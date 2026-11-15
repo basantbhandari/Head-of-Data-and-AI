@@ -1,35 +1,141 @@
 # Head of Data and AI
 
-A personal bank of Data and AI interview questions, built for the path from **senior Data & AI engineer** today to **Head of Data and AI** over the next 10–15 years.
+### The Senior Data and AI Engineer's Interview Handbook
+
+_1,593 interview questions with worked answers, in 31 chapters across 6 parts._
 
 Last updated 2026-11-15.
 
-## Sections
+---
 
-| Section | Questions | Covers |
-|---|---|---|
-| [AI and ML Engineering](ai-ml-engineering/README.md) | 1,282 | LLMs, RAG, agents, fine-tuning, LLMOps, evaluation, safety, classical ML, DL, NLP, CV, RL, stats |
-| [Data Engineering](data-engineering/README.md) | 103 + glossary | Warehousing, Spark, streaming, Airflow, modelling, normalization |
-| [Backend Engineering](backend-engineering/README.md) | 243 | HTTP/APIs, OOP and patterns, databases, CI/CD, Python internals, AI/ML system design |
+## Preface
 
-**Total: 1,628 numbered questions.**
+Senior Data and AI engineering interviews test more than one discipline. In one loop a candidate may derive a gradient, tune a Spark job, design a retrieval-augmented assistant, explain how a model will be monitored in production, and describe how they handled a disagreement with a stakeholder. This handbook brings those disciplines together in one place.
 
-## How to read the answers
+The book is organised by domain rather than by source. It starts with the foundations that every later topic depends on, then moves through data engineering, machine learning and generative AI, and finishes with the production, architecture and leadership topics that separate senior candidates from mid-level ones. Each chapter is self-contained and can be read on its own before a targeted interview.
+
+It is also the first step on a longer path, from senior engineer today towards a Head of Data and AI role over the next ten to fifteen years. The [Future editions](#future-editions) section lists the leadership domains to be added along the way.
+
+## How to use this book
+
+- **Preparing for a specific role.** Use the role guide below to pick the chapters that matter most, then work through them in order.
+- **Practising answers.** Read the question, answer it aloud or on paper, and only then compare with the written answer. The contents list at the top of each chapter works as a question sheet for this purpose.
+- **Going deeper.** Many answers link to related questions in other chapters. Following those links is the fastest way to connect, for example, attention mechanics (Chapter 17) to KV-cache serving costs (Chapter 27).
+- **Numbering.** Questions are numbered by chapter: Question 20.14 is the fourteenth question in Chapter 20.
+
+### Reading the answers
 
 | Marker | Meaning |
 |---|---|
-| _(no marker)_ | My own notes |
-| `✍️ Drafted answer` | The question had no answer in my notes, so an answer was drafted (297 questions) |
-| `✍️ Drafted addition` | My answer stopped partway or was incomplete; the extra text comes after the original (7 places) |
-| `🔁 Already answered in …` | A drafted answer that would repeat an existing one; it was skipped and links to the existing answer instead |
-| `🔁 See also …` | The same question has separate notes in another file; the two are cross-linked |
+| _(no marker)_ | Original study notes |
+| `✍️ Drafted answer` | The question had no answer in the original notes, so one was drafted |
+| `✍️ Drafted addition` | The original answer was incomplete; the drafted text follows it |
+| **Additional notes** | A second set of notes on the same question, merged under the first |
+| **See also** | A closely related question in another chapter |
 
-## Roadmap gap
+### Role guide
 
-The current notes cover the **engineering** ladder well. To grow toward Head of Data and AI, sections to add over time:
+| Target role | Core chapters | Also review |
+|---|---|---|
+| Senior Data Engineer | 2, 4, 5, 6, 7 | 3, 25, 26, 31 |
+| Senior ML Engineer | 1, 8–13, 26, 28 | 2, 14, 15, 27, 31 |
+| Senior AI / LLM Engineer | 17–24, 27, 29 | 13, 26, 30, 31 |
+| Applied Scientist | 1, 8–17, 22 | 12, 24 |
+| Data and AI Platform / Architect | 4, 6, 25–29 | 7, 30, 31 |
 
-- Data and AI strategy, roadmaps, build vs. buy, measuring the return on data and AI work
-- Data governance, privacy and AI regulation (e.g. the EU AI Act)
-- Org design, hiring and leveling for data and AI teams
-- Stakeholder, executive and board communication
-- Leadership behavioural stories (STAR)
+---
+
+## Table of contents
+
+### Part I — Foundations
+
+_The mathematical, statistical and software-engineering bedrock that every other chapter assumes._
+
+| Chapter | Questions |
+|---|---:|
+| 1. [Mathematics, Probability and Statistics](part-1-foundations/01-mathematics-probability-and-statistics.md) | 53 |
+| 2. [Python Engineering](part-1-foundations/02-python-engineering.md) | 95 |
+| 3. [Computer Science and Software Design](part-1-foundations/03-computer-science-and-software-design.md) | 18 |
+| **Part total** | **166** |
+
+### Part II — Data Engineering
+
+_Designing, storing, moving and governing data at scale: the platform that every model depends on._
+
+| Chapter | Questions |
+|---|---:|
+| 4. [Data Engineering Fundamentals and Architecture](part-2-data-engineering/04-data-engineering-fundamentals-and-architecture.md) | 35 |
+| 5. [SQL, Databases and Data Modeling](part-2-data-engineering/05-sql-databases-and-data-modeling.md) | 37 |
+| 6. [Distributed Processing and Streaming](part-2-data-engineering/06-distributed-processing-and-streaming.md) | 35 |
+| 7. [Pipelines and Orchestration](part-2-data-engineering/07-pipelines-and-orchestration.md) | 19 |
+| **Part total** | **126** |
+
+### Part III — Machine Learning
+
+_Classical and deep learning, from first principles to the judgment calls interviewers probe for._
+
+| Chapter | Questions |
+|---|---:|
+| 8. [Machine Learning Fundamentals](part-3-machine-learning/08-machine-learning-fundamentals.md) | 99 |
+| 9. [Machine Learning Algorithms](part-3-machine-learning/09-machine-learning-algorithms.md) | 81 |
+| 10. [Data Preprocessing and Feature Engineering](part-3-machine-learning/10-data-preprocessing-and-feature-engineering.md) | 36 |
+| 11. [Optimization and Training Dynamics](part-3-machine-learning/11-optimization-and-training-dynamics.md) | 38 |
+| 12. [Model Evaluation and Experimentation](part-3-machine-learning/12-model-evaluation-and-experimentation.md) | 58 |
+| 13. [Deep Learning](part-3-machine-learning/13-deep-learning.md) | 79 |
+| 14. [Natural Language Processing](part-3-machine-learning/14-natural-language-processing.md) | 30 |
+| 15. [Computer Vision](part-3-machine-learning/15-computer-vision.md) | 31 |
+| 16. [Reinforcement Learning](part-3-machine-learning/16-reinforcement-learning.md) | 73 |
+| **Part total** | **525** |
+
+### Part IV — Generative AI and LLM Engineering
+
+_Large language models and the systems built around them: prompting, retrieval, agents, adaptation and evaluation._
+
+| Chapter | Questions |
+|---|---:|
+| 17. [Large Language Model Foundations](part-4-generative-ai/17-large-language-model-foundations.md) | 142 |
+| 18. [Prompt and Context Engineering](part-4-generative-ai/18-prompt-and-context-engineering.md) | 36 |
+| 19. [Embeddings and Vector Databases](part-4-generative-ai/19-embeddings-and-vector-databases.md) | 26 |
+| 20. [Retrieval-Augmented Generation](part-4-generative-ai/20-retrieval-augmented-generation.md) | 70 |
+| 21. [AI Agents and Agentic Systems](part-4-generative-ai/21-ai-agents-and-agentic-systems.md) | 64 |
+| 22. [Fine-Tuning and Model Adaptation](part-4-generative-ai/22-fine-tuning-and-model-adaptation.md) | 38 |
+| 23. [Multimodal AI](part-4-generative-ai/23-multimodal-ai.md) | 31 |
+| 24. [Evaluation and Testing of AI Systems](part-4-generative-ai/24-evaluation-and-testing-of-ai-systems.md) | 42 |
+| **Part total** | **449** |
+
+### Part V — Production Systems and Architecture
+
+_Taking data and AI systems to production: services, operations, infrastructure, system design and safety._
+
+| Chapter | Questions |
+|---|---:|
+| 25. [Backend Engineering, APIs and DevOps](part-5-production-systems/25-backend-engineering-apis-and-devops.md) | 20 |
+| 26. [MLOps and LLMOps](part-5-production-systems/26-mlops-and-llmops.md) | 73 |
+| 27. [AI Infrastructure and Inference Optimization](part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md) | 62 |
+| 28. [Machine Learning System Design](part-5-production-systems/28-machine-learning-system-design.md) | 27 |
+| 29. [Generative AI System Design](part-5-production-systems/29-generative-ai-system-design.md) | 49 |
+| 30. [AI Safety, Security and Responsible AI](part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) | 52 |
+| **Part total** | **283** |
+
+### Part VI — Professional Practice
+
+_Behavioural, leadership and scenario questions that decide senior-level offers._
+
+| Chapter | Questions |
+|---|---:|
+| 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 44 |
+| **Part total** | **44** |
+
+**Total: 1,593 questions.**
+
+---
+
+## Future editions
+
+The current edition covers the engineering ladder in depth. To support the move towards Head of Data and AI, planned chapters include:
+
+- **Data and AI strategy:** roadmaps, build vs. buy, and measuring the return on data and AI investment
+- **Data governance and regulation:** privacy, data contracts, and AI regulation such as the EU AI Act
+- **Organisation design:** hiring, leveling and structuring data and AI teams
+- **Executive communication:** stakeholder management and presenting to leadership and boards
+- **Leadership stories:** a bank of STAR-format examples for leadership-level behavioural interviews
