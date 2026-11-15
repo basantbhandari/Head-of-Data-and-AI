@@ -1,4 +1,3 @@
-<!-- notion-id: 3d567418285480f18f61d0666de4f4d7 -->
 # Vector Databases and Embeddings
 
 Interview questions on embeddings and vector databases: similarity metrics, ANN indexing, model selection, drift, multi-tenancy, scaling and troubleshooting.

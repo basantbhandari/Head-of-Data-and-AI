@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480a0a78fcec82f8a89eb -->
 # Optimization
 
 Optimization interview questions: gradient descent, vanishing gradients, learning rates, hyperparameter tuning (grid/random/Bayesian, TPE), quantization, fairness, and adaptive optimizers (Adam, RMSprop, Adagrad).
@@ -26,7 +25,7 @@ Optimization interview questions: gradient descent, vanishing gradients, learnin
 - Can get stuck in local minima (less issue in deep learning with high-dimensional loss surfaces)
 - Variants: Batch, Stochastic (SGD), Mini-Batch, and adaptive optimizers (Adam, RMSProp)
 
-> The Notion page also asks "What is stochastic gradient descent (SGD)?" here. Its answer was merged into [02 · Fundamentals of Machine Learning: What is Stochastic Gradient Descent (SGD)?](02-fundamentals-of-machine-learning.md#q10-what-is-stochastic-gradient-descent-sgd), where the same question appears first.
+> This set also asks "What is stochastic gradient descent (SGD)?" here. Its answer was merged into [02 · Fundamentals of Machine Learning: What is Stochastic Gradient Descent (SGD)?](02-fundamentals-of-machine-learning.md#q10-what-is-stochastic-gradient-descent-sgd), where the same question appears first.
 
 ### Q2. What are vanishing gradients?
 

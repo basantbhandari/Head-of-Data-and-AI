@@ -1,4 +1,3 @@
-<!-- notion-id: 3d4674182854803ab005c946791afc47 -->
 # Probability and Statistics
 
 Probability and statistics interview questions: bias-variance, probability distributions, descriptive statistics, correlation, hypothesis testing and p-values, confidence intervals, Bayesian vs. frequentist inference, MLE/MAP, CLT, sampling and the bootstrap.

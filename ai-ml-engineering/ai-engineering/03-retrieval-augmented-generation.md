@@ -1,4 +1,3 @@
-<!-- notion-id: 3d5674182854804680d3e66df065f621 -->
 # Retrieval-Augmented Generation (RAG)
 
 Interview questions on Retrieval-Augmented Generation: architecture, chunking, retrieval, evaluation, scaling and production failure scenarios.

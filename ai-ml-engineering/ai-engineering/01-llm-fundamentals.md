@@ -1,4 +1,3 @@
-<!-- notion-id: 3d567418285480f0aa7ad772d8ad68be -->
 # LLM Fundamentals
 
 Interview questions and notes on LLM fundamentals: Transformer architecture, attention, tokenization, decoding, training/alignment methods and production troubleshooting.
@@ -41,7 +40,7 @@ Interview questions and notes on LLM fundamentals: Transformer architecture, att
 
 ### Q5. What is Fine-tuning?
 
-> 🔁 _See also [01-ai-engineering.md → Q17](../ml-engineering/01-ai-engineering.md#q17-fine-tuning) (separate Notion notes on the same question)._
+> 🔁 _See also [01-ai-engineering.md → Q17](../ml-engineering/01-ai-engineering.md#q17-fine-tuning) (separate notes on the same question)._
 
 - **Fine-tuning is the process of taking a pretrained model and further training it on a smaller, task-specific or domain-specific dataset so that the model becomes better adapted to a particular task, behavior, or domain.**
 - **Instead of training a model from scratch, we start with the knowledge and representations learned during pretraining and update some or all of the model's parameters using the fine-tuning dataset.**
@@ -49,7 +48,7 @@ Interview questions and notes on LLM fundamentals: Transformer architecture, att
 
 ### Q6. What is Quantization?
 
-> 🔁 _See also [01-ai-engineering.md → Q18](../ml-engineering/01-ai-engineering.md#q18-quantization) (separate Notion notes on the same question)._
+> 🔁 _See also [01-ai-engineering.md → Q18](../ml-engineering/01-ai-engineering.md#q18-quantization) (separate notes on the same question)._
 
 - **Quantization is the process of representing a model's weights and sometimes activations using lower-precision numerical formats, such as INT8 or INT4, instead of higher-precision formats like FP32 or FP16.**
 - **The main goal is to reduce model memory usage, storage requirements, and inference latency, while maintaining as much model accuracy as possible. This is particularly useful for deploying large language models on GPUs or resource-constrained environments.**
@@ -101,7 +100,7 @@ Interview questions and notes on LLM fundamentals: Transformer architecture, att
 
 ### Q9. What is the Transformer architecture, and how does it work?
 
-> 🔁 _See also [09-large-language-model.md → Q2](../ml-engineering/09-large-language-model.md#q2-what-is-the-transformer-architecture-and-how-does-it-work) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q2](../ml-engineering/09-large-language-model.md#q2-what-is-the-transformer-architecture-and-how-does-it-work) (separate notes on the same question)._
 
 #### Transformer Architecture
 
@@ -126,7 +125,7 @@ Interview questions and notes on LLM fundamentals: Transformer architecture, att
 
 ### Q10. What are the key components of the Transformer architecture?
 
-> 🔁 _See also [09-large-language-model.md → Q3](../ml-engineering/09-large-language-model.md#q3-what-are-the-key-components-of-the-transformer-architecture) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q3](../ml-engineering/09-large-language-model.md#q3-what-are-the-key-components-of-the-transformer-architecture) (separate notes on the same question)._
 
 1. **Token Embeddings** — Convert tokens into vectors.
 2. **Positional Encoding** — Adds token position information.
@@ -251,7 +250,7 @@ The same tokens have different meanings when their positions change.
 
 ### Q15. What are embeddings?
 
-> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q13](../ml-engineering/02-fundamentals-of-machine-learning.md#q13-what-are-embeddings-in-machine-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q13](../ml-engineering/02-fundamentals-of-machine-learning.md#q13-what-are-embeddings-in-machine-learning) (separate notes on the same question)._
 
 #### Embeddings
 
@@ -280,7 +279,7 @@ The same tokens have different meanings when their positions change.
 
 ### Q16. Explain the Query(Q), Key(K), and Value(V) in attention.
 
-> 🔁 _See also [09-large-language-model.md → Q17](../ml-engineering/09-large-language-model.md#q17-explain-the-queryq-keyk-and-valuev-in-attention) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q17](../ml-engineering/09-large-language-model.md#q17-explain-the-queryq-keyk-and-valuev-in-attention) (separate notes on the same question)._
 
 #### Query (Q), Key (K), and Value (V)
 
@@ -319,7 +318,7 @@ The query for **"it"** can assign higher attention to the key corresponding to *
 
 ### Q17. What is self-attention, and how does it work in Transformers?
 
-> 🔁 _See also [09-large-language-model.md → Q18](../ml-engineering/09-large-language-model.md#q18-what-is-self-attention-and-how-does-it-work-in-transformers) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q18](../ml-engineering/09-large-language-model.md#q18-what-is-self-attention-and-how-does-it-work-in-transformers) (separate notes on the same question)._
 
 #### Self-Attention
 
@@ -348,7 +347,7 @@ Attention(Q, K, V) = softmax(QK^T / √d_k) V
 
 ### Q18. What is cross-attention in Transformers?
 
-> 🔁 _See also [09-large-language-model.md → Q19](../ml-engineering/09-large-language-model.md#q19-what-is-cross-attention-in-transformers) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q19](../ml-engineering/09-large-language-model.md#q19-what-is-cross-attention-in-transformers) (separate notes on the same question)._
 
 #### Cross-Attention
 
@@ -375,7 +374,7 @@ CrossAttention(Q, K, V) = softmax(QK^T / √d_k) V
 
 > **Cross-attention enables one sequence to selectively retrieve information from another sequence by generating Q from the target sequence and K, V from the source sequence.**
 
-#### Notes from a repeated entry in Notion: "Cross Attention?"
+#### Notes from a repeated entry: "Cross Attention?"
 
 **Cross-Attention** allows one sequence to attend to another sequence.
 
@@ -385,7 +384,7 @@ The key idea is:
 
 ### Q19. Why do we scale the dot product attention by √dₖ in the Transformer architecture?
 
-> 🔁 _See also [09-large-language-model.md → Q5](../ml-engineering/09-large-language-model.md#q5-why-do-we-scale-the-dot-product-attention-by-dₖ-in-the-transformer-architecture) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q5](../ml-engineering/09-large-language-model.md#q5-why-do-we-scale-the-dot-product-attention-by-dₖ-in-the-transformer-architecture) (separate notes on the same question)._
 
 In scaled dot-product attention:
 
@@ -405,7 +404,7 @@ Attention(Q, K, V) = softmax(QK^T / √d_k) V
 
 ### Q20. What is causal masking?
 
-> 🔁 _See also [09-large-language-model.md → Q29](../ml-engineering/09-large-language-model.md#q29-what-is-causal-masking) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q29](../ml-engineering/09-large-language-model.md#q29-what-is-causal-masking) (separate notes on the same question)._
 
 #### Causal Masking
 
@@ -444,7 +443,7 @@ M[i,j] = −∞    if j > i
 
 ### Q21. What are multi-head attention mechanisms? Why use multiple attention heads?
 
-> 🔁 _See also [09-large-language-model.md → Q20](../ml-engineering/09-large-language-model.md#q20-what-are-multi-head-attention-mechanisms-why-use-multiple-attention-heads) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q20](../ml-engineering/09-large-language-model.md#q20-what-are-multi-head-attention-mechanisms-why-use-multiple-attention-heads) (separate notes on the same question)._
 
 #### Multi-Head Attention
 
@@ -470,7 +469,7 @@ MultiHead(X) = Concat(head_1, ..., head_h) W_O
 
 > **Multi-head attention performs attention in parallel across multiple learned projections, allowing the Transformer to capture different relationships and representations from the same input sequence.**
 
-#### Notes from a repeated entry in Notion: "Multi Head Attention?"
+#### Notes from a repeated entry: "Multi Head Attention?"
 
 **Multi-Head Attention (MHA)** allows the model to perform attention from multiple different representation subspaces simultaneously.
 
@@ -480,7 +479,7 @@ The key idea is:
 
 ### Q22. What are Feed-Forward Networks in LLMs?
 
-> 🔁 _See also [09-large-language-model.md → Q23](../ml-engineering/09-large-language-model.md#q23-what-are-feed-forward-networks-in-llms) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q23](../ml-engineering/09-large-language-model.md#q23-what-are-feed-forward-networks-in-llms) (separate notes on the same question)._
 
 - **Feed-Forward Network (FFN)** is the **non-linear transformation layer** inside each Transformer block.
 - It processes each token **independently** after self-attention.
@@ -511,7 +510,7 @@ The key idea is:
 
 ### Q24. Why is the context window limited in LLMs?
 
-> 🔁 _See also [09-large-language-model.md → Q39](../ml-engineering/09-large-language-model.md#q39-why-is-the-context-window-limited-in-llms) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q39](../ml-engineering/09-large-language-model.md#q39-why-is-the-context-window-limited-in-llms) (separate notes on the same question)._
 
 - **Context window** is the maximum amount of text/tokens an LLM can consider **at once** when generating a response.
 - It includes the **input prompt, conversation history, retrieved documents, and sometimes the generated output**, depending on the model/API.
@@ -526,9 +525,9 @@ The key idea is:
 
 > “The context window is the maximum number of tokens an LLM can process as context in a single request. It determines how much information the model can consider at once, making it important for long conversations, RAG, and document analysis. However, larger context can increase cost and latency, and the model may not use all information equally well.”
 
-> ✍️ _Addition drafted during sync._
+> ✍️ _Drafted addition._
 
-The Notion answer above is the same as Q23 (what the context window is and why it matters). It does not explain why the window is limited. The main reasons are:
+The answer above is the same as Q23 (what the context window is and why it matters). It does not explain why the window is limited. The main reasons are:
 
 - **Attention cost grows quadratically.** Standard self-attention scores every token against every other token, so compute and attention memory scale as O(n²) with sequence length. Doubling the context roughly quadruples attention work during prefill.
 - **The KV cache grows linearly with length.** The model keeps K and V tensors for every previous token in every layer. At long contexts and large batch sizes, the KV cache (not the weights) often dominates GPU memory and limits how many concurrent requests a server can handle.
@@ -661,7 +660,7 @@ Output = x + Sublayer(x)
 
 ### Q31. What is the difference between encoder-only, decoder-only, and encoder-decoder Transformer architectures?
 
-> 🔁 _See also [06-deep-learning.md → Q20](../ml-engineering/06-deep-learning.md#q20-what-is-the-difference-between-encoder-only-decoder-only-and-encoder-decoder-transformer-architectures) (separate Notion notes on the same question)._
+> 🔁 _See also [06-deep-learning.md → Q20](../ml-engineering/06-deep-learning.md#q20-what-is-the-difference-between-encoder-only-decoder-only-and-encoder-decoder-transformer-architectures) (separate notes on the same question)._
 
 #### Encoder-only vs Decoder-only vs Encoder-Decoder
 
@@ -731,7 +730,7 @@ Smaller Student LLM
 
 ### Q34. What is Mixture of Experts (MoE), and how does it work in models like Mixtral?
 
-> 🔁 _See also [09-large-language-model.md → Q41](../ml-engineering/09-large-language-model.md#q41-what-is-mixture-of-experts-moe-and-how-does-it-work-in-models-like-mixtral) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q41](../ml-engineering/09-large-language-model.md#q41-what-is-mixture-of-experts-moe-and-how-does-it-work-in-models-like-mixtral) (separate notes on the same question)._
 
 - **Mixture of Experts (MoE)** is a Transformer architecture where the model contains multiple **expert networks**, but only a subset of experts is activated for each token.
 - A **router/gating network** decides which experts should process each token.
@@ -761,7 +760,7 @@ Combine outputs
 
 ### Q35. What is the difference between dense and sparse models?
 
-> 🔁 _See also [09-large-language-model.md → Q42](../ml-engineering/09-large-language-model.md#q42-what-is-the-difference-between-dense-and-sparse-models) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q42](../ml-engineering/09-large-language-model.md#q42-what-is-the-difference-between-dense-and-sparse-models) (separate notes on the same question)._
 
 - **Dense model:** Every input token passes through **all model parameters/layers** during inference.
   - Example: A traditional Transformer with all FFN parameters active for every token.
@@ -783,7 +782,7 @@ Combine outputs
 
 ### Q36. What is Flash Attention?
 
-> 🔁 _See also [09-large-language-model.md → Q8](../ml-engineering/09-large-language-model.md#q8-what-is-flash-attention) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q8](../ml-engineering/09-large-language-model.md#q8-what-is-flash-attention) (separate notes on the same question)._
 
 - **FlashAttention** is an **IO-aware algorithm for computing Transformer attention more efficiently**. It does not change the attention formula; it optimizes how attention is computed and moved through GPU memory.
 - Standard attention materializes large intermediate matrices such as the QKT attention matrix, which requires significant **GPU memory reads/writes**.
@@ -829,7 +828,7 @@ Loss = -log(P("blue"))
 
 ### Q38. What is Grouped-Query Attention (GQA), and how does it differ from Multi-Head Attention (MHA)?
 
-> 🔁 _See also [09-large-language-model.md → Q22](../ml-engineering/09-large-language-model.md#q22-what-is-grouped-query-attention-gqa-and-how-does-it-differ-from-multi-head-attention-mha) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q22](../ml-engineering/09-large-language-model.md#q22-what-is-grouped-query-attention-gqa-and-how-does-it-differ-from-multi-head-attention-mha) (separate notes on the same question)._
 
 #### Grouped-Query Attention (GQA)
 
@@ -862,7 +861,7 @@ Q4 ─┘
 
 > **“GQA is a compromise between MHA and MQA. In MHA, every query head has its own Key and Value heads, while in GQA, multiple query heads share a smaller number of Key/Value heads. This significantly reduces KV-cache memory and improves inference efficiency while retaining performance close to MHA.”**
 
-#### Notes from a repeated entry in Notion: "Grouped-Query Attention?"
+#### Notes from a repeated entry: "Grouped-Query Attention?"
 
 **Grouped-Query Attention (GQA)** is an attention mechanism that sits between **Multi-Head Attention (MHA)** and **Multi-Query Attention (MQA)**.
 
@@ -872,7 +871,7 @@ The key idea is:
 
 ### Q39. How does Rotary Position Embedding (RoPE) work, and why is it preferred over learned positional embeddings?
 
-> 🔁 _See also [09-large-language-model.md → Q31](../ml-engineering/09-large-language-model.md#q31-how-does-rotary-position-embedding-rope-work-and-why-is-it-preferred-over-learned-positional-embeddings) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q31](../ml-engineering/09-large-language-model.md#q31-how-does-rotary-position-embedding-rope-work-and-why-is-it-preferred-over-learned-positional-embeddings) (separate notes on the same question)._
 
 #### Rotary Position Embedding (RoPE)
 
@@ -928,7 +927,7 @@ output = γx̂ + β
 
 ### Q41. Explain RMSNorm (Root Mean Square Layer Normalization)
 
-> 🔁 _See also [09-large-language-model.md → Q33](../ml-engineering/09-large-language-model.md#q33-explain-rmsnorm-root-mean-square-layer-normalization) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q33](../ml-engineering/09-large-language-model.md#q33-explain-rmsnorm-root-mean-square-layer-normalization) (separate notes on the same question)._
 
 #### RMSNorm (Root Mean Square Normalization)
 
@@ -1185,7 +1184,7 @@ Invalid → Retry / Repair
 
 ### Q59. Transformers work on text, so can they also understand images?
 
-> 🔁 _See also [09-large-language-model.md → Q43](../ml-engineering/09-large-language-model.md#q43-transformers-work-on-text-so-can-they-also-understand-images) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q43](../ml-engineering/09-large-language-model.md#q43-transformers-work-on-text-so-can-they-also-understand-images) (separate notes on the same question)._
 
 Yes. **Transformers can understand images**, but the original Transformer architecture was designed for sequences such as text. To process images, we represent the image as a sequence of numerical tokens.
 
@@ -1205,7 +1204,7 @@ The vision encoder converts the image into representations that the language mod
 
 ### Q60. Small Language Models (SLMs)
 
-> 🔁 _See also [09-large-language-model.md → Q44](../ml-engineering/09-large-language-model.md#q44-small-language-models-slms) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q44](../ml-engineering/09-large-language-model.md#q44-small-language-models-slms) (separate notes on the same question)._
 
 **Small Language Models (SLMs)** are language models with significantly fewer parameters than large language models (LLMs), designed to perform specific language tasks efficiently with lower **memory, compute, latency, and cost**.
 
@@ -1222,7 +1221,7 @@ The vision encoder converts the image into representations that the language mod
 
 ### Q61. Large Reasoning Models (LRMs)
 
-> 🔁 _See also [09-large-language-model.md → Q45](../ml-engineering/09-large-language-model.md#q45-large-reasoning-models-lrms) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q45](../ml-engineering/09-large-language-model.md#q45-large-reasoning-models-lrms) (separate notes on the same question)._
 
 #### Large Reasoning Models (LRMs)
 
@@ -1298,7 +1297,7 @@ The model can use both **“The cat”** and **“sleeping”** to predict the m
 
 ### Q64. Proximal Policy Optimization (PPO)
 
-> 🔁 _See also [09-large-language-model.md → Q47](../ml-engineering/09-large-language-model.md#q47-proximal-policy-optimization-ppo) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q47](../ml-engineering/09-large-language-model.md#q47-proximal-policy-optimization-ppo) (separate notes on the same question)._
 
 #### Proximal Policy Optimization (PPO)
 
@@ -1341,7 +1340,7 @@ PPO also commonly uses a **KL penalty** to prevent the RL-trained model from dri
 
 ### Q65. Direct Preference Optimization (DPO)
 
-> 🔁 _See also [09-large-language-model.md → Q48](../ml-engineering/09-large-language-model.md#q48-direct-preference-optimization-dpo) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q48](../ml-engineering/09-large-language-model.md#q48-direct-preference-optimization-dpo) (separate notes on the same question)._
 
 #### Direct Preference Optimization (DPO)
 
@@ -1395,7 +1394,7 @@ It also compares the model against a **reference model** to prevent the policy f
 
 ### Q66. Group Relative Policy Optimization (GRPO)
 
-> 🔁 _See also [09-large-language-model.md → Q49](../ml-engineering/09-large-language-model.md#q49-group-relative-policy-optimization-grpo) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q49](../ml-engineering/09-large-language-model.md#q49-group-relative-policy-optimization-grpo) (separate notes on the same question)._
 
 #### Group Relative Policy Optimization (GRPO)
 
@@ -1464,7 +1463,7 @@ This is powerful because you don't necessarily need a human preference model to 
 
 ### Q67. Recursive Language Models (RLMs)
 
-> 🔁 _See also [09-large-language-model.md → Q50](../ml-engineering/09-large-language-model.md#q50-recursive-language-models-rlms) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q50](../ml-engineering/09-large-language-model.md#q50-recursive-language-models-rlms) (separate notes on the same question)._
 
 #### Recursive Language Models (RLMs)
 
@@ -1517,7 +1516,7 @@ They solve different problems:
 
 ### Q68. Continual Learning in LLMs
 
-> 🔁 _See also [09-large-language-model.md → Q51](../ml-engineering/09-large-language-model.md#q51-continual-learning-in-llms) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q51](../ml-engineering/09-large-language-model.md#q51-continual-learning-in-llms) (separate notes on the same question)._
 
 #### Continual Learning in LLMs
 
@@ -1570,7 +1569,7 @@ For frequently changing information, **RAG is often safer and cheaper** because 
 
 ### Q69. How do Diffusion Language Models (DLMs) work?
 
-> 🔁 _See also [06-deep-learning.md → Q47](../ml-engineering/06-deep-learning.md#q47-how-do-diffusion-language-models-dlms-work) (separate Notion notes on the same question)._
+> 🔁 _See also [06-deep-learning.md → Q47](../ml-engineering/06-deep-learning.md#q47-how-do-diffusion-language-models-dlms-work) (separate notes on the same question)._
 
 #### Diffusion Language Models (DLMs)
 
@@ -1698,7 +1697,7 @@ Transformers process sequences where **batch size and sequence length can vary**
 
 ### Q72. What is SVD (singular value decomposition)?
 
-> 🔁 _See also [advanced-ml.md → Q170](../advanced-ml.md#q170-singular-value-decomposition-svd) (separate Notion notes on the same question)._
+> 🔁 _See also [advanced-ml.md → Q170](../advanced-ml.md#q170-singular-value-decomposition-svd) (separate notes on the same question)._
 
 **Singular Value Decomposition (SVD)** is a matrix factorization technique that decomposes a matrix into **three matrices**:
 
@@ -1789,7 +1788,7 @@ KL Divergence tells us how much information is lost when we use Q to represent P
 
 ### Q74. What is entropy vs. cross-entropy?
 
-> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q27](../ml-engineering/02-fundamentals-of-machine-learning.md#q27-what-is-cross-entropy) (separate Notion notes on the same question)._
+> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q27](../ml-engineering/02-fundamentals-of-machine-learning.md#q27-what-is-cross-entropy) (separate notes on the same question)._
 
 | Concept | Entropy | Cross-Entropy | KL Divergence |
 | --- | --- | --- | --- |
@@ -1887,7 +1886,7 @@ MHA→GQA→MQA
 
 ### Q78. What is reinforcement learning?
 
-> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q17](../ml-engineering/02-fundamentals-of-machine-learning.md#q17-what-is-reinforcement-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q17](../ml-engineering/02-fundamentals-of-machine-learning.md#q17-what-is-reinforcement-learning) (separate notes on the same question)._
 
 **Reinforcement Learning** is a machine learning paradigm where an **agent learns by interacting with an environment** and receiving **rewards or penalties**.
 

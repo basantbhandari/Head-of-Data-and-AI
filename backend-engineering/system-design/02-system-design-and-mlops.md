@@ -1,14 +1,13 @@
-<!-- notion-id: 3d467418-2854-80c8-a21f-e06c41962baa -->
 # System Design and MLOps
 
-Classic ML system design cases plus modelling, deployment, monitoring and MLOps questions. The Notion page lists the questions only, so every answer here was drafted during sync.
+Classic ML system design cases plus modelling, deployment, monitoring and MLOps questions. Every answer here is a drafted answer.
 
-> The first 13 questions on the Notion page (from "Design ChatGPT: Training to Serving (End-to-End)" to "Design an AI Coding Agent.") repeat Q1–Q13 of [AI System Design](01-ai-system-design.md), and "Design a Machine Learning System for Multimodal Search." repeats Q7 there. They are answered in that file.
+> The first 13 questions of this set (from "Design ChatGPT: Training to Serving (End-to-End)" to "Design an AI Coding Agent.") repeat Q1–Q13 of [AI System Design](01-ai-system-design.md), and "Design a Machine Learning System for Multimodal Search." repeats Q7 there. They are answered in that file.
 
 ## ML system design cases
 
 ### Q1. Design a Machine Learning System for YouTube Video Recommendation.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** home-feed recommendations for about 2B users and 1B+ videos. Latency under 200 ms. The goal is long-term satisfaction, not just clicks.
 
@@ -36,7 +35,7 @@ The final score is a weighted combination of the task heads. The weights are tun
 **Pitfalls:** cold start for new videos (use content embeddings and exploration traffic) and new users (popular-by-region, onboarding). Position bias (add position as a training feature and set it to a constant at serving). Feedback loops and filter bubbles (exploration, diversity). Clickbait (weight watch time and survey signals).
 
 ### Q2. Design a Machine Learning System for YouTube Video Search.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** text queries over 1B+ videos, multilingual, p99 latency under 300 ms. Results should be relevant first, then personalised.
 
@@ -60,7 +59,7 @@ Video embeddings are built offline when a video is uploaded (the text encoder us
 **Pitfalls:** tail queries have little click data, so rely on semantic retrieval. Freshness matters for news and trending queries, so add a freshness feature and a separate index for recent uploads. Spam titles and keyword stuffing call for quality and authority signals. Language mismatch can be handled with a multilingual encoder.
 
 ### Q3. Design a Machine Learning System for Personalized Content Feed.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** a social feed (posts from friends, pages and groups, plus unconnected recommended content). Hundreds of millions of DAU. The feed refreshes on every app open.
 
@@ -84,7 +83,7 @@ Inventory (friends' posts + recommended pool via two-tower retrieval)
 **Pitfalls:** engagement-bait and polarising content (add negative-feedback weights and integrity models). Position bias. Feedback loops that narrow interests (exploration slots). Delayed labels for comments and shares (use a label-attribution window). Cold-start authors (boost via exploration).
 
 ### Q4. Design a Machine Learning System for Harmful Content Detection.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** posts with text, images and video. Harm classes include violence, hate, nudity, self-harm, spam and misinformation. Some classes need proactive detection before anyone sees the post. Billions of posts a day. Actions are remove, demote, or send to human review.
 
@@ -106,7 +105,7 @@ Reviewer decisions flow back as training labels (active learning).
 **Pitfalls:** heavy class imbalance (stratified sampling, focal loss). Adversarial evolution: text obfuscation, image perturbation and new slang call for frequent retraining and red-teaming. Policy drift when the definitions change. Fairness across dialects and languages (measure per-group false-positive rates). Moderator wellbeing (blur content, show reviewers only what is needed).
 
 ### Q5. Design a Machine Learning System for Similar Listings on Airbnb.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** a "similar listings" carousel on a listing page. The goal is to raise bookings. Millions of listings, and the results must respect the viewer's dates and destination.
 
@@ -127,7 +126,7 @@ online:  anchor listing ─► ANN top-k (same market, available for dates) ─�
 **Pitfalls:** availability changes daily, so filter at request time. Position bias in the carousel. Embedding staleness (retrain daily). Fairness to new hosts (an exposure boost).
 
 ### Q6. Design a Machine Learning System for Replacement Product Recommendation.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** when an item is out of stock (e-commerce or grocery substitution), suggest a *substitute* that the customer will accept. Substitutes are not the same as complements: a different-brand milk is a substitute, cereal is a complement.
 
@@ -147,7 +146,7 @@ hard constraints: dietary/allergen rules, size bounds, price ceiling
 **Pitfalls:** violating hard constraints such as allergens or halal (always use rules, never rely only on the model). Price jumps upset customers. Sparse labels for long-tail items (back off to category-level models). Store-level inventory must be checked in real time.
 
 ### Q7. Design a Machine Learning System for Event Recommendation.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** an Eventbrite-like platform that recommends upcoming events. Events are short-lived (no long engagement history), location-bound and time-bound. The goal is ticket registrations.
 
@@ -169,7 +168,7 @@ hard constraints: dietary/allergen rules, size bounds, price ceiling
 **Pitfalls:** cold start for new users (location plus popular events, onboarding interests). Class imbalance. Features such as "friends registered" change quickly, so the online and offline features need point-in-time correctness to avoid leakage.
 
 ### Q8. Design a Machine Learning System for Ad Click Prediction.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** predict pCTR for ads shown in feed or search. Billions of impressions a day, latency under 10 ms per batch of candidates. pCTR feeds the auction (`bid × pCTR × quality`), so **calibration matters as much as ranking**.
 
@@ -194,7 +193,7 @@ Logistic regression + hashed crosses (baseline, very fast)
 **Pitfalls:** delayed feedback and label leakage, position bias (use a position feature or a separate position model), cold-start ads (content features and an exploration budget), privacy constraints (fewer cross-site signals, aggregated APIs).
 
 ### Q9. Design a Machine Learning System to Estimate Delivery Time.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** food-delivery ETA shown before ordering and updated during delivery. The business cost is asymmetric: late is worse than early. Strict latency limits.
 
@@ -220,7 +219,7 @@ stream events (prep ready, GPS) ─► re-estimate ─► push update to app
 **Pitfalls:** label noise (couriers mark "picked up" late). Distribution shift during storms and holidays. Feedback loops (shown ETAs change demand). Leakage from features that are only known after the order.
 
 ### Q10. Design a Machine Learning System for Image Search.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** query by image (visual search, as in Pinterest Lens) and/or by text. Billions of images, results within 200 ms.
 
@@ -240,7 +239,7 @@ Product quantisation compresses embeddings: 512-dimensional float32 is 2 KB, and
 **Pitfalls:** near-duplicates crowd the results (dedupe with perceptual hashing). Unsafe content (safety classifiers). Re-embedding billions of images after a model update (versioned indexes, backfill jobs, dual-serving during migration). Background clutter (crop detected objects first).
 
 ### Q11. Design a Machine Learning System for Friends Recommendation.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** "People You May Know" on a social network with about 1B users. The goal is accepted connections that lead to engagement, not just sent requests.
 
@@ -262,7 +261,7 @@ online: fetch precomputed candidates ─► refresh real-time features ─► ra
 **Pitfalls:** privacy (do not surface sensitive links such as therapists or exes from contact uploads). Spam and fake accounts. Cold-start users (contacts, onboarding). Over-recommending popular users.
 
 ### Q12. Design a Machine Learning Product Recommendation System for an e-commerce platform.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** surfaces are the homepage, product page ("similar"/"bought together") and cart. Catalogue of 10M+ SKUs, 100M users. The goals are GMV and conversion, with guardrails on returns.
 
@@ -285,7 +284,7 @@ online: fetch precomputed candidates ─► refresh real-time features ─► ra
 **Pitfalls:** popularity bias and long-tail coverage, cold-start items and users, seasonality, and the feedback loop with promotions.
 
 ### Q13. How would you build a system to detect fraudulent transactions?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** card or payment transactions scored in real time (under 50 ms) before authorisation. Decisions: approve, decline, or step-up (3DS/OTP). Fraud base rate is about 0.1%. The costs are asymmetric: fraud loss versus declining a good customer.
 
@@ -315,7 +314,7 @@ txn ─► feature service (real-time aggregates) ─► rules engine + ML score
 > 🔁 _Already answered in [10-multimodal-ai.md → Q20](../../ai-ml-engineering/ai-engineering/10-multimodal-ai.md#q20-explain-multimodal-fusion-techniques-early-fusion-vs-late-fusion); skipped here to avoid duplication._
 
 ### Q15. How would you approach a time series forecasting problem?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 1. **Clarify the decision:** the forecast horizon (next hour or next quarter), granularity, number of series (1 or 100k SKUs), whether a point forecast or prediction intervals are needed, and the cost of over- versus under-forecasting.
 2. **EDA:** trend, seasonality (daily, weekly, yearly), holidays and events, structural breaks such as COVID, missing data, outliers, and stationarity (ADF test). Decompose with STL.
@@ -340,7 +339,7 @@ cv = sf.cross_validation(df=df, h=14, n_windows=4)   # rolling-origin backtest
 > 🔁 _Already answered in [commonly-asked-ml-questions.md → Q119](../../ai-ml-engineering/commonly-asked-ml-questions.md#q119-how-do-you-build-a-spam-detection-system); skipped here to avoid duplication._
 
 ### Q17. Describe how you would implement an image classification system.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 1. **Define the problem:** the classes, single- or multi-label, accuracy versus latency targets, deployment target (cloud GPU or mobile), and data volume.
 2. **Data:** collect and label (labelling vendors, active learning to prioritise uncertain samples), write clear labelling guidelines, audit inter-annotator agreement, and split by source or time to avoid leakage (near-duplicates across splits inflate metrics).
@@ -357,7 +356,7 @@ opt = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.05)
 ```
 
 ### Q18. What approach would you take for a sentiment analysis task?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** the granularity (document, sentence or **aspect-based**, e.g. "battery great, screen bad"), the labels (positive/negative/neutral or 1–5 stars), domain (tweets, reviews, support tickets), languages, volume and latency, and whether explainability is needed.
 
@@ -380,7 +379,7 @@ clf(["Delivery was late but support fixed it fast"])
 ```
 
 ### Q19. How would you design a customer churn prediction model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 1. **Define churn precisely:** contractual (cancelled subscription) or non-contractual (no purchase in 60 days). Fix a **prediction window** ("will churn in the next 30 days") and an **observation window** for features. Be clear about the action: a retention offer or a CSM call, which sets the precision and recall needs.
 2. **Labels and leakage:** build snapshots. For each customer at date T, features use only data before T, and the label looks at T to T+30. Exclude signals that only appear after a churn decision, such as a "cancellation page visited" feature captured after the decision.
@@ -391,7 +390,7 @@ clf(["Delivery was late but support fixed it fast"])
 7. **Production:** a daily or weekly batch score pushed to the CRM, with SHAP reason codes ("usage down 40%, 2 failed payments") so account teams know what to do. Monitor drift and measure retention lift against a holdout.
 
 ### Q20. What would be your approach to ranking search results?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Multi-stage pipeline:**
 ```text
@@ -413,7 +412,7 @@ query understanding (spell, synonyms, intent, entities)
 **Pitfalls:** feedback loops (the model only learns from what it showed, so add exploration). Training/serving skew in features. Over-personalisation. Latency budgets limit the cross-encoder to the top-N.
 
 ### Q21. How would you build a system to detect anomalies in network traffic?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** the goal (intrusion/DDoS detection, data exfiltration, misconfigurations), the data (NetFlow/IPFIX, packet headers, firewall and DNS logs), the volume (millions of flows a second), and response time (seconds for DDoS). Labels are scarce, so this is **mostly unsupervised or semi-supervised**.
 
@@ -439,7 +438,7 @@ raw data ─► data lake for forensics + offline training
 ## Modelling, data & training
 
 ### Q22. How do you choose the right machine learning algorithm?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Start from the problem and constraints, not the algorithm.
 
@@ -456,7 +455,7 @@ Start from the problem and constraints, not the algorithm.
 **Rule of thumb:** "No free lunch". Pick 2–3 candidates suited to the data type, benchmark them fairly, and prefer the simplest model within noise of the best. For a Head of Data and AI, the deciding factor is often maintainability and time-to-value, not +0.5% AUC.
 
 ### Q23. What is model drift, and how do you handle it?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Model drift** means a model's performance degrades in production because the world has moved away from its training data.
 
@@ -490,7 +489,7 @@ def psi(expected, actual, bins=10):
 ```
 
 ### Q24. How would you handle large-scale data for training?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **First ask whether all of it is needed.** Learning curves often flatten. Smart sampling (stratified, hard-example mining, negative downsampling with reweighting) can cut cost 10× with no loss.
 
@@ -510,7 +509,7 @@ def psi(expected, actual, bins=10):
 **Operational concerns:** checkpoint often (spot instances), keep runs reproducible (data versioning, seeds), track experiments (MLflow/W&B), and control cost (spot or preemptible compute, autoscaling clusters).
 
 ### Q25. How do you deal with noisy data in machine learning models?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Separate **feature noise** (measurement errors, outliers, missing values) from **label noise** (wrong annotations). Label noise is usually more damaging.
 
@@ -536,7 +535,7 @@ Separate **feature noise** (measurement errors, outliers, missing values) from *
 **Key principle (data-centric AI):** cleaning 5% of the labels often beats a month of model tuning. Keep a small, very clean **test set**, otherwise you cannot even measure progress.
 
 ### Q26. What strategies would you use to optimize the training time for a deep learning model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Profile before optimising** (PyTorch Profiler, `nvidia-smi`, GPU utilisation). Find out whether the job is input-bound, compute-bound or communication-bound.
 
@@ -569,7 +568,7 @@ scaler.scale(loss).backward(); scaler.step(opt); scaler.update()
 ## Deployment, monitoring & scaling
 
 ### Q27. How do you deploy an ML model in production?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Choose the serving pattern from the requirements:**
 - *Batch scoring* (nightly Spark or Airflow job writing predictions to a table): churn scores, recommendations. Cheapest and simplest.
@@ -592,7 +591,7 @@ train ─► evaluate ─► registry (staging) ─► CI tests ─► shadow �
 **Key point:** the model is a small part of the system. Feature parity between training and serving (a feature store), versioning and monitoring are what make deployment reliable.
 
 ### Q28. How do you monitor a model's performance in production?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Monitor in layers, from cheapest and fastest to most meaningful:
 
@@ -611,7 +610,7 @@ Monitor in layers, from cheapest and fastest to most meaningful:
 - Connect monitoring to action: runbooks, automatic rollback, and retraining triggers.
 
 ### Q29. How would you deploy a model with low-latency requirements?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Set the budget first (for example p99 under 20 ms end to end) and break it down: network, feature fetch, inference and post-processing. Then attack each part.
 
@@ -635,7 +634,7 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 **Reliability:** timeouts with a fallback (last known good score, rule-based default), autoscaling on latency metrics, and load testing at peak QPS against p99, not the average.
 
 ### Q30. What are the common challenges when deploying ML models?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 - **Training/serving skew:** features computed differently offline (Spark SQL) and online (Java service), or preprocessing that doesn't match. *Fix:* shared feature definitions or a feature store, logging served features for training, and parity tests.
 - **Data leakage discovered late:** a great offline AUC collapses online because a feature isn't available at prediction time. *Fix:* point-in-time-correct joins and time-based validation.
@@ -651,7 +650,7 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 - **Organisational:** unclear ownership between data science and engineering, no on-call for models. *Fix:* MLOps platform and clear SLAs. This one is often the biggest blocker.
 
 ### Q31. Discuss scalability and latency requirements for ML systems.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Define the requirements up front:** peak QPS (not the average), p95/p99 latency SLOs, availability (99.9%?), data volume growth, freshness (how stale may features or models be), and cost per prediction. These choose the architecture.
 
@@ -678,7 +677,7 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 **Validate:** load tests at 2–3× expected peak, and capacity planning with cost per 1k predictions.
 
 ### Q32. How do you ensure your model is scalable and performs well with large datasets?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Training on large data:**
 - Choose algorithms that scale: mini-batch SGD-trained models, GBDT with histogram binning (LightGBM), distributed implementations (XGBoost on Spark/Dask, PyTorch DDP/FSDP). Avoid O(n²) methods (kernel SVMs, exact kNN) at scale. Use approximate versions (ANN, random features).
@@ -706,7 +705,7 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 ## Explainability, debugging & responsible AI
 
 ### Q33. What is model explainability? Why is it important?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Explainability** is the ability to understand *why* a model made a prediction (local explanation) and *how* it behaves overall (global explanation): which features drive it, in which direction, and with what interactions.
 
@@ -724,7 +723,7 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 **Trade-off:** more interpretable models can lose some accuracy. On tabular data, GBDT with SHAP or EBMs often closes the gap. Post-hoc explanations are approximations and can be unstable or misleading, so validate them and don't over-trust them.
 
 ### Q34. What techniques would you use to make a model more interpretable?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Choose interpretable models when stakes are high:**
 - Logistic regression with well-engineered features, scorecards (binned WoE features).
@@ -759,7 +758,7 @@ shap.plots.waterfall(sv[0])      # one prediction's reason codes
 Always validate explanations with domain experts and sanity checks, such as randomised-label tests for saliency maps.
 
 ### Q35. Describe your approach to debugging an underperforming ML model.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Work systematically, from the cheapest and most likely causes to the most expensive.
 
@@ -784,7 +783,7 @@ Document each hypothesis and its result. Fix the largest error bucket first.
 ## MLOps & infrastructure
 
 ### Q37. Explain MLOps and its key components.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **MLOps** applies DevOps and data-engineering practice to machine learning, so that models are built, deployed, monitored and improved **reliably, reproducibly and quickly**. The difference from DevOps is that an ML system depends on *code + data + model*, and all three change.
 
@@ -806,7 +805,7 @@ Document each hypothesis and its result. Fix the largest error bucket first.
 **Head-of perspective:** MLOps is a platform and team investment. Standardise paved roads (templates, a shared feature store and registry) so data scientists ship in days, not months. Measure time-to-production, the number of models in production, and incident rates.
 
 ### Q38. What is a feature store, and why is it important?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A **feature store** is a central system for defining, computing, storing and serving ML features consistently for **training (offline)** and **inference (online)**.
 
@@ -834,7 +833,7 @@ online = store.get_online_features(features=["user_stats:spend_30d"], entity_row
 ```
 
 ### Q39. Cloud vs on-device Model Deployment.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | Aspect | Cloud deployment | On-device (edge) deployment |
 | --- | --- | --- |
@@ -856,7 +855,7 @@ online = store.get_online_features(features=["user_stats:spend_30d"], entity_row
 **Hybrid is common:** a small on-device model handles common or simple requests (and privacy filtering), and hard requests escalate to a cloud model (Apple Intelligence's on-device plus Private Cloud Compute is one example). **Federated learning** can improve on-device models without centralising raw data.
 
 ### Q40. Tell about the Model Compression Techniques.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Compression shrinks models to cut **latency, memory, cost and energy**, which matters for edge deployment and for cheap large-scale serving.
 

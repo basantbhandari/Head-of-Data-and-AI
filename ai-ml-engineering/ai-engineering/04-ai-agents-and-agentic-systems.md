@@ -1,4 +1,3 @@
-<!-- notion-id: 3d567418285480aab3a9ebc981bceb60 -->
 # AI Agents and Agentic Systems
 
 Interview questions on AI agents: architectures, tools, memory, context engineering, safety, orchestration, frameworks and production failure scenarios.

@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: Behavioral and Remote Work
 
 Teamwork, remote work, prioritization, challenges and conflict-resolution answers.

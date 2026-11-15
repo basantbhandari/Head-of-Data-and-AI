@@ -1,4 +1,3 @@
-<!-- notion-id: 3dc6741828548009a070f58a3dc9811f -->
 # advanced ML interview question
 
 Advanced ML, deep learning, computer vision, Transformer/LLM, RAG, MLOps and ML system-design interview questions.
@@ -2347,7 +2346,7 @@ Usually:
 - Training stops → parameters from the best validation point are retained
 
 ### Q45. How would you debug a neural network whose loss suddenly becomes NaN?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Treat it as a bisection problem: find the **first step** and the **first tensor** that goes non-finite.
 
@@ -2368,7 +2367,7 @@ for name, p in model.named_parameters():
 **Production habit:** log loss, grad-norm and LR every step, and have the training loop skip and alert on non-finite losses rather than silently corrupting weights.
 
 ### Q46. Why do CNNs work well for images?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 CNNs encode **priors that match the structure of natural images**:
 
@@ -2382,7 +2381,7 @@ CNNs encode **priors that match the structure of natural images**:
 **Production angle:** CNNs are still the default for edge and real-time vision (YOLO, MobileNet, EfficientNet) because convolution is extremely well optimised on GPUs, NPUs and mobile accelerators.
 
 ### Q47. Explain convolution, stride, padding, dilation, and receptive field.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 - **Convolution** — slide a learned kernel (e.g. 3×3×C_in) over the input and take a dot product at each position, producing one output channel per kernel. It detects the same local pattern everywhere.
 - **Stride** — how far the kernel moves each step. Stride 2 halves the spatial resolution (cheap downsampling).
@@ -2401,7 +2400,7 @@ $$O = \left\lfloor \frac{I + 2P - D(K-1) - 1}{S} \right\rfloor + 1$$
 **Practical note:** the *effective* receptive field is smaller than the theoretical one (centre pixels dominate), which is one reason global-context modules and attention help on large objects.
 
 ### Q48. What is the difference between same and valid convolution?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 - **Valid convolution** — no padding. The kernel only sits where it fully fits, so the output shrinks: $O = I - K + 1$ (stride 1). A 32×32 input with a 3×3 kernel gives 30×30.
 - **Same convolution** — pad so the output has the **same spatial size** as the input (stride 1). For odd kernel $K$, pad $P = (K-1)/2$ on each side (3×3 → pad 1).
@@ -2420,7 +2419,7 @@ nn.Conv2d(64, 64, kernel_size=3, padding="same")  # same (stride 1)
 Note that with stride > 1, "same" in TensorFlow means $O = \lceil I/S \rceil$, and the padding can be asymmetric, which is a common source of PyTorch/TF porting bugs.
 
 ### Q49. How does pooling provide translation invariance?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Strictly, pooling gives only **local, approximate** translation invariance.
 
@@ -2435,7 +2434,7 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 - Most modern robustness to translation actually comes from **data augmentation** (random crops and shifts) and global pooling, not from the pooling layers themselves.
 
 ### Q50. Why did ResNet outperform many earlier CNN architectures?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Problem:** before ResNet, making plain networks deeper (beyond ~20 layers) made **training** error worse. This is the *degradation problem*: an optimisation difficulty, not overfitting.
 
@@ -2452,7 +2451,7 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 **Legacy:** skip connections are now everywhere: Transformers (residual stream), U-Net, DenseNet and diffusion models. ResNet-50 remains a standard production and benchmark backbone because it is simple and well supported by hardware.
 
 ### Q51. Compare ResNet, EfficientNet, Vision Transformer, and ConvNeXt.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | Model | Core idea | Strengths | Weaknesses |
 | --- | --- | --- | --- |
@@ -2470,7 +2469,7 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 **Takeaway:** much of the ViT vs CNN gap came from training recipes (augmentation, AdamW, long schedules), which is exactly what ConvNeXt showed.
 
 ### Q52. Explain IoU, precision, recall, and mAP for object detection.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 - **IoU (Intersection over Union)** — overlap between a predicted box and a ground-truth box: $\text{IoU} = \frac{|A \cap B|}{|A \cup B|}$. A prediction counts as a **true positive** if IoU ≥ a threshold (e.g. 0.5) and the class matches. Each ground truth can be matched only once.
 - **Precision** — $TP / (TP + FP)$: of the boxes predicted, how many are correct. Duplicates and wrong boxes are FPs.
@@ -2483,7 +2482,7 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 **Production angle:** mAP is a ranking metric that summarises all thresholds. In deployment you pick **one** confidence threshold, so also report precision and recall at the operating point, per-class performance (rare classes hide inside the mean) and latency. Business cost often depends on FP vs FN asymmetry, for example missed defects vs false alarms.
 
 ### Q53. How does NMS work?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Non-Maximum Suppression** removes duplicate detections of the same object.
 
@@ -2517,7 +2516,7 @@ def nms(boxes, scores, iou_thr=0.5):
 **Production:** NMS can dominate latency on edge devices with many candidate boxes, so use the framework's fused implementation (`torchvision.ops.nms`, TensorRT's NMS plugin).
 
 ### Q54. What is data augmentation, and why does it improve generalization?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Data augmentation** creates label-preserving variants of training examples so the model sees more of the input distribution.
 
@@ -2536,7 +2535,7 @@ def nms(boxes, scores, iou_thr=0.5):
 **Production angle:** design augmentations from the **failure modes** you see in production (motion blur, glare, low light) rather than a generic list. Apply them on the fly on GPU (DALI, Kornia) to avoid data-loader bottlenecks. Never augment validation or test sets, except deliberately for test-time augmentation.
 
 ### Q55. When can augmentation actually hurt model performance?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Augmentation hurts when it **breaks the label, breaks the distribution, or adds noise the model cannot use**.
 
@@ -2552,7 +2551,7 @@ Augmentation hurts when it **breaks the label, breaks the distribution, or adds 
 **Mitigation:** treat augmentation as a hyperparameter, run ablations, check per-class metrics, and visually inspect augmented batches before training.
 
 ### Q56. Explain the architecture of CLIP.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **CLIP (Contrastive Language-Image Pretraining, OpenAI 2021)** is a **dual-encoder** model trained on ~400M image-text pairs from the web.
 
@@ -2575,7 +2574,7 @@ loss = (F.cross_entropy(logits, labels) + F.cross_entropy(logits.T, labels)) / 2
 **Limitations:** weak at counting, spatial relations and fine-grained text in images; inherits web-data biases; a bag-of-concepts behaviour because there is no cross-attention between modalities.
 
 ### Q57. Why does CLIP use contrastive learning?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Because the supervision is noisy, open-ended web captions, and contrastive learning turns them into an efficient, scalable training signal.**
 
@@ -2588,7 +2587,7 @@ loss = (F.cross_entropy(logits, labels) + F.cross_entropy(logits.T, labels)) / 2
 **Tradeoffs:** quality depends on large batches (expensive multi-GPU all-gather), false negatives in the batch (two near-identical captions), and the temperature setting. Follow-ups address this: **SigLIP** uses a pairwise sigmoid loss that works with smaller batches; **ALIGN** scales to noisier data; and **BLIP/CoCa** add captioning losses back for generative ability.
 
 ### Q58. How would you use CLIP for zero-shot image classification?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Turn class names into text prompts, embed everything, and pick the nearest text.**
 
@@ -2677,7 +2676,7 @@ Then concatenate them: $\operatorname{MHA}(X) = \operatorname{Concat}(head_1,\ld
 Different heads can learn different relationships, such as syntax, semantic relationships, or long-range dependencies.
 
 ### Q60. Why divide by $\sqrt{d_k}$?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Scaled dot-product attention is $\text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$. The $\sqrt{d_k}$ is there to keep the **variance of the logits** around 1.
 
@@ -2694,7 +2693,7 @@ Dividing by $\sqrt{d_k}$ restores unit variance, so the softmax temperature does
 **Related practice:** some models instead apply **QK-LayerNorm** or learn the temperature for extra stability at large scale. In mixed precision, the scaling also helps avoid FP16 overflow in the logits, which is why FlashAttention applies the scale inside the fused kernel.
 
 ### Q61. What is the difference between self-attention and cross-attention?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Both use the same operation, $\text{softmax}(QK^\top/\sqrt{d_k})V$. The difference is **where Q, K and V come from**.
 
@@ -2713,7 +2712,7 @@ Both use the same operation, $\text{softmax}(QK^\top/\sqrt{d_k})V$. The differen
 **Production angle:** cross-attention K/V over a fixed context (the encoder output or image) can be **computed once and cached** for the whole generation. Decoder-only LLMs avoid cross-attention entirely by concatenating the context into the prompt and using self-attention, which simplifies the architecture but makes context length the cost driver.
 
 ### Q62. Why do Transformers need positional information?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Self-attention is **permutation-equivariant**: it computes weighted sums over a *set* of tokens. If you shuffle the input tokens, the outputs shuffle in the same way, and nothing in $\text{softmax}(QK^\top)V$ depends on order. Without extra information, "dog bites man" and "man bites dog" look identical.
 
@@ -2729,7 +2728,7 @@ RNNs get order from sequential processing and CNNs from local kernels. Transform
 **Nuance:** a causally masked decoder can infer some position implicitly (by counting how many tokens are visible), and "NoPE" models work at small scale. In practice explicit encodings train better and matter a lot for **long-context extrapolation**, which is why choices like RoPE scaling (NTK, YaRN) are central when extending context windows.
 
 ### Q63. Compare absolute positional embeddings, RoPE, ALiBi, and relative positional encoding.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | Method | How it works | Pros | Cons | Used in |
 | --- | --- | --- | --- | --- |
@@ -2741,7 +2740,7 @@ RNNs get order from sequential processing and CNNs from local kernels. Transform
 **Interview summary:** absolute encodings say *where* a token is; relative, RoPE and ALiBi say *how far apart* two tokens are, which generalises better. RoPE is the current default because it is parameter-free, efficient and has well-understood context-extension methods.
 
 ### Q64. Why does self-attention have $O(n^2)$ complexity?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 For a sequence of $n$ tokens with head dimension $d$:
 
@@ -2760,7 +2759,7 @@ So **time is $O(n^2 d)$** and naïvely **memory is $O(n^2)$** to store the atten
 - **At inference with a KV cache**, each new token costs $O(n)$, but over the full generation it is still quadratic in total.
 
 ### Q65. What techniques reduce Transformer attention complexity?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Exact but more efficient (same result):**
 
@@ -2788,7 +2787,7 @@ So **time is $O(n^2 d)$** and naïvely **memory is $O(n^2)$** to store the atten
 **Tradeoff:** approximate and linear methods often lose quality on precise long-range retrieval ("needle in a haystack"). That is why frontier LLMs mostly keep exact attention plus FlashAttention, GQA, sliding windows and ring/sequence parallelism, rather than replacing softmax attention.
 
 ### Q66. Explain Multi-Head Attention.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Instead of one attention over the full model width $d_{model}$, run $h$ attentions in parallel, each in a lower-dimensional subspace $d_k = d_{model}/h$.
 
@@ -2814,7 +2813,7 @@ y = proj(out)
 **Example:** GPT-3 175B uses 96 heads of size 128 ($d_{model} = 12288$). LLaMA-2 70B uses 64 query heads but only 8 KV heads (GQA) to shrink the KV cache.
 
 ### Q67. Why are multiple attention heads useful?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A single head produces **one** softmax distribution per token, so it must average all the relationships it cares about into one weighted sum. Multiple heads let the model attend to **different things at the same time**.
 
@@ -2827,7 +2826,7 @@ A single head produces **one** softmax distribution per token, so it must averag
 **Nuance:** many heads are redundant. Michel et al. (2019) pruned a large fraction of heads with little loss, and too many tiny heads ($d_k$ too small) hurts quality. That redundancy motivates **MQA/GQA** (share K/V across heads) and **head pruning** for cheaper inference.
 
 ### Q68. What is KV caching during inference?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 In autoregressive decoding, each new token must attend to all previous tokens. A **KV cache** stores the **Key and Value tensors** of every previous token, for every layer and head, so they are computed once and reused instead of reprocessing the whole prefix at each step.
 
@@ -2875,7 +2874,7 @@ and computes K/V only for **AI**.
 **Trade-off:** KV caching consumes significant **GPU memory**, which can become a bottleneck for large models and long context windows.
 
 ### Q70. What is Grouped Query Attention (GQA)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Grouped Query Attention (GQA)** is a middle ground between multi-head (MHA) and multi-query attention (MQA). Query heads are split into $G$ groups, and **each group shares one Key/Value head**.
 
@@ -2894,7 +2893,7 @@ and computes K/V only for **AI**.
 **Tradeoff:** fewer KV heads reduce representational capacity slightly. GQA recovers most of the quality lost by MQA, which is why it is the default in LLaMA-2/3, Mistral, Qwen and Gemma.
 
 ### Q71. Compare MHA, MQA, and GQA.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | | **MHA** (multi-head) | **GQA** (grouped-query) | **MQA** (multi-query) |
 | --- | --- | --- | --- |
@@ -2917,7 +2916,7 @@ and computes K/V only for **AI**.
 A further step is **MLA (Multi-head Latent Attention, DeepSeek-V2/V3)**, which compresses K/V into a low-rank latent per token, shrinking the cache even more while keeping per-head expressivity.
 
 ### Q72. What is FlashAttention?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **FlashAttention** (Dao et al., 2022) is an **exact**, IO-aware GPU kernel for attention. It computes the same output as standard attention but much faster and with far less memory.
 
@@ -2937,7 +2936,7 @@ A further step is **MLA (Multi-head Latent Attention, DeepSeek-V2/V3)**, which c
 **In practice:** use it via `torch.nn.functional.scaled_dot_product_attention`, `flash-attn`, or inference engines (vLLM, TensorRT-LLM). It is now the default in essentially every serious LLM stack.
 
 ### Q73. Why is FlashAttention faster without changing the attention result mathematically?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Because it changes **how data moves**, not **what is computed**. Attention on modern GPUs is limited by **memory bandwidth**, not arithmetic.
 
@@ -2958,7 +2957,7 @@ Because it changes **how data moves**, not **what is computed**. Attention on mo
 The output is exact up to floating-point rounding: results are not bit-identical because summation order changes, but the method is not an approximation.
 
 ### Q74. What is PagedAttention?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **PagedAttention** (Kwon et al., 2023, the core of **vLLM**) manages the KV cache like an operating system manages **virtual memory pages**.
 
@@ -2979,7 +2978,7 @@ The output is exact up to floating-point rounding: results are not bit-identical
 **Result:** near-zero waste, so many more concurrent sequences fit on the GPU. vLLM reported 2–4× throughput over prior systems (up to ~24× vs naïve HF Transformers).
 
 ### Q75. How does PagedAttention improve LLM serving?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 LLM decoding is memory-bound, so **throughput scales with how many sequences you can batch at once**, and batch size is limited by KV-cache memory. PagedAttention frees that memory.
 
@@ -2995,7 +2994,7 @@ LLM decoding is memory-bound, so **throughput scales with how many sequences you
 **Tradeoff:** the indirection adds some kernel overhead (gathering non-contiguous blocks), which is small compared with the batching gains. vLLM, TensorRT-LLM, TGI and SGLang all use paged KV caches today.
 
 ### Q76. What is the difference between encoder-only, decoder-only, and encoder-decoder Transformers?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | | **Encoder-only** | **Decoder-only** | **Encoder-decoder** |
 | --- | --- | --- | --- |
@@ -3012,7 +3011,7 @@ LLM decoding is memory-bound, so **throughput scales with how many sequences you
 - **Encoder-decoder** models are efficient when the input is long and the output short (the input is encoded once). They remain strong for translation and ASR.
 
 ### Q77. Why are decoder-only architectures dominant for modern LLMs?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 1. **Simplest objective that scales.** Next-token prediction on raw text needs no labels, uses every token as a training signal (unlike MLM, which trains on ~15%), and its loss follows smooth scaling laws.
 2. **Generation is native.** Training (predict the next token) and inference (generate the next token) are the same task, so there is no train/inference gap.
@@ -3024,7 +3023,7 @@ LLM decoding is memory-bound, so **throughput scales with how many sequences you
 **Caveats:** causal attention is less efficient for pure understanding tasks. Encoders still win for embeddings and classification per dollar, and encoder-decoder models remain strong for translation and ASR (Whisper). Decoder-only dominance is partly a scaling and ecosystem effect, not proof that it is strictly better.
 
 ### Q78. What is the difference between pretraining, instruction tuning, and alignment?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | Stage | Data | Objective | What it gives you |
 | --- | --- | --- | --- |
@@ -3042,7 +3041,7 @@ LLM decoding is memory-bound, so **throughput scales with how many sequences you
 - In industry, teams rarely pretrain. They pick an aligned open model and do SFT, LoRA or DPO on domain data.
 
 ### Q79. Explain supervised fine-tuning (SFT).
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Supervised fine-tuning (SFT)** continues training a pretrained model on **labeled input→output examples** with the standard next-token cross-entropy loss, usually computing the loss **only on the response tokens** (prompt tokens are masked).
 
@@ -3064,7 +3063,7 @@ $$\mathcal{L} = -\sum_{t \in \text{response}} \log p_\theta(y_t \mid x, y_{<t})$
 > 🔁 _Already answered in [01-llm-fundamentals.md → Q6](ai-engineering/01-llm-fundamentals.md#q6-what-is-quantization); skipped here to avoid duplication._
 
 ### Q81. Compare INT8, INT4, FP16, BF16, and FP8.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | Format | Bits | Layout | Range / precision | Typical use |
 | --- | --- | --- | --- | --- |
@@ -3083,7 +3082,7 @@ $$\mathcal{L} = -\sum_{t \in \text{response}} \log p_\theta(y_t \mid x, y_{<t})$
 **Rule of thumb:** train in BF16 (or FP8 at frontier scale), serve in FP8 or INT8 when quality matters and hardware supports it, and use INT4 weight-only to fit large models on limited GPUs, always validating on task evals.
 
 ### Q82. What is quantization-aware training vs post-training quantization?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | | **Post-training quantization (PTQ)** | **Quantization-aware training (QAT)** |
 | --- | --- | --- |
@@ -3118,7 +3117,7 @@ Always compare against the FP16 baseline on the task's own evaluation, not just 
 RLHF is useful when the desired behavior is difficult to specify with a deterministic reward, such as **helpfulness, harmlessness, instruction following, and response quality**.
 
 ### Q84. What is model collapse?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Model collapse** is the degradation that happens when generative models are **trained recursively on data generated by earlier models** instead of real human data (Shumailov et al., *Nature* 2024).
 
@@ -3140,7 +3139,7 @@ RLHF is useful when the desired behavior is difficult to specify with a determin
 Do not confuse it with **mode collapse** in GANs, which is a single training run failing to cover the modes, though both lose diversity.
 
 ### Q85. What is catastrophic forgetting during fine-tuning?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Catastrophic forgetting** is when fine-tuning a pretrained model on a new task overwrites the weights that encoded earlier knowledge, so performance on the original capabilities (general reasoning, other languages, safety behaviour, instruction following) drops sharply.
 
@@ -3160,7 +3159,7 @@ Do not confuse it with **mode collapse** in GANs, which is a single training run
 **Tradeoff:** stronger protection against forgetting usually means less specialisation; tune the mix ratio and LoRA rank against both evals.
 
 ### Q86. How would you fine-tune an LLM while preserving its general capabilities?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The goal is task gains without regressing general skills, so I treat it as a two-sided optimisation with evaluation on both sides.
 
@@ -3177,7 +3176,7 @@ The goal is task gains without regressing general skills, so I treat it as a two
 If forgetting is unacceptable, route only task traffic to the adapter, or use model merging (e.g. TIES/DARE) and re-evaluate.
 
 ### Q87. What causes LLM hallucinations?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 An LLM is trained to produce **plausible next tokens**, not true statements, so hallucination is a natural failure mode. Main causes:
 
@@ -3194,7 +3193,7 @@ An LLM is trained to produce **plausible next tokens**, not true statements, so 
 **Production takeaway:** treat hallucination as a systems problem — grounding with citations, abstention instructions, low temperature for factual tasks, verification steps and continuous groundedness evaluation.
 
 ### Q88. Can hallucinations be completely eliminated?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **No, not completely** — they can be reduced and contained, not eliminated.
 
@@ -3215,7 +3214,7 @@ An LLM is trained to produce **plausible next tokens**, not true statements, so 
 **Interview framing:** aim for a hallucination rate that is *acceptable for the use case and detectable when it happens*. A creative-writing tool tolerates it; a tax or medical assistant needs grounding, verification and escalation so the residual risk is managed.
 
 ### Q89. How would you evaluate an LLM beyond accuracy?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Accuracy alone misses most of what makes an LLM useful and safe. I evaluate across:
 
@@ -3233,7 +3232,7 @@ Accuracy alone misses most of what makes an LLM useful and safe. I evaluate acro
 **How:** golden datasets per capability built from real queries and edge cases; automated metrics where possible; **LLM-as-judge** with explicit rubrics, calibrated against human labels; pairwise human evaluation for subjective quality; online A/B tests and monitoring. Track everything per model/prompt version so regressions show up before release.
 
 ### Q90. What is LLM-as-a-judge, and what are its limitations?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **LLM-as-a-judge** uses a (usually strong) LLM to grade another model's output — pointwise against a rubric ("score faithfulness to the context 1–5") or pairwise ("which answer is better, A or B?"). It scales evaluation of open-ended outputs far cheaper and faster than human raters and correlates reasonably with humans when designed well.
 
@@ -3254,7 +3253,7 @@ Accuracy alone misses most of what makes an LLM useful and safe. I evaluate acro
 - Use deterministic checks (unit tests, schema validation, exact match) wherever possible; keep judges for the rest.
 
 ### Q91. How would you build an evaluation framework for an enterprise LLM application?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 I build it as a layered, versioned system that runs offline (pre-release) and online (production).
 
@@ -3398,7 +3397,7 @@ Was the correct document retrieved?
 **Golden dataset → Retrieval evaluation → Generation evaluation → Human/LLM evaluation → Production monitoring → Regression tests**
 
 ### Q93. Why can naive vector search produce poor results?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Naive vector search = embed the query, take top-k by cosine similarity, stuff into the prompt. It often underperforms because:
 
@@ -3447,7 +3446,7 @@ User Query ─────┤                   ├─→ Fusion/Reranking → L
 **Hybrid = robust retrieval using both**
 
 ### Q95. What is reranking, and why does it improve RAG?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Reranking** is a second-stage scoring step: a cheap first-stage retriever (BM25, dense or hybrid) fetches a broad candidate set (e.g. top 50–200), then a more accurate, more expensive model re-scores each (query, passage) pair and only the top-N go to the LLM.
 
@@ -3510,7 +3509,7 @@ LLM
 **Cross-encoder = rank accurately**
 
 ### Q97. What is contextual compression?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Contextual compression** shrinks retrieved documents to only what is relevant to the current query before they reach the LLM.
 
@@ -3555,7 +3554,7 @@ For large documents or long conversations:
 - **Long-context model:** use when the task genuinely requires broad context.
 
 ### Q99. How would you select an optimal chunk size?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 There's no universal best size; chunk size is a hyperparameter tuned against retrieval and answer quality.
 
@@ -3579,7 +3578,7 @@ There's no universal best size; chunk size is a hyperparameter tuned against ret
 Re-tune when the corpus, embedding model or query mix changes.
 
 ### Q100. What happens if chunks are too small?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Chunks that are too small** (a sentence or < ~100 tokens):
 
@@ -3594,7 +3593,7 @@ Re-tune when the corpus, embedding model or query mix changes.
 **Mitigations:** overlap, prepend document/section titles, parent-document (small-to-big) retrieval that sends the surrounding section, or larger top-k plus reranking.
 
 ### Q101. What happens if chunks are too large?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Chunks that are too large** (whole pages or thousands of tokens):
 
@@ -3610,7 +3609,7 @@ Re-tune when the corpus, embedding model or query mix changes.
 **Mitigations:** structure-aware splitting, hierarchical retrieval (retrieve section, then sub-chunk), reranking and contextual compression, and tuning size on an eval set.
 
 ### Q102. Explain retrieval precision, retrieval recall, faithfulness, and answer relevance.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 These four metrics separate RAG quality into **retrieval** and **generation**:
 
@@ -3652,7 +3651,7 @@ Question: *“How did Company A's acquisition of Company B affect its relationsh
 - **GraphRAG:** can traverse **Company A → acquired → Company B → supplied by → Supplier C** and reason over those relationships.
 
 ### Q104. How would you handle tables, PDFs, images, and scanned documents in RAG?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Enterprise corpora are messy, so I build a **document-type-aware ingestion pipeline**, not "extract text and chunk".
 
@@ -3674,7 +3673,7 @@ Enterprise corpora are messy, so I build a **document-type-aware ingestion pipel
 - Evaluate per document type — parsing failures are often the biggest source of bad answers.
 
 ### Q105. How would you prevent an LLM from answering using its pretrained knowledge instead of retrieved documents?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 You can't fully stop a model from using its priors, but you can constrain it strongly and detect violations.
 
@@ -3688,7 +3687,7 @@ You can't fully stop a model from using its priors, but you can constrain it str
 **Tradeoff:** stricter grounding raises refusal rates. Tune per use case (strict for legal/finance, looser for general assistants) and route abstentions to search results or a human.
 
 ### Q106. Design a real-time fraud detection system.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements:** score card/payment transactions in < 100 ms p99 at thousands of TPS; high recall on fraud with tolerable false-positive rate; explainability and audit for regulators; adapt to evolving fraud patterns.
 
@@ -3715,7 +3714,7 @@ Payment API → Kafka → Feature service (online store: Redis/Feast)
 **Operations:** shadow-deploy new models, canary, latency budgets with fallback to rules if the model times out, case-management UI for analysts, full audit log of features, score and reason codes per decision.
 
 ### Q107. Design a recommendation system for millions of users.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal:** personalised top-N items for millions of users and items at low latency (~100 ms), optimising engagement while respecting business rules (diversity, freshness, inventory).
 
@@ -3740,7 +3739,7 @@ Millions of items → Candidate generation (~1,000) → Ranking (~100) → Re-ra
 **Evaluation:** offline recall@k, NDCG, AUC; but decisions come from **online A/B tests** on business metrics (CTR, conversion, retention). Watch for feedback loops and popularity bias — keep some exploration traffic.
 
 ### Q108. Design a large-scale document classification system.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Scenario:** classify millions of documents (emails, contracts, tickets, invoices) into tens to hundreds of classes, possibly multi-label, with high throughput and auditability.
 
@@ -3765,7 +3764,7 @@ Ingest (S3/queue) → Parse/OCR → Clean + language detect → Feature/embeddin
 - Monitor class distribution and drift; version models and data; keep audit trail of predictions.
 
 ### Q109. Design an enterprise RAG platform.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal:** a shared platform letting many teams build grounded Q&A/assistants over internal content (Confluence, SharePoint, Drive, tickets, databases) with security, quality and cost control.
 
@@ -3783,7 +3782,7 @@ Ingest (S3/queue) → Parse/OCR → Clean + language detect → Feature/embeddin
 **Key tradeoffs:** central platform vs team autonomy (offer defaults with overridable pipelines); freshness vs indexing cost; managed vector DB vs self-hosted; stricter grounding vs refusal rate.
 
 ### Q110. Design a real-time anomaly detection pipeline.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Use case:** detect anomalies in metrics, logs, transactions or IoT sensor streams within seconds, with low false-alert rates.
 
@@ -3807,7 +3806,7 @@ Sources → Kafka/Kinesis → Stream processor (Flink/Spark Streaming)
 **Challenges:** few labels (mostly unsupervised; evaluate on injected anomalies and historical incidents with precision/recall and detection delay), concept drift (seasonality changes, new normal → periodic retraining or adaptive baselines), late/out-of-order events (watermarks), and scale (partition by entity key).
 
 ### Q111. Design a personalized search engine.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal:** return results ranked by relevance to the query **and** the individual user's preferences, within ~100–200 ms.
 
@@ -3832,7 +3831,7 @@ Query → Query understanding → Retrieval (lexical + semantic) → Personalise
 **Concerns:** cold-start users (fall back to non-personalised ranking), privacy and consent for using history, filter bubbles (keep some exploration), latency budget (precompute user embeddings, cache popular queries).
 
 ### Q112. Design a model serving infrastructure supporting 10,000 requests/second.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Targets:** 10k RPS, e.g. p99 < 100 ms, 99.9%+ availability, cost-efficient.
 
@@ -3858,7 +3857,7 @@ Clients → CDN/edge → API gateway / L7 load balancer (auth, rate limit)
 **Deployment and ops:** model registry and versioned images; canary/blue-green rollout; shadow traffic for new models; monitor latency percentiles, error rate, throughput, saturation, prediction distributions and drift; load-test before launch.
 
 ### Q113. How would you handle training-serving skew?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Training-serving skew** is any difference between how data/features look at training time and at inference time, causing a model that looked good offline to underperform in production.
 
@@ -3879,7 +3878,7 @@ Clients → CDN/edge → API gateway / L7 load balancer (auth, rate limit)
 **How to detect it:** compare feature distributions between training data and serving logs (PSI, KS tests), compare online predictions with offline predictions on the same inputs (shadow scoring), and monitor per-feature null rates and ranges. Alert on divergence before it shows up as a business metric drop.
 
 ### Q114. How would you version models and datasets?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Goal: any prediction must be **reproducible and traceable** to the exact code, data, config and model that produced it.
 
@@ -3900,7 +3899,7 @@ Goal: any prediction must be **reproducible and traceable** to the exact code, d
 **Practices:** promotion via CI/CD with automated evaluation gates, approvals for regulated domains, retention policies for old versions, and model cards documenting intended use and limitations.
 
 ### Q115. How would you perform online vs offline inference?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Offline (batch) inference:** predictions computed on a schedule for many records at once and stored for later lookup.
 - Examples: nightly churn scores, weekly demand forecasts, precomputed recommendations.
@@ -3922,7 +3921,7 @@ Goal: any prediction must be **reproducible and traceable** to the exact code, d
 **Decision drivers:** freshness requirement, latency, request volume and pattern, cost, and how far ahead inputs are known.
 
 ### Q116. How would you deploy a model using blue-green or canary deployment?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Blue-green deployment:** run two identical environments. **Blue** serves production with model v1; deploy model v2 to **green**, run smoke tests and validation against it, then switch the router/load balancer to send 100% of traffic to green. Blue remains on standby for instant rollback.
 - **Pros:** simple, near-zero downtime, instant rollback.
@@ -3939,7 +3938,7 @@ Goal: any prediction must be **reproducible and traceable** to the exact code, d
 - Version model + preprocessing + features together; ensure the feature pipeline is compatible with both versions during the rollout; keep v1 warm until v2 is proven.
 
 ### Q117. How would you monitor model performance after deployment?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Monitoring has to cover the **system**, the **data** and the **model's quality**, because models fail silently.
 
@@ -3963,7 +3962,7 @@ Monitoring has to cover the **system**, the **data** and the **model's quality**
 - Triggers for retraining or rollback; champion/challenger comparisons.
 
 ### Q118. What metrics would you monitor for an ML service?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 I group them into four layers:
 
@@ -3991,7 +3990,7 @@ I group them into four layers:
 Alert on SLO breaches and significant drift; review business metrics alongside model metrics because a model can be "accurate" yet hurt the business (or vice versa). Always slice metrics by model version and key segments.
 
 ### Q119. How would you detect data drift automatically?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Approach:** compare the distribution of recent production data against a reference (training data or a stable recent window) on a schedule or streaming, and alert when the difference is significant and meaningful.
 
@@ -4015,7 +4014,7 @@ Tools: Evidently, WhyLabs, NannyML (estimates performance without labels), Arize
 - Alert → investigate (pipeline bug vs real-world change) → retrain or fix. Many "drift" alerts are actually upstream data bugs.
 
 ### Q120. How would you roll back a model that performs badly in production?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Preparation (before anything goes wrong):**
 - Every model version is immutable in a **model registry**, together with its preprocessing, feature definitions and container image.
@@ -4036,7 +4035,7 @@ Tools: Evidently, WhyLabs, NannyML (estimates performance without labels), Arize
 - Reprocess or correct decisions made by the bad model if needed (important in finance/healthcare), using prediction logs keyed by model version.
 
 ### Q121. How would you reduce inference latency without significantly reducing accuracy?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 I start by **profiling** where time goes (preprocessing, network, feature fetch, model compute, postprocessing), then apply the cheapest fix with the least accuracy loss.
 
@@ -4058,7 +4057,7 @@ I start by **profiling** where time goes (preprocessing, network, feature fetch,
 **Process:** define latency budget (p99), benchmark on representative inputs, verify accuracy on the eval set after each optimisation, and roll out with canary. The usual order of payoff: system fixes and compilation → FP16 → INT8 → distillation.
 
 ### Q122. Training accuracy is 99%, validation accuracy is 60%. How do you debug it?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A 99% vs 60% gap is classic **overfitting**, but I first rule out data problems before adding regularisation.
 
@@ -4087,7 +4086,7 @@ A 99% vs 60% gap is classic **overfitting**, but I first rule out data problems 
 Fix one thing at a time and track experiments so the cause is clear.
 
 ### Q123. Training and validation accuracy are both 50%. What could be wrong?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Both at 50% (for a binary balanced task) means the model is performing at **chance** — it's learning nothing. Underfitting is possible, but this usually signals a bug.
 
@@ -4113,7 +4112,7 @@ Both at 50% (for a binary balanced task) means the model is performing at **chan
 5. Then increase capacity, train longer, or engineer better features.
 
 ### Q124. Your model performs well offline but poorly in production. Why?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Good offline, bad in production almost always means **the production data or setup differs from the offline evaluation**.
 
@@ -4135,7 +4134,7 @@ Good offline, bad in production almost always means **the production data or set
 **Prevention:** feature store, point-in-time joins, shadow deployments before launch, monitoring and canary rollouts.
 
 ### Q125. Your model's accuracy decreases after adding more training data. Explain possible reasons.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Normally more data helps, so a drop is a signal to inspect the new data and the evaluation:
 
@@ -4151,7 +4150,7 @@ Normally more data helps, so a drop is a signal to inspect the new data and the 
 **How to diagnose:** evaluate on a fixed, unchanged test set; train on old vs new data separately and compare; check label agreement on a sample of new data; compare distributions; check learning curves. Then clean or reweight the new data, or train with domain indicators.
 
 ### Q126. A feature has extremely high importance. How do you determine whether it is legitimate or leakage?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 An extremely important feature is either a genuine strong signal or — very often — **target leakage**. I check:
 
@@ -4172,7 +4171,7 @@ An extremely important feature is either a genuine strong signal or — very oft
 If legitimate, keep it but monitor it closely and consider robustness (the model shouldn't fail entirely if that feature breaks).
 
 ### Q127. Your validation score varies significantly between folds. What does that indicate?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 High variance across folds means your performance estimate is **unstable** — the score depends heavily on *which* rows land in validation. Typical causes:
 
@@ -4193,7 +4192,7 @@ High variance across folds means your performance estimate is **unstable** — t
 **Production angle:** large fold variance is a warning that production performance will also swing as the input mix changes — treat it as a robustness problem, not just an evaluation nuisance.
 
 ### Q128. Your model predicts only the majority class. How do you fix it?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Predicting only the majority class is the classic symptom of **severe class imbalance** combined with an objective (or metric) that rewards it: with 99% negatives, "always negative" gives 99% accuracy and a low unweighted loss.
 
@@ -4219,7 +4218,7 @@ probs = clf.predict_proba(X_val)[:, 1]
 **Production angle:** pick the threshold from the business cost of FP vs FN, and recalibrate as the base rate drifts.
 
 ### Q129. Your embeddings retrieve semantically similar but factually incorrect documents. How do you improve retrieval?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 This is the gap between **semantic similarity** and **factual relevance**: embeddings place "Q3 revenue rose 5%" near "Q3 revenue fell 5%", and an old policy near the current one. Fixes, roughly in order of payoff:
 
@@ -4234,7 +4233,7 @@ This is the gap between **semantic similarity** and **factual relevance**: embed
 **Measure it:** build a labeled set with gold passages and track recall@k and precision@k (or nDCG) separately from answer quality, including adversarial "near miss" queries. Downstream, ask the generator to cite passages and verify that claims are supported.
 
 ### Q130. Your RAG system retrieves the correct document but the LLM gives the wrong answer. Where is the problem?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 If retrieval is correct, the failure is in **context construction or generation**. Debug in that order:
 
@@ -4259,7 +4258,7 @@ If retrieval is correct, the failure is in **context construction or generation*
 **How to tell:** measure **faithfulness/groundedness** (is the answer supported by the given context?) separately from **context recall**. High context recall plus low faithfulness pins the problem on generation. Use traces (Langfuse/LangSmith) to inspect failing cases and add them to a regression set.
 
 ### Q131. The LLM answers correctly with 5 retrieved documents but incorrectly with 20. Why?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 More context is not free. Likely reasons:
 
@@ -4281,7 +4280,7 @@ More context is not free. Likely reasons:
 **Takeaway:** optimize for **precision of context**, not volume; retrieval recall matters, but the generator needs a short, clean, well-ordered context.
 
 ### Q132. Why does overparameterization not necessarily cause worse generalization?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Classical theory (VC dimension, bias-variance) says more parameters than data points should overfit. Modern deep nets with far more parameters than examples still generalize well, because **parameter count is a poor measure of effective capacity**:
 
@@ -4295,7 +4294,7 @@ Classical theory (VC dimension, bias-variance) says more parameters than data po
 **Caveat:** overparameterization does not *guarantee* generalization — with little data, label noise and no regularization, big models still overfit. Practically: scale model and data together, keep validation monitoring, and rely on weight decay and augmentation.
 
 ### Q133. Explain the double-descent phenomenon.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Double descent** is the observation that test error does not follow the classic U-curve as model capacity grows:
 
@@ -4321,7 +4320,7 @@ test error
 **Why it matters:** the peak is strongest with label noise and little regularization; proper weight decay or early stopping can flatten it. Practically, it justifies "go bigger and regularize" rather than shrinking models to avoid overfitting, and warns that small changes in data size can produce surprising regressions near the threshold.
 
 ### Q134. What is the implicit bias of gradient descent?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 When many parameter settings achieve zero (or equal) training loss, **gradient descent does not pick one at random** — its dynamics favor particular solutions. That preference, which comes without any explicit regularizer, is its *implicit bias*.
 
@@ -4340,7 +4339,7 @@ When many parameter settings achieve zero (or equal) training loss, **gradient d
 **Why it matters:** it is a key explanation for why overparameterized networks generalize — the training algorithm itself acts as a regularizer. Practically, hyperparameters like LR, batch size, warmup and init are not just speed knobs; they change *which* solution you end up with.
 
 ### Q135. Why can SGD find solutions that generalize despite having enormous parameter counts?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Huge networks can memorize random labels (Zhang et al., 2017), yet on real data SGD finds solutions that generalize. The main explanations:
 
@@ -4356,7 +4355,7 @@ Huge networks can memorize random labels (Zhang et al., 2017), yet on real data 
 **Caveat:** these are partial explanations; theory still does not fully account for deep-learning generalization.
 
 ### Q136. What is the relationship between model scaling and emergent capabilities?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Emergent capabilities** are abilities that appear to be absent in smaller models and show up abruptly once models pass a certain scale (parameters, data, compute) — for example multi-step arithmetic, chain-of-thought reasoning, or in-context learning of new tasks (Wei et al., 2022).
 
@@ -4372,7 +4371,7 @@ Huge networks can memorize random labels (Zhang et al., 2017), yet on real data 
 - For safety: unpredictable capability jumps are why labs run dangerous-capability evals at each scale-up.
 
 ### Q137. Explain the scaling laws for LLMs.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Scaling laws** are empirical power-law relationships between a language model's pretraining loss and the resources used to train it.
 
@@ -4395,7 +4394,7 @@ $L(N, D) = E + \frac{A}{N^{\alpha}} + \frac{B}{D^{\beta}}$ with $E$ the irreduci
 **Limits:** they predict loss, not specific downstream abilities; they assume fixed data quality; and the supply of high-quality data is becoming the bottleneck (driving synthetic data and test-time compute scaling).
 
 ### Q138. What is the Chinchilla scaling principle?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The **Chinchilla principle** (Hoffmann et al., 2022, *Training Compute-Optimal Large Language Models*): for a fixed training compute budget, **model size and number of training tokens should be scaled in equal proportion**.
 
@@ -4413,7 +4412,7 @@ The **Chinchilla principle** (Hoffmann et al., 2022, *Training Compute-Optimal L
 **Interview one-liner:** "Chinchilla says double the data whenever you double the parameters — about 20 tokens per parameter — but production teams deliberately over-train smaller models because inference dominates lifetime cost."
 
 ### Q139. Why can a smaller model outperform a larger model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Parameter count is only one driver of quality. A smaller model can win because of:
 
@@ -4429,7 +4428,7 @@ Parameter count is only one driver of quality. A smaller model can win because o
 **Production angle:** smaller models bring lower latency and cost, on-prem deployment, and easier fine-tuning. A standard pattern is a **router**: a small specialized model for the bulk of traffic, escalating hard cases to a large model.
 
 ### Q140. What is mixture-of-experts (MoE)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A **Mixture-of-Experts (MoE)** layer replaces a single dense feed-forward block with **many parallel "expert" FFNs plus a learned router (gating network)** that sends each token to only a few experts.
 
@@ -4453,7 +4452,7 @@ token h ─► router: softmax(W_g · h) ─► top-k experts (e.g., 2 of 8)
 - **Training instability and harder fine-tuning;** batching at inference is less efficient when tokens scatter across experts.
 
 ### Q141. Why does MoE allow larger parameter counts without proportionally increasing compute?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Because **compute scales with the parameters a token actually touches, not with the parameters that exist**.
 
@@ -4473,7 +4472,7 @@ Because **compute scales with the parameters a token actually touches, not with 
 **Summary:** MoE decouples **capacity** (total params) from **cost per token** (active params); the price is memory footprint and systems complexity.
 
 ### Q142. Explain expert routing and load balancing in MoE.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Routing:** a gating network computes scores for each token, $g = \text{softmax}(W_g h)$, and the token is sent to the **top-k** experts (k=1 in Switch, k=2 in Mixtral). The outputs are combined with the (renormalized) gate weights: $y = \sum_{i \in \text{topk}} g_i E_i(h)$. Variants: noisy top-k (adds noise for exploration), expert-choice routing (experts pick tokens, which balances by construction), and fine-grained plus **shared experts** (DeepSeek), where a few experts process every token.
 
@@ -4489,7 +4488,7 @@ Because **compute scales with the parameters a token actually touches, not with 
 **Production concerns:** monitor per-expert utilization and token-drop rate; at inference, balance experts across GPUs (expert parallelism) and replicate hot experts.
 
 ### Q143. What is speculative decoding?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Speculative decoding** speeds up autoregressive generation without changing the output distribution. A small, fast **draft model** proposes several tokens ahead; the large **target model** checks them all in **one forward pass** and accepts the longest correct prefix.
 
@@ -4509,7 +4508,7 @@ This rejection-sampling scheme guarantees the output is **distributed exactly as
 **Requirements:** the draft must share the tokenizer and agree with the target often (acceptance rate α typically 0.6–0.8). Supported in vLLM, TensorRT-LLM, SGLang and TGI.
 
 ### Q144. How can speculative decoding reduce LLM inference latency?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Decoding in a large LLM is **memory-bandwidth bound**: each new token requires streaming all the weights (and the KV cache) from HBM to compute just one token, so the GPU's arithmetic units sit mostly idle. Speculative decoding converts that idle compute into extra tokens.
 
@@ -4527,7 +4526,7 @@ Decoding in a large LLM is **memory-bandwidth bound**: each new token requires s
 **Production tuning:** choose a draft model ~10–50× smaller from the same family; tune *k* (3–8); monitor acceptance rate per workload; use n-gram/prompt-lookup drafting for input-grounded tasks (RAG, code editing), where acceptance is very high.
 
 ### Q145. What is continuous batching?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Continuous (in-flight / iteration-level) batching** schedules LLM requests **per decoding step** instead of per batch.
 
@@ -4547,7 +4546,7 @@ Decoding in a large LLM is **memory-bandwidth bound**: each new token requires s
 **Trade-offs:** larger batches raise throughput but also per-token latency (TPOT); tune max batch size and max batched tokens against your SLOs (p95 TTFT, tokens/sec). Implemented in vLLM, TGI, TensorRT-LLM and SGLang.
 
 ### Q146. Why is GPU memory often the bottleneck in LLM inference?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Two things must live in GPU memory (HBM) during inference, and both are large:
 
@@ -4569,7 +4568,7 @@ $\text{KV bytes} = 2 \times n_{layers} \times n_{kv\_heads} \times d_{head} \tim
 - Tensor/pipeline parallelism across GPUs; KV offloading for long contexts.
 
 ### Q147. Compare compute-bound vs memory-bandwidth-bound workloads.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The **roofline model** classifies a workload by its **arithmetic intensity** = FLOPs performed per byte moved from memory.
 
@@ -4592,7 +4591,7 @@ The **roofline model** classifies a workload by its **arithmetic intensity** = F
 - Profile (Nsight, PyTorch profiler) before optimizing: check achieved bandwidth vs achieved FLOPS.
 
 ### Q148. What is the difference between training FLOPs and inference FLOPs?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 For a dense Transformer with $N$ parameters:
 
@@ -4614,7 +4613,7 @@ For a dense Transformer with $N$ parameters:
 **Use in practice:** estimate training cost = FLOPs ÷ (GPUs × peak FLOPS × MFU); estimate inference cost from tokens/day × 2N, then sanity-check against bandwidth limits.
 
 ### Q149. How would you estimate the GPU requirements for serving an LLM?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Work through **memory first, then throughput**, then validate with a benchmark.
 
@@ -4640,7 +4639,7 @@ Llama-3-70B (80 layers, 8 KV heads, d=128, FP16) ≈ 320 KB per token.
 **Levers:** quantization, GQA models, prefix caching, speculative decoding, smaller distilled models, routing easy traffic to cheaper models.
 
 ### Q150. What happens to model quality when you aggressively quantize a model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Quality degrades **gracefully down to ~8 bits, noticeably at 4 bits, and sharply below that** — but how much depends on the method, the model size and the task.
 
@@ -4685,7 +4684,7 @@ Suppose you're building a **company support chatbot**:
 - **RAG:** Retrieve the company's latest HR policies and provide them to the LLM.
 - **Fine-tuning:** Train the model to consistently classify tickets into `HR`, `IT`, `Finance`, etc.
 
-> ✍️ _Addition drafted during sync._
+> ✍️ _Drafted addition._
 
 **Train from scratch (pretraining your own model)** is the fourth option, and rarely the right one:
 - **Choose it only when:** you have a genuinely different modality or language/tokenization that existing models handle badly (e.g., genomics, proprietary time-series, a low-resource script); you have **massive in-domain data** (hundreds of billions of tokens or more); strict sovereignty, licensing or IP rules forbid using third-party weights; or a tiny, highly specialized model must run on the edge.
@@ -5287,7 +5286,7 @@ Rapid intelligence growth
 
 ### Q170. Singular Value Decomposition (SVD)?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q72](ai-engineering/01-llm-fundamentals.md#q72-what-is-svd-singular-value-decomposition) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q72](ai-engineering/01-llm-fundamentals.md#q72-what-is-svd-singular-value-decomposition) (separate notes on the same question)._
 **Singular Value Decomposition (SVD)** is a matrix factorization technique that decomposes a matrix into three matrices:
 
 $A = U\Sigma V^T$
@@ -5458,7 +5457,7 @@ and provide it to the LLM to generate the answer.
 
 ## Covered elsewhere
 
-These questions also appear in the Notion page but are answered by another question in this repo:
+These questions are answered by another question in this repo:
 
 - What is the difference between object detection, segmentation, and classification? → see [02-ai-engineer-senior-level.md Q14](role-prep/02-ai-engineer-senior-level.md#q14-whats-the-difference-between-object-detection-image-classification-and-segmentation-and-when-would-you-use-each)
 - What is LoRA, and why does it reduce fine-tuning cost? → see [Q152](#q152-explain-lora-and-qlora)

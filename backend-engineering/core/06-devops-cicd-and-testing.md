@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: DevOps, CI/CD and Testing
 
 Feature delivery workflow, CI/CD, containerization, and functional, acceptance, performance and database testing.
@@ -58,7 +57,7 @@ Overall, I follow a cycle of **requirements → design → implementation → te
 
 **Acceptance testing = verifies the complete system against business/user requirements.**
 
-#### Repeated later in Notion as: "What is the difference between Acceptance Test and Functional Test?"
+#### Repeated later as: "What is the difference between Acceptance Test and Functional Test?"
 
 - **Functional Testing:** Verifies that a **specific feature or function** works according to its requirements.
   - Example: Testing whether a login API correctly validates username and password.

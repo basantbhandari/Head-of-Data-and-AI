@@ -1,10 +1,9 @@
-<!-- notion-id: 3ef6741828548082a8b8e515c27b24d5 -->
 # Commonly Asked ML Interview Questions
 
 Frequently asked ML interview questions, from classical ML and statistics to deep learning, LLMs, agents and system design.
 
 ### Q1. Difference between convex and non-convex cost functions; what does it mean when a cost function is non-convex?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Convex cost function:** any line segment between two points on its graph lies on or above the graph — formally $f(\lambda a + (1-\lambda) b) \le \lambda f(a) + (1-\lambda) f(b)$. It has a single basin, so **every local minimum is the global minimum** and gradient descent with a suitable learning rate converges to it. Examples: MSE for linear regression, log loss for logistic regression, the hinge loss for linear SVMs (the regularized versions too).
 
@@ -20,7 +19,7 @@ Frequently asked ML interview questions, from classical ML and statistics to dee
 **Interview takeaway:** convex = optimization is "solved" and reproducible; non-convex = optimization becomes part of the modeling problem, so you report variance across seeds and tune the optimizer.
 
 ### Q2. How do you decide when to go for deep learning for a project?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Deep learning is worth it when the **problem, data and constraints** line up; otherwise gradient-boosted trees or linear models usually win on cost and maintainability.
 
@@ -45,7 +44,7 @@ Deep learning is worth it when the **problem, data and constraints** line up; ot
 **Example:** churn prediction on CRM tables → GBM. Defect detection on factory images → fine-tune a pretrained CNN/ViT or YOLO.
 
 ### Q3. Give an example where the median is a better measure than the mean
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The **median is better when the distribution is skewed or has outliers**, because the mean is pulled toward extreme values while the median depends only on the middle observation.
 
@@ -62,7 +61,7 @@ The **median is better when the distribution is skewed or has outliers**, becaus
 **Practice:** look at the histogram or box plot, report both mean and median when they differ, and consider a log transform for heavily skewed features.
 
 ### Q4. What do you mean by the unreasonable effectiveness of data?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 "**The Unreasonable Effectiveness of Data**" is a 2009 paper by Halevy, Norvig and Pereira (Google), echoing Wigner's "unreasonable effectiveness of mathematics". The thesis: for many real-world problems, **simple models trained on very large datasets outperform sophisticated models trained on less data**.
 
@@ -78,7 +77,7 @@ The **median is better when the distribution is skewed or has outliers**, becaus
 **Practical takeaway:** before spending weeks tuning a model, ask whether acquiring, labeling or cleaning more representative data would yield a bigger gain — it often does. Learning curves tell you which regime you are in.
 
 ### Q5. What is an OOB error, and how is it useful?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **OOB (out-of-bag) error** is a built-in validation estimate for bagging ensembles such as **Random Forests**.
 
@@ -102,7 +101,7 @@ print(rf.oob_score_)   # accuracy on out-of-bag samples
 **Caveats:** it assumes i.i.d. rows — it is optimistic for time-series or grouped data (use time-based/grouped CV instead); it can be slightly pessimistic with few trees; and it does not replace a final untouched test set for reporting.
 
 ### Q6. In what scenario should a decision tree be preferred over random forest?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A single decision tree is preferable to a random forest when **interpretability, simplicity or speed** matter more than the last few points of accuracy:
 
@@ -118,7 +117,7 @@ A single decision tree is preferable to a random forest when **interpretability,
 **Middle ground:** train a forest or GBM for accuracy, then **distill** it into a surrogate tree for explanation, or use a shallow tree when its validated performance is within your tolerance of the ensemble's.
 
 ### Q7. Why is Logistic Regression called regression?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Because at its core it **is a regression model — a linear regression on the log-odds** — and only becomes a classifier when you put a threshold on its output.
 
@@ -132,7 +131,7 @@ $\log\frac{p}{1-p} = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n \quad\Rightarro
 **Why this matters in practice:** because it outputs (reasonably calibrated) probabilities, logistic regression is used for risk scoring, ranking and expected-value decisions — not just hard labels. It is trained with maximum likelihood (log loss), not least squares.
 
 ### Q8. What is Online Machine Learning? How is it different from Offline machine learning? List some of its applications
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Online learning** updates the model **incrementally as each new example (or mini-batch) arrives**, typically discarding the data after the update. **Offline (batch) learning** trains on a fixed, complete dataset at once and is retrained periodically from scratch.
 
@@ -155,7 +154,7 @@ $\log\frac{p}{1-p} = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n \quad\Rightarro
 **Production concerns:** the learning rate controls how fast it forgets; guard against bad data with validation gates and anomaly checks; keep shadow evaluation and rollback snapshots. Many teams use a hybrid approach: a periodic offline model plus online fine-tuning or recalibration.
 
 ### Q9. What is the No Free Lunch Theorem?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The **No Free Lunch (NFL) theorem** (Wolpert & Macready, 1997, for optimization; Wolpert, 1996, for supervised learning) states that **averaged over all possible problems (all possible data-generating functions), every learning algorithm has the same expected performance**. No algorithm is universally best: any gain on one class of problems is paid for by losses on another.
 
@@ -169,7 +168,7 @@ The **No Free Lunch (NFL) theorem** (Wolpert & Macready, 1997, for optimization;
 **Common misreading:** NFL does *not* say all algorithms are equally good on *your* problem — only when averaged over all conceivable problems.
 
 ### Q10. Imagine you are working with a laptop with 2 GB RAM; how would you process a dataset of 10GB?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Don't load it all at once — **stream, reduce, or push the compute elsewhere**.
 
@@ -202,7 +201,7 @@ for chunk in pd.read_csv("big.csv", usecols=["user", "amount"], chunksize=500_00
 **Interview signal:** mention profiling memory (`df.info(memory_usage='deep')`), and that the right answer often is "do the heavy lifting in the warehouse".
 
 ### Q11. What are the main differences between Structured and Unstructured Data?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | | Structured data | Unstructured data |
 | --- | --- | --- |
@@ -222,7 +221,7 @@ for chunk in pd.read_csv("big.csv", usecols=["user", "amount"], chunksize=500_00
 - Governance differs: PII is easy to locate in columns but hidden inside free text and scans, so unstructured data needs detection and redaction pipelines.
 
 ### Q12. What are the main points of difference between Bagging and Boosting?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Both are ensemble methods that combine many weak/base learners, but they attack different errors.
 
@@ -245,7 +244,7 @@ Both are ensemble methods that combine many weak/base learners, but they attack 
 **One-liner:** bagging = many independent experts voting to cancel out noise; boosting = a team where each new member fixes the previous members' mistakes.
 
 ### Q13. How do you measure the accuracy of a Clustering Algorithm?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Clustering has no single "accuracy" because there is usually no ground truth. Use two families of metrics:
 
@@ -270,7 +269,7 @@ adjusted_rand_score(y_true, labels)  # external
 ```
 
 ### Q14. What is Matrix Factorization, and where is it used in Machine Learning?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Matrix factorization** decomposes a matrix $R$ ($m \times n$) into a product of lower-rank matrices, typically $R \approx U V^T$ with $U \in \mathbb{R}^{m\times k}$, $V \in \mathbb{R}^{n\times k}$ and $k \ll m,n$. Each row of $U$ and $V$ is a latent vector, and their dot product reconstructs an entry.
 
@@ -284,7 +283,7 @@ adjusted_rand_score(y_true, labels)  # external
 **Tradeoffs:** it is fast, scalable and gives reusable embeddings, but has a **cold-start problem** (new users/items have no vector), is linear (dot-product interactions only), and implicit feedback (clicks) needs weighted variants (e.g. implicit ALS). In production, hybrid models (factorization machines, two-tower networks) add side features to solve cold start.
 
 ### Q15. How do you measure the accuracy of a recommendation engine?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Evaluate a recommender at three levels: offline, online and business.
 
@@ -314,7 +313,7 @@ def ndcg_at_k(rels, k):
 ```
 
 ### Q16. What are some ways to make your model more robust to outliers?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **First decide whether the outliers are errors or real signal.** Fix or drop data-entry errors. Keep genuine extremes (fraud, large orders) and make the model handle them.
 
@@ -341,7 +340,7 @@ model = HuberRegressor(epsilon=1.35).fit(X, y)
 ```
 
 ### Q17. How can you measure the performance of a dimensionality reduction algorithm on your dataset?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 It depends on *why* you are reducing dimensions:
 
@@ -366,7 +365,7 @@ trustworthiness(X, X_emb, n_neighbors=10)
 ```
 
 ### Q18. What is Data Leakage? List some ways by which you can overcome this problem.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Data leakage** happens when information that would not be available at prediction time gets into training. The result is optimistic offline metrics that collapse in production.
 
@@ -393,7 +392,7 @@ cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
 ```
 
 ### Q19. What are the different types of bias in Machine Learning?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 "Bias" means two different things in ML. Separate them in an interview.
 
@@ -415,7 +414,7 @@ cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
 **Mitigation:** audit data coverage, use stratified sampling, compute per-group metrics (equal opportunity, demographic parity), reweight or resample, apply fairness constraints, use diverse annotators with clear guidelines, monitor slices in production, and keep a human review for high-stakes decisions.
 
 ### Q20. How do you approach a categorical feature with high cardinality?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 High-cardinality categoricals (zip codes, user IDs, product SKUs) make one-hot encoding explode in dimension and sparsity, and the rare levels overfit.
 
@@ -439,7 +438,7 @@ X_enc = TargetEncoder(smooth="auto").fit_transform(X[["zip"]], y)
 ```
 
 ### Q21. Explain Pruning in Decision Trees and how it is done
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Pruning** reduces the size of a decision tree to stop it from memorizing noise. Fully grown trees have low bias and very high variance.
 
@@ -464,7 +463,7 @@ clf = DecisionTreeClassifier(ccp_alpha=best_alpha).fit(X_tr, y_tr)
 **Practical note:** inside ensembles, random forests usually use unpruned trees (bagging handles the variance), while gradient boosting uses shallow, pre-pruned trees. Pruning matters most when you need a single interpretable tree.
 
 ### Q22. What is the ROC-AUC curve? List some of its benefits.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The **ROC curve** plots the **True Positive Rate** (recall) against the **False Positive Rate** ($FP/(FP+TN)$) as the classification threshold sweeps from 1 to 0. **AUC** is the area under it: the probability that the model ranks a random positive above a random negative. 0.5 is random and 1.0 is perfect.
 
@@ -487,7 +486,7 @@ fpr, tpr, thr = roc_curve(y_true, y_score)
 ```
 
 ### Q23. What are kernels in SVM? Can you list some popular SVM kernels?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A **kernel** is a function $K(x, x') = \langle \phi(x), \phi(x') \rangle$ that computes an inner product in a (possibly infinite-dimensional) feature space without computing $\phi$ explicitly. Because the SVM dual depends on the data only through dot products, swapping in a kernel lets a linear max-margin classifier learn **non-linear decision boundaries**. This is the kernel trick. A valid kernel must be positive semi-definite (Mercer's condition).
 
@@ -505,7 +504,7 @@ A **kernel** is a function $K(x, x') = \langle \phi(x), \phi(x') \rangle$ that c
 - Tune $C$ and $\gamma$ jointly with grid search on a log scale, and **scale the features** first.
 
 ### Q24. What is the difference between Gini Impurity and Entropy? Which one is better and why?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Both measure node impurity for choosing splits in decision trees.
 
@@ -524,7 +523,7 @@ DecisionTreeClassifier(criterion="gini")      # or "entropy" / "log_loss"
 ```
 
 ### Q25. Why does L2 regularization give sparse coefficients?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **The premise is wrong: L2 (Ridge) regularization does *not* give sparse coefficients. L1 (Lasso) does.**
 
@@ -538,7 +537,7 @@ DecisionTreeClassifier(criterion="gini")      # or "entropy" / "log_loss"
 **Practical use:** use L1 for feature selection or interpretability, L2 for stability with multicollinearity, and **Elastic Net** for both (sparse, but it handles groups of correlated features better than Lasso, which picks one arbitrarily).
 
 ### Q26. List some ways using which you can improve a model’s performance.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Work systematically: diagnose first, then pick the lever.
 
@@ -566,7 +565,7 @@ Work systematically: diagnose first, then pick the lever.
 **Production angle:** measure gains against latency, cost and maintainability, and confirm them with an A/B test, because an offline lift is not a business lift.
 
 ### Q27. Can PCA be used to reduce the dimensionality of a highly nonlinear dataset?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Standard PCA will usually do poorly** on a highly non-linear dataset. PCA finds orthogonal *linear* directions of maximum variance. If the data lies on a curved manifold (a Swiss roll, concentric circles), the important structure isn't aligned with any linear subspace. PCA will either need many components or squash distinct regions on top of each other.
 
@@ -583,7 +582,7 @@ X_k = KernelPCA(n_components=2, kernel="rbf", gamma=15).fit_transform(X)
 ```
 
 ### Q28. What’s the difference between probability and likelihood?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 They use the same function $p(x \mid \theta)$, read in two different directions.
 
@@ -597,7 +596,7 @@ They use the same function $p(x \mid \theta)$, read in two different directions.
 **Example:** 7 heads in 10 flips gives $L(0.7) = \binom{10}{7}0.7^7 0.3^3 \approx 0.267$ and $L(0.5) \approx 0.117$, so $p = 0.7$ is more likely given the data. The MLE is $\hat p = 0.7$.
 
 ### Q29. What cross-validation technique would you use on a time series data set?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Standard k-fold shuffles the rows, so the model trains on the future and tests on the past (leakage), and autocorrelation inflates the scores. Use **order-preserving** schemes:
 
@@ -620,7 +619,7 @@ for tr, te in tscv.split(X):
 ```
 
 ### Q30. Once a dataset’s dimensionality has been reduced, is it possible to reverse the operation? If so, how? If not, why?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Generally only approximately, and for some methods not at all.** Reducing dimensions throws information away, so an exact inverse is impossible unless the dropped components carried zero variance.
 
@@ -639,7 +638,7 @@ err = ((X - X_rec) ** 2).mean(axis=1)
 ```
 
 ### Q31. Why do we always need the intercept term in a regression model??
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The intercept $\beta_0$ is the predicted value when all features are 0. Without it, the regression line or hyperplane is **forced through the origin**, which is almost never justified.
 
@@ -658,7 +657,7 @@ The intercept $\beta_0$ is the predicted value when all features are 0. Without 
 Interpretation caveat: the intercept itself often has no practical meaning (age = 0, house size = 0). Centering features makes it the "average case" prediction.
 
 ### Q32. Which among these is more important: model accuracy or model performance?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 It depends on how you define the terms, and that is the point of the question.
 
@@ -674,7 +673,7 @@ It depends on how you define the terms, and that is the point of the question.
 **How I'd frame it in practice:** agree on the success metric with stakeholders up front (e.g. "recall ≥ 90% at ≤ 5% FPR, p95 latency < 100 ms"), select models on that, and validate with an A/B test on the business KPI.
 
 ### Q33. What is active learning, and where is it useful?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Active learning** is a semi-supervised loop in which the model **chooses which unlabelled examples a human should label next**, so you reach a target accuracy with far fewer labels.
 
@@ -695,7 +694,7 @@ It depends on how you define the terms, and that is the point of the question.
 **Pitfalls:** the selected samples are biased (not i.i.d.), so keep a **random, separately labelled test set**. Cold start needs a reasonable seed. Pure uncertainty sampling can chase label noise and outliers. Factor annotator latency into the batch size.
 
 ### Q34. Why is Ridge Regression called Ridge?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 There are two complementary explanations.
 
@@ -708,7 +707,7 @@ Adding $\lambda I$ puts a constant "ridge" along the diagonal of $X^TX$. This li
 **Why it matters:** ridge trades a little bias for a large reduction in variance, keeps all features (no sparsity, unlike Lasso), and is the go-to when predictors are highly correlated. Equivalent views: L2 regularization, a Gaussian prior on the weights (MAP), and weight decay in neural networks.
 
 ### Q35. Does it make any sense to chain two different dimensionality reduction algorithms?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Yes, and it is common practice.** The typical pattern is a **cheap linear method first, then an expensive non-linear one**:
 
@@ -732,7 +731,7 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 ```
 
 ### Q36. Is it possible to speed up training of a bagging ensemble by distributing it across multiple servers?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Yes. Bagging is embarrassingly parallel.** Each base model is trained independently on its own bootstrap sample, so there are no dependencies between estimators during training.
 
@@ -750,7 +749,7 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 - Out-of-bag (OOB) evaluation requires tracking which rows each tree saw.
 
 ### Q37. If a Decision Tree is underfitting the training set, is it a good idea to try scaling the input features?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **No.** Decision trees are **invariant to monotonic feature scaling**. A split asks "is $x_j \le t$?", and scaling $x_j$ (standardization, min-max, even a log transform) just moves the threshold $t$. The ordering of samples, and therefore the partitions and impurity reductions, stays exactly the same. Scaling won't change the tree at all, apart from floating-point ties.
 
@@ -763,7 +762,7 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 **When scaling does matter:** distance- or gradient-based models such as KNN, SVM, linear and logistic regression with regularization, neural networks, PCA and k-means. In a mixed pipeline (e.g. trees stacked with logistic regression) you scale for the other models, not for the tree.
 
 ### Q38. Say you trained an SVM classifier with an RBF kernel. It seems to underfit the training set: should you increase or decrease γ (gamma)? What about C?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Increase γ and increase C.** Both reduce regularization and make the model more complex.
 
@@ -787,7 +786,7 @@ grid = GridSearchCV(make_pipeline(StandardScaler(), SVC(kernel="rbf")),
 ```
 
 ### Q39. What is cross-validation and its types?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Cross-validation** estimates how well a model generalizes by repeatedly splitting the data into training and validation parts, training on one and evaluating on the other, then averaging. It gives a lower-variance estimate than a single holdout split and is used for model selection and hyperparameter tuning.
 
@@ -811,7 +810,7 @@ cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),
 ```
 
 ### Q40. How do we interpret weights in linear models?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 In a linear model $\hat y = \beta_0 + \sum_j \beta_j x_j$, the weight $\beta_j$ is **the expected change in the prediction for a one-unit increase in $x_j$, holding all other features constant**.
 
@@ -832,7 +831,7 @@ In a linear model $\hat y = \beta_0 + \sum_j \beta_j x_j$, the weight $\beta_j$ 
 For complex models, SHAP or partial dependence give comparable per-feature effect interpretations.
 
 ### Q41. Which Gradient Descent algorithm (among those we discussed) will reach the vicinity of the optimal solution the fastest? Which will actually converge?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 (This refers to the classic comparison of **Batch GD, Stochastic GD and Mini-batch GD**, as in *Hands-On ML*.)
 
@@ -853,7 +852,7 @@ For complex models, SHAP or partial dependence give comparable per-feature effec
 In deep learning, mini-batch with a schedule (warmup plus cosine decay) and an optimizer such as Adam or AdamW is the standard.
 
 ### Q42. Why is it important to scale the inputs when using SVMs?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 SVMs maximize the **geometric margin**, which is measured with Euclidean distances in feature space. If one feature ranges from 0 to 100,000 (income) and another from 0 to 1 (a ratio), the large-scale feature dominates the distances and the margin. The SVM effectively ignores the small-scale features and finds a poor boundary.
 
@@ -878,7 +877,7 @@ clf = make_pipeline(StandardScaler(), SVC(kernel="rbf", C=1, gamma="scale"))
 Tree-based models, by contrast, don't need scaling.
 
 ### Q43. What is OvR and OvO for multiclass classification, and which machine learning algorithm supports this
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 These are two strategies for turning **binary classifiers into multiclass classifiers**.
 
@@ -905,7 +904,7 @@ OneVsOneClassifier(SVC()).fit(X, y)
 ```
 
 ### Q44. How will you do feature selection using Lasso Regression?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Lasso adds an L1 penalty, $\min_\beta \frac{1}{2n}\lVert y - X\beta\rVert^2 + \alpha\lVert\beta\rVert_1$. The L1 term drives the coefficients of uninformative features **exactly to zero**, so the features with non-zero coefficients are the selected set.
 
@@ -933,7 +932,7 @@ selected = X.columns[pipe[1].get_support()]
 - When $p > n$, Lasso selects at most $n$ features.
 
 ### Q45. What is the difference between standard scaler and minmax scaler? What will you do if there is a categorical variable?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **StandardScaler** (z-score): $x' = (x - \mu)/\sigma$, giving zero mean and unit variance with an unbounded range.
 **MinMaxScaler**: $x' = (x - x_{min})/(x_{max} - x_{min})$, mapping to a fixed range, usually $[0,1]$.
@@ -964,7 +963,7 @@ pre = ColumnTransformer([
 Tree-based models need neither scaling nor one-hot encoding in many implementations.
 
 ### Q46. What types of models tend to overfit?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Models with **high capacity and few built-in constraints** relative to the amount of data overfit most easily.
 
@@ -985,7 +984,7 @@ Models with **high capacity and few built-in constraints** relative to the amoun
 **Controls:** regularization, pruning, early stopping, dropout, cross-validation, more data or augmentation, feature selection and ensembling. The bias–variance tradeoff says to match model capacity to data size and noise.
 
 ### Q47. What are some advantages and Disadvantages of regression models and tree-based models?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Regression (linear/logistic) models**
 
@@ -1020,7 +1019,7 @@ Models with **high capacity and few built-in constraints** relative to the amoun
 **Rule of thumb:** start with a regularized linear baseline for interpretability and sanity, move to GBMs for maximum tabular accuracy, and use a hybrid (linear model plus tree-engineered features, or GBM with monotonic constraints) when you need both.
 
 ### Q48. What are some important hyperparameters for XGBOOST
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Group them by what they control:
 
@@ -1052,7 +1051,7 @@ Group them by what they control:
 **Tuning recipe:** fix a moderately high learning rate (0.1) with early stopping, then tune `max_depth` and `min_child_weight`, then `gamma`, then the subsample and colsample parameters, then the regularization, and finally lower the learning rate and raise the rounds. Use Optuna or Bayesian search with CV.
 
 ### Q49. Can you tell the complete life cycle of a data science project?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A typical end-to-end lifecycle (CRISP-DM extended with MLOps):
 
@@ -1070,7 +1069,7 @@ A typical end-to-end lifecycle (CRISP-DM extended with MLOps):
 The process is **iterative, not linear**. Most time goes into the data steps, and most failures come from poor problem framing or missing monitoring, not from the choice of algorithm.
 
 ### Q50. What are the properties of a good ML model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A good ML model is judged by more than its validation score:
 
@@ -1087,7 +1086,7 @@ A good ML model is judged by more than its validation score:
 **Interview angle:** the "best" model is often not the most accurate one. A gradient-boosted model 0.5% worse in AUC but 10x cheaper, explainable and easy to retrain usually wins in production. Frame the answer as a tradeoff between accuracy, cost, risk and maintainability.
 
 ### Q51. What are the different evaluation metrics for a regression model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Common regression metrics:**
 
@@ -1106,7 +1105,7 @@ A good ML model is judged by more than its validation score:
 **How to choose:** pick the metric that matches the cost of errors. If being off by 10 units costs the same whatever the size, use MAE. If big misses are disproportionately bad (inventory stock-outs), use RMSE. If relative error matters (demand across products of very different volume), use WAPE or RMSLE. Always report a baseline (predict the mean or last value) alongside the metric so the number has context.
 
 ### Q52. What are the different evaluation metrics for a classification model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Threshold-based (from the confusion matrix):**
 
@@ -1133,7 +1132,7 @@ A good ML model is judged by more than its validation score:
 **Production angle:** choose the metric that maps to business cost, then pick the operating threshold on a validation set (e.g. maximize recall subject to precision >= 95%). Track it per segment, not only globally.
 
 ### Q53. Difference between R2 and adjusted R2? Why do you prefer adjusted R2?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **$R^2$** measures the fraction of the target's variance explained by the model:
 
@@ -1155,7 +1154,7 @@ It only increases if a new feature improves the fit more than would be expected 
 **Caveats:** both are in-sample measures for linear models. For real model selection, held-out metrics (cross-validated RMSE/MAE) or AIC/BIC are more reliable, and neither $R^2$ tells you whether the model is unbiased or whether residual assumptions hold. With $n \gg p$ the two are nearly identical.
 
 ### Q54. List some of the drawbacks of a Linear model
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Drawbacks of linear models (linear/logistic regression):**
 
@@ -1171,7 +1170,7 @@ It only increases if a new feature improves the fit more than would be expected 
 **Why they're still used:** fast, cheap, highly interpretable, robust with little data, easy to regularize (Ridge/Lasso) and to deploy. In production they're often a strong baseline, a calibrated scoring layer, or the model of choice in regulated domains (credit scoring) where explainability outweighs a few points of accuracy.
 
 ### Q55. What do you mean by the curse of Dimensionality?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The **curse of dimensionality** is the set of problems that appear as the number of features grows:
 
@@ -1191,7 +1190,7 @@ The **curse of dimensionality** is the set of problems that appear as the number
 **Nuance:** real data usually lies near a low-dimensional manifold, which is why deep nets work on million-pixel images. The curse bites hardest for methods that rely on raw Euclidean distance over many uninformative features.
 
 ### Q56. Explain the kernel trick in SVM
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 An SVM's dual formulation and decision function only use **dot products** between data points:
 
@@ -1210,7 +1209,7 @@ If the data isn't linearly separable, we could map it to a higher-dimensional sp
 - Kernel choice and hyperparameters ($\gamma$, $C$) need tuning.
 
 ### Q57. Why is it sometimes needed to scale or normalise features?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Feature scaling puts features on comparable ranges. It's needed when an algorithm is sensitive to the **magnitude** of features:
 
@@ -1233,7 +1232,7 @@ model = make_pipeline(StandardScaler(), SVC(kernel="rbf")).fit(X_train, y_train)
 ```
 
 ### Q58. Why do binary\_crossentropy and categorical\_crossentropy give different performances for the same problem?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Usually because they are being used for **different problem formulations**, or because of how Keras computes accuracy.
 
@@ -1257,7 +1256,7 @@ Using the wrong pairing gives different gradients and a different optimum, so tr
 For two classes, 1 sigmoid + BCE and 2 softmax + CCE are mathematically equivalent.
 
 ### Q59. [Why does one-hot encoding improve machine learning performance?](https://stackoverflow.com/questions/17469835/why-does-one-hot-encoding-improve-machine-learning-performance)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 One-hot encoding turns a categorical feature with $k$ values into $k$ binary columns. It helps because:
 
@@ -1273,7 +1272,7 @@ One-hot encoding turns a categorical feature with $k$ values into $k$ binary col
 - In production, handle unseen categories (`handle_unknown='ignore'`).
 
 ### Q60. Considering the long list of machine learning algorithms, given a data set, how do you decide which one to use?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 There's no universally best algorithm (No Free Lunch), so the choice is driven by the problem, the data and the constraints, then confirmed empirically.
 
@@ -1297,7 +1296,7 @@ There's no universally best algorithm (No Free Lunch), so the choice is driven b
 **Example:** churn prediction on 200k rows of tabular CRM data with a requirement to explain decisions → logistic regression baseline, then LightGBM with SHAP explanations; pick LightGBM if the uplift justifies it.
 
 ### Q61. Differentiate between wide and tall data formats?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Wide and tall (long) are two layouts of the same data.
 
@@ -1331,7 +1330,7 @@ wide = long.pivot(index="customer", columns="month", values="sales")
 In feature engineering pipelines you often store data tall (events) and pivot to wide (one feature row per entity) right before training.
 
 ### Q62. How will you know which machine learning algorithm to choose for your classification problem?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Choosing a classifier is a mix of constraints and experiments:
 
@@ -1355,7 +1354,7 @@ Choosing a classifier is a mix of constraints and experiments:
 **Example:** loan default with 50k rows, mixed features, explainability required → logistic regression baseline vs. LightGBM with monotonic constraints and SHAP.
 
 ### Q63. How will you find the correlation between a categorical variable and a continuous variable?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 It depends on whether the categorical variable is binary, nominal or ordinal:
 
@@ -1379,7 +1378,7 @@ def correlation_ratio(cat, num):
 **Interview caveats:** don't just label-encode a nominal variable and compute Pearson, since the result depends on the arbitrary codes. Association isn't causation, and with large samples tiny effects become statistically significant, so report the effect size ($\eta$), not just the p-value.
 
 ### Q64. What are the differences between “Bayesian” and “Frequentist” approaches for Machine Learning?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The two schools differ in **what probability means**.
 
@@ -1406,7 +1405,7 @@ The two schools differ in **what probability means**.
 **Production example:** Bayesian A/B testing gives "P(variant B is better) = 94%", which is often easier for stakeholders than a p-value.
 
 ### Q65. What is the difference between a Gaussian Mixture Model and the K-Means Algorithm?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Both cluster data into $k$ groups, but GMM is a probabilistic generalization of k-means.
 
@@ -1434,7 +1433,7 @@ probs = gmm.predict_proba(X)
 ```
 
 ### Q66. Is more data always better?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **No.** More data usually helps, but not always, and not for free.
 
@@ -1455,7 +1454,7 @@ probs = gmm.predict_proba(X)
 **How to decide in practice:** plot a **learning curve** (validation score vs. training-set size). If it's still rising, collecting data is worthwhile; if it has flattened, invest in features, model changes or label quality instead. Targeted collection via active learning or error analysis usually beats collecting more of the same.
 
 ### Q67. How can you determine which features are the most important in your model?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Several methods, each with caveats:
 
@@ -1483,7 +1482,7 @@ r = permutation_importance(model, X_val, y_val, n_repeats=10, scoring="roc_auc")
 **Pitfalls to mention:** importance is not causality; correlated features split or hide importance; a suspiciously dominant feature often signals **data leakage** (e.g. a field populated after the outcome). Validate on held-out data and check stability across CV folds.
 
 ### Q68. Which hyperparameter tuning strategies (in general) do you know?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Main strategies:**
 
@@ -1512,7 +1511,7 @@ optuna.create_study(direction="maximize").optimize(objective, n_trials=100)
 ```
 
 ### Q69. How to select K for K-means?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 $k$ is a hyperparameter, so you combine quantitative criteria with domain sense:
 
@@ -1535,7 +1534,7 @@ best_k = max(scores, key=scores.get)
 **Caveats:** scale features first; k-means assumes roughly spherical clusters, so if no $k$ looks good, the issue may be the algorithm (try DBSCAN/HDBSCAN or GMM) rather than $k$.
 
 ### Q70. Describe the differences between and use cases for box plots and histograms
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Both show the distribution of a numeric variable, at different levels of detail.
 
@@ -1556,7 +1555,7 @@ Both show the distribution of a numeric variable, at different levels of detail.
 **Practical tip:** violin plots or box plots overlaid with strip/jitter points combine both views. In EDA I'd use histograms per feature to understand shape and box plots of the feature by target class to see which features separate classes.
 
 ### Q71. How would you differentiate between multi-label and multi-class classification?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Multi-class:** each sample belongs to **exactly one** of $K > 2$ mutually exclusive classes.
 Example: classifying a digit as 0–9, or a ticket as Billing / Technical / Sales.
@@ -1579,7 +1578,7 @@ Example: tagging a movie as Action + Comedy, or an image containing both a dog a
 **Production gotchas:** multi-label often has strong label imbalance (rare tags), so threshold tuning per label and label co-occurrence analysis matter. Using softmax for a multi-label problem silently forces labels to compete and caps recall.
 
 ### Q72. What is KL divergence, and how would you define its use case in ML?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **KL divergence** measures how much one probability distribution $P$ differs from a reference distribution $Q$:
 
@@ -1607,7 +1606,7 @@ def kl(p, q, eps=1e-12):
 ```
 
 ### Q73. Can you define the concept of Undersampling and Oversampling?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Both are **resampling** techniques for imbalanced classification that change the class distribution of the **training** data.
 
@@ -1640,7 +1639,7 @@ pipe = Pipeline([("smote", SMOTE()), ("clf", model)])  # resampling happens per 
 > 🔁 _Already answered in [06-deep-learning.md → Q50](ml-engineering/06-deep-learning.md#q50-normalization-vs-standardization); skipped here to avoid duplication._
 
 ### Q75. List the most popular distribution curves along with scenarios where you will use them in an algorithm.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 | Distribution | Type | Describes | Where it shows up in ML |
 | --- | --- | --- | --- |
@@ -1660,7 +1659,7 @@ pipe = Pipeline([("smote", SMOTE()), ("clf", model)])  # resampling happens per 
 **Why it matters:** the assumed distribution determines the right loss (MSE ↔ Gaussian, cross-entropy ↔ Bernoulli/categorical, Poisson deviance ↔ counts), the right transformation (log for log-normal data) and the right statistical test.
 
 ### Q76. List all types of popular recommendation systems?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Main families of recommendation systems:**
 
@@ -1681,7 +1680,7 @@ pipe = Pipeline([("smote", SMOTE()), ("clf", model)])  # resampling happens per 
 **Production architecture:** multi-stage: **candidate generation** (two-tower ANN retrieval, CF, popularity) → **ranking** (gradient boosting or deep model on rich features) → **re-ranking** for diversity, freshness, business rules. Evaluate offline with precision@k, recall@k, NDCG, MAP and online with A/B tests on CTR, conversion, retention.
 
 ### Q77. Which metrics can be used to measure correlation of categorical data?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Categorical vs. categorical (nominal):**
 
@@ -1711,7 +1710,7 @@ def cramers_v(x, y):
 **Caveat:** with large samples chi-square is almost always significant, so report an effect size like Cramér's V. Label-encoding nominal categories and computing Pearson is meaningless.
 
 ### Q78. Which type of sampling is better for a classification model, and why?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 There's no single best sampling method; it depends on the goal. For **building train/validation/test splits** for classification, **stratified sampling** is usually the better default.
 
@@ -1752,7 +1751,7 @@ Transformer: Drops recurrence entirely. Self-attention lets every token look at 
 
 ### Q81. Federated learning?
 
-> 🔁 _See also [07-ai-security-and-ml-topics.md → Q2](../backend-engineering/core/07-ai-security-and-ml-topics.md#q2-federated-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [07-ai-security-and-ml-topics.md → Q2](../backend-engineering/core/07-ai-security-and-ml-topics.md#q2-federated-learning) (separate notes on the same question)._
 Federated learning is a way to train a machine learning model across many devices or organizations without ever collecting their raw data in one place. Instead of sending data to a central server, the model goes to the data.
 
 **How it works**
@@ -1790,7 +1789,7 @@ Federated learning is a way to train a machine learning model across many device
 The study of vulnerabilities in artificial intelligence and machine learning models
 
 ### Q83. AI ontology?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 In AI, an **ontology** is a formal, explicit model of a domain: the **concepts** (classes), their **properties**, the **relationships** between them, and **rules/constraints**, expressed in a machine-readable way so software can reason over it.
 
@@ -1814,7 +1813,7 @@ In AI, an **ontology** is a formal, explicit model of a domain: the **concepts**
 **Tradeoffs:** expensive to design and maintain, requires domain experts, can be rigid. A pragmatic approach is a lightweight ontology for core entities, extended with LLM-assisted extraction and human review.
 
 ### Q84. Consciousness?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 In an AI interview this usually means: **can AI systems be conscious, and how should engineers think about the claim?**
 
@@ -1838,7 +1837,7 @@ In an AI interview this usually means: **can AI systems be conscious, and how sh
 A good interview answer is calibrated: explain the distinctions, note the uncertainty, and tie it back to practical concerns like trust, safety and honest UX.
 
 ### Q85. Unsupervised learning through compression?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 The idea: **learning = compression**. A model that can compress data well must have captured its underlying structure, so you can learn useful representations without labels by training a model to compress (or predict) the data.
 
@@ -1861,7 +1860,7 @@ The idea: **learning = compression**. A model that can compress data well must h
 **Caveats:** compressing raw pixels perfectly wastes capacity on irrelevant details (noise, texture), which motivates predicting in latent space (JEPA) instead of reconstructing inputs; and good compression doesn't guarantee representations aligned with the downstream task.
 
 ### Q86. Static vs. continuous batching in LLMs?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Batching groups requests so the GPU processes them together, which raises throughput because LLM decoding is memory-bandwidth-bound (weights are loaded once per step for the whole batch).
 
@@ -1882,7 +1881,7 @@ Batching groups requests so the GPU processes them together, which raises throug
 **Tradeoffs to mention:** larger batches increase throughput but also per-token latency (inter-token latency), so production systems cap batch size / tokens per step to meet p95 latency SLOs; scheduling policies (priority, fairness, preemption with KV swapping or recomputation) matter under load.
 
 ### Q87. BERT architecture?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **BERT** (Bidirectional Encoder Representations from Transformers, Google 2018) is an **encoder-only Transformer** pre-trained to produce deep bidirectional contextual embeddings.
 
@@ -1903,7 +1902,7 @@ Batching groups requests so the GPU processes them together, which raises throug
 **Strengths and limits:** excellent for understanding tasks (classification, NER, retrieval, reranking as a cross-encoder); bidirectionality makes it unsuited to text generation; 512-token limit; quadratic attention. Successors: RoBERTa, ALBERT, DistilBERT, DeBERTa, ModernBERT. In production, BERT-family models remain the workhorses for embeddings, classifiers and rerankers because they're cheap compared with LLMs.
 
 ### Q88. What is next-sentence prediction in BERT?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Next-Sentence Prediction (NSP)** is BERT's second pre-training task (alongside masked language modeling). Its goal was to teach the model relationships **between** sentences, useful for tasks like question answering and natural language inference.
 
@@ -1928,7 +1927,7 @@ Batching groups requests so the GPU processes them together, which raises throug
 **Interview takeaway:** NSP is a good example of a pre-training objective that sounded useful but whose benefit came mostly from confounding signals; ablations (RoBERTa) revealed it.
 
 ### Q89. Hooks, Coroutine, Plugins, Rules, Skills?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 These are building blocks for **extending and controlling AI agents / coding assistants** (Claude Code, Cursor, agent frameworks), plus coroutines as the async primitive under them.
 
@@ -1946,7 +1945,7 @@ async def run_tools(calls):
 ```
 
 ### Q90. Reliability (trust model out), Controllability (control the model)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Two complementary properties for deploying LLMs/agents safely:
 
@@ -1967,7 +1966,7 @@ Ability to direct behaviour (style, scope, actions) and bound it so it stays wit
 **Relationship:** controllability is a prerequisite for reliability (you can't trust what you can't constrain), but a controllable model can still be confidently wrong, so reliability needs measurement on top. In regulated domains (fintech, healthcare) both are requirements, captured as an evaluation plan (accuracy, groundedness, policy-violation rate) and an audit trail of every prompt, tool call and decision.
 
 ### Q91. SAM vs YOLO?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 They solve different problems and are often combined rather than competing.
 
@@ -1989,7 +1988,7 @@ They solve different problems and are often combined rather than competing.
 **Trade-off:** YOLO needs labeled data for your classes but runs cheaply. SAM is zero-shot for shapes but gives you no semantics and costs more compute per image.
 
 ### Q92. NCM(next concept modeling) vs LLM?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **LLM (next-token modeling):** a Transformer trained to predict the next *token* (a subword). Reasoning, planning and abstraction emerge implicitly from that objective, and generation happens one token at a time.
 
@@ -2008,7 +2007,7 @@ They solve different problems and are often combined rather than competing.
 **Caveats:** embedding-space prediction is lossy (fine detail such as numbers or exact wording can drift), the field has few tools and benchmarks yet, and in production today it is a research direction, not a replacement for LLMs.
 
 ### Q93. World Models vs. JEPA?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **World model:** an internal model that predicts how an environment evolves, $p(s_{t+1} \mid s_t, a_t)$, so an agent can *imagine* outcomes and plan before acting. Examples include Ha & Schmidhuber's World Models, Dreamer (RL in a learned latent space), MuZero (planning with a learned dynamics model), and video-generation "world simulators" such as Genie and Sora-style models. Many of these are **generative**: they reconstruct or predict pixels or observations.
 
@@ -2033,7 +2032,7 @@ loss = || ŝ_y - s_y ||   (no pixel reconstruction)
 backpropagation solves a computational circuit by reversing the flow of data to instantly calculate exactly how to fix the circuit's errors
 
 ### Q95. Why is AI infra moving towards Rust?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Python remains the *interface* for AI, but more of the *infrastructure underneath* is being written in Rust:
 
@@ -2054,7 +2053,7 @@ https://spinningup.openai.com/en/latest/
 Neural networks
 
 ### Q97. Hopfield networks vs. Boltzmann Machine
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 All three are **energy-based** neural networks from the 1980s with symmetric weights. They differ in whether they are deterministic or stochastic, and in what they are used for.
 
@@ -2087,7 +2086,7 @@ All three are **energy-based** neural networks from the 1980s with symmetric wei
 **Today:** they are largely historical. VAEs, GANs and diffusion models replaced them for generative modeling, but the energy-based view and the Hopfield ↔ attention link still come up in interviews.
 
 ### Q98. Content-addressable memory vs. parametric memory
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 These are two ways a system can "remember" information.
 
@@ -2113,7 +2112,7 @@ These are two ways a system can "remember" information.
 **Production takeaway:** modern LLM systems are **hybrid**. Parametric memory provides language skill and reasoning, and content-addressable memory (RAG, tool lookups, agent memory stores) provides fresh, private, auditable facts. That is why "prompting vs. RAG vs. fine-tuning" is mostly a question of which memory type should hold a given piece of knowledge.
 
 ### Q99. How does BERT work, and what are its pre-training objectives (MLM, NSP)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Architecture:** BERT (Devlin et al., 2018) is a **Transformer encoder-only** stack: 12 layers, hidden size 768, 12 heads, about 110M parameters for Base; 24 layers, 1024, 16 heads, about 340M for Large. It uses full **bidirectional self-attention**, so every token sees left *and* right context.
 
@@ -2135,7 +2134,7 @@ Training data was BooksCorpus plus English Wikipedia (about 3.3B words).
 **Caveats worth mentioning:** RoBERTa later showed **NSP adds little or even hurts**. MLM only learns from about 15% of tokens per pass, which is sample-inefficient (ELECTRA addresses this). BERT also can't generate text naturally. It is still a strong, cheap backbone for classification, NER, reranking (cross-encoders) and embeddings.
 
 ### Q100. How does RoBERTa differ from BERT?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **RoBERTa** ("Robustly optimized BERT approach", Facebook AI, 2019) keeps BERT's **architecture unchanged** and shows BERT was significantly *undertrained*. The gains come purely from the training recipe:
 
@@ -2150,7 +2149,7 @@ Training data was BooksCorpus plus English Wikipedia (about 3.3B words).
 **Interview takeaway:** data scale, training duration and objective choices can matter as much as architecture, and ablations should be done carefully (the NSP finding). In practice RoBERTa, and DeBERTa after it, became the default encoder backbones for classification, NER and cross-encoder rerankers.
 
 ### Q101. Why do Transformers use layer normalization instead of batch normalization, and what is Pre-LN vs Post-LN?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Why LayerNorm instead of BatchNorm**
 
@@ -2171,7 +2170,7 @@ Pre-LN  (GPT-2 onwards):         x = x + Sublayer(LN(x))
 **One-liner:** LN because NLP batches are variable and inference is per-token; Pre-LN because stability at depth matters more than the small quality edge of Post-LN.
 
 ### Q102. What is the difference between SFT and RL-based tuning (RLHF/DPO)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **SFT (Supervised Fine-Tuning):** train on curated (prompt, ideal response) pairs with standard next-token cross-entropy on the response tokens. It is **imitation learning**: "write like this demonstration."
 
@@ -2194,7 +2193,7 @@ Pre-LN  (GPT-2 onwards):         x = x + Sublayer(LN(x))
 **Practice:** the standard pipeline is pretrain → SFT → preference tuning. SFT gets the model into the right distribution, and preference/RL tuning refines it. Comparisons are also easier for humans to give than perfect demonstrations.
 
 ### Q103. What is InfoNCE loss, and where is it used?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **InfoNCE** (from Contrastive Predictive Coding, van den Oord et al., 2018) is the standard **contrastive loss**. Given an anchor $q$, one positive $k^+$ and $N-1$ negatives, it is a softmax cross-entropy that asks the model to pick out the positive:
 
@@ -2222,7 +2221,7 @@ def info_nce(q, k, tau=0.07):           # q, k: [B, D], row i of k is the positi
 **Practical issues:** quality depends on **batch size / number of negatives** (hence large batches, memory queues, cross-device gathering), **hard-negative mining** (but watch for false negatives, such as duplicates that are actually positives), and tuning $\tau$.
 
 ### Q104. How does BPE tokenization work?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Byte-Pair Encoding** builds a subword vocabulary by repeatedly merging the most frequent adjacent symbol pair.
 
@@ -2249,7 +2248,7 @@ merge 1: (e,s) → es     merge 2: (es,t) → est    merge 3: (l,o) → lo ...
 - Related schemes: **WordPiece** (BERT; merges by likelihood gain), **Unigram LM** (SentencePiece; prunes a large vocabulary probabilistically). Libraries: `tiktoken`, Hugging Face `tokenizers` (Rust), SentencePiece.
 
 ### Q105. How do you implement a tokenizer (training, encoding, decoding, special tokens)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A tokenizer has four parts: a **normalizer**, a **pre-tokenizer**, a **model** (BPE/Unigram/WordPiece) and a **post-processor** for special tokens. A minimal byte-level BPE:
 
@@ -2313,7 +2312,7 @@ class BPETokenizer:
 - **Versioning:** the tokenizer is part of the model contract. Changing it means retraining the embeddings.
 
 ### Q106. What does the LM head do, and what is weight tying?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **LM head:** the final layer of a language model. It maps each position's final hidden state $h \in \mathbb{R}^{d}$ to **logits over the vocabulary**:
 
@@ -2346,9 +2345,9 @@ class TinyLM(nn.Module):
 **Practical gotchas:** when you resize the vocabulary (adding special tokens) you must resize both matrices and keep them tied. LoRA or quantization configs must handle the shared parameter correctly. The LM head is also often the single biggest matmul at decode time for small models.
 
 ### Q107. How would you implement a regex matcher supporting `.` and your PyTorch training loss is NaN or not decreasing. How do you debug it?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
-This Notion title merges two separate questions, so both are answered: (a) a regex matcher supporting `.` and `*`, and (b) debugging a PyTorch loss that is NaN or not decreasing.
+This title merges two separate questions, so both are answered: (a) a regex matcher supporting `.` and `*`, and (b) debugging a PyTorch loss that is NaN or not decreasing.
 
 **(a) Regex matcher with `.` (any char) and `*` (zero or more of the preceding element), full match**
 
@@ -2387,7 +2386,7 @@ Discuss: the recursive version without memoization is exponential, a bottom-up t
 Log loss, gradient norm, LR and activation stats (W&B/TensorBoard) so the failure step is visible, and fix seeds to reproduce it.
 
 ### Q108. Design a conversational assistant (memory, context management, safety, latency).
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** domain (customer support vs. general chat), scale (QPS, users), latency SLO (e.g., first token < 1s), modalities, compliance (PII, regulated data).
 
@@ -2419,7 +2418,7 @@ Client ⇄ (WebSocket/SSE streaming) ⇄ API Gateway (auth, rate limit)
 **Evaluation and operations:** golden conversation sets and LLM-as-judge (calibrated to human ratings), regression tests in CI for prompt changes, online metrics (CSAT, resolution rate, escalation rate, thumbs up/down), tracing of every turn (Langfuse/OTel), and cost per conversation dashboards.
 
 ### Q109. Design a coding agent.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal:** an agent that takes a task ("fix this failing test", "add an endpoint") and produces a verified code change in a real repository.
 
@@ -2443,7 +2442,7 @@ Client ⇄ (WebSocket/SSE streaming) ⇄ API Gateway (auth, rate limit)
 **Evaluation:** SWE-bench-style task suites (resolved rate), internal golden tasks, metrics for test pass rate, diff size, number of iterations, cost per task, human acceptance rate of PRs, and regressions caught in CI. Trace every step to debug failure modes such as wrong file edited, test hallucination, or loops.
 
 ### Q110. How does prompt caching work, and when does it help?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **What it is:** during prefill an LLM computes **KV-cache tensors** for every prompt token. Prompt caching stores the KV cache for a prompt **prefix**, so a later request with the *exact same prefix* skips recomputing it and only processes the new suffix.
 
@@ -2467,7 +2466,7 @@ Client ⇄ (WebSocket/SSE streaming) ⇄ API Gateway (auth, rate limit)
 **Don't confuse with:** *semantic caching*, which returns a stored **response** for a semantically similar query. That skips the model entirely but risks stale or wrong answers. Prompt caching still runs the model, so the output is unaffected.
 
 ### Q111. Design a distributed rate limiter.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements:** limit requests per key (user, API key, IP, tenant) across many stateless API servers, e.g. 100 req/min. Low added latency (< a few ms), high availability, roughly accurate globally, and support for different limits per tier.
 
@@ -2515,7 +2514,7 @@ return ok and 1 or 0
 - **LLM-specific:** limit **tokens per minute** as well as requests, using the estimated cost of the request.
 
 ### Q112. What is ROC-AUC, and what are its limitations?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **ROC curve:** plots **TPR (recall)** against **FPR** = FP/(FP+TN) as the classification threshold sweeps from 1 to 0. **AUC** is the area under it. It equals the probability that a randomly chosen positive is scored higher than a randomly chosen negative (equivalent to the Mann-Whitney U statistic). 0.5 is random and 1.0 is perfect.
 
@@ -2533,7 +2532,7 @@ return ok and 1 or 0
 **Production angle:** report ROC-AUC for model comparison, but choose the threshold and monitor with business-aligned metrics (precision/recall at the operating point, cost per decision), plus calibration plots.
 
 ### Q113. When should you use PR-AUC over ROC-AUC?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Use **PR-AUC (average precision)** when the **positive class is rare** and you care mainly about how well the model finds positives, not about the negatives.
 
@@ -2557,7 +2556,7 @@ Use **PR-AUC (average precision)** when the **positive class is rare** and you c
 - Finally, choose an operating threshold by business constraint, e.g. "maximize recall subject to precision ≥ 80%", and monitor precision and recall at that point in production.
 
 ### Q114. How do you detect hallucinations?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Detect hallucinations at several layers. No single method is enough.
 
@@ -2586,7 +2585,7 @@ Detect hallucinations at several layers. No single method is enough.
 **Trade-off:** judge-based checks add latency and cost, so run lightweight checks inline and heavier ones asynchronously.
 
 ### Q115. How do you run a good ablation study?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 An **ablation study** removes or changes one component at a time to measure its causal contribution to the result.
 
@@ -2614,7 +2613,7 @@ An **ablation study** removes or changes one component at a time to measure its 
 **Pitfalls:** confounding changes (a new data version alongside the ablation), comparing to a weak baseline, cherry-picking seeds, and ablating only on easy benchmarks. Ablations drive **simplification decisions** as much as paper claims.
 
 ### Q116. How do you evaluate LLM outputs (metrics, LLM-as-judge, human eval)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Combine three layers: **automatic metrics**, **LLM-as-judge**, and **human evaluation**, run both offline and online.
 
@@ -2642,7 +2641,7 @@ Combine three layers: **automatic metrics**, **LLM-as-judge**, and **human evalu
 - Always track quality together with **latency, cost and safety**. A "better" output that is 3× slower may not ship.
 
 ### Q117. What does TensorRT (TensorRT-LLM) do?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **TensorRT** is NVIDIA's SDK for **optimizing and running trained neural networks for inference on NVIDIA GPUs**. It takes a model (typically via ONNX or framework integrations such as Torch-TensorRT) and compiles it into an optimized **engine** for a specific GPU:
 
@@ -2667,7 +2666,7 @@ Combine three layers: **automatic metrics**, **LLM-as-judge**, and **human evalu
 **When to use it:** high-volume, latency-sensitive production on fixed NVIDIA hardware where the extra engineering effort pays off in GPU cost.
 
 ### Q118. What are the main techniques for optimizing LLM inference overall (latency, throughput, cost)?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 First identify what you are optimizing: **latency** (TTFT, inter-token latency), **throughput** (tokens/s per GPU), or **cost** ($ per 1M tokens). Prefill is compute-bound; decode is **memory-bandwidth-bound** (reading weights and the KV cache for every token).
 
@@ -2696,7 +2695,7 @@ First identify what you are optimizing: **latency** (TTFT, inter-token latency),
 **Trade-offs to discuss:** bigger batches raise throughput but hurt per-request latency, so tune to the SLO. Quantization and distillation can cost quality, so evaluate on *your* tasks. Every optimization should be measured on a load test (p50/p95/p99 TTFT, tokens/s, GPU utilization, cost per request).
 
 ### Q119. How do you build a spam detection system?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Problem framing:** binary (or multi-class: spam, phishing, promo, ham) classification on messages or emails. **Precision matters most**: putting a legitimate email in spam is very costly. So pick an operating point such as precision ≥ 99% and maximize recall. Latency target is under about 50 ms per message at high volume. The setting is **adversarial**: spammers adapt.
 
@@ -2721,7 +2720,7 @@ First identify what you are optimizing: **latency** (TTFT, inter-token latency),
 **7. Adversarial loop:** frequent retraining (daily, or online learning), fast rule deployment for emerging campaigns, adversarial testing, rate limits on suspicious senders, and keep the exact features secret so they are harder to game.
 
 ### Q120. How do you approach text summarization?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Clarify requirements:** extractive or abstractive? Single or multiple documents? Length and format (bullets, TL;DR, structured fields)? Domain (legal, medical, meetings)? Faithfulness requirements (regulated domains allow zero hallucination)? Volume, latency, cost?
 
@@ -2748,7 +2747,7 @@ First identify what you are optimizing: **latency** (TTFT, inter-token latency),
 **5. Production concerns:** hallucinated numbers, names and dates (verify entities against the source, or add citations per bullet), omission of critical information, PII handling, prompt injection inside the documents being summarized, model choice by cost (a cheap model for bulk work, a stronger one for important documents), caching, and monitoring of user edits and feedback as a quality signal.
 
 ### Q121. How are knowledge graphs used with NLP?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(Marie Curie, wonPrize, Nobel Prize in Physics)`. NLP and KGs help each other in both directions.
 
@@ -2771,7 +2770,7 @@ A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(
 **Production pattern:** combine them. Run LLM-based extraction with human validation for critical relations, store the result in a graph DB (Neo4j, Neptune), and use hybrid retrieval (vector + graph traversal) at query time.
 
 ### Q122. How do you build a harmful-content detection system?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Scope and policy first:** define the taxonomy (hate, harassment, violence, self-harm, sexual content, CSAM, extremism, spam, misinformation) with written policy guidelines and severity levels. The policy drives labeling, thresholds and actions. Cover multiple modalities (text, image, video, audio) and languages.
 
@@ -2793,7 +2792,7 @@ A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(
 **7. Adversarial robustness and operations:** obfuscation (misspellings, emoji, text in images, so add OCR), evolving slang, coordinated attacks. Mitigate with frequent retraining, rapid rule updates, drift monitoring, and transparency reports.
 
 ### Q123. How would you solve entity resolution?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Entity resolution (ER)** identifies records that refer to the same real-world entity across or within datasets (customers, companies, products) despite typos, abbreviations, missing fields and format differences.
 
@@ -2815,7 +2814,7 @@ A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(
 **Trade-off:** false merges (combining two customers) are usually worse than missed matches, so set thresholds asymmetrically.
 
 ### Q124. How did you make the agentic RAG system reliable, trustworthy, explainable, responsible, and aligned?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 This is behavioural, so answer in **STAR** form with concrete numbers. Template to adapt:
 
@@ -2882,7 +2881,7 @@ Stores structured facts and concepts that help the agent retrieve and apply know
 
 ## Covered elsewhere
 
-These questions also appear in the Notion page but are answered by another question in this repo:
+These questions are answered by another question in this repo:
 
 - What is the difference between Parametric and Non Parametric Algorithms? → see [01-turing-100-interview-questions.md Q84](resources/01-turing-100-interview-questions.md#q84-how-can-you-differentiate-between-a-parametric-and-a-non-parametric-model)
 - Give an example of when a false positive is more crucial than a false negative, and vice versa → see [01-turing-100-interview-questions.md Q88](resources/01-turing-100-interview-questions.md#q88-which-is-better-to-have-a-false-positive-or-false-negative)

@@ -1,6 +1,6 @@
 # AI Engineering Interview Questions
 
-GenAI / LLM application engineering, from fundamentals to production, safety and behavioural rounds. Every answer here is copied from the Notion notes word for word.
+GenAI / LLM application engineering, from fundamentals to production, safety and behavioural rounds. Every answer here comes from my own notes.
 
 | # | Topic | Questions |
 |---|---|---|

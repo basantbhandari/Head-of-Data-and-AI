@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480e78060edb1702ef241 -->
 # Algorithms
 
 Classical ML algorithms: decision trees, random forests, ensembles and gradient boosting (XGBoost), linear/logistic regression, KNN, K-Means, SVM, Naive Bayes, PCA and dimensionality reduction, gradient descent, and ROC-AUC.

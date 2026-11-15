@@ -1,7 +1,6 @@
-<!-- notion-id: 3be67418-2854-8019-b107-e6d767a6b763 -->
 # System design
 
-The Notion page has no content of its own; it contains two child pages, synced as the files below (in Notion order).
+This section contains the two files below.
 
 | # | File | Description |
 | --- | --- | --- |

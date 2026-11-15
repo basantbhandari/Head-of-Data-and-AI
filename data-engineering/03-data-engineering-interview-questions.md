@@ -1,4 +1,3 @@
-<!-- notion-id: 3d967418285480448e90e6349ebbdb9b -->
 # Data engineering interview question
 
 Apache Airflow Q&A plus a topic checklist and links to the OBenner data-engineering-interview-questions repo.
@@ -36,7 +35,7 @@ A directed acyclic graph (DAG) is used to design an Airflow workflow. That is to
 
 ## Other topics
 
-These topic headings exist in Notion with no notes under them yet:
+These topic headings have no notes under them yet:
 
 - Apache Avro
 - Apache Cassandra

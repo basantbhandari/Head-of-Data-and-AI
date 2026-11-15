@@ -1,4 +1,3 @@
-<!-- notion-id: 3d567418285480a8b6e3e55d3ddf233c -->
 # Prompt Engineering
 
 Interview questions on prompt engineering techniques, structured output, prompt security, evaluation and multilingual prompting.

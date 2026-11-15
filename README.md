@@ -2,7 +2,7 @@
 
 A personal bank of Data and AI interview questions, built for the path from **senior Data & AI engineer** today to **Head of Data and AI** over the next 10–15 years.
 
-The content comes from my Notion workspace ("🏦 Head of Data and AI") and was synced here as Markdown on 2026-11-15.
+Last updated 2026-11-15.
 
 ## Sections
 
@@ -18,13 +18,11 @@ The content comes from my Notion workspace ("🏦 Head of Data and AI") and was 
 
 | Marker | Meaning |
 |---|---|
-| _(no marker)_ | My own Notion notes, copied **word for word** (only the formatting was converted) |
-| `✍️ Answer drafted during sync` | The question had no answer in Notion, so an answer was written during the sync (297 questions) |
-| `✍️ Addition drafted during sync` | A Notion answer that stopped partway or was incomplete; the extra text comes after the original (7 places) |
+| _(no marker)_ | My own notes |
+| `✍️ Drafted answer` | The question had no answer in my notes, so an answer was drafted (297 questions) |
+| `✍️ Drafted addition` | My answer stopped partway or was incomplete; the extra text comes after the original (7 places) |
 | `🔁 Already answered in …` | A drafted answer that would repeat an existing one; it was skipped and links to the existing answer instead |
-| `🔁 See also …` | The same question has separate Notion notes in another file; the two are cross-linked |
-
-Every file starts with `<!-- notion-id: … -->`, the ID of the Notion page it came from, so it can be synced again later.
+| `🔁 See also …` | The same question has separate notes in another file; the two are cross-linked |
 
 ## Roadmap gap
 

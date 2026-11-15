@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: AI Security and ML Topics
 
 AI jailbreaking and federated learning.
@@ -45,7 +44,7 @@ AI jailbreaking and federated learning.
 
 ### Q2. Federated Learning
 
-> 🔁 _See also [commonly-asked-ml-questions.md → Q81](../../ai-ml-engineering/commonly-asked-ml-questions.md#q81-federated-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [commonly-asked-ml-questions.md → Q81](../../ai-ml-engineering/commonly-asked-ml-questions.md#q81-federated-learning) (separate notes on the same question)._
 
 #### Federated Learning Model
 

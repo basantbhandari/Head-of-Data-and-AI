@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: Performance, Scalability and Reliability
 
 Latency percentiles, retries with backoff and jitter, scalability, the CAP theorem and high availability.

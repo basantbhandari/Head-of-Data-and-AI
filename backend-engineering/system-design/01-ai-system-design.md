@@ -1,10 +1,9 @@
-<!-- notion-id: 3d567418-2854-80dc-aeed-e60d4aea7559 -->
 # AI System Design
 
-AI/LLM system design interview questions. The Notion page has only the questions, so every answer here was drafted during sync.
+AI/LLM system design interview questions. Every answer here is a drafted answer.
 
 ### Q1. Design ChatGPT: Training to Serving (End to End)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements and scale.** A general chat assistant with roughly 100M DAU, streaming responses (time to first token under 1s), multi-turn context, safety, and many model sizes.
 
@@ -35,7 +34,7 @@ Client → API gateway (auth, rate limit) → Orchestrator (context, tools, safe
 **Main tradeoffs:** model size vs latency/cost, batch size vs TTFT, and safety strictness vs over-refusal.
 
 ### Q2. Design a RAG System (Chat with Your Documents)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Users upload PDFs, docs and wikis (from thousands up to millions of documents) and ask questions. Answers must be grounded, cite their sources, and respect per-user permissions.
 
@@ -65,7 +64,7 @@ Query:  question → rewrite → hybrid retrieve (dense + BM25) → ACL filter �
 **Cost:** embed once and cache. Use a small LLM for rewriting and a large one only for the final answer.
 
 ### Q3. Design Memory for a Personal AI Assistant
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** The assistant remembers user preferences, facts, and past tasks across sessions without bloating context or storing things it shouldn't.
 
@@ -94,7 +93,7 @@ Next turn → memory retriever (profile + top-k episodic) → inject into prompt
 **Risks:** wrong memories compounding, privacy leaks across users (keep a strict user_id partition), and prompt injection that writes false memories.
 
 ### Q4. Design a Deep Research Agent
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** Given a question, the agent autonomously searches the web and internal sources for minutes, reads dozens of sources, and writes a cited report.
 
@@ -125,7 +124,7 @@ Planner (decompose into sub-questions) → parallel Researcher agents
 **Cost:** a cheap model for search and extraction, a strong model for planning and writing, and caching of fetched pages.
 
 ### Q5. Design a Multi-Agent Customer Support System
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Handle chat and email tickets for millions of customers, resolve 50–70% automatically, escalate cleanly to humans, and take actions such as refunds and order lookups safely.
 
@@ -152,7 +151,7 @@ Supervisor enforces policy, budgets, and final response QA
 **Production concerns:** latency (stream responses, run tool calls in parallel), multilingual support, rollout by intent category, and A/B tests against human baselines.
 
 ### Q6. Design an On-Device AI Assistant
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** The assistant runs on a phone or laptop with private, offline-capable, low-latency features: summarise notifications, rewrite text, answer questions over personal data, and control apps.
 
@@ -182,7 +181,7 @@ Cloud (optional): larger model via private compute for hard queries, with user c
 **Risks:** fragmentation across hardware, and keeping models updated without large downloads.
 
 ### Q7. Design a Multimodal Search System (Text, Image, Video)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Search a catalogue of billions of images and videos with text, image or video queries in under 200 ms at p95.
 
@@ -206,7 +205,7 @@ Query:  text/image → shared embedding space → ANN top-K → hybrid merge wit
 **Ops:** batch GPU embedding pipelines with backfill when the encoder version changes (dual-index during migration). Monitor embedding drift and keep a cache for popular queries.
 
 ### Q8. Design an LLM Inference Platform (vLLM-as-a-Service)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** An internal platform serving many open models (7B–70B+, LoRA fine-tunes) to many teams through an OpenAI-compatible API, with SLOs on TTFT and throughput, multi-tenancy, and cost efficiency.
 
@@ -238,7 +237,7 @@ Control plane: model registry, deployment (K8s + GPU operator), autoscaler, metr
 **Tradeoffs:** larger batches raise throughput but hurt latency, and dedicated pools give isolation at the cost of utilisation.
 
 ### Q9. Design an LLM Evaluation Platform
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** Teams can evaluate prompts, models, RAG pipelines and agents offline and online, gate releases, and catch regressions.
 
@@ -269,7 +268,7 @@ Online: tracing (OpenTelemetry), sampling of prod traffic, user feedback, A/B te
 **Metric examples:** faithfulness, answer relevance, pass@k, win rate, latency, cost per query.
 
 ### Q10. Design a Text-to-Image Generation Service (Midjourney-like)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Millions of generations per day, about 10 s per job, variations and upscales, a community gallery, and safety.
 
@@ -294,7 +293,7 @@ Client → API (auth, credits) → Prompt safety filter → Job queue (priority 
 **Cost:** GPU-seconds per image dominate, so step reduction, batching and right-sized resolutions are the main levers. Credits enforce per-user budgets.
 
 ### Q11. Design a Music Generation Service (Suno-like)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Text prompt plus optional lyrics in, 2–4 minute song with vocals out, in about 30–60 s. Users can extend, remix and create stems.
 
@@ -325,7 +324,7 @@ Prompt → LLM: lyrics generation/structuring (verse/chorus tags) + style tags
 **Cost:** long audio sequences are expensive, so use distillation, step reduction and caching of popular styles.
 
 ### Q12. Design a Video Generation Service (Sora-like)
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Text or image prompt in, 5–20 s video at 720p–1080p out. It is very compute heavy (minutes of GPU time per clip), so the system is async with queues and credits.
 
@@ -355,7 +354,7 @@ Prompt → safety + prompt rewrite (LLM expands to detailed caption)
 **Tradeoffs:** quality vs duration and resolution vs cost. A draft/preview mode gives fast iteration before committing expensive renders.
 
 ### Q13. Design an AI Coding Agent.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** Given an issue or task, the agent reads a repo, plans, edits code, runs tests, and opens a PR (Claude Code / Devin / SWE-agent style).
 
@@ -382,7 +381,7 @@ Output: patch + test results → PR with description → human review
 **Risks:** prompt injection via repo files or issues, secrets leakage, and plausible but wrong code (mitigated by tests and review).
 
 ### Q14. Design a code generation and review system.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Scope.** IDE code completion plus automated PR review across a large engineering organisation.
 
@@ -407,7 +406,7 @@ PR webhook → diff + related files + repo conventions → static analyzers (lin
 - **Measurement:** track impact on cycle time and defect rate through experiments, not anecdotes.
 
 ### Q15. Design a content moderation system using AI.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** A social platform with millions of text, image and video posts per day. Policies cover hate, harassment, CSAM, spam, self-harm and more. Decisions must be fast (pre-publish for high-risk content), accurate, appealable and auditable.
 
@@ -432,7 +431,7 @@ Appeals → human review → labels → retraining
 **Concerns:** bias across dialects and languages, transparency (notices), and regulatory reporting (DSA).
 
 ### Q16. Design a real-time AI recommendation system.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Feed or product recommendations for 100M users, about 100 ms end to end, reacting to in-session behaviour within seconds.
 
@@ -458,7 +457,7 @@ Request → Candidate generation (two-tower ANN, item-to-item, trending, followe
 **Ops:** daily retraining plus online fine-tuning, monitoring of feature freshness and drift, and latency budgets per stage.
 
 ### Q17. Design an AI-powered email assistant.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Features.** Triage and prioritise, summarise threads, draft replies in the user's tone, extract action items and meetings, and search the inbox with natural language.
 
@@ -485,7 +484,7 @@ User action (summarize/draft) → context builder (thread + relevant past emails
 - **Quality:** triage precision.
 
 ### Q18. Design a medical diagnosis assistant using AI.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Framing.** This is clinical decision *support* for clinicians, not autonomous diagnosis. It is regulated (possibly FDA SaMD or EU MDR), safety-critical, and handles PHI (HIPAA/GDPR).
 
@@ -513,7 +512,7 @@ EHR (FHIR API): history, labs, meds, notes, imaging → de-identification where 
 **Risks:** hallucination, bias, liability and data leakage. Mitigations are grounding, guardrails, scope limits and governance boards.
 
 ### Q19. Design a fraud detection system powered by LLMs.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Key point.** LLMs should not replace low-latency tabular fraud models (GBDTs on transaction features are better and run in under 50 ms). LLMs add value around them.
 
@@ -541,7 +540,7 @@ Unstructured signals → LLM extraction: chat/email scams, merchant descriptions
 - **Privacy:** PII handling.
 
 ### Q20. Design an AI-powered data extraction pipeline from unstructured documents.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** Extract structured fields (invoices, contracts, forms) from PDFs, scans and emails at scale into a typed schema with high accuracy.
 
@@ -568,7 +567,7 @@ Sources (email, S3, upload) → queue → classify doc type → parse
 **Ops:** idempotent processing, a dead-letter queue, PII handling, audit trail of extraction version, and drift monitoring as new templates appear.
 
 ### Q21. Design a personalized learning assistant.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** An AI tutor that adapts to each learner's level, explains concepts, generates practice, and tracks mastery.
 
@@ -594,7 +593,7 @@ Session: Tutor LLM (Socratic prompting, grounded in curriculum) ↔ learner
 **Cost:** cache explanations for common concepts and use small models for grading routine items.
 
 ### Q22. Design an AI system for automated code migration.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Examples.** Python 2→3, Java 8→17, framework upgrades (AngularJS→React), or moving a monolith's SQL dialect from Oracle to Postgres, across thousands of repos or millions of lines.
 
@@ -618,7 +617,7 @@ Inventory & analysis (dependency graph, AST, call graph) → plan: order by depe
 **Risks:** silent semantic changes (numeric precision, encoding, time zones) and low test coverage. Mitigate with risk scoring and stricter review for low-coverage areas.
 
 ### Q23. Design an AI-powered legal document review system.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Use cases.** Contract review (clause extraction, deviation from playbook, risk flags), due diligence over thousands of documents, and e-discovery relevance and privilege review.
 
@@ -639,7 +638,7 @@ Ingest (DMS, data rooms) → OCR/layout → clause segmentation → clause class
 **Risks:** hallucinated legal reasoning, jurisdictional nuance and liability, mitigated by keeping lawyers as the decision makers and positioning the tool as triage and acceleration.
 
 ### Q24. Design a conversational AI system with memory across sessions.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 See also Q3.
 
@@ -666,7 +665,7 @@ Async: session-end job → summarize session, extract durable facts → memory s
 - **Online:** a "repeat yourself" metric, satisfaction and retention.
 
 ### Q25. How do you design for latency vs quality trade-offs in AI systems?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Start from the product SLO. Inline autocomplete needs under 300 ms, chat needs a TTFT under 1 s, and batch analysis can take minutes. Then pick levers per stage.
 
@@ -681,7 +680,7 @@ Start from the product SLO. Inline autocomplete needs under 300 ms, chat needs a
 Measure the Pareto frontier: plot quality (eval score) against p95 latency and cost for each configuration, and choose by segment (paid vs free, interactive vs batch). Always A/B test, because users often prefer fast and good enough over slow and perfect.
 
 ### Q26. How do you implement caching strategies for LLM applications?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 There are several layers, from cheapest to most complex.
 
@@ -697,7 +696,7 @@ There are several layers, from cheapest to most complex.
 - **Monitoring:** hit rate, staleness complaints, and cost savings.
 
 ### Q27. How do you design rate limiting and cost management for AI APIs?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 #### Rate limiting
 - **Units:** limit on tokens, not just requests. Use RPM *and* TPM (input + output tokens), since one request can cost 100x another.
@@ -713,7 +712,7 @@ There are several layers, from cheapest to most complex.
 - **Unit economics:** track cost per resolved ticket or per active user, not just total spend.
 
 ### Q28. How do you handle failover and fallback strategies for AI systems?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 #### Failure types
 Provider outages, 429 rate limits, timeouts and slow tails, model errors or invalid output, and quality failures such as hallucination or refusal.
@@ -733,7 +732,7 @@ Provider outages, 429 rate limits, timeouts and slow tails, model errors or inva
 - **Visibility:** dashboards for fallback rate, because silent fallback to a weaker model is a quality incident.
 
 ### Q29. How do you design an AI system for high availability and fault tolerance?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Targets.** For example 99.9% to 99.95% availability, with an RTO and RPO defined per component.
 
@@ -752,7 +751,7 @@ Provider outages, 429 rate limits, timeouts and slow tails, model errors or inva
 - **Tracing and drills:** distributed tracing across retrieval, LLM and tools, plus regular game days.
 
 ### Q30. How do you design an AI system that gracefully degrades when the model is unavailable?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Define degradation tiers ahead of time, from full to minimal functionality, and switch automatically using health signals and circuit breakers.
 
@@ -771,7 +770,7 @@ Define degradation tiers ahead of time, from full to minimal functionality, and 
 - **Testing:** chaos tests that disable model endpoints, and monitoring of time spent in each tier.
 
 ### Q31. What are the key considerations for multi-region deployment of AI systems?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 - **Data residency and compliance:** GDPR and sector rules may require EU data, including prompts, logs, embeddings and vector indexes, to stay in-region. Route by user or tenant home region and check the provider's regional endpoints and data-processing terms.
 - **GPU capacity:** H100s and similar are unevenly available across regions. Plan reservations per region and accept that some regions may serve smaller models or fall back to others (if residency allows).
@@ -783,7 +782,7 @@ Define degradation tiers ahead of time, from full to minimal functionality, and 
 - **Observability:** per-region SLOs, a global view, and per-region quotas with upstream providers.
 
 ### Q32. Design an AI-powered search engine for an e-commerce platform.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** 10M+ SKUs, natural-language queries ("waterproof hiking boots under $150 for wide feet"), latency under 200 ms, and the goal of maximising conversion.
 
@@ -809,7 +808,7 @@ Query → query understanding (spell-correct, NER: brand/size/price, category cl
 **Ops:** near-real-time index updates for price and stock, caching of head queries, and monitoring of query-category drift (seasonality).
 
 ### Q33. Design an AI gateway/proxy for managing LLM access across an organization.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** A single control point for every team's LLM usage: one API, many providers and models, with governance, cost control and observability.
 
@@ -834,7 +833,7 @@ Apps/SDKs → AI Gateway (OpenAI-compatible API)
 **Risks:** single point of failure (deploy it highly available, multi-AZ), and lowest-common-denominator APIs hiding provider-specific features (allow passthrough).
 
 ### Q34. How do you design a RAG system that handles conflicting information across sources?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 Conflicts come from stale versions, different scopes (regional policies), different authorities, or genuine disagreement.
 
@@ -859,7 +858,7 @@ Conflicts come from stale versions, different scopes (regional policies), differ
 - **Test sets:** planted contradictions, measuring whether the system picks the correct authoritative answer or surfaces the conflict.
 
 ### Q35. How do you approach capacity planning for an AI system?
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 #### 1. Model the demand
 - **Usage profile:** DAU × requests per user × peak factor (peak-to-average is often 2–4x). Measure input and output tokens per request, which are the real units.
@@ -880,7 +879,7 @@ Conflicts come from stale versions, different scopes (regional policies), differ
 - **Forecasting:** tie it to product roadmap and growth. Monitor utilisation, queue depth and SLO burn, and re-plan quarterly given GPU lead times.
 
 ### Q36. Design a multi-tenant AI chatbot platform where each business gets a custom chatbot.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Thousands of businesses each upload their knowledge (docs, website, FAQs), configure persona and tools, and embed the bot on their site or WhatsApp. Tenant isolation is critical.
 
@@ -904,7 +903,7 @@ Analytics: per-tenant conversations, deflection, unanswered questions → conten
 - **Per-tenant auto-generated test sets:** questions from their docs, re-run on model or prompt changes. Platform-wide regression gates.
 
 ### Q37. Design an AI meeting summarizer system for thousands of meetings daily.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Thousands of meetings per day (30–60 min each) from Zoom, Meet and Teams. Deliver a summary, decisions, action items with owners, and searchable transcripts within minutes of the meeting ending.
 
@@ -932,7 +931,7 @@ Meeting bot / platform API → audio stream → object storage
 - **Summary quality:** faithfulness checks (claims supported by the transcript) via LLM-as-judge, action-item precision/recall against human labels, and user edit rate.
 
 ### Q38. Design an AI notification system that prioritizes instead of broadcasting.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** Decide *whether*, *when*, *how* and *which* notifications to send each user, maximising long-term value (engagement, retention) while minimising fatigue and opt-outs.
 
@@ -957,7 +956,7 @@ Event producers → candidate notifications (Kafka)
 - **Monitoring:** delivery latency for urgent items.
 
 ### Q39. Design an AI-powered anomaly detection system for cloud infrastructure.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Millions of time series (CPU, latency, error rates, costs), logs and traces across thousands of services. Detect incidents early, reduce alert noise, and help with root cause.
 
@@ -982,7 +981,7 @@ Telemetry (Prometheus/OTel, logs, traces, cost data) → stream (Kafka) → feat
 - **Feedback:** on-call ratings tune sensitivity per service.
 
 ### Q40. Design an AI-powered document processing pipeline for financial institutions.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Documents.** Loan applications, KYC IDs, bank statements, tax forms, trade confirmations. Regulated (SOX, GDPR, model risk management under SR 11-7), auditable, with high accuracy requirements.
 
@@ -1007,7 +1006,7 @@ Secure intake (portal, email, SFTP) → malware scan → classification
 - **Bias:** checks where outputs feed credit decisions (fair lending).
 
 ### Q41. Design an AI dynamic pricing engine.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Use case.** E-commerce, ride-hailing or travel. Set prices per product, segment and time to maximise revenue or margin subject to business constraints.
 
@@ -1032,7 +1031,7 @@ Data: sales history, inventory, competitor prices (scraped), demand signals (tra
 - **Online:** A/B or switchback tests on revenue, margin and conversion, plus long-term customer trust metrics.
 
 ### Q42. Design an AI resume screening system that handles 100K applications per week.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** About 100K resumes per week (about 15K/day, bursty) across many job postings. Rank and shortlist candidates for recruiters, fairly, explainably and legally. This is a high-risk use case under the EU AI Act and NYC Local Law 144.
 
@@ -1057,7 +1056,7 @@ ATS → resume intake → parse (PDF/DOCX → text; LLM extraction to schema: sk
 **Risks:** adversarial resumes (hidden text with prompt injection), so sanitise and detect invisible text.
 
 ### Q43. Design an AI voice assistant architecture.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Natural spoken conversation (support line or Alexa-like). Under 800 ms voice-to-voice latency, barge-in (interruptions), and tool use.
 
@@ -1084,7 +1083,7 @@ VAD and endpointing take about 200 ms, ASR finalisation about 100 ms, LLM TTFT a
 - **Evaluation:** WER, task success, latency percentiles, interruption handling, and MOS for TTS.
 
 ### Q44. Design a multi-agent workflow system where agents collaborate on complex tasks.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** A platform where specialised agents (researcher, analyst, coder, reviewer) collaborate on long, complex tasks such as producing a market analysis or implementing a feature.
 
@@ -1111,7 +1110,7 @@ User task → Orchestrator/Planner → task graph (DAG) with dependencies
 - **Ablations:** single-agent vs multi-agent ablations, because multi-agent isn't automatically better.
 
 ### Q45. Design a real-time AI transcription system for concurrent audio streams.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** 10K+ concurrent live streams (calls, meetings, broadcasts). Partial transcripts within about 300–500 ms, final segments within about 1–2 s, plus diarization, punctuation and multiple languages.
 
@@ -1138,7 +1137,7 @@ Clients (WebSocket/gRPC/WebRTC) → edge ingest (regional) → session router (s
 **Compliance:** consent, encryption, retention, and PII redaction in transcripts.
 
 ### Q46. Design an AI-powered live streaming content moderation system.
-> ✍️ _Answer drafted during sync (not in the original Notion notes)._
+> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** 100K+ concurrent live streams plus live chat. Detect violations (nudity, violence, self-harm, hate, dangerous acts) within seconds, because damage happens live.
 

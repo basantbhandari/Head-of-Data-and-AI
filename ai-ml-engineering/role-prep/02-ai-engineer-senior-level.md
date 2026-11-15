@@ -1,4 +1,3 @@
-<!-- notion-id: 3d46741828548064a95ad6313aa2da08 -->
 # AI Engineer – Senior Level
 
 Prep for a senior AI engineer role, grouped by area: agentic systems, agent protocols, RAG, computer vision, deployment and MLOps, cloud, foundations, process and responsible AI.

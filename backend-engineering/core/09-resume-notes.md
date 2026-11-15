@@ -1,7 +1,6 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: Resume Notes
 
-Resume-style summary of back-end responsibilities held in previous roles, kept verbatim from Notion.
+Resume-style summary of back-end responsibilities held in previous roles, kept verbatim.
 
 ### Q1. Name the key back-end development responsibilities that you held in your previous job.
 

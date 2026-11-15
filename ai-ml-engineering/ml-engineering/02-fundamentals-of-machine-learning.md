@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480e8a34ac9ef5cdbe5fd -->
 # Fundamentals of Machine Learning
 
 ML fundamentals: training terminology (epochs, batches, gradient descent variants), learning paradigms, bias/overfitting, losses and regularization, evaluation metrics, reinforcement learning basics, and representation learning.
@@ -43,7 +42,7 @@ An optimization method where the model computes the gradient using the **entire 
 
 An optimization method where the model computes the gradient and updates weights using **just one training example** at a time (batch size = 1).
 
-<!-- Merged from 05-optimization.md, where the same question appeared again ("What is stochastic gradient descent (SGD)?"). Verbatim Notion content follows. -->
+<!-- Merged from 05-optimization.md, where the same question appeared again ("What is stochastic gradient descent (SGD)?"). Original content follows. -->
 
 **Stochastic Gradient Descent (SGD)**
 
@@ -64,7 +63,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 ### Q13. What are embeddings in Machine Learning?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q15](../ai-engineering/01-llm-fundamentals.md#q15-what-are-embeddings) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q15](../ai-engineering/01-llm-fundamentals.md#q15-what-are-embeddings) (separate notes on the same question)._
 
 - Dense, low-dimensional vector representations of data (text, images, users, etc.) that capture semantic meaning
 - Convert discrete/high-dimensional data into continuous numerical form usable by ML models
@@ -91,7 +90,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 ### Q16. Differentiate between Supervised and Unsupervised Learning.
 
-> 🔁 _See also [01-turing-100-interview-questions.md → Q14](../resources/01-turing-100-interview-questions.md#q14-differentiate-between-supervised-and-unsupervised-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [01-turing-100-interview-questions.md → Q14](../resources/01-turing-100-interview-questions.md#q14-differentiate-between-supervised-and-unsupervised-learning) (separate notes on the same question)._
 
 **Supervised vs Unsupervised Learning**
 
@@ -106,7 +105,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 ### Q17. What is Reinforcement Learning?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q78](../ai-engineering/01-llm-fundamentals.md#q78-what-is-reinforcement-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q78](../ai-engineering/01-llm-fundamentals.md#q78-what-is-reinforcement-learning) (separate notes on the same question)._
 
 - Learning paradigm where an agent learns to make decisions by interacting with an environment
 - Agent takes actions → receives rewards/penalties → learns policy to maximize cumulative reward
@@ -124,7 +123,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 ### Q19. What is the difference between Classification and Regression?
 
-> 🔁 _See also [01-turing-100-interview-questions.md → Q32](../resources/01-turing-100-interview-questions.md#q32-what-is-the-difference-between-regression-and-classification) (separate Notion notes on the same question)._
+> 🔁 _See also [01-turing-100-interview-questions.md → Q32](../resources/01-turing-100-interview-questions.md#q32-what-is-the-difference-between-regression-and-classification) (separate notes on the same question)._
 
 **Classification vs Regression**
 
@@ -236,7 +235,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 ### Q27. What is Cross-Entropy?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q74](../ai-engineering/01-llm-fundamentals.md#q74-what-is-entropy-vs-cross-entropy) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q74](../ai-engineering/01-llm-fundamentals.md#q74-what-is-entropy-vs-cross-entropy) (separate notes on the same question)._
 
 - Loss function that measures difference between predicted probability distribution and true distribution
 - Formula (binary): L = −\[y log(p) + (1−y) log(1−p)\]
@@ -268,7 +267,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 ### Q30. What is Confusion Matrix?
 
-> 🔁 _See also [01-turing-100-interview-questions.md → Q21](../resources/01-turing-100-interview-questions.md#q21-what-is-the-confusion-matrix) (separate Notion notes on the same question)._
+> 🔁 _See also [01-turing-100-interview-questions.md → Q21](../resources/01-turing-100-interview-questions.md#q21-what-is-the-confusion-matrix) (separate notes on the same question)._
 
 **Confusion Matrix**
 

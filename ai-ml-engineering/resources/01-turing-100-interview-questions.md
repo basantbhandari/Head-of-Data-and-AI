@@ -1,4 +1,3 @@
-<!-- notion-id: 3d567418285480b4926df43d1b9729a3 -->
 # Turing 100 interview questions
 
 Answers to the Turing list of ~100 common ML / data-science interview questions.
@@ -234,7 +233,7 @@ There is **no universal rule** that XGBoost is better than SVM; performance depe
 
 ### Q14. Differentiate between Supervised and Unsupervised learning.
 
-> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q16](../ml-engineering/02-fundamentals-of-machine-learning.md#q16-differentiate-between-supervised-and-unsupervised-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q16](../ml-engineering/02-fundamentals-of-machine-learning.md#q16-differentiate-between-supervised-and-unsupervised-learning) (separate notes on the same question)._
 #### Supervised vs. Unsupervised Learning
 
 | **Aspect** | **Supervised Learning** | **Unsupervised Learning** |
@@ -396,7 +395,7 @@ Five popular Machine Learning algorithms are:
 
 ### Q21. What is the confusion matrix?
 
-> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q30](../ml-engineering/02-fundamentals-of-machine-learning.md#q30-what-is-confusion-matrix) (separate Notion notes on the same question)._
+> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q30](../ml-engineering/02-fundamentals-of-machine-learning.md#q30-what-is-confusion-matrix) (separate notes on the same question)._
 A **Confusion Matrix** is a table used to evaluate the performance of a **classification model** by comparing the model's predicted classes with the actual classes.
 
 #### Binary Classification
@@ -523,7 +522,7 @@ Common applications include:
 
 ### Q26. Difference between Stemming vs Lemmatization?
 
-> 🔁 _See also [07-nlp.md → Q14](../ml-engineering/07-nlp.md#q14-what-is-stemming-vs-lemmatization) (separate Notion notes on the same question)._
+> 🔁 _See also [07-nlp.md → Q14](../ml-engineering/07-nlp.md#q14-what-is-stemming-vs-lemmatization) (separate notes on the same question)._
 #### Stemming vs Lemmatization
 
 Both **stemming** and **lemmatization** are NLP techniques used to reduce words to their **base or root form**, but they work differently.
@@ -624,7 +623,7 @@ Common techniques include:
 
 ### Q32. What is the difference between Regression and Classification?
 
-> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q19](../ml-engineering/02-fundamentals-of-machine-learning.md#q19-what-is-the-difference-between-classification-and-regression) (separate Notion notes on the same question)._
+> 🔁 _See also [02-fundamentals-of-machine-learning.md → Q19](../ml-engineering/02-fundamentals-of-machine-learning.md#q19-what-is-the-difference-between-classification-and-regression) (separate notes on the same question)._
 #### Regression vs Classification
 
 | Regression | Classification |
@@ -721,7 +720,7 @@ Common techniques include:
 
 ### Q40. What is overfitting?
 
-> 🔁 _See also [01-ai-engineering.md → Q8](../ml-engineering/01-ai-engineering.md#q8-what-is-overfitting) (separate Notion notes on the same question)._
+> 🔁 _See also [01-ai-engineering.md → Q8](../ml-engineering/01-ai-engineering.md#q8-what-is-overfitting) (separate notes on the same question)._
 - **Overfitting** occurs when a machine learning model learns the **training data too closely**, including its noise and random patterns, instead of learning general patterns.
 - As a result:
   - **Training performance** → Very high
@@ -791,7 +790,7 @@ Common techniques include:
 
 ### Q44. What is underfitting?
 
-> 🔁 _See also [01-ai-engineering.md → Q9](../ml-engineering/01-ai-engineering.md#q9-what-is-underfitting) (separate Notion notes on the same question)._
+> 🔁 _See also [01-ai-engineering.md → Q9](../ml-engineering/01-ai-engineering.md#q9-what-is-underfitting) (separate notes on the same question)._
 - **Underfitting** occurs when a machine learning model is **too simple to learn the important patterns** in the training data.
 - It is associated with **high bias and low variance**.
 - As a result:

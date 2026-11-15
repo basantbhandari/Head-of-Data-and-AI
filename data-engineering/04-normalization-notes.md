@@ -1,7 +1,6 @@
-<!-- notion-id: 3bd67418285480d4abe5df245608077a -->
 # Normalization notes
 
-My notes on database normalization (1NF, 2NF, 3NF and the key terms), from the "Data Engineering" Notion page, followed by additions drafted during sync.
+My notes on database normalization (1NF, 2NF, 3NF and the key terms), followed by drafted additions.
 
 ## 1 NF
 
@@ -35,7 +34,7 @@ Transitive dependency: let's you have table T that has 3 columns A, B, C. If col
 
 ---
 
-> ✍️ _Addition drafted during sync._
+> ✍️ _Drafted addition._
 
 The notes above define each normal form but have no worked examples and stop at 3NF. The rest of this file fills those gaps: one running example taken from unnormalized data to 3NF, then BCNF, and a short note on when to denormalize.
 

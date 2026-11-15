@@ -1,4 +1,3 @@
-<!-- notion-id: 3be67418-2854-8077-95d3-d6f6169e59eb -->
 # Python
 
 Python interview Q&A: CPython internals (memory, objects, scoping, descriptors, import system, concurrency) and Python for data engineering.
@@ -16,7 +15,7 @@ Python interview Q&A: CPython internals (memory, objects, scoping, descriptors, 
 - The **Global Interpreter Lock (GIL)** is a mutex (lock) in the standard CPython interpreter that **ensures only one thread executes Python bytecode at a time**.
 - Because **CPython’s memory management is not thread-safe**
 
-<!-- merged from duplicate Notion question: "What is the Global Interpreter Lock (GIL), and why does CPython have one?" -->
+<!-- merged from duplicate question: "What is the Global Interpreter Lock (GIL), and why does CPython have one?" -->
 
 | Aspect | Explanation |
 | --- | --- |
@@ -101,7 +100,7 @@ Python interview Q&A: CPython internals (memory, objects, scoping, descriptors, 
 | **Execution flow** | `Class(...) → __new__() → __init__()` | Runs only if `__new__()` returns a suitable instance of the class. |
 | **Key interview point** | **`__new__` creates the object.** | **`__init__` initializes the object.** |
 
-<!-- merged from duplicate Notion question: "What is the `__init__` method and how does it differ from `__new__`?" -->
+<!-- merged from duplicate question: "What is the `__init__` method and how does it differ from `__new__`?" -->
 
 - **`__new__()`** → Creates and returns a new instance of the class.
 - **`__init__()`** → Initializes the instance after it has been created.

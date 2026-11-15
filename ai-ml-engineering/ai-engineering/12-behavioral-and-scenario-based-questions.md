@@ -1,4 +1,3 @@
-<!-- notion-id: 3d5674182854801692f9e46c43c4f6ba -->
 # Behavioral and Scenario-Based Questions
 
 Behavioral and scenario-based AI engineering interview questions with prepared answers: decision-making, stakeholders, ROI, trade-offs, and project experience.

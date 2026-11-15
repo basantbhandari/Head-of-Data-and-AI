@@ -1,4 +1,3 @@
-<!-- notion-id: 3d4674182854806e85bbcd2540b07ef9 -->
 # Maths
 
 Maths interview questions for ML: linear algebra fundamentals (eigenvalues and eigenvectors).

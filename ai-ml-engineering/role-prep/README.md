@@ -1,6 +1,6 @@
 # Role prep
 
-Question sets tailored to specific job descriptions, in Notion order.
+Question sets tailored to specific job descriptions.
 
 | # | File | What's inside |
 | --- | --- | --- |

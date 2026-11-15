@@ -1,4 +1,3 @@
-<!-- notion-id: 40a67418285480f995bbf570a52c349b -->
 # Most influential papers
 
 Reading list of 15 landmark papers in modern AI, with links.

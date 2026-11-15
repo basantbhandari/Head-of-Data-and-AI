@@ -1,4 +1,3 @@
-<!-- notion-id: 3d6674182854802db793c5cb1240fdb3 -->
 # Large Language Model
 
 LLM interview questions: Transformer internals, attention variants, inference optimization (KV cache, PagedAttention, FlashAttention, batching, speculative decoding), tokenization, positional encodings, alignment (RLHF, PPO, DPO, GRPO) and related topics.
@@ -45,7 +44,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q2. What is the Transformer architecture, and how does it work?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q9](../ai-engineering/01-llm-fundamentals.md#q9-what-is-the-transformer-architecture-and-how-does-it-work) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q9](../ai-engineering/01-llm-fundamentals.md#q9-what-is-the-transformer-architecture-and-how-does-it-work) (separate notes on the same question)._
 
 #### Transformer Architecture
 
@@ -80,7 +79,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q3. What are the key components of the Transformer architecture?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q10](../ai-engineering/01-llm-fundamentals.md#q10-what-are-the-key-components-of-the-transformer-architecture) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q10](../ai-engineering/01-llm-fundamentals.md#q10-what-are-the-key-components-of-the-transformer-architecture) (separate notes on the same question)._
 
 #### Key Components of the Transformer Architecture
 
@@ -141,7 +140,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q5. Why do we scale the dot product attention by √dₖ in the Transformer architecture?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q19](../ai-engineering/01-llm-fundamentals.md#q19-why-do-we-scale-the-dot-product-attention-by-dₖ-in-the-transformer-architecture) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q19](../ai-engineering/01-llm-fundamentals.md#q19-why-do-we-scale-the-dot-product-attention-by-dₖ-in-the-transformer-architecture) (separate notes on the same question)._
 
 #### Why Scale Dot-Product Attention by √dₖ
 
@@ -246,7 +245,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q8. What is Flash Attention?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q36](../ai-engineering/01-llm-fundamentals.md#q36-what-is-flash-attention) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q36](../ai-engineering/01-llm-fundamentals.md#q36-what-is-flash-attention) (separate notes on the same question)._
 
 #### FlashAttention
 
@@ -294,7 +293,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q9. What is speculative decoding, and how does it speed up inference?
 
-> 🔁 _See also [11-ai-infrastructure-and-scalability.md → Q8](../ai-engineering/11-ai-infrastructure-and-scalability.md#q8-what-is-speculative-decoding-and-how-does-it-speed-up-inference) (separate Notion notes on the same question)._
+> 🔁 _See also [11-ai-infrastructure-and-scalability.md → Q8](../ai-engineering/11-ai-infrastructure-and-scalability.md#q8-what-is-speculative-decoding-and-how-does-it-speed-up-inference) (separate notes on the same question)._
 
 #### Speculative Decoding
 
@@ -344,7 +343,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q10. How does continuous batching improve LLM inference throughput?
 
-> 🔁 _See also [11-ai-infrastructure-and-scalability.md → Q7](../ai-engineering/11-ai-infrastructure-and-scalability.md#q7-how-does-continuous-batching-improve-llm-inference-throughput) (separate Notion notes on the same question)._
+> 🔁 _See also [11-ai-infrastructure-and-scalability.md → Q7](../ai-engineering/11-ai-infrastructure-and-scalability.md#q7-how-does-continuous-batching-improve-llm-inference-throughput) (separate notes on the same question)._
 
 #### Continuous Batching (Dynamic Batching)
 
@@ -524,7 +523,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q17. Explain the Query(Q), Key(K), and Value(V) in attention.
 
-> 🔁 _See also [01-llm-fundamentals.md → Q16](../ai-engineering/01-llm-fundamentals.md#q16-explain-the-queryq-keyk-and-valuev-in-attention) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q16](../ai-engineering/01-llm-fundamentals.md#q16-explain-the-queryq-keyk-and-valuev-in-attention) (separate notes on the same question)._
 
 #### Query, Key, Value in Attention
 
@@ -544,7 +543,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q18. What is self-attention, and how does it work in Transformers?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q17](../ai-engineering/01-llm-fundamentals.md#q17-what-is-self-attention-and-how-does-it-work-in-transformers) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q17](../ai-engineering/01-llm-fundamentals.md#q17-what-is-self-attention-and-how-does-it-work-in-transformers) (separate notes on the same question)._
 
 #### Self-Attention in Transformers
 
@@ -561,7 +560,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q19. What is cross-attention in Transformers?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q18](../ai-engineering/01-llm-fundamentals.md#q18-what-is-cross-attention-in-transformers) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q18](../ai-engineering/01-llm-fundamentals.md#q18-what-is-cross-attention-in-transformers) (separate notes on the same question)._
 
 #### Cross-Attention in Transformers
 
@@ -601,7 +600,7 @@ LLM interview questions: Transformer internals, attention variants, inference op
 
 ### Q20. What are multi-head attention mechanisms? Why use multiple attention heads?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q21](../ai-engineering/01-llm-fundamentals.md#q21-what-are-multi-head-attention-mechanisms-why-use-multiple-attention-heads) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q21](../ai-engineering/01-llm-fundamentals.md#q21-what-are-multi-head-attention-mechanisms-why-use-multiple-attention-heads) (separate notes on the same question)._
 
 ##### Multi-Head Attention
 
@@ -666,7 +665,7 @@ Direct connectivity doesn't automatically mean the model _learns_ to use dista
 
 ### Q22. What is Grouped-Query Attention (GQA), and how does it differ from Multi-Head Attention (MHA)?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q38](../ai-engineering/01-llm-fundamentals.md#q38-what-is-grouped-query-attention-gqa-and-how-does-it-differ-from-multi-head-attention-mha) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q38](../ai-engineering/01-llm-fundamentals.md#q38-what-is-grouped-query-attention-gqa-and-how-does-it-differ-from-multi-head-attention-mha) (separate notes on the same question)._
 
 ##### Grouped-Query Attention (GQA)
 
@@ -703,7 +702,7 @@ The intuition is that the _value_ of having many independent heads mostly comes 
 
 ### Q23. What are Feed-Forward Networks in LLMs?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q22](../ai-engineering/01-llm-fundamentals.md#q22-what-are-feed-forward-networks-in-llms) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q22](../ai-engineering/01-llm-fundamentals.md#q22-what-are-feed-forward-networks-in-llms) (separate notes on the same question)._
 
 ##### Feed-Forward Networks (FFNs) in LLMs
 
@@ -930,7 +929,7 @@ might get split into something like:
 
 ### Q29. What is causal masking?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q20](../ai-engineering/01-llm-fundamentals.md#q20-what-is-causal-masking) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q20](../ai-engineering/01-llm-fundamentals.md#q20-what-is-causal-masking) (separate notes on the same question)._
 
 ##### Causal Masking
 
@@ -1022,7 +1021,7 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 
 ### Q31. How does Rotary Position Embedding (RoPE) work, and why is it preferred over learned positional embeddings?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q39](../ai-engineering/01-llm-fundamentals.md#q39-how-does-rotary-position-embedding-rope-work-and-why-is-it-preferred-over-learned-positional-embeddings) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q39](../ai-engineering/01-llm-fundamentals.md#q39-how-does-rotary-position-embedding-rope-work-and-why-is-it-preferred-over-learned-positional-embeddings) (separate notes on the same question)._
 
 ##### Rotary Position Embedding (RoPE)
 
@@ -1085,7 +1084,7 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 
 ### Q32. What is normalization?
 
-> 🔁 _See also [06-deep-learning.md → Q49](06-deep-learning.md#q49-normalization-in-machine-learning) (separate Notion notes on the same question)._
+> 🔁 _See also [06-deep-learning.md → Q49](06-deep-learning.md#q49-normalization-in-machine-learning) (separate notes on the same question)._
 
 ##### Normalization (in Neural Networks / LLMs)
 
@@ -1132,7 +1131,7 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 
 ### Q33. Explain RMSNorm (Root Mean Square Layer Normalization)
 
-> 🔁 _See also [01-llm-fundamentals.md → Q41](../ai-engineering/01-llm-fundamentals.md#q41-explain-rmsnorm-root-mean-square-layer-normalization) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q41](../ai-engineering/01-llm-fundamentals.md#q41-explain-rmsnorm-root-mean-square-layer-normalization) (separate notes on the same question)._
 
 ##### RMSNorm (Root Mean Square Layer Normalization)
 
@@ -1324,7 +1323,7 @@ Softmax converts raw attention scores (from `QKᵀ`) into a valid probability di
 
 ### Q37. How do you improve inference speed in production LLM deployments?
 
-> 🔁 _See also [11-ai-infrastructure-and-scalability.md → Q1](../ai-engineering/11-ai-infrastructure-and-scalability.md#q1-how-do-you-improve-inference-speed-in-production-llm-deployments) (separate Notion notes on the same question)._
+> 🔁 _See also [11-ai-infrastructure-and-scalability.md → Q1](../ai-engineering/11-ai-infrastructure-and-scalability.md#q1-how-do-you-improve-inference-speed-in-production-llm-deployments) (separate notes on the same question)._
 
 ##### Improving Inference Speed in Production LLM Deployments
 
@@ -1464,7 +1463,7 @@ If the total exceeds the limit, older content typically has to be dropped, trunc
 
 ### Q39. Why is the context window limited in LLMs?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q24](../ai-engineering/01-llm-fundamentals.md#q24-why-is-the-context-window-limited-in-llms) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q24](../ai-engineering/01-llm-fundamentals.md#q24-why-is-the-context-window-limited-in-llms) (separate notes on the same question)._
 
 ##### Why the Context Window Is Limited
 
@@ -1625,7 +1624,7 @@ Three distinct approaches to getting an LLM to produce better, more relevant, or
 
 ### Q41. What is Mixture of Experts (MoE), and how does it work in models like Mixtral?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q34](../ai-engineering/01-llm-fundamentals.md#q34-what-is-mixture-of-experts-moe-and-how-does-it-work-in-models-like-mixtral) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q34](../ai-engineering/01-llm-fundamentals.md#q34-what-is-mixture-of-experts-moe-and-how-does-it-work-in-models-like-mixtral) (separate notes on the same question)._
 
 ##### Mixture of Experts (MoE)
 
@@ -1702,7 +1701,7 @@ Three distinct approaches to getting an LLM to produce better, more relevant, or
 
 ### Q42. What is the difference between dense and sparse models?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q35](../ai-engineering/01-llm-fundamentals.md#q35-what-is-the-difference-between-dense-and-sparse-models) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q35](../ai-engineering/01-llm-fundamentals.md#q35-what-is-the-difference-between-dense-and-sparse-models) (separate notes on the same question)._
 
 ##### Dense vs. Sparse Models
 
@@ -1765,7 +1764,7 @@ Three distinct approaches to getting an LLM to produce better, more relevant, or
 
 ### Q43. Transformers work on text, so can they also understand images?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q59](../ai-engineering/01-llm-fundamentals.md#q59-transformers-work-on-text-so-can-they-also-understand-images) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q59](../ai-engineering/01-llm-fundamentals.md#q59-transformers-work-on-text-so-can-they-also-understand-images) (separate notes on the same question)._
 
 ##### Can Transformers Understand Images?
 
@@ -1807,7 +1806,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q44. Small Language Models (SLMs)
 
-> 🔁 _See also [01-llm-fundamentals.md → Q60](../ai-engineering/01-llm-fundamentals.md#q60-small-language-models-slms) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q60](../ai-engineering/01-llm-fundamentals.md#q60-small-language-models-slms) (separate notes on the same question)._
 
 ##### Small Language Models (SLMs)
 
@@ -1873,7 +1872,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q45. Large Reasoning Models (LRMs)
 
-> 🔁 _See also [01-llm-fundamentals.md → Q61](../ai-engineering/01-llm-fundamentals.md#q61-large-reasoning-models-lrms) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q61](../ai-engineering/01-llm-fundamentals.md#q61-large-reasoning-models-lrms) (separate notes on the same question)._
 
 ##### Large Reasoning Models (LRMs)
 
@@ -1982,7 +1981,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q47. Proximal Policy Optimization (PPO)
 
-> 🔁 _See also [01-llm-fundamentals.md → Q64](../ai-engineering/01-llm-fundamentals.md#q64-proximal-policy-optimization-ppo) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q64](../ai-engineering/01-llm-fundamentals.md#q64-proximal-policy-optimization-ppo) (separate notes on the same question)._
 
 ##### Proximal Policy Optimization (PPO)
 
@@ -1996,7 +1995,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q48. Direct Preference Optimization (DPO)
 
-> 🔁 _See also [01-llm-fundamentals.md → Q65](../ai-engineering/01-llm-fundamentals.md#q65-direct-preference-optimization-dpo) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q65](../ai-engineering/01-llm-fundamentals.md#q65-direct-preference-optimization-dpo) (separate notes on the same question)._
 
 ##### Direct Preference Optimization (DPO)
 
@@ -2009,7 +2008,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q49. Group Relative Policy Optimization (GRPO)
 
-> 🔁 _See also [01-llm-fundamentals.md → Q66](../ai-engineering/01-llm-fundamentals.md#q66-group-relative-policy-optimization-grpo) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q66](../ai-engineering/01-llm-fundamentals.md#q66-group-relative-policy-optimization-grpo) (separate notes on the same question)._
 
 ##### Group Relative Policy Optimization (GRPO)
 
@@ -2023,7 +2022,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q50. Recursive Language Models (RLMs)
 
-> 🔁 _See also [01-llm-fundamentals.md → Q67](../ai-engineering/01-llm-fundamentals.md#q67-recursive-language-models-rlms) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q67](../ai-engineering/01-llm-fundamentals.md#q67-recursive-language-models-rlms) (separate notes on the same question)._
 
 ##### Recursive Language Models (RLMs)
 
@@ -2036,7 +2035,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q51. Continual Learning in LLMs
 
-> 🔁 _See also [01-llm-fundamentals.md → Q68](../ai-engineering/01-llm-fundamentals.md#q68-continual-learning-in-llms) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q68](../ai-engineering/01-llm-fundamentals.md#q68-continual-learning-in-llms) (separate notes on the same question)._
 
 ##### Continual Learning in LLMs
 
@@ -2062,7 +2061,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q53. What is instruction tuning, and why is it important for chat models?
 
-> 🔁 _See also [05-fine-tuning-and-model-adaptation.md → Q9](../ai-engineering/05-fine-tuning-and-model-adaptation.md#q9-what-is-instruction-tuning-and-why-is-it-important-for-chat-models) (separate Notion notes on the same question)._
+> 🔁 _See also [05-fine-tuning-and-model-adaptation.md → Q9](../ai-engineering/05-fine-tuning-and-model-adaptation.md#q9-what-is-instruction-tuning-and-why-is-it-important-for-chat-models) (separate notes on the same question)._
 
 ##### Instruction Tuning
 
@@ -2076,7 +2075,7 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 
 ### Q54. Prefill vs Decode
 
-> 🔁 _See also [07-llmops-and-production-ai.md → Q2](../ai-engineering/07-llmops-and-production-ai.md#q2-prefill-vs-decode) (separate Notion notes on the same question)._
+> 🔁 _See also [07-llmops-and-production-ai.md → Q2](../ai-engineering/07-llmops-and-production-ai.md#q2-prefill-vs-decode) (separate notes on the same question)._
 
 ##### Prefill vs Decode
 

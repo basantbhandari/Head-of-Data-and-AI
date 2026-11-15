@@ -1,4 +1,3 @@
-<!-- notion-id: 3cd674182854800ea6ead9f987aba504 -->
 # Senior Software Engineer - Applied AI
 
 Short-answer prep for an applied-AI engineering role: agents, tool calling, RAG, extraction, evaluation, cost, safety, observability and frameworks.

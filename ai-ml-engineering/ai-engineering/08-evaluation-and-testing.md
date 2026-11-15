@@ -1,4 +1,3 @@
-<!-- notion-id: 3d56741828548066be4fcec98dd05e4b -->
 # Evaluation and Testing
 
 Interview Q&A on evaluating LLMs, RAG systems, and agents: metrics, LLM-as-a-judge, human evaluation, red teaming, regression testing, and audit scenarios.

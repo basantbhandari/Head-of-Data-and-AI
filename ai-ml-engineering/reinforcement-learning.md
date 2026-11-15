@@ -1,4 +1,3 @@
-<!-- notion-id: 3e867418285480e1a8dfe7895c6e4723 -->
 # Reinforcement Learning Interview Questions
 
 Reinforcement learning interview questions with answers: fundamentals, value-based and policy-gradient methods, coding exercises, applications, and research/production topics.

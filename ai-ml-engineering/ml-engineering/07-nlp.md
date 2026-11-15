@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480f6b740ca3f7de868a6 -->
 # NLP
 
 NLP interview questions: Transformers and BERT, pre-training, fine-tuning and post-training, text generation, Seq2Seq, n-grams, classic text representations (BoW, TF-IDF, LSI), embeddings, parsing, summarization, perplexity, and retrieval (ColBERT).
@@ -368,7 +367,7 @@ If it assigns similar probabilities to many unrelated words, it has high uncerta
 
 ### Q14. What is stemming vs. lemmatization?
 
-> 🔁 _See also [01-turing-100-interview-questions.md → Q26](../resources/01-turing-100-interview-questions.md#q26-difference-between-stemming-vs-lemmatization) (separate Notion notes on the same question)._
+> 🔁 _See also [01-turing-100-interview-questions.md → Q26](../resources/01-turing-100-interview-questions.md#q26-difference-between-stemming-vs-lemmatization) (separate notes on the same question)._
 
 | **Aspect** | **Stemming** | **Lemmatization** |
 | --- | --- | --- |

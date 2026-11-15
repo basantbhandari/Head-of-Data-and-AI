@@ -1,6 +1,6 @@
 # ML Engineering Interview Questions
 
-Classical ML, deep learning, NLP/CV, LLM internals, evaluation, statistics and maths. Every answer here is copied from the Notion notes word for word, except a few marked additions where a Notion answer stops partway.
+Classical ML, deep learning, NLP/CV, LLM internals, evaluation, statistics and maths. Every answer here comes from my own notes, except a few marked additions where an answer stopped partway.
 
 | # | Topic | Questions |
 |---|---|---|

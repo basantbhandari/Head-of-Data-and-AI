@@ -1,11 +1,10 @@
-<!-- notion-id: 3d567418285480b1a73cf68ffa15480e -->
 # AI Infrastructure and Scalability
 
 Interview Q&A on LLM inference optimization, GPUs, parallelism, batching, KV cache, quantization, scaling, scheduling, and model routing.
 
 ### Q1. How do you improve inference speed in production LLM deployments?
 
-> 🔁 _See also [09-large-language-model.md → Q37](../ml-engineering/09-large-language-model.md#q37-how-do-you-improve-inference-speed-in-production-llm-deployments) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q37](../ml-engineering/09-large-language-model.md#q37-how-do-you-improve-inference-speed-in-production-llm-deployments) (separate notes on the same question)._
 
 To improve **LLM inference speed in production**, I would optimize the model, serving stack, request handling, and infrastructure.
 
@@ -291,7 +290,7 @@ Pipeline parallelism typically uses **micro-batches** to keep GPUs busy:
 
 ### Q7. How does continuous batching improve LLM inference throughput?
 
-> 🔁 _See also [09-large-language-model.md → Q10](../ml-engineering/09-large-language-model.md#q10-how-does-continuous-batching-improve-llm-inference-throughput) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q10](../ml-engineering/09-large-language-model.md#q10-how-does-continuous-batching-improve-llm-inference-throughput) (separate notes on the same question)._
 
 **Continuous batching** dynamically adds and removes requests from a batch while the LLM is generating tokens, instead of waiting for all requests in a batch to finish.
 
@@ -336,7 +335,7 @@ Continuous batching requires sophisticated scheduling and KV-cache management. I
 
 ### Q8. What is speculative decoding, and how does it speed up inference?
 
-> 🔁 _See also [09-large-language-model.md → Q9](../ml-engineering/09-large-language-model.md#q9-what-is-speculative-decoding-and-how-does-it-speed-up-inference) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q9](../ml-engineering/09-large-language-model.md#q9-what-is-speculative-decoding-and-how-does-it-speed-up-inference) (separate notes on the same question)._
 
 **Speculative decoding** is an LLM inference technique where a **small, fast draft model** generates several candidate tokens, and the **large target model** verifies them in parallel.
 

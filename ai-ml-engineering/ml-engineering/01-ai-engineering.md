@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480909f27ff3fadb2638b -->
 # AI Engineering
 
 AI engineering interview questions: A/B testing of models, ML foundations (induction, over/underfitting, KNN), LLM concepts (RAG, MCP, agents, fine-tuning, quantization, autoregression, function calling), and model types.
@@ -66,13 +65,13 @@ It only works if there is actually something to learn — i.e., if the data cont
 
 ### Q8. What is Overfitting?
 
-> 🔁 _See also [01-turing-100-interview-questions.md → Q40](../resources/01-turing-100-interview-questions.md#q40-what-is-overfitting) (separate Notion notes on the same question)._
+> 🔁 _See also [01-turing-100-interview-questions.md → Q40](../resources/01-turing-100-interview-questions.md#q40-what-is-overfitting) (separate notes on the same question)._
 
 Overfitting happens when a model is too complex and fits the training data extremely well — including its noise — rather than the true underlying pattern. It has low training (approximation) error but high test (estimation) error, because it fails to generalize to unseen data.
 
 ### Q9. What is Underfitting?
 
-> 🔁 _See also [01-turing-100-interview-questions.md → Q44](../resources/01-turing-100-interview-questions.md#q44-what-is-underfitting) (separate Notion notes on the same question)._
+> 🔁 _See also [01-turing-100-interview-questions.md → Q44](../resources/01-turing-100-interview-questions.md#q44-what-is-underfitting) (separate notes on the same question)._
 
 Underfitting happens when a model is too simplistic to capture the underlying pattern. It tends to be stable with respect to noise, so the training error is high, but paradoxically the "estimation gap" (variance) can be low — the model consistently fails, both on training and test data.
 
@@ -106,13 +105,13 @@ An LLM-driven system that can plan, take actions (via tools/APIs), observe resul
 
 ### Q17. Fine-tuning
 
-> 🔁 _See also [01-llm-fundamentals.md → Q5](../ai-engineering/01-llm-fundamentals.md#q5-what-is-fine-tuning) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q5](../ai-engineering/01-llm-fundamentals.md#q5-what-is-fine-tuning) (separate notes on the same question)._
 
 Further training a pre-trained model on a smaller, task-specific dataset to specialize its behavior (e.g., tone, domain knowledge, format) beyond what the base model does out of the box.
 
 ### Q18. Quantization
 
-> 🔁 _See also [01-llm-fundamentals.md → Q6](../ai-engineering/01-llm-fundamentals.md#q6-what-is-quantization) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q6](../ai-engineering/01-llm-fundamentals.md#q6-what-is-quantization) (separate notes on the same question)._
 
 Reducing the numerical precision of a model's weights (e.g., from 32-bit to 8-bit or 4-bit) to shrink its size and speed up inference, usually with some trade-off in accuracy.
 
@@ -215,7 +214,7 @@ Despite the critique, autoregressive training is what has powered essentially th
 | Naive Bayes (with assumed distribution) | Kernel density estimation |
 | Neural nets with fixed architecture\* | k-means (arguably semi-parametric — see below) |
 
-> ✍️ _Addition drafted during sync._
+> ✍️ _Drafted addition._
 
 **About the two footnoted rows in the table:**
 

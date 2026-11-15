@@ -1,4 +1,3 @@
-<!-- notion-id: 3d967418285480d89f5cda9970cbdc5c -->
 # 100+ Data Engineer Interview Questions and Answers (2026)
 
 Interview Q&A across core fundamentals, SQL and data modeling, Spark, ETL/orchestration, cloud and file formats, streaming/NoSQL, and data quality.

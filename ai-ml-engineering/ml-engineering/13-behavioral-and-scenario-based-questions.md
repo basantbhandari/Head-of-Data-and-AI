@@ -1,4 +1,3 @@
-<!-- notion-id: 3d467418285480d3b39dd08cba83de44 -->
 # Behavioral and Scenario-Based Questions
 
 Behavioral and scenario-based ML interview questions with prepared answers: improving models, limited labels, test-vs-production gaps, staying current, project stories, failures, career motivation and handling disagreements.

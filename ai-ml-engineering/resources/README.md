@@ -1,6 +1,6 @@
 # Resources
 
-Reference material for AI/ML interview prep, in Notion order.
+Reference material for AI/ML interview prep.
 
 | # | File | What's inside |
 | --- | --- | --- |

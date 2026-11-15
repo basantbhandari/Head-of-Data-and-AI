@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: Web, APIs and HTTP
 
 HTTP status codes, APIs and REST, web servers, web services and static vs dynamic sites.

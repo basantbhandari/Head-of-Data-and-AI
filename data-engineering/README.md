@@ -1,7 +1,6 @@
-<!-- notion-id: 3bd67418285480d4abe5df245608077a -->
 # Data Engineering
 
-Notes and interview prep synced from the "Data Engineering" Notion page and its sub-pages, in Notion order.
+Data engineering notes and interview prep.
 
 | # | File | What's in it |
 | --- | --- | --- |

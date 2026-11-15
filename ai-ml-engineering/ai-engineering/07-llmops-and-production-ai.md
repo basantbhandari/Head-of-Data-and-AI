@@ -1,4 +1,3 @@
-<!-- notion-id: 3d567418285480528485d7c0d8618659 -->
 # LLMOps and Production AI
 
 Interview Q&A on running LLM applications in production: serving, monitoring, guardrails, cost, deployment, routing, and reliability scenarios.
@@ -54,7 +53,7 @@ Request 2:
 
 ### Q2. Prefill vs Decode
 
-> 🔁 _See also [09-large-language-model.md → Q54](../ml-engineering/09-large-language-model.md#q54-prefill-vs-decode) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q54](../ml-engineering/09-large-language-model.md#q54-prefill-vs-decode) (separate notes on the same question)._
 
 ##### Prefill vs Decode
 

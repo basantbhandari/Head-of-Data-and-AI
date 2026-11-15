@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480d0bce1ef3739bfa91d -->
 # Computer Vision
 
 Computer vision interview questions: core tasks (classification, detection, segmentation, OCR, tracking), feature extraction, CNNs vs. dense networks, data augmentation, frameworks, Vision Transformers, world models and JEPA.

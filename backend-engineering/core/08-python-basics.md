@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: Python Basics
 
 Core Python interview questions: strings, files, serialization, exceptions, memory, namespaces, modules, pickling, access modifiers and more.

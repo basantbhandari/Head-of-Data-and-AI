@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480f7a2a4e888ee8c32a7 -->
 # Model Evaluation
 
 Model evaluation interview questions: classification and regression metrics, class imbalance, ROC/AUC, metric selection, model comparison, cross-validation, hyperparameter tuning, unsupervised and recommender evaluation, A/B testing and LLM-as-a-judge.
@@ -377,9 +376,9 @@ These are standard metrics for evaluating classification models, built from four
 
 **Rule of thumb:** start from what a wrong prediction _costs_ in the real-world use case, then pick the metric that best reflects minimizing
 
-> ✍️ _Addition drafted during sync._
+> ✍️ _Drafted addition._
 
-…that cost. The Notion note above ends mid-sentence. The intended closing point: **the offline metric should be a proxy for the business cost of errors.** In practice:
+…that cost. The note above ends mid-sentence. The intended closing point: **the offline metric should be a proxy for the business cost of errors.** In practice:
 
 - **Separate the optimization metric from the reporting metric.** Train on a differentiable loss (log loss, MSE), select models on the metric that reflects the cost (PR-AUC, recall@precision≥X, cost-weighted error), and report a business KPI (fraud $ caught, tickets deflected).
 - **Use constraint-style metrics when there's a hard requirement.** For example, "maximize recall subject to precision ≥ 95%" or "maximize precision at a review capacity of 500 cases/day" (precision@k).

@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: Databases and SQL Basics
 
 NoSQL, SQL injection, indexes, ORMs, SQL subsets and clauses, OLTP/OLAP, constraints, joins and triggers.

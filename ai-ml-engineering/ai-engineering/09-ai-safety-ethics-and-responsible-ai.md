@@ -1,4 +1,3 @@
-<!-- notion-id: 3d567418285480928b3cdec7fada52af -->
 # AI Safety, Ethics, and Responsible AI
 
 Interview Q&A on hallucinations, prompt injection, guardrails, bias, privacy (GDPR/CCPA), explainability, regulation (EU AI Act, NIST AI RMF), and responsible-AI scenarios.

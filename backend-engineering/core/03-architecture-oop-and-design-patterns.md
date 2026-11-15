@@ -1,4 +1,3 @@
-<!-- notion-id: 3bd67418285480739651cd80ce66c26a -->
 # Backend Engineering: Architecture, OOP and Design Patterns
 
 DRY/DIE, architecture vs design, microservices, OOP, constructors, SOLID, multiple inheritance and design patterns.
@@ -37,7 +36,7 @@ DRY/DIE, architecture vs design, microservices, OOP, constructors, SOLID, multip
 
 **In short:** Microservices are used to build systems that are **scalable, independently deployable, loosely coupled, and easier to maintain as the application and development team grow**.
 
-#### Repeated later in Notion as: "Why would you choose Microservices architecture?"
+#### Repeated later as: "Why would you choose Microservices architecture?"
 
 **Microservices architecture** is chosen when an application benefits from being divided into **small, independent services**, each responsible for a specific business capability.
 

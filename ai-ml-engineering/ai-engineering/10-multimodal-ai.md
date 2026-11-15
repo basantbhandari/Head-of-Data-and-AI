@@ -1,11 +1,10 @@
-<!-- notion-id: 3d5674182854805282c5d45dcf0699ae -->
 # Multimodal AI
 
 Interview Q&A on vision-language models, CLIP, diffusion, speech, multimodal RAG, document understanding, video, fusion, and multimodal failure scenarios.
 
 ### Q1. What are Multimodal AI models, and how do they process different types of data?
 
-> 🔁 _See also [06-deep-learning.md → Q45](../ml-engineering/06-deep-learning.md#q45-what-are-multimodal-ai-models-and-how-do-they-process-different-types-of-data) (separate Notion notes on the same question)._
+> 🔁 _See also [06-deep-learning.md → Q45](../ml-engineering/06-deep-learning.md#q45-what-are-multimodal-ai-models-and-how-do-they-process-different-types-of-data) (separate notes on the same question)._
 
 **Multimodal AI models** are models that can understand and generate information across multiple data types, such as **text, images, audio, video, and structured data**, within a unified AI system.
 

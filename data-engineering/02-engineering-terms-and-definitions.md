@@ -1,4 +1,3 @@
-<!-- notion-id: 3cd6741828548016bbb9e205ac5bdff7 -->
 # Engineering terms with their definitions
 
 One-line definitions of common data engineering terms.

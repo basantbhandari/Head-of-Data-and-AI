@@ -1,4 +1,3 @@
-<!-- notion-id: 3d5674182854800583f1d71f40631fdc -->
 # Fine-Tuning and Model Adaptation
 
 Interview questions on fine-tuning and model adaptation: PEFT/LoRA/QLoRA, alignment (RLHF, RLAIF), data preparation, evaluation and failure scenarios.
@@ -290,7 +289,7 @@ It helps improve:
 
 ### Q9. What is instruction tuning, and why is it important for chat models?
 
-> 🔁 _See also [09-large-language-model.md → Q53](../ml-engineering/09-large-language-model.md#q53-what-is-instruction-tuning-and-why-is-it-important-for-chat-models) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q53](../ml-engineering/09-large-language-model.md#q53-what-is-instruction-tuning-and-why-is-it-important-for-chat-models) (separate notes on the same question)._
 
 #### What is Instruction Tuning?
 

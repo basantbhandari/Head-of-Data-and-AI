@@ -1,4 +1,3 @@
-<!-- notion-id: 3d667418285480b49b0ef1c9f36220a3 -->
 # Deep Learning
 
 Deep learning interview questions: neural network basics, activations, regularization, generative models (autoencoders, VAEs, GANs, diffusion), CNNs, RNNs/LSTMs, Transformers, transfer learning, multimodal and world models.
@@ -461,7 +460,7 @@ Deep learning interview questions: neural network basics, activations, regulariz
 
 ### Q20. What is the difference between encoder-only, decoder-only, and encoder-decoder Transformer architectures?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q31](../ai-engineering/01-llm-fundamentals.md#q31-what-is-the-difference-between-encoder-only-decoder-only-and-encoder-decoder-transformer-architectures) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q31](../ai-engineering/01-llm-fundamentals.md#q31-what-is-the-difference-between-encoder-only-decoder-only-and-encoder-decoder-transformer-architectures) (separate notes on the same question)._
 
 **Encoder-Only vs Decoder-Only vs Encoder-Decoder Transformers**
 
@@ -918,7 +917,7 @@ A typical CNN pipeline looks like:
 
 The convolutional layers act as feature extractors (edges, textures, shapes, object parts), while the fully connected layers act as the "reasoning" stage that combines those features into a decision.
 
-> ✍️ _Addition drafted during sync._
+> ✍️ _Drafted addition._
 
 - **Flatten step:** the final feature map (e.g., 7×7×512) is flattened into a 1-D vector (25,088 values) so it can feed a dense layer. Each FC neuron computes `y = f(W·x + b)` and connects to *every* input value, so FC layers learn global combinations of features, unlike the local, weight-shared filters of conv layers.
 - **Typical head:** one or two hidden FC layers (often with ReLU + dropout), then an output FC layer sized to the number of classes, followed by softmax (multi-class) or sigmoid (binary/multi-label).
@@ -1283,7 +1282,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 
 ### Q45. What are Multimodal AI models, and how do they process different types of data?
 
-> 🔁 _See also [10-multimodal-ai.md → Q1](../ai-engineering/10-multimodal-ai.md#q1-what-are-multimodal-ai-models-and-how-do-they-process-different-types-of-data) (separate Notion notes on the same question)._
+> 🔁 _See also [10-multimodal-ai.md → Q1](../ai-engineering/10-multimodal-ai.md#q1-what-are-multimodal-ai-models-and-how-do-they-process-different-types-of-data) (separate notes on the same question)._
 
 #### Multimodal AI Models
 
@@ -1346,7 +1345,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 
 ### Q47. How do Diffusion Language Models (DLMs) work?
 
-> 🔁 _See also [01-llm-fundamentals.md → Q69](../ai-engineering/01-llm-fundamentals.md#q69-how-do-diffusion-language-models-dlms-work) (separate Notion notes on the same question)._
+> 🔁 _See also [01-llm-fundamentals.md → Q69](../ai-engineering/01-llm-fundamentals.md#q69-how-do-diffusion-language-models-dlms-work) (separate notes on the same question)._
 
 - **Core idea:** Apply the diffusion paradigm (originally used for images) to text generation — instead of generating tokens left-to-right like autoregressive LLMs, DLMs generate/refine an entire sequence in parallel through iterative denoising.
 - **Forward process:** Text tokens are progressively corrupted, typically by:
@@ -1377,7 +1376,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 
 ### Q49. Normalization in machine learning?
 
-> 🔁 _See also [09-large-language-model.md → Q32](09-large-language-model.md#q32-what-is-normalization) (separate Notion notes on the same question)._
+> 🔁 _See also [09-large-language-model.md → Q32](09-large-language-model.md#q32-what-is-normalization) (separate notes on the same question)._
 
 Normalization refers to techniques that rescale or reshape data (or model activations) so that different features or values are on a comparable scale. It matters because many ML algorithms are sensitive to the scale of inputs — without normalization, features with larger numeric ranges can dominate training, and optimization (like gradient descent) can converge slowly or unstably.
 
@@ -1400,7 +1399,7 @@ x' = (x - min) / (max - min)
 
 Sensitive to outliers since it depends on the extremes.
 
-> ✍️ _Addition drafted during sync._
+> ✍️ _Drafted addition._
 
 **Other common techniques for input data**
 
