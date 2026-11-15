@@ -16,14 +16,7 @@ The book is organised by domain rather than by source. It starts with the founda
 
 It is also the first step on a longer path, from senior engineer today towards a Head of Data and AI role over the next ten to fifteen years. The [Future editions](#future-editions) section lists the leadership domains to be added along the way.
 
-## How to use this book
-
-- **Preparing for a specific role.** Use the role guide below to pick the chapters that matter most, then work through them in order.
-- **Practising answers.** Read the question, answer it aloud or on paper, and only then compare with the written answer. The contents list at the top of each chapter works as a question sheet for this purpose.
-- **Going deeper.** Many answers link to related questions in other chapters. Following those links is the fastest way to connect, for example, attention mechanics (Chapter 17) to KV-cache serving costs (Chapter 27).
-- **Numbering.** Questions are numbered by chapter: Question 20.14 is the fourteenth question in Chapter 20.
-
-### Reading the answers
+## Reading the answers
 
 | Marker | Meaning |
 |---|---|
@@ -33,7 +26,7 @@ It is also the first step on a longer path, from senior engineer today towards a
 | **Additional notes** | A second set of notes on the same question, merged under the first |
 | **See also** | A closely related question in another chapter |
 
-### Role guide
+## Role guide
 
 | Target role | Core chapters | Also review |
 |---|---|---|
