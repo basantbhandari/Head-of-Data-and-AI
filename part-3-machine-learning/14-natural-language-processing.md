@@ -4,7 +4,7 @@ _Part III — Machine Learning_
 
 Text representation, classical NLP, BERT-family models and applied NLP systems.
 
-This chapter contains **30 questions**.
+This chapter contains **43 questions**.
 
 ## Contents
 
@@ -38,6 +38,19 @@ This chapter contains **30 questions**.
 - **14.28** [How do you approach text summarization?](#1428-how-do-you-approach-text-summarization)
 - **14.29** [How are knowledge graphs used with NLP?](#1429-how-are-knowledge-graphs-used-with-nlp)
 - **14.30** [How would you solve entity resolution?](#1430-how-would-you-solve-entity-resolution)
+- **14.31** [How does named entity recognition work, from rule-based systems to Transformer token classification?](#1431-how-does-named-entity-recognition-work-from-rule-based-systems-to-transformer-token-classification)
+- **14.32** [How do Hidden Markov Models and Conditional Random Fields work for sequence labelling?](#1432-how-do-hidden-markov-models-and-conditional-random-fields-work-for-sequence-labelling)
+- **14.33** [How do you choose an approach for a text classification problem, from TF-IDF baselines to fine-tuned encoders and LLMs?](#1433-how-do-you-choose-an-approach-for-a-text-classification-problem-from-tf-idf-baselines-to-fine-tuned-encoders-and-llms)
+- **14.34** [What is aspect-based sentiment analysis, and why are negation, sarcasm and domain shift hard for sentiment models?](#1434-what-is-aspect-based-sentiment-analysis-and-why-are-negation-sarcasm-and-domain-shift-hard-for-sentiment-models)
+- **14.35** [How do GloVe and fastText differ from Word2Vec, and how did contextual embeddings change NLP?](#1435-how-do-glove-and-fasttext-differ-from-word2vec-and-how-did-contextual-embeddings-change-nlp)
+- **14.36** [How did Bahdanau and Luong attention improve sequence-to-sequence models?](#1436-how-did-bahdanau-and-luong-attention-improve-sequence-to-sequence-models)
+- **14.37** [How does beam search work, and when should you use it instead of sampling?](#1437-how-does-beam-search-work-and-when-should-you-use-it-instead-of-sampling)
+- **14.38** [How do topic models such as LDA and BERTopic work, and when would you use each?](#1438-how-do-topic-models-such-as-lda-and-bertopic-work-and-when-would-you-use-each)
+- **14.39** [How do you build an information extraction system for entities and relations, and how have LLMs changed it?](#1439-how-do-you-build-an-information-extraction-system-for-entities-and-relations-and-how-have-llms-changed-it)
+- **14.40** [What is coreference resolution, and why does it matter in NLP pipelines?](#1440-what-is-coreference-resolution-and-why-does-it-matter-in-nlp-pipelines)
+- **14.41** [How do extractive, abstractive and open-domain question answering systems differ?](#1441-how-do-extractive-abstractive-and-open-domain-question-answering-systems-differ)
+- **14.42** [How do weak supervision and LLM-assisted labelling help when labelled text data is scarce?](#1442-how-do-weak-supervision-and-llm-assisted-labelling-help-when-labelled-text-data-is-scarce)
+- **14.43** [How do you detect near-duplicate documents at scale using MinHash and locality-sensitive hashing?](#1443-how-do-you-detect-near-duplicate-documents-at-scale-using-minhash-and-locality-sensitive-hashing)
 
 ---
 
@@ -900,6 +913,603 @@ A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(
 **Production concerns:** incremental or streaming ER for new records (match against the existing index rather than re-running everything), stable entity IDs over time, scalability (Spark/Splink, Zingg), PII and privacy (hashing, access controls), and explainability for regulated uses (KYC/AML).
 
 **Trade-off:** false merges (combining two customers) are usually worse than missed matches, so set thresholds asymmetrically.
+
+### 14.31 How does named entity recognition work, from rule-based systems to Transformer token classification?
+
+**Named entity recognition (NER)** finds spans of text that name things (people, organisations, locations, dates, drugs, product codes) and assigns each span a type. Almost every modern system treats it as **sequence labelling**: one tag per token in a scheme such as BIO, which a decoder then turns back into spans.
+
+**Tagging schemes**
+
+| Scheme | Tags | Note |
+| --- | --- | --- |
+| **IO** | I-PER, O | Cannot separate two adjacent entities of the same type |
+| **BIO (IOB2)** | B-PER, I-PER, O | The default; B marks the start of a span |
+| **BIOES / BILOU** | adds E (end) and S (single) | Often slightly better, because boundaries are explicit |
+
+Example: `Tim/B-PER Cook/I-PER visited/O Paris/B-LOC`.
+
+**How the approaches evolved**
+
+1. **Rules and gazetteers.** Regular expressions, dictionaries of known names, and patterns such as "Mr. + capitalised word". High precision, zero training data, easy to audit. They still win for structured entities (IBANs, emails, ICD-10 codes, order numbers). They break on new names, ambiguity ("Jordan" the person, country or brand) and noisy text.
+2. **Feature-based statistical models.** HMMs, maximum-entropy taggers and especially **linear-chain CRFs** over hand-made features: the word, its shape (`Xxxx`, `dd-dd`), prefixes and suffixes, POS tags, gazetteer hits and neighbouring words. The CRF learns which tag transitions are legal, so `O → I-PER` is penalised.
+3. **Neural sequence models.** Lample et al. (2016) replaced feature engineering with a **BiLSTM-CRF**: word embeddings plus a character-level BiLSTM (which captures capitalisation and morphology) feed a bidirectional LSTM, and a CRF layer on top decodes the best tag sequence. It reached about 91 F1 on CoNLL-2003 English without gazetteers.
+4. **Transformer token classification.** Fine-tune a pretrained encoder (BERT, RoBERTa, DeBERTa-v3, ModernBERT, XLM-R for multilingual) with a linear layer that predicts a tag for every token, as proposed in the original BERT paper. Contextual representations largely remove the need for the CRF, although a CRF head can still add a little on small datasets.
+5. **LLMs and generalist extractors.** Prompting an LLM to return JSON spans, or using span-based zero-shot models such as GLiNER, handles new entity types with no labelled data. They are useful for bootstrapping labels, but slower, costlier and less consistent on exact boundaries than a fine-tuned encoder.
+
+**The subword alignment detail interviewers probe**
+
+Encoders split words into subwords, but labels are per word. The standard recipe uses the fast tokenizer's `word_ids()` to map tokens back to words, labels the first subtoken of each word, and sets the rest and the special tokens to `-100` so the cross-entropy loss ignores them.
+
+```python
+def align(labels, word_ids):
+    out, prev = [], None
+    for w in word_ids:
+        out.append(-100 if w is None or w == prev else labels[w])
+        prev = w
+    return out
+```
+
+At inference, take the prediction of each word's first subtoken, repair invalid sequences (an `I-` after `O`), and merge into spans.
+
+**Evaluation:** entity-level, exact-match precision, recall and F1 (the CoNLL convention, as in `seqeval`), not token accuracy, which is inflated by the many `O` tags. Report per-type F1 and partial-match metrics where boundaries are fuzzy.
+
+**Production issues**
+
+- **Nested and overlapping entities** ("Bank of [England]") cannot be expressed in flat BIO; use span classification models.
+- **Long documents** exceed 512 tokens, so use a sliding window with overlap and merge predictions, or a long-context encoder.
+- **Annotation consistency** limits accuracy more than architecture: write guidelines for edge cases (titles, possessives, nested organisations) and measure inter-annotator agreement.
+- **Hybrid systems** are common: rules for structured IDs, a fine-tuned model for names, and entity linking afterwards to map mentions to canonical records.
+
+### 14.32 How do Hidden Markov Models and Conditional Random Fields work for sequence labelling?
+
+Both assign a label sequence $y = (y_1, \ldots, y_n)$ to an input sequence $x$ (POS tags, BIO entity tags). An **HMM** is a *generative* model of the joint probability $P(x, y)$; a **linear-chain CRF** is a *discriminative* model of the conditional probability $P(y \mid x)$. That one difference explains most of their trade-offs.
+
+**Hidden Markov Model**
+
+An HMM assumes the hidden tags form a Markov chain and each word is generated only by its own tag:
+
+$$
+P(x, y) = \prod_{t=1}^{n} P(y_t \mid y_{t-1}) \, P(x_t \mid y_t)
+$$
+
+- **Parameters:** transition probabilities $P(y_t \mid y_{t-1})$ and emission probabilities $P(x_t \mid y_t)$, estimated by counting on labelled data (with smoothing), or with Baum-Welch (EM) when tags are unobserved.
+- **Decoding:** the **Viterbi** algorithm finds the most likely tag sequence by dynamic programming in $O(n K^2)$ for $K$ tags. The **forward algorithm** sums over all paths to give $P(x)$.
+- **Weakness:** the emission assumption means a word sees only its own tag. You cannot easily add overlapping features such as "is capitalised", "ends in -ing", "previous word is Mr." or "next word is Inc." without breaking the independence assumptions. Unknown words are handled poorly.
+
+**Conditional Random Field (Lafferty, McCallum and Pereira, 2001)**
+
+A linear-chain CRF scores the whole tag sequence with weighted feature functions that may look at **any part of the input**, then normalises over all possible tag sequences:
+
+$$
+P(y \mid x) = \frac{1}{Z(x)} \exp\left( \sum_{t=1}^{n} \sum_{k} \lambda_k f_k(y_{t-1}, y_t, x, t) \right)
+$$
+
+- **Features** can be arbitrary and overlapping: the current word, its shape, suffixes, neighbouring words, gazetteer membership, and the transition pair $(y_{t-1}, y_t)$.
+- **Training** maximises the conditional log-likelihood, a convex objective (with L2 regularisation) solved with L-BFGS or SGD. Computing $Z(x)$ and the gradients uses the forward-backward algorithm, so training is $O(n K^2)$ per sentence.
+- **Decoding** is again Viterbi.
+- **Why not a MEMM?** Maximum-entropy Markov models normalise locally, per position, which causes the **label bias problem**: states with few outgoing transitions ignore the observation. The CRF normalises globally over the whole sequence, which was the paper's key contribution.
+
+**Comparison**
+
+| Aspect | HMM | Linear-chain CRF |
+| --- | --- | --- |
+| Model type | Generative, $P(x, y)$ | Discriminative, $P(y \mid x)$ |
+| Features | Current word given tag only | Arbitrary, overlapping, whole input |
+| Training | Counting (closed form) or EM | Convex optimisation, slower |
+| Unlabelled data | Can use EM | Needs labels |
+| Accuracy on NER/POS | Lower | Higher with good features |
+| Decoding | Viterbi | Viterbi |
+
+**Where they sit today**
+
+- The CRF survives as an **output layer**: BiLSTM-CRF and BERT-CRF replace hand-made features with neural emission scores, while the CRF's learned transition matrix enforces consistent tags (no `I-ORG` straight after `B-PER`). With strong pretrained encoders the gain is usually small, but it helps on small datasets and strict-boundary tasks.
+- Feature-based CRFs (CRFsuite, sklearn-crfsuite) are still sensible when you need a tiny, CPU-only, explainable model, for example parsing addresses or invoice fields.
+- HMMs remain important for teaching dynamic programming, and their ideas live on in speech recognition, bioinformatics and constrained decoding.
+
+**Interview point:** be ready to write Viterbi. Keep a table `score[t][k]` of the best path score ending in tag `k` at position `t`, plus back-pointers, then trace back from the best final tag.
+
+### 14.33 How do you choose an approach for a text classification problem, from TF-IDF baselines to fine-tuned encoders and LLMs?
+
+Start from the constraints, not the model: how many labelled examples you have, how many classes, the latency and cost budget, how often the labels change, and how much an error costs. Then climb a ladder, stopping at the first rung that meets the target, because every step up adds cost and operational burden.
+
+**Clarify the problem first**
+
+- **Shape:** binary, multi-class, **multi-label** (one ticket can be "billing" and "outage"), or hierarchical.
+- **Labels:** how many exist, their quality and inter-annotator agreement, class imbalance, and whether the label set changes monthly.
+- **Text:** length (tweets vs. contracts), languages, domain jargon, PII.
+- **Serving:** volume, p95 latency, batch or online, CPU or GPU, explainability or regulatory needs.
+
+**The ladder**
+
+| Approach | Labels needed | Strengths | Weaknesses |
+| --- | --- | --- | --- |
+| **Rules / keywords** | None | Instant, auditable | Low recall, brittle |
+| **TF-IDF + logistic regression or linear SVM** | Hundreds to thousands | Trains in seconds, CPU, interpretable weights, hard to beat on topical tasks | No semantics, misses paraphrases and negation |
+| **Frozen embeddings + linear head** (sentence-transformer, SetFit) | Tens to hundreds per class | Strong few-shot accuracy, cheap | Ceiling below full fine-tuning |
+| **Fine-tuned encoder** (DeBERTa-v3, RoBERTa, ModernBERT, XLM-R) | About 1,000+ | Best accuracy per dollar at scale, 5 to 50 ms on GPU | Needs labels, GPU training, retraining when labels change |
+| **LLM zero- or few-shot** | None to a few examples | Handles new or changing labels and nuanced instructions, gives rationales | Costly per call, slower, less calibrated, can drift with model versions |
+| **LLM-labelled data distilled into an encoder** | LLM labels plus a human-checked sample | LLM quality at encoder cost | Inherits LLM biases, needs an audit set |
+
+**How I decide in practice**
+
+1. **Build a gold test set first** (a few hundred human-labelled, stratified examples). Without it nothing else can be compared.
+2. **Run TF-IDF + logistic regression** in an afternoon. It sets the floor and often reveals label noise.
+3. **Try an LLM zero-shot** on the same test set to see the ceiling for unlabelled approaches and to find ambiguous label definitions.
+4. **If volume is high or latency is tight**, fine-tune an encoder, using LLM-generated labels to bootstrap if human labels are scarce.
+5. **Keep the LLM** for long-tail or low-volume classes, or as a fallback when the encoder's confidence is low (a cascade).
+
+```python
+from sklearn.pipeline import make_pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+
+baseline = make_pipeline(
+    TfidfVectorizer(ngram_range=(1, 2), min_df=2, sublinear_tf=True),
+    LogisticRegression(max_iter=2000, class_weight="balanced"),
+)
+```
+
+**Details that decide success**
+
+- **Metrics:** macro-F1 for imbalanced classes, per-class precision and recall, and for multi-label tune a threshold per label rather than using 0.5.
+- **Calibration:** routing and auto-close decisions need calibrated probabilities (temperature scaling for encoders; LLM verbalised confidence is unreliable).
+- **Long documents:** chunk and aggregate, or use a long-context encoder such as ModernBERT (8,192 tokens).
+- **Cost maths:** 10 million documents a day through an LLM API costs orders of magnitude more than a self-hosted encoder on one GPU.
+- **Change management:** if the taxonomy changes often, an LLM with label descriptions in the prompt or an embedding plus nearest-centroid approach avoids constant retraining.
+
+**Common failure:** jumping straight to an LLM, never measuring it against a TF-IDF baseline, and discovering in production that the baseline was within one F1 point at a thousandth of the cost.
+
+### 14.34 What is aspect-based sentiment analysis, and why are negation, sarcasm and domain shift hard for sentiment models?
+
+**Aspect-based sentiment analysis (ABSA)** identifies *what* is being judged and the sentiment towards *each* target, rather than one score per document. "The battery life is superb but the screen scratches easily" is mixed at document level, but positive for battery and negative for screen. That is the level product and operations teams can act on.
+
+**The ABSA subtasks** (formalised in the SemEval 2014 to 2016 shared tasks on laptop and restaurant reviews)
+
+| Subtask | Output for "The pasta was great but the waiter was rude" |
+| --- | --- |
+| **Aspect term extraction** | `pasta`, `waiter` |
+| **Aspect term polarity** | pasta: positive, waiter: negative |
+| **Aspect category detection** | FOOD#QUALITY, SERVICE#GENERAL |
+| **Aspect category polarity** | FOOD: positive, SERVICE: negative |
+| **Opinion term extraction / triplets** | (pasta, great, positive), (waiter, rude, negative) |
+
+Implicit aspects matter too: "it died after two hours" is about the battery without naming it.
+
+**Modelling approaches**
+
+- **Pipeline:** sequence labelling (BIO tags) to extract aspects, then a classifier fed the sentence plus the aspect.
+- **Sentence-pair encoders:** feed `[CLS] sentence [SEP] aspect [SEP]` to BERT or DeBERTa and classify polarity. This auxiliary-sentence framing works well for category polarity.
+- **Joint / generative:** a seq2seq model (T5) or LLM emits all (aspect, category, opinion, polarity) tuples as structured output, avoiding error propagation between stages.
+- **LLMs with a schema:** strong zero-shot quality and easy to add new categories; in production often used to label data and then distilled into a smaller encoder.
+
+**Why negation is hard**
+
+- Negation changes polarity, but its **scope** varies: "not bad" is mildly positive, "not only cheap but also durable" is positive, "I can't say I disliked it" is a double negative.
+- Bag-of-words and lexicon models flip or ignore the wrong words. Contextual encoders do far better, but still fail on rare structures, and benchmarks with targeted negation tests (CheckList-style) expose it.
+- Mitigations: include hard negations in training data, generate counterfactual pairs ("good" vs. "not good"), and test them explicitly.
+
+**Why sarcasm is hard**
+
+- The literal words are positive while the intent is negative: "Great, my flight is delayed again. Love it."
+- Detecting it often needs world knowledge (delays are bad), conversation context, or the author's history, none of which is in the sentence. Even humans disagree, so label agreement is low and the accuracy ceiling is low.
+- Signals that help: sentiment contrast between a positive word and a negative situation, emojis, punctuation, and thread context. LLMs handle common sarcasm better but are far from reliable.
+
+**Why domain shift is hard**
+
+- Word polarity depends on domain: "unpredictable" is positive for a film plot and negative for a car's steering; "small" is good for a phone, bad for a hotel room; "sick" is positive in some slang.
+- Distributions drift: new products, features, competitors, memes and languages appear. A model trained on movie reviews loses a lot of accuracy on support tickets.
+- Mitigations: label in-domain data (even a few hundred examples help a lot), continue pre-training on domain text, use active learning to label the most uncertain new examples, and monitor prediction distributions and accuracy on a refreshed human-labelled sample.
+
+**Evaluation:** macro-F1 per aspect category, accuracy on a targeted challenge set (negation, sarcasm, comparisons such as "better than the old model"), and slice metrics by product and channel. Handle the "conflict" or mixed label explicitly instead of forcing it into neutral.
+
+### 14.35 How do GloVe and fastText differ from Word2Vec, and how did contextual embeddings change NLP?
+
+All three produce **static** word vectors (one vector per word type), but they learn from different signals: Word2Vec from **local context windows**, GloVe from **global co-occurrence counts**, and fastText from **context windows plus character n-grams**. Contextual embeddings (ELMo, then BERT) replaced the fixed vector with one computed from the whole sentence.
+
+**GloVe (Pennington, Socher and Manning, 2014)**
+
+- First builds a word-word co-occurrence matrix $X$ over the corpus, where $X_{ij}$ counts how often word $j$ appears near word $i$.
+- Then fits vectors so that their dot product predicts the log co-occurrence, with a weighting function $f$ that caps the influence of very frequent pairs and ignores zero counts:
+
+$$
+J = \sum_{i,j} f(X_{ij}) \left( w_i^\top \tilde{w}_j + b_i + \tilde{b}_j - \log X_{ij} \right)^2
+$$
+
+- In the paper $f(x) = (x / x_{\max})^{3/4}$ below $x_{\max} = 100$ and 1 above it.
+- **Intuition:** ratios of co-occurrence probabilities carry meaning ("ice" co-occurs with "solid" far more than "steam" does), and a log-bilinear model turns those ratios into vector differences, which is why analogies work.
+- **Relation to Word2Vec:** skip-gram with negative sampling has been shown to implicitly factorise a shifted PMI matrix, so the two are closer than they look. GloVe makes the matrix explicit and trains on it in a single pass over non-zero entries.
+
+**fastText (Bojanowski et al., 2017)**
+
+- Extends skip-gram by representing each word as the **sum of its character n-gram vectors** (lengths 3 to 6, with `<` and `>` boundary markers) plus a vector for the whole word. "where" includes `<wh`, `whe`, `her`, `ere`, `re>` and `<where>`.
+- N-grams are hashed into a fixed number of buckets (2 million in the paper) to bound memory.
+- **Benefits:** vectors for **out-of-vocabulary** words and typos ("recieve"), shared information between morphological variants, and much better results for morphologically rich languages (Finnish, Turkish, German compounds). Pretrained vectors exist for 157 languages.
+- **Cost:** a larger model and some noise from coincidental shared substrings.
+
+**Comparison**
+
+| Aspect | Word2Vec | GloVe | fastText |
+| --- | --- | --- | --- |
+| Training signal | Local windows, predictive | Global co-occurrence counts | Local windows plus subwords |
+| Unseen words | No vector | No vector | Built from n-grams |
+| Morphology | Ignored | Ignored | Captured |
+| Typical strength | Fast, good analogies | Uses global statistics efficiently | Rare words, noisy text, rich morphology |
+
+**How contextual embeddings changed NLP**
+
+- **The problem:** static vectors average all senses of a word, so "bank" (river) and "bank" (money) share one vector, and the vector ignores syntax in the sentence.
+- **ELMo (Peters et al., 2018):** a two-layer bidirectional LSTM language model over character-based inputs. Each token's representation is a learned, task-specific weighted sum of all layers. Lower layers carried more syntax, higher layers more semantics. Adding ELMo to existing models improved results across six benchmarks, including question answering, NER and sentiment.
+- **BERT and successors:** deep Transformer encoders trained with masked language modelling, then **fine-tuned end to end** rather than used as frozen features.
+- **The paradigm shift:** from "pretrain word vectors, then train a task architecture from scratch" to "pretrain a whole network, then fine-tune or prompt it". Task-specific architectures largely disappeared.
+
+**Are static vectors still useful?** Yes, where cost and simplicity dominate: features for gradient-boosted models, fast lexical expansion, keyword clustering, very low-resource on-device settings, and fastText's own linear classifier, which trains on millions of documents in minutes on a CPU. For semantic search, use sentence-level embedding models instead.
+
+### 14.36 How did Bahdanau and Luong attention improve sequence-to-sequence models?
+
+Early RNN encoder-decoders compressed the entire source sentence into **one fixed-length vector**, and translation quality collapsed on long sentences. **Bahdanau et al. (2014)** let the decoder build a **different context vector at every output step** as a weighted average of all encoder states, with the weights learned jointly ("align and translate"). **Luong et al. (2015)** simplified and systematised the idea with cheaper scoring functions and global versus local variants. Together they are the direct ancestors of Transformer attention.
+
+**The general mechanism**
+
+At decoder step $t$, with encoder states $h_1, \ldots, h_S$ and decoder state $s$:
+
+$$
+e_{t,i} = \text{score}(s, h_i), \qquad \alpha_{t,i} = \frac{\exp(e_{t,i})}{\sum_{j} \exp(e_{t,j})}, \qquad c_t = \sum_{i} \alpha_{t,i} h_i
+$$
+
+The context vector $c_t$ is then combined with the decoder state to predict the next word.
+
+**Bahdanau (additive) attention**
+
+- **Score:** a small feed-forward network, $e_{t,i} = v^\top \tanh(W s_{t-1} + U h_i)$.
+- Uses the **previous** decoder state $s_{t-1}$ to compute attention, and feeds $c_t$ into the RNN update that produces $s_t$.
+- **Bidirectional encoder**, so each $h_i$ summarises words both before and after position $i$.
+- **Result:** performance no longer fell sharply with sentence length, and the attention weights formed interpretable soft alignments (for example, handling the reversed adjective-noun order between English and French).
+
+**Luong (multiplicative) attention**
+
+- **Score options:** `dot` $s_t^\top h_i$, `general` $s_t^\top W h_i$, and `concat` (similar to Bahdanau).
+- Uses the **current** decoder state $s_t$ (computed first), then forms an attentional state $\tilde{s}_t = \tanh(W_c [c_t ; s_t])$ to predict the word. This is a simpler computation path.
+- **Global attention** attends to all source positions. **Local attention** predicts an aligned position $p_t$ and attends within a window around it with a Gaussian weighting, reducing cost on long inputs.
+- **Input feeding:** $\tilde{s}_t$ is fed into the next step's input so the model remembers past alignment decisions (a rough form of coverage).
+- Stacked LSTMs plus these ideas set new results on WMT English-German at the time.
+
+**Comparison**
+
+| Aspect | Bahdanau | Luong |
+| --- | --- | --- |
+| Score | Additive MLP | Dot, general (bilinear) or concat |
+| Decoder state used | Previous, $s_{t-1}$ | Current, $s_t$ |
+| Encoder | Bidirectional RNN | Stacked unidirectional LSTM |
+| Variants | Global only | Global and local (windowed) |
+| Cost | More parameters, slower | Dot product is a fast matrix multiply |
+
+**Why it mattered**
+
+- **Removed the bottleneck:** information flows directly from every source word to every output step, giving shorter gradient paths and better long-range handling.
+- **Alignment for free:** attention maps became a debugging and analysis tool, and were used for unknown-word replacement by copying the aligned source word.
+- **Led to the Transformer:** scaled dot-product attention is Luong's `dot` score divided by $\sqrt{d_k}$ to keep softmax gradients healthy, with queries, keys and values as separate projections. The Transformer then dropped the RNN altogether and applied attention to the sequence itself (self-attention), which made training parallel across positions.
+
+**Limits that remained:** RNN computation was still sequential, attention cost grows with source length times target length, and soft attention was not guaranteed to cover every source word, causing over- and under-translation. Coverage models and later Transformers addressed these.
+
+### 14.37 How does beam search work, and when should you use it instead of sampling?
+
+**Beam search** is an approximate search for the **most probable output sequence**. Instead of committing to the single best token at each step (greedy decoding), it keeps the $B$ best partial sequences, extends each by every candidate token, and again keeps the top $B$ by cumulative log-probability. Use it when there is essentially one correct answer (translation, transcription, structured extraction); use sampling when variety and natural-sounding open-ended text matter.
+
+**The algorithm**
+
+1. Start with one hypothesis: the start token, score 0.
+2. For each of the $B$ hypotheses, compute next-token log-probabilities and form candidates with score $\sum_{t} \log P(y_t \mid y_{<t}, x)$.
+3. Keep the top $B$ candidates overall. Move any hypothesis that emits the end token into a finished list.
+4. Stop when $B$ hypotheses have finished or no unfinished one can beat the best finished score. Return the best finished hypothesis.
+
+Cost is roughly $B$ times greedy decoding in compute and KV-cache memory (inference engines share the prompt's cache across beams to reduce this). Typical beam sizes are 4 to 10.
+
+**Length bias and normalisation**
+
+Every extra token adds a negative log-probability, so raw scores favour **short outputs**. Common fixes:
+
+- Divide the score by length, or by a length penalty. Google's GNMT used $lp(Y) = \frac{(5 + |Y|)^\alpha}{(5 + 1)^\alpha}$ with lpha on a development set (values around 0.6 are common), plus a **coverage penalty** to discourage ignoring source words.
+- Set minimum and maximum lengths, and add a **no-repeat n-gram** constraint to stop loops.
+
+**The beam search curse**
+
+Larger beams find higher-probability sequences, but the quality metric (BLEU) often gets **worse** beyond a modest beam, and very large beams can return short or even empty outputs. The model's most probable sequence is not the best sequence, so a moderate beam acts as a useful regulariser.
+
+**Why beam search fails for open-ended text**
+
+Holtzman et al. ("The Curious Case of Neural Text Degeneration", 2019) showed that maximisation-based decoding produces **bland, generic and repetitive** text, while human text is not the highest-probability text; its per-token probability varies a lot. They proposed **nucleus (top-p) sampling**, which samples from the smallest token set covering probability mass $p$, cutting off the unreliable tail while keeping diversity.
+
+**When to use which**
+
+| Use case | Recommended decoding | Why |
+| --- | --- | --- |
+| Machine translation, speech recognition, OCR | Beam search ($B$ = 4 to 5) with length normalisation | One correct output; beam beats greedy by a measurable margin |
+| Summarisation with smaller seq2seq models (BART, T5) | Beam search with no-repeat n-grams | Faithful, compact outputs |
+| Structured extraction, code with tests | Greedy or beam; or sample many and verify | Determinism, or pass@k with a checker |
+| Chat, creative writing, brainstorming | Temperature plus top-p or min-p sampling | Diversity, avoids degeneration |
+| Self-consistency reasoning | Sample $N$ answers, majority vote | Diversity is the point |
+| Large instruction-tuned LLMs | Usually greedy or low-temperature sampling | Sharp distributions; beam adds cost for little gain |
+
+**Variants worth knowing**
+
+- **Diverse beam search** splits beams into groups with a diversity penalty, giving genuinely different candidates for reranking.
+- **Constrained beam search** forces required phrases or terminology (glossary terms in translation).
+- **Sample-and-rerank** (generate $N$ samples and pick the best by a reward model, verifier or minimum Bayes risk) often outperforms beam search on quality in modern systems.
+
+**Production notes:** beam search multiplies memory per request and complicates token streaming (the leading hypothesis can change), which is why most LLM serving APIs do not offer it. Always tune beam size and length penalty on a dev set with the real metric, not on log-likelihood.
+
+### 14.38 How do topic models such as LDA and BERTopic work, and when would you use each?
+
+A topic model finds recurring themes in a collection of documents without labels. **LDA** is a probabilistic bag-of-words model: each document is a mixture of topics, and each topic is a distribution over words. **BERTopic** is a clustering pipeline: it embeds documents with a transformer, clusters the embeddings, and then describes each cluster with its most distinctive words. Use LDA when you need interpretable mixed memberships on long documents with little compute. Use BERTopic when meaning matters more than word counts, especially for short text.
+
+**How LDA works**
+
+LDA assumes a generative story. For $K$ topics, each topic $k$ has a word distribution $\phi_k \sim \text{Dir}(\beta)$. Each document $d$ draws topic proportions $\theta_d \sim \text{Dir}(\alpha)$. Each word position first picks a topic $z \sim \text{Mult}(\theta_d)$, then a word $w \sim \text{Mult}(\phi_z)$. Training inverts this story: given only the words, infer $\theta$ and $\phi$ with variational Bayes (the original paper, and scikit-learn's online version) or collapsed Gibbs sampling (MALLET).
+
+- A small $\alpha$ pushes each document towards a few topics; a small $\beta$ pushes each topic towards a few words.
+- Output per document is a probability vector, such as 60% "billing", 30% "delivery", 10% "returns".
+- It sees only counts, so preprocessing decides quality: stop words, lemmatisation, bigrams ("credit_card"), and pruning very rare and very common terms.
+
+**How BERTopic works**
+
+1. **Embed** each document with a sentence-transformer.
+2. **Reduce** dimensions with UMAP, which keeps local neighbourhood structure so density clustering works.
+3. **Cluster** with HDBSCAN, which picks the number of clusters itself and puts unclear documents in an outlier topic (labelled -1).
+4. **Describe** each cluster with **class-based TF-IDF (c-TF-IDF)**: concatenate all documents in a cluster into one "class document" and score words that are frequent there but rare across other clusters.
+5. Optionally refine labels with KeyBERT-style reranking or an LLM that writes a short topic name.
+
+Every step is swappable (k-means instead of HDBSCAN, a domain embedding model), and the library supports topics over time, per class, guided seed topics and merging similar topics.
+
+**Comparison**
+
+| Aspect | LDA | BERTopic |
+| --- | --- | --- |
+| Input signal | Word counts | Contextual embeddings |
+| Short text (tweets, tickets) | Weak, too few words per document | Strong |
+| Document membership | Mixture of topics | One cluster per document (soft distribution is approximate) |
+| Number of topics | Set $K$ yourself | Found by HDBSCAN, tunable via minimum cluster size |
+| Compute | CPU, cheap | Embedding cost, GPU helps |
+| Reproducibility | Fairly stable with fixed seed | UMAP is stochastic, results shift between runs |
+| Main failure mode | Junk topics of stop words and boilerplate | Large outlier topic, one giant cluster |
+
+**Evaluating topics**
+
+- Perplexity does not track human judgement; prefer **topic coherence** (NPMI or $C_v$) plus **topic diversity** (share of unique words across top-word lists).
+- The real test is human review: can an analyst name each topic, and are its example documents consistent?
+- Check stability: rerun with different seeds and measure how many topics survive.
+
+**Production pitfalls**
+
+- With HDBSCAN, a large share of documents (in practice often a third or more) can land in the outlier topic. Lower `min_samples`, or reassign outliers to the nearest topic, and report the share you reassigned.
+- Topics drift. Retraining renumbers them, so map new topics to old ones by centroid or top-word similarity before updating dashboards.
+- Do not treat topics as classes. If the business needs a stable taxonomy ("complaint about delivery"), use topic modelling to *discover* the categories, then label data and train a classifier.
+
+**Example:** for 200,000 short support tickets, I would run BERTopic with a multilingual embedding model, an LLM to name topics, and a human pass to merge and rename. For 10,000 long policy reports where each covers several themes, LDA or BERTopic's approximate topic distribution gives the mixture view that analysts want.
+
+### 14.39 How do you build an information extraction system for entities and relations, and how have LLMs changed it?
+
+Information extraction (IE) turns unstructured text into structured records: entities (people, drugs, contract parties), their types and canonical IDs, and typed relations between them, such as `(Acme Ltd, acquired, Beta GmbH, 2025-03-01)`. A production system is a pipeline with a schema, extraction models, normalisation and validation. LLMs have made the extraction step much faster to build, but have not removed the need for the rest.
+
+**1. Start from the schema, not the model.** Define the entity types, relation types, argument types, cardinality and allowed values (for example, `acquired` takes two `Organisation` arguments and an optional date). Write annotation guidelines with edge cases. Most IE projects fail on vague schemas, not weak models.
+
+**2. Classic pipeline.**
+
+- **Preprocessing:** document parsing (PDF, HTML, tables), sentence splitting, tokenisation.
+- **Named entity recognition:** sequence labelling with BIO tags, usually a fine-tuned encoder (BERT, RoBERTa, DeBERTa) with a token-classification head.
+- **Coreference resolution:** link "the company" and "it" back to the entity, so relations stated with pronouns are not lost.
+- **Entity linking:** map each mention to a canonical ID in a knowledge base or master data, using candidate generation (alias tables, embeddings) and a disambiguation model.
+- **Relation extraction:** classify each candidate entity pair in a sentence or document into a relation type or "no relation". Typical models mark the entities with special tokens and classify the encoder output.
+- **Normalisation:** dates, amounts, units and names into standard formats.
+
+**3. Design choices.**
+
+- **Pipeline vs joint models:** pipelines are modular and easy to debug, but errors cascade (a missed entity means a missed relation). Joint models extract entities and relations together and reduce cascading errors.
+- **Sentence vs document level:** many relations span sentences (the buyer is named in paragraph 1, the price in paragraph 4). Document-level RE is much harder and needs coreference.
+- **Closed vs open IE:** a fixed schema gives clean, queryable data; open IE extracts any (subject, predicate, object) triple but produces noisy, redundant relations that need canonicalisation.
+
+**4. What LLMs changed.**
+
+- **Zero/few-shot extraction:** describe the schema in a prompt, request JSON, and enforce it with structured outputs or constrained decoding. A working prototype now takes days, not months of labelling.
+- **Long, messy documents:** LLMs handle cross-sentence relations, implicit relations and varied phrasing better than sentence-level classifiers.
+- **Labelling:** LLMs pre-annotate data that humans correct, or label a corpus to train a small model.
+- **Small generalist models:** GLiNER-style encoders take entity or relation type names as input and do zero-shot extraction at a fraction of LLM cost.
+
+**What did not change:** zero-shot LLMs still trail well-tuned supervised models on benchmark NER and RE, especially for rare types and precise span boundaries. LLMs also hallucinate entities not in the text, normalise values inconsistently, and cost far more per document.
+
+**5. Production pattern I would use.**
+
+- Prototype with an LLM and the schema, measure on a gold set of 200–500 annotated documents.
+- Require **evidence spans**: every extracted field must cite the exact text it came from, and a validator checks that the span exists in the source. This removes most hallucinated values.
+- Validate types and business rules (dates parse, amounts are positive, both arguments have the right type).
+- If volume is high, **distil**: label 20,000 documents with the LLM, review a sample, fine-tune an encoder for cheap inference, and keep the LLM for low-confidence cases.
+- Route low-confidence or high-impact extractions to human review.
+
+**Evaluation:** entity F1 with exact and partial span matching, relation F1 with strict matching (both arguments and type correct), and field-level accuracy for document templates. Track performance per relation type, because averages hide rare relations that the business often cares about most.
+
+### 14.40 What is coreference resolution, and why does it matter in NLP pipelines?
+
+Coreference resolution finds all expressions in a text that refer to the same real-world entity and groups them into clusters. In "Siemens reported results on Tuesday. The company said its margins improved, and they expect growth", the mentions "Siemens", "The company", "its" and "they" form one cluster. Without this step, any system that reads text sentence by sentence loses much of what is said about each entity.
+
+**Types of reference it must handle**
+
+- **Pronouns:** "she", "it", "they", "its".
+- **Definite noun phrases:** "the company", "the drug", "the defendant".
+- **Name variants:** "Microsoft Corporation", "Microsoft", "MSFT".
+- **Harder cases:** event coreference ("the acquisition" referring to an earlier sentence), split antecedents ("Anna met Ben; they left"), and cataphora, where the pronoun comes first.
+- It is different from **entity resolution**, which matches records across databases, and from **entity linking**, which maps a mention to a knowledge-base ID. Coreference works within one document.
+
+**How it is solved**
+
+- **Rule-based and statistical (pre-2017):** hand-crafted sieves (exact match, then head match, then pronouns) and mention-pair classifiers with features such as gender, number and distance.
+- **End-to-end neural (Lee et al., 2017):** treat every text span up to a maximum length as a possible mention, score how likely it is to be a mention, prune, then for each remaining span score each earlier span as its antecedent (or "no antecedent"). Training uses only the gold clusters, with no separate mention detector or parser. Later work replaced the encoder with SpanBERT and Longformer and made the model cheaper.
+- **Current encoder models:** recent encoder-only systems (for example LingMess, Maverick, and the fast library fastcoref) reach the low 80s CoNLL F1 on OntoNotes and run quickly on a single GPU.
+- **LLMs:** a prompted LLM can resolve references reasonably well, and it is often done implicitly when the LLM answers questions over a document. But zero-shot LLMs still trail specialised models on benchmarks by double-digit F1, and they cost far more per document.
+
+**Evaluation:** there is no single correct metric, so the standard is the **CoNLL F1**, the average of MUC (link-based), $B^3$ (mention-based) and CEAF (entity alignment). Report it alongside errors on the mention types your product depends on.
+
+**Why it matters in pipelines**
+
+- **Information extraction:** "It agreed to pay \$2 billion" only becomes the triple (Acme, pays, \$2B) if "It" resolves to Acme. Relation extraction recall can drop sharply without coreference.
+- **RAG and chunking:** a chunk that starts "He later resigned" is useless when retrieved alone. Resolve references, or add context such as the entity name, before chunking.
+- **Summarisation and QA:** both need to know who did what across sentences; errors cause wrong attributions.
+- **Knowledge graphs and analytics:** entity sentiment, mention counts and timelines are undercounted when pronoun mentions are ignored.
+- **Privacy:** redacting a patient name but leaving "she was admitted on..." still exposes information linked to the person.
+
+**Production pitfalls**
+
+- Domain shift: models trained on news struggle with clinical notes, legal contracts and chat logs.
+- Long documents: errors increase with distance, and memory grows with document length. Process in overlapping windows and merge clusters.
+- **Over-merging** two similar entities ("the buyer" and "the seller") is usually worse than missing a link, since it corrupts downstream facts. Use conservative thresholds for high-stakes uses.
+- Language coverage: quality for low-resource languages is much lower than for English.
+
+### 14.41 How do extractive, abstractive and open-domain question answering systems differ?
+
+They differ in **where the answer comes from** and **what the system is given**. Extractive QA selects a span from a supplied passage. Abstractive QA generates the answer in its own words. Open-domain QA is not given the passage at all: it must first find relevant documents in a large corpus, then answer with an extractive or abstractive reader.
+
+**Extractive QA**
+
+- Input: question plus context passage. Output: start and end positions of the answer span.
+- Model: an encoder (BERT, RoBERTa, DeBERTa) with two heads that score each token as span start and span end; the best valid span (start before end, limited length) wins.
+- Benchmark: **SQuAD** (crowdsourced questions on Wikipedia paragraphs). SQuAD 2.0 added unanswerable questions, so the model must also learn to say "no answer", usually by comparing the best span score with a null score.
+- Metrics: **Exact Match** and **token-level F1** against reference answers.
+- Strengths: the answer is guaranteed to be in the source, which makes it faithful and easy to highlight. Weaknesses: cannot combine facts, compute, summarise or answer yes/no in a natural way.
+
+**Abstractive (generative) QA**
+
+- Input: question, optionally with context. Output: free text written by a seq2seq model (T5, BART) or a decoder LLM.
+- Strengths: combines evidence from several passages, rephrases, handles "why" and "how" questions, and adapts tone and length.
+- Weaknesses: can hallucinate content not in the source, and EM/F1 underrate correct paraphrases. Evaluation needs semantic metrics, LLM judges, and faithfulness checks against the context.
+
+**Open-domain QA**
+
+The classic design is **retriever plus reader**:
+
+- **Retriever:** sparse (BM25) or dense. **Dense Passage Retrieval (DPR)** trains two BERT encoders, one for questions and one for passages, so that the dot product of their vectors ranks relevant passages first. It is trained with in-batch negatives plus a hard negative from BM25, and passage vectors are indexed with FAISS. On Natural Questions, DPR reached about 78% top-20 retrieval accuracy against about 59% for BM25, which showed that learned retrieval could beat strong lexical baselines.
+- **Reader:** an extractive model over the top passages, or a generative one that reads many passages together (Fusion-in-Decoder).
+- **Closed-book QA** is the opposite extreme: the model answers from its parameters with no retrieval. It is simple but cannot be updated without retraining and cannot cite sources.
+
+Modern RAG is open-domain abstractive QA with an LLM as reader.
+
+**Comparison**
+
+| Aspect | Extractive | Abstractive | Open-domain |
+| --- | --- | --- | --- |
+| Given context? | Yes | Optional | No, must retrieve |
+| Answer form | Exact span | Generated text | Span or generated |
+| Main risk | Wrong span, no synthesis | Hallucination | Retrieval misses the evidence |
+| Typical metrics | EM, F1 | Semantic similarity, LLM judge, faithfulness | Retrieval recall@k plus reader metrics |
+| Good fit | Highlighting in contracts, forms | Assistants, explanations | Search over a knowledge base |
+
+**How I decide**
+
+- If users must see the exact source wording (legal, compliance, clinical), use extractive or require generated answers to quote spans that are verified against the source.
+- If questions need synthesis across documents, use a generative reader with citations.
+- In open-domain systems, **measure retrieval separately**: if the right passage is not in the top $k$, no reader can fix it. Most production errors I see are retrieval failures, not reader failures.
+- Handle "no answer" explicitly. Models trained only on answerable questions will invent an answer from the closest passage.
+
+### 14.42 How do weak supervision and LLM-assisted labelling help when labelled text data is scarce?
+
+Both replace part of expensive expert labelling with cheaper, noisier sources and then control that noise. **Weak supervision** combines many imperfect heuristics into probabilistic labels. **LLM-assisted labelling** uses a large model as an annotator or pre-annotator. In both cases, a small, clean, human-labelled set is still essential, because it is the only way to measure how good the cheap labels are.
+
+**Weak supervision (data programming, Snorkel)**
+
+1. Experts write **labelling functions (LFs)**: small programs that vote a label or abstain. Examples: a keyword rule ("refund" → `BILLING`), a regex for order numbers, a lookup in a list of known product names (distant supervision), an old model's prediction, or an LLM prompt treated as one more LF.
+2. Apply all LFs to the unlabelled corpus to get a matrix of votes, mostly abstains.
+3. A **label model** estimates each LF's accuracy and correlations from their agreements and conflicts, **without ground truth**, and outputs a probabilistic label per example. This beats a simple majority vote when LFs differ in quality.
+4. Train an **end model** (for example, a fine-tuned transformer) on the probabilistic labels. It generalises beyond the LFs, because it learns from context, not just the keywords that fired.
+
+Key LF diagnostics: **coverage** (share of examples labelled), **overlap**, **conflict**, and empirical accuracy on a small dev set. The Snorkel paper's user study reported experts building models several times faster than with hand labelling, and with better accuracy than seven hours of manual labels.
+
+Failure modes: LFs that are correlated (three rules on the same keyword count as three votes), low coverage of the minority class, and LFs that encode the same bias as the old process.
+
+**LLM-assisted labelling**
+
+- **LLM as annotator:** prompt with the label guide and a few examples, use low temperature, and request structured output with a short rationale. Studies (for example, on tweet and news classification) found zero-shot ChatGPT beat crowd workers on accuracy at a much lower cost, and its agreement with itself was high at low temperature.
+- **LLM as pre-annotator:** the model proposes labels or spans and humans accept or correct them. In practice this can substantially cut the time per item, so measure it on a pilot batch.
+- **LLM as one labelling function:** combine it with rules in a label model, so its errors are weighted by its estimated accuracy.
+- **Distillation:** label tens of thousands of examples with the LLM, then fine-tune a small classifier for cheap, fast, private inference.
+- **Synthetic data:** generate examples for rare classes. Check diversity and realism, because synthetic text is often easier and more uniform than real data.
+
+**Risks to manage**
+
+- LLM errors are **systematic, not random**: biases towards certain labels, positions in the list, dialects or demographic groups, and they repeat the same mistake consistently. Averaging does not remove them.
+- Labels depend on model version and prompt. Pin versions, store prompts with labels, and re-validate when either changes.
+- Data governance: sending customer text to an external API may breach privacy rules. Use an approved or self-hosted model.
+- Never evaluate a model on labels made by the same LLM; the test set must be human-labelled.
+
+**Workflow I would use**
+
+1. Write a label guide; have experts label 300–500 examples as a gold set, and measure inter-annotator agreement (Cohen's kappa).
+2. Run the LLM and rules on the gold set; measure per-class precision and recall for each source.
+3. Combine sources (label model, or LLM with rules as checks); route low-confidence and disagreement cases to humans.
+4. Train the end model, evaluate on the gold set, and compare with a baseline trained only on the gold labels.
+5. Spend the remaining budget on the classes and slices with the largest error, found through error analysis.
+
+**When not to use them:** if the task needs deep expertise and the LLM's agreement with experts is close to chance, or if a few thousand human labels are affordable and the label space is small, plain human labelling is often simpler and more reliable.
+
+### 14.43 How do you detect near-duplicate documents at scale using MinHash and locality-sensitive hashing?
+
+Represent each document as a set of shingles, compress each set into a short **MinHash signature** whose agreement rate estimates Jaccard similarity, then use **locality-sensitive hashing (LSH) banding** so that only documents likely to be similar are compared. This turns an $O(n^2)$ all-pairs comparison into roughly linear work, which is how billion-document web corpora are deduplicated.
+
+**Step 1: Shingling.** Normalise the text (lowercase, collapse whitespace, strip punctuation and boilerplate), then split it into overlapping n-grams: word 5-grams or character 5–9-grams are common. Similarity between documents $A$ and $B$ is the Jaccard index of their shingle sets:
+
+$$
+J(A, B) = \frac{|A \cap B|}{|A \cup B|}
+$$
+
+**Step 2: MinHash.** Apply a hash function to every shingle and keep the minimum value. For a random hash function, the probability that two documents share the same minimum equals their Jaccard similarity:
+
+$$
+P\left[\min h(A) = \min h(B)\right] = J(A, B)
+$$
+
+Repeat with $k$ independent hash functions (commonly 128–256) to get a $k$-number signature. The share of positions where two signatures agree estimates $J$, with standard error about $\sqrt{J(1-J)/k}$. The signature size is fixed, whatever the document length.
+
+**Step 3: LSH banding.** Split the signature into $b$ bands of $r$ rows ($b \cdot r = k$). Hash each band to a bucket; two documents become **candidates** if they match exactly in at least one band. The probability of becoming candidates is:
+
+$$
+P(\text{candidate}) = 1 - \left(1 - s^{r}\right)^{b}
+$$
+
+This is an S-curve with its steep part near $(1/b)^{1/r}$. More rows per band make the threshold stricter (fewer false positives); more bands make it more lenient (fewer missed duplicates). For example, with $k = 128$, choose $b$ and $r$ so that the curve rises near your target threshold, often 0.7–0.8 for training data deduplication.
+
+**Step 4: Verify and cluster.** Optionally compute exact Jaccard for candidate pairs to remove false positives. Then build a graph of duplicate pairs and take **connected components** (union-find) to form clusters, keeping one document per cluster, for example the longest, newest or highest-quality one.
+
+**Small example with datasketch**
+
+```python
+from datasketch import MinHash, MinHashLSH
+
+def signature(text, k=128, n=5):
+    words = text.lower().split()
+    m = MinHash(num_perm=k)
+    for i in range(max(1, len(words) - n + 1)):
+        m.update(" ".join(words[i:i + n]).encode("utf8"))
+    return m
+
+lsh = MinHashLSH(threshold=0.8, num_perm=128)
+for doc_id, text in docs:
+    sig = signature(text)
+    dupes = lsh.query(sig)          # candidate near-duplicates already indexed
+    if not dupes:
+        lsh.insert(doc_id, sig)     # keep the first copy only
+```
+
+**Scaling to billions of documents.** In Spark, Ray or Daft, compute signatures per partition, emit `(band_id, band_hash, doc_id)` rows, group by band, generate pairs within each bucket, and run distributed connected components. Cap or sample very large buckets, which come from boilerplate (cookie banners, templates) and can explode the number of pairs.
+
+**Why it matters for LLMs.** Lee et al. ("Deduplicating Training Data Makes Language Models Better") found that common corpora such as C4 contain many near-duplicates and long repeated substrings. Deduplication with MinHash (document level) plus suffix arrays (exact repeated substrings) cut verbatim memorised output roughly tenfold, reached the same or better accuracy with fewer training steps, and exposed train-test overlap that inflated benchmark scores. Decontaminating evaluation sets against the training data uses the same tools.
+
+**Trade-offs and alternatives**
+
+| Method | Detects | Notes |
+| --- | --- | --- |
+| Exact hash (SHA-256) | Identical text | Cheap first pass |
+| MinHash + LSH | High shingle overlap (Jaccard) | Standard for web-scale text |
+| SimHash | Small edits (Hamming distance) | Compact 64-bit fingerprints |
+| Suffix array | Repeated exact substrings | Finds copied paragraphs within different documents |
+| Embedding similarity | Paraphrases, translations | Semantic, expensive, needs ANN search |
+
+**Pitfalls:** shingle size changes what counts as "similar" (short shingles make unrelated documents look alike); threshold choice trades data volume against redundancy, so inspect sampled pairs at several thresholds; and all signatures must use the same number of permutations and seeds, or comparisons are meaningless.
 
 ---
 
