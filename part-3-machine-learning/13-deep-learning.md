@@ -4,7 +4,7 @@ _Part III — Machine Learning_
 
 Backpropagation, activations, normalization, residual networks, sequence models, generative models and the practicalities of training deep networks.
 
-This chapter contains **84 questions**.
+This chapter contains **97 questions**.
 
 ## Contents
 
@@ -92,6 +92,19 @@ This chapter contains **84 questions**.
 - **13.82** [How do Graph Attention Networks work, and how do they differ from GCNs?](#1382-how-do-graph-attention-networks-work-and-how-do-they-differ-from-gcns)
 - **13.83** [What are modern Hopfield networks, and how are they related to Transformer attention?](#1383-what-are-modern-hopfield-networks-and-how-are-they-related-to-transformer-attention)
 - **13.84** [How is a Restricted Boltzmann Machine trained, and what is contrastive divergence?](#1384-how-is-a-restricted-boltzmann-machine-trained-and-what-is-contrastive-divergence)
+- **13.85** [How should neural network weights be initialised, and why do Xavier and He initialisation work?](#1385-how-should-neural-network-weights-be-initialised-and-why-do-xavier-and-he-initialisation-work)
+- **13.86** [How do mixed-precision training and gradient checkpointing reduce memory use and speed up training?](#1386-how-do-mixed-precision-training-and-gradient-checkpointing-reduce-memory-use-and-speed-up-training)
+- **13.87** [Which loss functions beyond cross-entropy and mean squared error are used in deep learning, and when?](#1387-which-loss-functions-beyond-cross-entropy-and-mean-squared-error-are-used-in-deep-learning-and-when)
+- **13.88** [How do you estimate uncertainty in deep neural networks?](#1388-how-do-you-estimate-uncertainty-in-deep-neural-networks)
+- **13.89** [What is network pruning, and what does the lottery ticket hypothesis say?](#1389-what-is-network-pruning-and-what-does-the-lottery-ticket-hypothesis-say)
+- **13.90** [Why do gradient-boosted trees often beat deep learning on tabular data, and when does deep learning win?](#1390-why-do-gradient-boosted-trees-often-beat-deep-learning-on-tabular-data-and-when-does-deep-learning-win)
+- **13.91** [What are depthwise separable and 1x1 convolutions, and why do efficient architectures use them?](#1391-what-are-depthwise-separable-and-1x1-convolutions-and-why-do-efficient-architectures-use-them)
+- **13.92** [What are normalizing flows, and how do they compare with VAEs, GANs and diffusion models?](#1392-what-are-normalizing-flows-and-how-do-they-compare-with-vaes-gans-and-diffusion-models)
+- **13.93** [How do diffusion models work mathematically, from the DDPM objective to score matching and classifier-free guidance?](#1393-how-do-diffusion-models-work-mathematically-from-the-ddpm-objective-to-score-matching-and-classifier-free-guidance)
+- **13.94** [What is flow matching, and how does it relate to diffusion models?](#1394-what-is-flow-matching-and-how-does-it-relate-to-diffusion-models)
+- **13.95** [What are state space models such as S4 and Mamba, and how do they compare with Transformers?](#1395-what-are-state-space-models-such-as-s4-and-mamba-and-how-do-they-compare-with-transformers)
+- **13.96** [What is mechanistic interpretability, and how are superposition and sparse autoencoders used to understand neural networks?](#1396-what-is-mechanistic-interpretability-and-how-are-superposition-and-sparse-autoencoders-used-to-understand-neural-networks)
+- **13.97** [What are Kolmogorov-Arnold Networks, and how do they differ from multilayer perceptrons?](#1397-what-are-kolmogorov-arnold-networks-and-how-do-they-differ-from-multilayer-perceptrons)
 
 ---
 
@@ -3429,6 +3442,761 @@ Hinton, Osindero and Teh (2006) trained a stack of RBMs **greedily layer by laye
 - Sampling-based training is slow, hard to tune and hard to evaluate (no tractable likelihood).
 - VAEs, GANs, autoregressive models and diffusion models gave better samples with simple gradient training.
 - The legacy remains: energy-based modelling, the positive/negative phase idea in contrastive learning, score matching and diffusion, and RBMs in quantum many-body physics.
+
+### 13.85 How should neural network weights be initialised, and why do Xavier and He initialisation work?
+
+Initialise weights randomly (to break symmetry) with a variance chosen so that the scale of activations in the forward pass and of gradients in the backward pass stays roughly constant from layer to layer. Xavier (Glorot) initialisation does this for symmetric activations such as tanh; He (Kaiming) initialisation does it for ReLU-family activations, which zero out half their input.
+
+**The variance argument**
+
+For a layer $y = W x$ with $n_{in}$ inputs, independent zero-mean weights and inputs:
+
+$$
+\operatorname{Var}(y) = n_{in} \operatorname{Var}(W) \operatorname{Var}(x)
+$$
+
+If $n_{in} \operatorname{Var}(W)$ is above 1, activations grow geometrically with depth; below 1, they shrink to zero. The backward pass gives the same condition with $n_{out}$ in place of $n_{in}$. Gradients are products of these per-layer factors, so a factor of 1.1 or 0.9 over 50 layers means explosion or vanishing before training even starts.
+
+**Xavier / Glorot (2010)** compromises between the forward and backward conditions:
+
+$$
+\operatorname{Var}(W) = \frac{2}{n_{in} + n_{out}}, \qquad W \sim U\left[-\sqrt{\frac{6}{n_{in}+n_{out}}},\ \sqrt{\frac{6}{n_{in}+n_{out}}}\right]
+$$
+
+It assumes the activation is roughly linear around zero (tanh, softsign). Glorot and Bengio also showed that sigmoid's non-zero mean drives top layers into saturation, one reason sigmoid fell out of hidden layers.
+
+**He / Kaiming (2015)** accounts for ReLU discarding the negative half, which halves the second moment of each layer's output:
+
+$$
+\operatorname{Var}(W) = \frac{2}{n_{in}}
+$$
+
+He et al. showed that with this scaling a 30-layer ReLU network trained from scratch converges, where Xavier scaling made very deep ReLU nets slow or unable to start. For Leaky ReLU with slope $a$, use $2 / ((1 + a^2) n_{in})$. Use `fan_in` mode to preserve forward activations and `fan_out` to preserve backward gradients; for convolutions, fan-in is $k_h k_w C_{in}$.
+
+| Activation | Initialisation | PyTorch call |
+| --- | --- | --- |
+| tanh, sigmoid, linear | Xavier | `nn.init.xavier_uniform_(w)` |
+| ReLU, Leaky ReLU | He | `nn.init.kaiming_normal_(w, nonlinearity="relu")` |
+| SELU | LeCun normal, $1/n_{in}$ | `kaiming_normal_(w, nonlinearity="linear")` |
+| RNN recurrent matrix | Orthogonal | `nn.init.orthogonal_(w)` |
+
+**What modern architectures add**
+
+- **Normalisation layers and residuals reduce sensitivity** but do not remove it. A residual stream sums $L$ branch outputs, so its variance grows with depth. GPT-2 scales the output projection of each residual branch by $1/\sqrt{2L}$; LLM codebases typically use a small normal (std around 0.02) plus this scaling.
+- **Zero-init the last layer of each residual branch** (or the last BatchNorm gamma in a ResNet block) so each block starts as the identity. Fixup and T-Fixup make normalisation-free training work this way.
+- **Biases** are usually zero. Exceptions: forget-gate bias of 1 in LSTMs, and the prior-probability bias on detection heads (e.g. $-\log((1-\pi)/\pi)$ with $\pi = 0.01$ in RetinaNet) so early loss is not dominated by background.
+- **Hyperparameter transfer at scale:** maximal update parametrisation (muP) adjusts initialisation and per-layer learning rates with width so hyperparameters tuned on a small model transfer to a large one.
+- **Data-dependent methods** such as LSUV rescale each layer on a real batch until its output variance is 1.
+
+**Production gotcha:** PyTorch's default for `nn.Linear` and `nn.Conv2d` is Kaiming-uniform with $a = \sqrt{5}$, which gives variance $1/(3 n_{in})$, smaller than He. It works with normalisation layers, but a deep custom MLP without normalisation can train poorly on defaults. Diagnose by logging per-layer activation and gradient standard deviations on the first batch: they should be of similar order across depth.
+
+```python
+def init_weights(m):
+    if isinstance(m, (nn.Linear, nn.Conv2d)):
+        nn.init.kaiming_normal_(m.weight, mode="fan_in", nonlinearity="relu")
+        if m.bias is not None:
+            nn.init.zeros_(m.bias)
+model.apply(init_weights)
+```
+
+### 13.86 How do mixed-precision training and gradient checkpointing reduce memory use and speed up training?
+
+Mixed precision runs most of the arithmetic in 16-bit floats (BF16 or FP16), which uses Tensor Cores and halves activation and gradient memory, while keeping numerically sensitive parts in FP32. Gradient checkpointing stores only a subset of activations in the forward pass and recomputes the rest during backward, trading roughly one extra forward pass for a large cut in activation memory. Mixed precision makes training faster; checkpointing makes it slower per step but lets a bigger model, batch or sequence fit.
+
+**Where training memory goes**
+
+| Component | Mixed precision with Adam, per parameter |
+| --- | --- |
+| 16-bit weights | 2 bytes |
+| 16-bit gradients | 2 bytes |
+| FP32 master weights | 4 bytes |
+| Adam first and second moments (FP32) | 8 bytes |
+| **Total model state** | **~16 bytes** |
+
+Activations come on top and scale with batch × sequence length × layers × hidden size; for long-context Transformers they usually dominate. Mixed precision does not shrink model state (it adds the master copy); sharding (ZeRO/FSDP) does that. Mixed precision and checkpointing attack activations and compute.
+
+**Mixed precision: the three ideas from Micikevicius et al. (2018)**
+
+1. **FP32 master weights.** The optimizer updates an FP32 copy. In FP16, an update smaller than about $2^{-11}$ times the weight is rounded away, so many small updates would simply vanish.
+2. **Loss scaling.** Many FP16 gradients are smaller than its smallest normal value and underflow to zero. Multiply the loss by $S$ before backward, divide gradients by $S$ before the step. Dynamic scaling starts large, halves $S$ and skips the step when it sees inf or NaN, and grows $S$ after a run of clean steps.
+3. **FP32 for sensitive ops.** Reductions (softmax, norms, losses, large sums) accumulate in FP32.
+
+**BF16 vs FP16:** BF16 has FP32's 8-bit exponent, so it does not underflow in practice and needs **no loss scaling**. It is the default on A100, H100 and TPUs. FP16 is still used on older GPUs (V100, T4). FP8 training (E4M3 forward, E5M2 gradients, per-tensor or per-block scaling) adds another ~1.5–2x on Hopper and Blackwell at frontier scale, with more tuning risk.
+
+```python
+scaler = torch.amp.GradScaler("cuda")          # only needed for FP16
+for x, y in loader:
+    opt.zero_grad(set_to_none=True)
+    with torch.autocast("cuda", dtype=torch.float16):
+        loss = loss_fn(model(x), y)
+    scaler.scale(loss).backward()
+    scaler.unscale_(opt)                        # before clipping
+    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+    scaler.step(opt)                            # skips the step on inf/NaN
+    scaler.update()
+```
+
+`autocast` keeps a per-op policy: matmuls and convolutions run in 16-bit, softmax, log, norms and losses run in FP32. Do not call `.half()` on the whole model yourself.
+
+**Gradient checkpointing**
+
+Backward needs each layer's input activations. Normally all are kept, so memory is $O(n)$ in the number of layers. Chen et al. (2016) showed that keeping activations only at about $\sqrt{n}$ segment boundaries and recomputing inside each segment during backward gives $O(\sqrt{n})$ memory for roughly one extra forward pass, typically 20–35% more step time.
+
+```python
+from torch.utils.checkpoint import checkpoint
+def forward(self, x):
+    for block in self.blocks:
+        x = checkpoint(block, x, use_reentrant=False)
+    return x
+```
+
+Pass `use_reentrant=False` explicitly; it is the recommended implementation and supports keyword arguments and `torch.autograd.grad`. Hugging Face models expose `model.gradient_checkpointing_enable()`.
+
+**Practical decisions**
+
+- **Checkpoint per Transformer block**, not per op; that is the natural boundary.
+- **Selective recomputation:** recompute only cheap but memory-heavy parts (attention softmax and dropout masks), keep expensive matmul outputs. FlashAttention already recomputes attention in backward without storing the $N \times N$ matrix.
+- **Spend the memory you saved:** a larger micro-batch often recovers much of the recompute cost through better GPU utilisation. Compare tokens per second, not step time.
+- **Randomness:** recomputation must reproduce the same dropout masks; PyTorch preserves RNG state by default, at a small cost.
+
+**Failure modes:** FP16 loss going to NaN with a collapsing scale (overflow in attention logits or an exponent outside autocast), forgetting `unscale_` before gradient clipping, BatchNorm statistics computed in FP16, and checkpointed blocks with side effects (counters, in-place buffer updates) running twice.
+
+### 13.87 Which loss functions beyond cross-entropy and mean squared error are used in deep learning, and when?
+
+The loss encodes what "wrong" costs, so pick it from the task's error structure: class imbalance, label noise, outliers, ranking or similarity, overlap-based metrics, or a target that is a distribution. Most production choices are small modifications of cross-entropy or regression losses.
+
+**Classification variants**
+
+- **Focal loss (Lin et al., RetinaNet):** multiplies cross-entropy by $(1-p_t)^\gamma$, so well-classified examples contribute almost nothing.
+
+$$
+\text{FL}(p_t) = -\alpha_t (1 - p_t)^{\gamma} \log(p_t)
+$$
+
+With $\gamma = 2$, an example at $p_t = 0.9$ is down-weighted 100x. Built for one-stage detectors where tens of thousands of easy background anchors swamp a few objects. Also useful for rare-defect and fraud classifiers. Pair it with a prior-probability bias on the output layer, or training is unstable at the start.
+- **Class-weighted cross-entropy:** the simple baseline for imbalance. Weights by inverse frequency or effective number of samples.
+- **Label smoothing (Szegedy et al., Inception-v3):** replace the one-hot target with $(1-\varepsilon)$ on the true class and $\varepsilon/K$ spread over all classes, typically $\varepsilon = 0.1$. It stops logits growing without bound, improves accuracy and calibration, and helps with label noise. Müller, Kornblith and Hinton showed the trade-off: it pulls same-class representations into tight clusters, erasing between-class similarity information, so **teachers trained with label smoothing make worse distillation teachers**.
+- **Robust losses for noisy labels:** generalised cross-entropy, symmetric cross-entropy, or bootstrapping, which bound the penalty from confidently wrong (likely mislabelled) examples.
+
+**Regression variants**
+
+| Loss | Behaviour | Use when |
+| --- | --- | --- |
+| **MAE / L1** | Linear penalty, predicts the median | Outliers in targets |
+| **Huber / smooth L1** | Quadratic near zero, linear beyond $\delta$ | Box regression, RL value functions, noisy targets |
+| **Quantile (pinball)** | Asymmetric penalty for quantile $\tau$ | Prediction intervals, demand forecasting where under-stocking costs more |
+| **Gaussian NLL** | Predicts mean and variance | Heteroscedastic regression with uncertainty |
+| **Poisson / Tweedie** | Count or zero-inflated positive targets | Claims, sales counts |
+
+**Metric and similarity learning**
+
+- **Contrastive (pairwise) loss:** pull positive pairs together, push negatives apart beyond a margin.
+- **Triplet loss (Schroff et al., FaceNet):** for anchor $a$, positive $p$, negative $n$ on L2-normalised embeddings:
+
+$$
+\mathcal{L} = \max\left(0,\ \lVert f(a) - f(p) \rVert^2 - \lVert f(a) - f(n) \rVert^2 + m\right)
+$$
+
+The loss is zero for most random triplets, so **mining is everything**: FaceNet used semi-hard negatives (farther than the positive but inside the margin) within large batches; the hardest negatives cause collapse early on.
+- **InfoNCE / NT-Xent:** a softmax over one positive and many in-batch negatives with temperature (SimCLR, CLIP, embedding models). It mostly replaced triplet loss because every batch item serves as a negative.
+- **ArcFace / CosFace:** additive angular margins on a normalised softmax; standard in face recognition.
+- **Ranking:** pairwise (BPR, RankNet) and listwise (ListNet, LambdaRank) losses for recommenders and search.
+
+**Segmentation and dense prediction**
+
+- **Dice and Jaccard (IoU) losses** optimise overlap directly and are insensitive to the background-to-foreground ratio. Common recipe: cross-entropy plus Dice, since Dice alone has noisy gradients on empty masks.
+- **IoU-family box losses (GIoU, DIoU, CIoU)** for detection boxes.
+
+**Distribution-matching and generative**
+
+- **KL divergence:** distillation, VAEs, and the RLHF penalty against a reference model.
+- **Adversarial losses** for GANs, **noise-prediction MSE** for diffusion models, and **CTC** for speech and handwriting where the input-to-label alignment is unknown.
+
+**How I decide:** start with plain cross-entropy or MSE as the baseline, then change the loss only for a named problem (imbalance, outliers, asymmetric cost, retrieval), and judge the change on the business metric at the operating threshold, not on the loss value, since losses with different shapes are not comparable.
+
+### 13.88 How do you estimate uncertainty in deep neural networks?
+
+A softmax score is not a reliable confidence: modern networks are overconfident and can be confidently wrong on inputs unlike their training data. Practical uncertainty estimation separates the two sources of uncertainty, then uses one of a few methods: deep ensembles (strongest), MC dropout (cheapest retrofit), post-hoc calibration such as temperature scaling, and conformal prediction for guaranteed coverage.
+
+**Two kinds of uncertainty**
+
+- **Aleatoric:** noise in the data itself (a blurry image, an ambiguous label). It does not shrink with more data. Model it by predicting a distribution, e.g. a mean and variance trained with Gaussian negative log-likelihood.
+- **Epistemic:** the model's ignorance, high far from the training data. It shrinks with more data. Model it by representing uncertainty over the weights, via ensembles or approximate Bayesian methods.
+
+The distinction matters operationally: high epistemic uncertainty means "route to a human and collect this kind of data"; high aleatoric means "this case is inherently ambiguous".
+
+**Methods**
+
+| Method | How | Cost | Strength |
+| --- | --- | --- | --- |
+| **Temperature scaling** (Guo et al.) | Divide logits by one scalar $T$ fit on a validation set | Free | Fixes in-distribution calibration; does not change accuracy or detect novel inputs |
+| **MC dropout** (Gal & Ghahramani) | Keep dropout on at inference, average $T$ stochastic passes | $T$ forward passes | Retrofits any dropout model; approximate Bayesian inference |
+| **Deep ensembles** (Lakshminarayanan et al.) | Train $M$ (typically 5) models from different random inits | $M$ times training and serving | Best accuracy, calibration and robustness under dataset shift in benchmarks |
+| **Laplace / SWAG** | Gaussian over weights around the trained solution | Moderate | Post-hoc, single model |
+| **Conformal prediction** | Calibrate a score threshold on held-out data | Cheap | Prediction sets with a coverage guarantee |
+
+**Calibration and temperature scaling**
+
+Guo et al. found that deeper and wider networks with batch normalisation and less weight decay are better at accuracy but worse at calibration. The fix is surprisingly simple:
+
+$$
+\hat{p} = \operatorname{softmax}(z / T)
+$$
+
+Fit $T$ by minimising NLL on validation data. Measure with expected calibration error (ECE) and reliability diagrams, but also NLL and Brier score, since ECE depends on binning.
+
+**Ensembles and MC dropout**
+
+For either, the predictive distribution is the average of member predictions, and disagreement measures epistemic uncertainty. A useful decomposition with entropy $H$:
+
+$$
+\underbrace{H\left[\bar{p}\right]}_{\text{total}} = \underbrace{\mathbb{E}_m H\left[p_m\right]}_{\text{aleatoric}} + \underbrace{H\left[\bar{p}\right] - \mathbb{E}_m H\left[p_m\right]}_{\text{epistemic (mutual information)}}
+$$
+
+Large benchmark studies of uncertainty under dataset shift found deep ensembles the most robust, and that calibration fitted on in-distribution data degrades as shift grows. Cheaper ensemble variants: snapshot ensembles, BatchEnsemble, multiple heads on a shared backbone, or ensembling only the last layers.
+
+**Conformal prediction** is the strongest production tool when you need a guarantee. Split conformal: compute nonconformity scores (e.g. $1 - p_{\text{true}}$) on a calibration set, take the appropriate quantile, and at inference return every class above the threshold. If calibration and test data are exchangeable, the set contains the true label with probability at least $1-\alpha$, whatever the model. Set size becomes the uncertainty signal; for regression, conformalised quantile regression gives intervals.
+
+**Production practice**
+
+- **Decide what the uncertainty is for:** abstention and human review, active learning, OOD alerts, or risk-adjusted decisions. Evaluate it on that task, e.g. accuracy versus coverage curves for selective prediction.
+- **Recalibrate after every retrain and on drift**; a temperature fit last quarter is stale.
+- **Check calibration per segment**, not just globally; models are often well calibrated overall and badly calibrated on minority groups.
+- **For LLMs,** token probabilities are poorly calibrated after RLHF; use sampling consistency (several generations, measure agreement), verbalised confidence checked against accuracy, or a trained probe.
+- **Common failure:** treating max softmax as OOD detection. It catches some far-OOD inputs but misses many near-OOD ones; ensembles, feature-space distances (Mahalanobis) or energy scores do better.
+
+### 13.89 What is network pruning, and what does the lottery ticket hypothesis say?
+
+Pruning removes weights, neurons, channels, heads or layers that contribute little, to make a model smaller or faster. The lottery ticket hypothesis (Frankle and Carbin, 2019) says that a dense, randomly initialised network contains a sparse subnetwork that, trained in isolation from its original initialisation, can match the full network's accuracy in a similar number of steps.
+
+**Kinds of pruning**
+
+| | Unstructured | Semi-structured (N:M) | Structured |
+| --- | --- | --- | --- |
+| What is removed | Individual weights | N of every M weights (e.g. 2:4) | Whole channels, heads, layers |
+| Typical sparsity without accuracy loss | Very high (80–95% on CNNs) | 50% | Moderate (20–50%) |
+| Real speedup | Rarely on GPUs; mainly storage | ~1.5–2x on Ampere+ sparse Tensor Cores | Yes, on any hardware: the model is just smaller |
+
+The key production lesson: **sparsity is not speed**. A 90% unstructured-sparse model is still dense matmuls on a GPU unless a sparse kernel or specialised hardware exploits it. If latency is the goal, prune structurally or use 2:4.
+
+**Criteria and schedules**
+
+- **Magnitude:** remove the smallest $\lvert w \rvert$. Simple and surprisingly strong, globally or per layer.
+- **Gradient or Taylor scores:** estimate loss change from removing a weight, e.g. $\lvert w \cdot \partial L / \partial w \rvert$.
+- **LLM-specific one-shot methods:** SparseGPT (second-order reconstruction per layer) and Wanda (weight magnitude times input activation norm) prune large language models to 50% or 2:4 without retraining, at a small quality cost.
+- **Schedule:** iterative pruning with fine-tuning (prune a little, retrain, repeat) beats one-shot. Gradual magnitude pruning ramps sparsity during training.
+
+**Deep compression (Han et al.)** combined pruning, trained weight sharing (quantisation) and Huffman coding, shrinking AlexNet about 35x and VGG-16 about 49x with no accuracy loss. That was the result that made compression a mainstream field, though the size gains were storage gains rather than GPU latency gains.
+
+**The lottery ticket hypothesis**
+
+Procedure (iterative magnitude pruning with rewinding):
+
+1. Randomly initialise the network with weights $\theta_0$.
+2. Train to convergence.
+3. Prune the lowest-magnitude fraction of remaining weights (e.g. 20%), giving mask $m$.
+4. **Reset** surviving weights to their original values in $\theta_0$, not new random values.
+5. Repeat steps 2–4 until the target sparsity.
+
+Findings: on MNIST and CIFAR-10 networks, winning tickets at 10–20% of the original size matched or beat the dense network and often trained faster. The **same mask with a new random initialisation performs much worse**, so the initial values matter, not just the architecture.
+
+**What later work refined**
+
+- **Rewinding:** for larger networks (ResNet-50, Transformers) resetting to iteration 0 fails. Rewinding to an early point in training (a few hundred to a few thousand steps) works; this links to the network becoming stable to SGD noise early on (linear mode connectivity).
+- **Cost:** finding a ticket needs several full training runs, so it does not save training compute. Its value is scientific: it explains why over-parameterisation helps optimisation (more chances of a good subnetwork) and motivates pruning-at-initialisation methods (SNIP, GraSP, SynFlow), which so far have not matched trained-then-pruned results.
+- **Transfer:** tickets found on one dataset transfer partially to related ones.
+
+**How I would apply this**
+
+- Need a smaller, faster model: try **distillation into a smaller dense architecture** and **quantisation** first; they give dependable latency wins. Add **structured pruning** plus fine-tuning when the architecture is fixed.
+- Serving LLMs on Ampere or newer: **2:4 sparsity** with SparseGPT or Wanda, measured on task evaluations, not perplexity alone.
+- Edge storage limits: unstructured pruning plus quantisation and compression.
+- Always evaluate pruned models on rare classes and slices; pruning tends to hurt the long tail first while headline accuracy barely moves.
+
+### 13.90 Why do gradient-boosted trees often beat deep learning on tabular data, and when does deep learning win?
+
+On typical tabular datasets, medium-sized (thousands to tens of thousands of rows) with heterogeneous columns, tuned gradient-boosted trees (XGBoost, LightGBM, CatBoost) still match or beat deep networks while being cheaper to train and tune. The reason is inductive bias: trees fit irregular, axis-aligned, piecewise functions and ignore useless columns, which is what tabular targets look like. Deep learning wins with very large data, raw unstructured inputs, sequences, multimodal features, or when the model must be trained end to end with other networks. Tabular foundation models such as TabPFN have now shifted the small-data picture.
+
+**Why trees win: the Grinsztajn, Oyallon and Varoquaux findings**
+
+Their benchmark of 45 datasets found tree-based models remained state of the art at around 10K samples, even ignoring their speed advantage. They traced it to three inductive-bias gaps:
+
+1. **Irregular target functions.** Tabular targets often jump at thresholds (an age cutoff, a credit limit). Neural networks are biased toward smooth, low-frequency functions; trees are piecewise constant by construction. Smoothing the targets narrowed the gap.
+2. **Uninformative features.** Tabular data often has many irrelevant columns. Trees choose a feature per split and ignore the rest; MLPs degrade as useless columns are added.
+3. **Rotation invariance.** MLPs are rotation-invariant learners, so they cannot exploit the fact that each column has its own meaning. Trees are tied to the original axes, and randomly rotating the data hurt neural nets much less than trees, which showed how much trees benefit from the axes.
+
+**Practical reasons too**
+
+- Mixed types, missing values and high skew work natively in GBDTs (CatBoost handles categoricals, LightGBM and XGBoost handle missing values), whereas neural nets need scaling, embeddings and imputation.
+- Less tuning: GBDTs are robust to hyperparameters; deep tabular models are sensitive to learning rate, regularisation and numeric feature encoding.
+- Fast CPU training, cheap inference, SHAP explanations, and mature monotonic constraints, which regulated domains such as credit need.
+
+**When deep learning wins**
+
+| Situation | Why |
+| --- | --- |
+| Very large data (millions of rows) | Capacity pays off; mini-batch training scales |
+| High-cardinality IDs (users, items, merchants) | Learned embeddings beat one-hot or target encoding; standard in recommenders and CTR models |
+| Mixed modalities (text, images, sequences alongside columns) | One network learns everything end to end |
+| Event sequences and time-dependent behaviour | Sequence models over raw transactions beat hand-made aggregates |
+| Transfer and multi-task learning | Pretrained representations, shared heads |
+| Small data with a foundation model | TabPFN-style in-context learning |
+| Online or streaming updates | Gradient updates on new data without full retrains |
+
+**The 2024–2026 picture**
+
+- **Better deep tabular models:** FT-Transformer, plus MLPs with careful numeric feature embeddings (periodic or piecewise-linear encodings) and ensembling (TabM, RealMLP), close most of the gap on medium data when well tuned. Ensembles of GBDTs and neural nets often beat either alone.
+- **Tabular foundation models:** TabPFN is a Transformer pretrained on millions of synthetic datasets drawn from a prior over causal data-generating processes. It makes predictions in one forward pass by reading the training set as context: no gradient training, no tuning. TabPFN v2 (2025) beat tuned GBDT ensembles on datasets up to 10,000 rows and 500 features in seconds; TabPFN-2.5 raised the design target to about 50,000 rows and 2,000 features. Costs: GPU inference that grows with training-set size, a row limit, and licence terms that need checking for commercial use.
+
+**How I decide in practice**
+
+1. Start with a tuned GBDT baseline; it is fast and hard to beat.
+2. If data is small (under ~10K rows), also try TabPFN; it often wins with zero tuning.
+3. Move to deep learning when the problem has embeddings, sequences, text or images, or when data is large enough that capacity matters, and compare on the same time-aware validation split.
+4. Weigh operational cost: a 0.3% AUC gain rarely justifies GPU serving, a harder explainability story and a more fragile retraining pipeline.
+
+### 13.91 What are depthwise separable and 1x1 convolutions, and why do efficient architectures use them?
+
+A standard convolution mixes spatial neighbourhoods and channels in one operation. A depthwise separable convolution splits that into two cheaper steps: a depthwise convolution that filters each channel spatially on its own, followed by a 1x1 (pointwise) convolution that mixes channels. This cuts FLOPs and parameters by roughly 8–9x for 3x3 kernels with a small accuracy loss, which is why MobileNet, Xception and EfficientNet are built from it.
+
+**1x1 convolutions**
+
+A 1x1 convolution is a fully connected layer applied independently at every pixel across channels. Uses:
+
+- **Change channel count cheaply:** bottlenecks in ResNet (1x1 reduce, 3x3, 1x1 expand) and Inception (reduce channels before expensive 3x3 and 5x5 branches).
+- **Add nonlinearity and channel mixing** without spatial cost (Network in Network).
+- **Projection shortcuts** in residual blocks, and the per-pixel classifier in segmentation heads.
+
+**Cost comparison**
+
+For a $K \times K$ kernel, $M$ input channels, $N$ output channels and a $D_F \times D_F$ output map:
+
+| Operation | Multiply-adds |
+| --- | --- |
+| Standard conv | $D_F^2 \cdot K^2 \cdot M \cdot N$ |
+| Depthwise conv | $D_F^2 \cdot K^2 \cdot M$ |
+| Pointwise (1x1) conv | $D_F^2 \cdot M \cdot N$ |
+
+$$
+\frac{\text{separable}}{\text{standard}} = \frac{1}{N} + \frac{1}{K^2}
+$$
+
+With $K = 3$ and $N = 256$, that is about 0.115, so about 8.7x fewer operations. Parameters shrink by the same ratio.
+
+**How the main architectures use it**
+
+- **Xception (Chollet):** treats Inception modules as a step toward fully separating spatial and cross-channel correlations, then goes all the way: a ResNet-like stack built entirely from depthwise separable convolutions. Slightly better than Inception-v3 on ImageNet at a similar parameter count, showing the factorisation loses little representational power.
+- **MobileNetV1 (Howard et al.):** depthwise separable layers throughout, plus a **width multiplier** $\alpha$ (thins every layer) and **resolution multiplier** $\rho$ (shrinks input), giving a dial over the accuracy and latency trade-off.
+- **MobileNetV2:** **inverted residual** blocks: 1x1 expand (e.g. 6x), 3x3 depthwise in the wide space, 1x1 project back down to a narrow **linear bottleneck** with no ReLU, since ReLU in a low-dimensional space destroys information. Residuals connect the narrow ends.
+- **EfficientNet (Tan & Le):** MBConv blocks (inverted residuals plus squeeze-and-excitation channel attention), a baseline found by neural architecture search, and **compound scaling** that grows depth, width and resolution together by $\alpha^\phi, \beta^\phi, \gamma^\phi$ under the constraint $\alpha \beta^2 \gamma^2 \approx 2$, so each step of $\phi$ roughly doubles FLOPs.
+- **ConvNeXt** uses 7x7 depthwise convolutions as the spatial mixer, the same role self-attention plays in a Transformer block, with 1x1 MLP layers for channel mixing.
+
+**Why FLOPs are not latency**
+
+Depthwise convolutions have very low arithmetic intensity: each weight is reused only across spatial positions of one channel, so on GPUs they are **memory-bandwidth bound**. That is why EfficientNet can run slower on a GPU than a ResNet with several times its FLOPs, and why EfficientNetV2 replaced early MBConv stages with fused MBConv (a regular 3x3 convolution). On mobile CPUs and NPUs, which optimise these kernels, the FLOP savings translate much better.
+
+**Practical guidance**
+
+- **Choose by target hardware and measured latency**, not FLOPs. Benchmark on the device with the real runtime (TensorRT, LiteRT, Core ML).
+- **Mobile and edge:** MobileNetV3/V4 or EfficientNet-Lite; they quantise to INT8 well when batch norm is folded and activations are clipped (ReLU6, hard-swish).
+- **Server GPUs:** dense 3x3 convolutions (ResNet, RegNet, RepVGG) or ViTs often give better throughput per dollar.
+- **Watch quantisation:** depthwise layers have few weights per output channel, so per-tensor INT8 can lose accuracy; use per-channel scales.
+- **Small datasets:** separable networks are thin, so fine-tuning from pretrained weights matters even more than with ResNets.
+
+### 13.92 What are normalizing flows, and how do they compare with VAEs, GANs and diffusion models?
+
+A **normalizing flow** turns a simple base distribution (usually a standard Gaussian) into a complex one by passing samples through a chain of **invertible, differentiable maps**. Because every step is a bijection with a tractable Jacobian determinant, the model gives an **exact log-likelihood** and a one-pass sampler. That combination is unique among the classic deep generative families.
+
+**The change-of-variables formula**
+
+Let $z \sim p_Z$ and $x = f(z)$ with $f = f_K \circ \dots \circ f_1$ invertible. Writing $z_0 = z$ and $z_k = f_k(z_{k-1})$:
+
+$$
+\log p_X(x) = \log p_Z\left(f^{-1}(x)\right) - \sum_{k=1}^{K} \log \left| \det \frac{\partial f_k}{\partial z_{k-1}} \right|
+$$
+
+Training is plain maximum likelihood: map data back to the base space, score it under the Gaussian and add the log-determinant terms. The whole design problem is building layers that are **expressive, invertible and have a cheap determinant**; a general $d \times d$ Jacobian costs $O(d^3)$.
+
+**How the main layer types solve it**
+
+- **Planar and radial flows (Rezende and Mohamed, 2015):** small rank-one updates used to enrich the posterior of a VAE. Cheap, but each layer adds little, so they need many layers.
+- **Coupling layers (NICE, then RealNVP by Dinh et al.):** split $x$ into $(x_a, x_b)$, keep $x_a$ unchanged and transform the other half with scale and shift computed by an arbitrary network of $x_a$:
+
+$$
+y_a = x_a, \qquad y_b = x_b \odot \exp\left(s(x_a)\right) + t(x_a)
+$$
+
+  The Jacobian is triangular, so $\log \lvert \det \rvert = \sum s(x_a)$, and the inverse is just as cheap. $s$ and $t$ never need to be inverted, so they can be any deep network. RealNVP adds alternating masks and a multi-scale architecture that factors out dimensions as it goes.
+- **Glow (Kingma and Dhariwal, 2018):** each step is **ActNorm** (per-channel affine with data-dependent initialisation), an **invertible 1x1 convolution** (a learned channel permutation, LU-decomposed so the determinant is the product of the diagonal) and an affine coupling layer. It produced the first convincing high-resolution face samples and smooth latent interpolation.
+- **Autoregressive flows (MAF, IAF):** each dimension is transformed conditioned on earlier ones. MAF gives fast density evaluation but slow sampling; IAF is the reverse. Both have triangular Jacobians.
+- **Neural spline flows:** monotonic rational-quadratic splines instead of affine maps, far more expressive per layer.
+- **Continuous flows (Neural ODEs, FFJORD):** define $f$ as the solution of an ODE $\dot z = v_\theta(z, t)$; the log-density changes by the integral of the trace of $\partial v / \partial z$. This is the bridge to flow matching and diffusion's probability flow ODE.
+
+**Comparison with the other families**
+
+| | Normalizing flow | VAE | GAN | Diffusion |
+|---|---|---|---|---|
+| Likelihood | Exact | Lower bound (ELBO) | None | Bound, or exact via the ODE (expensive) |
+| Sampling cost | One pass | One pass | One pass | Many network evaluations (reducible by distillation) |
+| Latent space | Same dimension as data, invertible | Lower-dimensional, approximate encoder | Implicit, no encoder | Same dimension, deterministic via DDIM or ODE |
+| Training | Stable MLE | Stable, but blurry samples | Adversarial, unstable, mode collapse | Stable regression |
+| Sample quality on images | Lagged behind | Blurry | Sharp, low diversity | State of the art |
+| Main constraint | Invertibility limits architecture | Posterior gap | Min-max game | Inference compute |
+
+**Why flows lost the image race**
+
+- **Architectural tax:** every layer must keep the full dimension and be invertible, so models get huge (Glow used hundreds of millions of parameters for 256x256 faces) and still lag GANs and diffusion in FID.
+- **Topology:** a continuous bijection cannot change topology, so mapping a unimodal Gaussian onto well-separated modes needs very steep transformations, which leave thin regions of probability mass between modes.
+- **Likelihood is not the same as perceptual quality.** Flows famously assign **higher likelihood to some out-of-distribution data** than to the training data (a model trained on CIFAR-10 scores SVHN higher), because likelihood is dominated by low-level pixel statistics. Do not use raw flow likelihood as an out-of-distribution detector without corrections such as likelihood ratios.
+
+**Where they are still the right tool**
+
+- **Exact density and invertibility matter:** variational inference posteriors, simulation-based inference in physics and cosmology, Boltzmann generators that sample molecular configurations with importance reweighting, lattice field theory, anomaly scores on tabular data.
+- **Cheap sampling with exact likelihood** for low- to moderate-dimensional data, such as audio vocoders (WaveGlow) and density estimation in finance.
+- **The idea lives on:** continuous normalizing flows trained with flow matching are what most modern image and video generators actually are, and recent work on Transformer autoregressive flows has narrowed the quality gap for discrete-step flows too.
+
+**Interview one-liner:** flows buy exact likelihood and one-step sampling by restricting every layer to be invertible with a cheap determinant; that restriction is why they lost on sample quality and why their continuous, simulation-free descendant (flow matching) won.
+
+### 13.93 How do diffusion models work mathematically, from the DDPM objective to score matching and classifier-free guidance?
+
+A diffusion model fixes a **forward process** that gradually turns data into Gaussian noise and learns the **reverse process**. Mathematically, the network learns the **score** $\nabla_x \log p_t(x)$ of the noised data distribution at every noise level, and DDPM's "predict the noise" loss is a rescaled denoising score-matching loss. Sampling solves a reverse SDE or ODE, and guidance modifies that score at inference time.
+
+**1. The forward process (DDPM, Ho et al. 2020)**
+
+With a variance schedule $\beta_1, \dots, \beta_T$, $\alpha_t = 1 - \beta_t$ and $\bar\alpha_t = \prod_{s \le t} \alpha_s$:
+
+$$
+q(x_t \mid x_{t-1}) = \mathcal{N}\left(\sqrt{\alpha_t}\, x_{t-1}, \beta_t I\right), \qquad q(x_t \mid x_0) = \mathcal{N}\left(\sqrt{\bar\alpha_t}\, x_0, (1 - \bar\alpha_t) I\right)
+$$
+
+The closed form lets you jump to any $t$ in one step: $x_t = \sqrt{\bar\alpha_t}\, x_0 + \sqrt{1 - \bar\alpha_t}\, \epsilon$ with $\epsilon \sim \mathcal{N}(0, I)$. The **signal-to-noise ratio** $\bar\alpha_t / (1 - \bar\alpha_t)$ falls monotonically, and the schedule (linear, cosine, or one designed directly in log-SNR) decides how training effort is spread across noise levels.
+
+**2. The variational objective and its simplification**
+
+The model is a latent-variable model trained with an ELBO. Because the posterior $q(x_{t-1} \mid x_t, x_0)$ is Gaussian in closed form, every KL term compares two Gaussians. Parameterising the reverse mean through a noise predictor $\epsilon_\theta(x_t, t)$ turns each term into a weighted squared error, and Ho et al. found that **dropping the weights** works better for sample quality:
+
+$$
+\mathcal{L}_{\text{simple}} = \mathbb{E}_{x_0, \epsilon, t} \left[ \left\lVert \epsilon - \epsilon_\theta\left(\sqrt{\bar\alpha_t}\, x_0 + \sqrt{1 - \bar\alpha_t}\, \epsilon,\ t\right) \right\rVert^2 \right]
+$$
+
+The weighting matters: the unweighted loss favours perceptual quality, while the true ELBO weighting favours likelihood (improved DDPM learns the variances to get both).
+
+**3. The score-matching view**
+
+For a Gaussian corruption, the score of $q(x_t \mid x_0)$ is $-\epsilon / \sqrt{1 - \bar\alpha_t}$. **Denoising score matching** (Vincent, 2011) shows that regressing on this conditional score recovers the marginal score, so:
+
+$$
+s_\theta(x_t, t) \approx \nabla_{x_t} \log p_t(x_t) = -\frac{\epsilon_\theta(x_t, t)}{\sqrt{1 - \bar\alpha_t}}
+$$
+
+Predicting the noise, predicting the clean image and predicting the score are the same model under different parameterisations. **Tweedie's formula** gives the denoised estimate $\hat x_0 = \left(x_t - \sqrt{1 - \bar\alpha_t}\, \epsilon_\theta\right) / \sqrt{\bar\alpha_t}$. Practical parameterisations: $\epsilon$-prediction (DDPM), $x_0$-prediction, and **$v$-prediction** $v = \sqrt{\bar\alpha_t}\,\epsilon - \sqrt{1 - \bar\alpha_t}\, x_0$, which stays well-conditioned at both ends of the schedule and is needed for distillation and high-resolution models.
+
+**4. The continuous-time picture (Song et al., score SDE)**
+
+As $T \to \infty$, the forward chain becomes an SDE $dx = f(x, t)\,dt + g(t)\,dw$ (DDPM is the "variance preserving" SDE; NCSN is the "variance exploding" one). Anderson's theorem gives the **reverse-time SDE**, which only needs the score:
+
+$$
+dx = \left[ f(x, t) - g(t)^2 \nabla_x \log p_t(x) \right] dt + g(t)\, d\bar w
+$$
+
+There is also a deterministic **probability flow ODE** with the same marginals at every $t$:
+
+$$
+\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)
+$$
+
+Consequences: you can use any ODE solver (Heun, DPM-Solver, UniPC) with 10 to 30 steps instead of 1,000; the map from noise to image is deterministic, so you can encode real images into noise (inversion for editing); and you get exact likelihoods via the instantaneous change-of-variables formula.
+
+**5. DDIM (Song, Meng and Ermon)**
+
+DDIM defines a family of **non-Markovian** forward processes with the same marginals $q(x_t \mid x_0)$, so the **same trained network** works unchanged. Its update is:
+
+$$
+x_{t-1} = \sqrt{\bar\alpha_{t-1}}\, \hat x_0 + \sqrt{1 - \bar\alpha_{t-1} - \sigma_t^2}\ \epsilon_\theta(x_t, t) + \sigma_t z
+$$
+
+With $\sigma_t = 0$ it is deterministic, equivalent to an Euler discretisation of the probability flow ODE, and allows skipping steps (50 instead of 1,000). With the DDPM value of $\sigma_t$ it recovers ancestral sampling.
+
+**6. Guidance**
+
+By Bayes' rule, $\nabla \log p(x \mid c) = \nabla \log p(x) + \nabla \log p(c \mid x)$. **Classifier guidance** (Dhariwal and Nichol) adds the gradient of a separate noise-aware classifier, scaled up. **Classifier-free guidance** (Ho and Salimans) trains one network both conditionally and unconditionally by dropping the condition (for example 10% of the time, replaced by a null token), then extrapolates at sampling time:
+
+$$
+\tilde\epsilon_\theta(x_t, c) = \epsilon_\theta(x_t, \varnothing) + w \left( \epsilon_\theta(x_t, c) - \epsilon_\theta(x_t, \varnothing) \right)
+$$
+
+With $w > 1$ this samples from a sharpened distribution proportional to $p(x)\,p(c \mid x)^{w}$ (approximately, since the guided score is not the score of any single diffused distribution). It trades **diversity for fidelity and prompt adherence**.
+
+```python
+eps_u, eps_c = model(x_t, t, null_emb), model(x_t, t, text_emb)
+eps = eps_u + w * (eps_c - eps_u)            # w around 3-8 for typical text-to-image
+x0_hat = (x_t - (1 - abar_t).sqrt() * eps) / abar_t.sqrt()
+```
+
+**Production pitfalls**
+
+- **High guidance scales** oversaturate colours and collapse diversity; fixes include dynamic thresholding, guidance rescaling and applying guidance only in a middle band of noise levels.
+- **Schedule bugs:** many schedules never reach zero SNR at the final step, so the model never sees pure noise yet sampling starts from it. That causes the "cannot generate very dark or very bright images" artefact; the fix is a zero-terminal-SNR schedule with $v$-prediction.
+- **CFG doubles inference cost** (two forward passes per step); guidance distillation folds it into one pass.
+- **Few-step generation** comes from distillation (progressive distillation, consistency models, adversarial diffusion distillation), not from simply cutting solver steps.
+
+**Interview one-liner:** the network learns the score of the data at every noise level; DDPM's noise MSE is denoising score matching, sampling integrates a reverse SDE or its probability flow ODE, and CFG extrapolates between conditional and unconditional scores.
+
+### 13.94 What is flow matching, and how does it relate to diffusion models?
+
+**Flow matching** (Lipman et al., 2022) trains a **continuous normalizing flow** without simulating it: you choose a probability path that moves noise to data, and regress a neural velocity field $v_\theta(x, t)$ onto the known velocity of that path. Sampling integrates the ODE $\dot x = v_\theta(x, t)$ from noise to data. With Gaussian paths it is mathematically very close to diffusion; the main practical difference is that the default **straight-line path** gives simpler training and fewer sampling steps, which is why Stable Diffusion 3, FLUX and many video models use it.
+
+**The problem it solves**
+
+Continuous normalizing flows such as FFJORD were trained by maximum likelihood, which means solving an ODE and estimating a Jacobian trace inside every training step: slow and hard to scale. Flow matching replaces that with a simple regression whose target is known in closed form.
+
+**The construction (convention: $x_0$ is noise, $x_1$ is data)**
+
+- Pick a **conditional path** for each data point. The simplest is linear interpolation:
+
+$$
+x_t = (1 - t)\, x_0 + t\, x_1, \qquad x_0 \sim \mathcal{N}(0, I), \quad x_1 \sim p_{\text{data}}
+$$
+
+- Its velocity is constant: $u_t = x_1 - x_0$. (Lipman et al. keep a tiny noise floor $\sigma_{\min}$ at the data end; it barely changes anything.)
+- **Conditional flow matching loss:**
+
+$$
+\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_0, x_1} \left[ \left\lVert v_\theta(x_t, t) - (x_1 - x_0) \right\rVert^2 \right]
+$$
+
+- **Key theorem:** this conditional loss has the same gradients as regressing on the intractable *marginal* velocity field that pushes the whole noise distribution onto the data distribution. So the learned $v_\theta$ is the conditional expectation $\mathbb{E}[x_1 - x_0 \mid x_t]$, and integrating it transports noise to data.
+
+```python
+x1 = batch                                  # data (or VAE latents)
+x0 = torch.randn_like(x1)
+t = torch.sigmoid(torch.randn(len(x1)))     # logit-normal t, as in SD3
+xt = (1 - t)[:, None, None, None] * x0 + t[:, None, None, None] * x1
+loss = F.mse_loss(model(xt, t, cond), x1 - x0)
+
+# sampling with Euler steps
+x = torch.randn(shape)
+for i in range(n_steps):
+    t = i / n_steps
+    x = x + model(x, t, cond) / n_steps
+```
+
+**Rectified flow (Liu et al., 2022)** arrived at the same linear-interpolation objective independently and added **reflow**: generate (noise, sample) pairs with the trained model, then retrain on those *coupled* pairs. Paths that crossed in the original random pairing get untangled, trajectories become straighter, and one or two Euler steps can be enough. Reflow straightens paths but does not, in general, compute the optimal transport map; it also costs a large synthetic-pair generation pass and can lose some quality.
+
+**How it relates to diffusion**
+
+- **Same family.** Diffusion's forward process is also an interpolation $x_t = \alpha_t x_1 + \sigma_t x_0$, just with curved (variance-preserving) coefficients. Velocity, noise, clean-sample and score predictions are all linear transformations of each other for Gaussian paths, so a flow-matching model is a diffusion model with a particular schedule, a particular parameterisation and a particular loss weighting.
+- **Diffusion's probability flow ODE is a flow.** Flow matching trains that ODE directly instead of deriving it from a score.
+- **What really differs in practice:**
+
+| | DDPM-style diffusion | Flow matching / rectified flow |
+|---|---|---|
+| Path | Curved, variance preserving | Straight line (by default) |
+| Prediction target | Noise $\epsilon$ (or $v$) | Velocity $x_1 - x_0$ |
+| Terminal SNR | Often not exactly zero (needs a fix) | Pure noise at $t = 0$ by construction |
+| Sampler | Stochastic or DDIM / ODE solvers | Simple ODE solvers; Euler works well |
+| Non-Gaussian sources | Awkward | Natural: any source distribution or coupling |
+
+- **Not magically one-step.** The *conditional* paths are straight but the learned *marginal* field is still curved where paths cross, so you still need tens of steps without reflow or distillation.
+
+**What Stable Diffusion 3 (Esser et al., 2024) showed**
+
+- They compared many diffusion and flow formulations at scale and found that rectified flow works best **when the timestep sampling is reweighted**: a **logit-normal** distribution over $t$ concentrates training on intermediate noise levels, where predicting the velocity is hardest, instead of the trivial ends.
+- Combined with the **MM-DiT** architecture (separate weights for image and text tokens joined in one attention), validation loss scaled smoothly up to 8B parameters and tracked human-preference and compositional benchmarks.
+- High resolutions need a **timestep shift** towards noisier levels, because more pixels carry more redundant signal at the same noise level.
+
+**Extensions worth knowing**
+
+- **Minibatch optimal-transport couplings** pair noise with data inside a batch to straighten paths without a reflow pass.
+- **Stochastic interpolants** generalise to arbitrary source and target distributions (image-to-image, data-to-data translation).
+- **Discrete and Riemannian flow matching** for tokens, molecules, proteins and data on manifolds; flow matching is now standard in protein and molecule generation and in speech synthesis.
+- **Few-step models** (consistency, shortcut and mean-flow models) learn larger jumps along the flow directly.
+
+**Interview one-liner:** flow matching regresses a velocity field onto the known velocity of a chosen noise-to-data path; with straight paths it is diffusion with a cleaner parameterisation and schedule, which made it the default for modern image and video generators.
+
+### 13.95 What are state space models such as S4 and Mamba, and how do they compare with Transformers?
+
+**State space models (SSMs)** process a sequence through a learned **linear dynamical system** with a fixed-size hidden state. They train in parallel like a convolution or scan, and generate like an RNN with **constant memory and time per token**. **S4** made them work on long-range tasks; **Mamba** made the dynamics input-dependent (selective) so they can compete with Transformers on language; **Mamba-2** showed they are a structured form of linear attention. Today the strongest production designs are **hybrids** that keep a few attention layers.
+
+**The continuous system and its discretisation**
+
+For a scalar input channel $u(t)$, hidden state $h(t) \in \mathbb{R}^N$ and output $y(t)$:
+
+$$
+h'(t) = A h(t) + B u(t), \qquad y(t) = C h(t)
+$$
+
+Discretising with step size $\Delta$ (zero-order hold) gives $\bar A = \exp(\Delta A)$ and a matching $\bar B$, so:
+
+$$
+h_k = \bar A h_{k-1} + \bar B u_k, \qquad y_k = C h_k
+$$
+
+If $\bar A, \bar B, C$ do not depend on the input, unrolling gives a **convolution** $y = \bar K * u$ with kernel $\bar K = (C\bar B, C\bar A\bar B, \dots, C\bar A^{L-1}\bar B)$. That is the **duality** S4 exploits: train as a long convolution (FFT, $O(L \log L)$), infer as a recurrence ($O(1)$ per token).
+
+**S4 (Gu, Goel and Ré, 2021)**
+
+- Plain linear RNNs forget fast or blow up. S4 initialises $A$ with the **HiPPO** matrix, which makes the state an online projection of the input history onto orthogonal polynomials, so information is retained over thousands of steps.
+- It reparameterises $A$ as normal plus low-rank so the kernel can be computed efficiently; later variants (S4D, S5) showed diagonal $A$ is almost as good and much simpler.
+- Results: it solved the Path-X task of Long Range Arena (length 16k) that every efficient Transformer failed, and was strong on audio and time series. But it lagged Transformers on **language**.
+
+**Why S4 struggled with language, and what Mamba changed**
+
+A time-invariant system applies the same dynamics to every token, so it cannot decide *what to remember*: it is poor at selective copying and **associative recall** ("the key that appeared 2,000 tokens ago maps to which value?"). **Mamba (Gu and Dao, 2023)** makes $B$, $C$ and $\Delta$ **functions of the current input**:
+
+- A large $\Delta$ resets the state and focuses on the current token; a small $\Delta$ ignores it and preserves memory. That is a learned, continuous version of LSTM-style gating.
+- Input dependence kills the convolution trick, so Mamba uses a **hardware-aware parallel scan**: the expanded state is kept in GPU SRAM and never written to HBM, with recomputation in the backward pass (the same idea as FlashAttention).
+- The block merges the SSM with a gated MLP, so a Mamba model is a stack of identical blocks with no attention and no positional encoding. The original paper reported roughly 5x higher generation throughput than a same-size Transformer and matched Transformers twice its size on language modelling at small scale.
+
+**Mamba-2 and state space duality (Dao and Gu, 2024)**
+
+- Restricting $A$ to a **scalar times the identity per head** makes the whole sequence map a multiplication by a **semiseparable matrix** $M_{ji} = C_j^\top \left( \prod_{k=i+1}^{j} a_k \right) B_i$ for $j \ge i$.
+- That is exactly **causal linear attention with a data-dependent decay mask**: $C$ plays the query, $B$ the key, $u$ the value.
+- The SSD algorithm splits the sequence into chunks: attention-like matmuls inside a chunk, a recurrence between chunks. It uses tensor cores, runs 2 to 8 times faster than Mamba's scan, and allows much larger states (64 to 256 instead of 16) and tensor parallelism.
+
+**Comparison with Transformers**
+
+| | Transformer | Mamba-style SSM |
+|---|---|---|
+| Training cost in sequence length | $O(L^2)$ (FlashAttention makes memory linear) | $O(L)$ |
+| Inference memory | KV cache grows linearly with context | Fixed-size state |
+| Per-token decode cost | Grows with context | Constant |
+| Exact recall and copying from far back | Strong: every token is still addressable | Weaker: history is compressed into a fixed state |
+| In-context learning, retrieval-heavy tasks | Strong | Lags at equal size |
+| Ecosystem | Mature kernels, serving stacks, interpretability tools | Younger; fewer optimised serving paths |
+
+The fundamental trade-off: a Transformer **stores** the past and pays for it in memory; an SSM **compresses** the past and pays in recall. Theoretical and empirical work shows fixed-state models need state size growing with the length of the string they must copy.
+
+**Hybrids are where the field landed**
+
+- **Jamba (AI21, 2024):** one attention layer for every seven Mamba layers, plus mixture-of-experts. 52B total and 12B active parameters, 256K context, and a KV cache about 8 times smaller than a comparable Transformer.
+- Later hybrids (NVIDIA Nemotron-H, IBM Granite 4.0, Falcon-H1, Zamba, Samba, and linear-attention hybrids such as Qwen3-Next with Gated DeltaNet) follow the same recipe: mostly linear-time layers for cheap long context, a small fraction of attention layers for precise retrieval.
+
+**How to decide**
+
+- Long sequences with modest recall needs, streaming, or edge inference (audio, genomics, sensor time series, very long documents on limited memory): pure SSMs or SSM-heavy hybrids.
+- Long-context LLM serving where KV-cache memory dominates cost: a hybrid can raise batch size and throughput substantially.
+- Retrieval, tool-use and exact-copy-heavy workloads, or teams that need mature serving and fine-tuning tooling: a standard Transformer remains the safe default.
+- Always evaluate on **recall-style tasks** (needle-in-a-haystack, multi-key retrieval, in-context learning), not just perplexity; that is where SSMs hide their weakness.
+
+**Interview one-liner:** SSMs are linear RNNs that train like convolutions or attention and decode in constant memory; Mamba added input-dependent gating, Mamba-2 showed it is decayed linear attention, and hybrids keep a few attention layers because a fixed-size state cannot recall everything.
+
+### 13.96 What is mechanistic interpretability, and how are superposition and sparse autoencoders used to understand neural networks?
+
+**Mechanistic interpretability** tries to reverse-engineer a trained network into human-understandable **features** (the variables it represents) and **circuits** (the algorithms that connect them), the way you would decompile a binary. The main obstacle is **superposition**: networks represent more features than they have neurons, so individual neurons are polysemantic. **Sparse autoencoders (SAEs)** and their successors are the main tool for undoing superposition and recovering monosemantic features.
+
+**How it differs from classic explainability**
+
+SHAP, saliency maps and similar methods attribute an output to inputs. Mechanistic work asks *what is computed internally and how*, and tests its claims causally by intervening on activations. It aims at questions attribution cannot answer: is the model planning, deceiving, or using a memorised shortcut?
+
+**The circuits programme (Olah et al.)**
+
+- **Features** are directions in activation space; **circuits** are weighted connections between features across layers. Early vision work traced curve detectors and high-low frequency detectors in InceptionV1.
+- In Transformers, the **residual stream** view treats each attention head and MLP as reading from and writing to a shared vector space. Landmark findings: **induction heads** (a two-head circuit that copies the token following an earlier occurrence, which drives much of in-context learning), the indirect-object-identification circuit in GPT-2 small, and modular-arithmetic circuits that use Fourier features.
+- Core tools: activation patching and causal tracing, path patching, logit lens, linear probes, steering vectors.
+
+**Superposition (Elhage et al., "Toy Models of Superposition", 2022)**
+
+- In a small model that must reconstruct many sparse features through a narrow hidden layer, the network packs features into **nearly orthogonal directions**, more of them than dimensions. Interference is tolerable precisely because features are rarely active together.
+- Features form geometric arrangements (antipodal pairs, triangles, pentagons), with **phase changes** between "dedicate a dimension", "superpose" and "ignore" depending on feature importance and sparsity.
+- Consequence: a single neuron fires for unrelated concepts (polysemanticity), so **neurons are the wrong unit of analysis**.
+
+**Sparse autoencoders (dictionary learning)**
+
+Train a wide, sparse autoencoder on a layer's activations $x \in \mathbb{R}^d$, with $m \gg d$ latents:
+
+$$
+f(x) = \operatorname{ReLU}\left(W_e (x - b_d) + b_e\right), \qquad \hat x = W_d f(x) + b_d
+$$
+
+$$
+\mathcal{L} = \lVert x - \hat x \rVert_2^2 + \lambda \lVert f(x) \rVert_1
+$$
+
+Each decoder column is a candidate feature direction; the sparsity penalty pushes each input to be explained by a few active features.
+
+- **"Towards Monosemanticity" (Anthropic, 2023):** applied to the MLP layer of a one-layer Transformer with 512 neurons, SAEs found thousands of features far more interpretable than neurons (DNA sequences, Arabic script, base64, legal language), and features **split** into finer ones as dictionary size grew.
+- **"Scaling Monosemanticity" (Anthropic, 2024):** SAEs with up to about 34 million features on the residual stream of Claude 3 Sonnet. Features were **multilingual and multimodal** and abstract (code bugs, sycophancy, deception, secrecy, the Golden Gate Bridge). **Clamping a feature high steered behaviour causally**: amplifying the Golden Gate Bridge feature made the model talk about the bridge and even identify as it.
+- **Scaling and tooling:** OpenAI's TopK SAEs (16 million latents on GPT-4), DeepMind's JumpReLU SAEs and the open Gemma Scope suite, and SAE scaling laws for choosing dictionary size and sparsity.
+
+**From features to circuits**
+
+**Transcoders** and **cross-layer transcoders** replace each MLP with a sparse, interpretable approximation, so you can build **attribution graphs** showing how features feed each other on a specific prompt. Anthropic's 2025 circuit-tracing work used this to show multi-step reasoning (an intermediate fact is computed and then used), **planning ahead** for rhymes in poetry, and cases where a model's stated chain of thought did not match its internal computation.
+
+**Limitations a senior engineer should know**
+
+- **Reconstruction gap:** splicing SAE reconstructions back into the model raises its loss noticeably; the unexplained "dark matter" can hide important computation.
+- **Features are not canonical:** results depend on dictionary size, sparsity penalty and random seed; features split and absorb each other (a "starts with E" feature that stops firing for some words because a more specific feature absorbed them).
+- **Dead and dense latents**, plus costly training (SAEs on frontier models need large compute and storage of activations).
+- **Interpretability illusions:** labels come from max-activating examples and automated explanations, which can look convincing but be wrong. Validate with causal interventions.
+- **Practical utility is mixed:** DeepMind reported in 2025 that SAE features were worse than simple linear probes for detecting harmful intent and shifted its priorities. Probes, steering vectors and activation patching often give more value per engineering hour.
+
+**Practical uses today**
+
+- Safety research and audits: finding features for deception, sycophancy or dangerous knowledge, and checking whether fine-tuning changed them.
+- **Steering and unlearning** via feature clamping or ablation.
+- **Debugging:** spurious features (a classifier relying on watermarks), and monitoring internal features in deployment.
+- Open tooling: TransformerLens, nnsight, SAELens, Neuronpedia.
+
+**Interview one-liner:** networks pack more sparse features than neurons into near-orthogonal directions; SAEs learn an overcomplete sparse dictionary that recovers those features, which can then be traced into circuits and tested by intervention, but the decomposition is incomplete and not unique.
+
+### 13.97 What are Kolmogorov-Arnold Networks, and how do they differ from multilayer perceptrons?
+
+**Kolmogorov-Arnold Networks (KANs, Liu et al., 2024)** swap where the nonlinearity lives. An MLP has **fixed activations on nodes** and **learnable linear weights on edges**; a KAN has **learnable univariate functions on edges** (parameterised as splines) and nodes that **just sum**. They are attractive for small scientific problems where you want an interpretable, possibly symbolic formula, but fair comparisons show they do not beat MLPs on general machine learning tasks and are much slower on GPUs.
+
+**The theorem behind it**
+
+The **Kolmogorov-Arnold representation theorem** says any continuous function of $n$ variables on a bounded domain can be written using only univariate functions and addition:
+
+$$
+f(x_1, \dots, x_n) = \sum_{q=1}^{2n+1} \Phi_q\left( \sum_{p=1}^{n} \phi_{q,p}(x_p) \right)
+$$
+
+The catch, and why it was long considered useless for learning: the inner functions can be **non-smooth or even fractal**. KANs sidestep this by abandoning the fixed depth-two, width-$(2n+1)$ form and stacking arbitrary widths and depths, betting that real-world functions have smooth compositional structure.
+
+**A KAN layer**
+
+Each edge from input $i$ to output $j$ has its own learnable function, and nodes add:
+
+$$
+x_{l+1, j} = \sum_{i=1}^{n_l} \phi_{l, j, i}(x_{l, i}), \qquad \phi(x) = w_b\, \operatorname{silu}(x) + w_s \sum_{k} c_k B_k(x)
+$$
+
+where $B_k$ are B-spline basis functions on a grid of $G$ intervals of order $k$ (usually cubic). An MLP layer is $\sigma(Wx + b)$: one shared nonlinearity after a linear map. A KAN layer has $O(n_{\text{in}} n_{\text{out}} (G + k))$ parameters, so a KAN needs far fewer **nodes** but has more parameters per edge.
+
+**Distinctive features from the paper**
+
+- **Grid extension:** refine the spline grid during training to increase accuracy without retraining from scratch.
+- **Sparsification and pruning:** L1 and entropy penalties on edge activations, then prune unimportant nodes and edges to get a small network.
+- **Symbolic regression:** inspect each learned edge function, snap it to a candidate like $\sin$, $\exp$ or $x^2$, fine-tune the affine parameters, and read off a closed-form formula. The paper rediscovered relations in knot theory and physics (Anderson localisation) this way.
+- **Claimed scaling:** faster neural scaling laws than MLPs on smooth synthetic functions and PDE solving, and claimed resistance to catastrophic forgetting thanks to spline locality.
+- **KAN 2.0** (same group) focused on science: injecting known modularity and auxiliary variables, and converting between KANs and code or formulas.
+
+**KAN versus MLP**
+
+| | MLP | KAN |
+|---|---|---|
+| Learnable part | Linear weights on edges | Univariate spline functions on edges |
+| Nonlinearity | Fixed (ReLU, GELU) on nodes | Learned per edge; nodes sum |
+| Theoretical basis | Universal approximation theorem | Kolmogorov-Arnold representation theorem |
+| Hardware fit | Dense matmuls, ideal for tensor cores | Spline evaluation and gather ops, poorly batched |
+| Training speed | Fast | Roughly 10x slower at equal parameters (authors' own estimate) |
+| Interpretability | Low | High for small networks: plot or symbolify each edge |
+| Proven scale | Billions of parameters | Mostly small scientific and toy problems |
+
+**What the follow-up critiques found**
+
+- **"KAN or MLP: A Fairer Comparison" (Yu et al., 2024)** matched parameters and FLOPs across machine learning, vision, NLP, audio and symbolic tasks. MLPs won everywhere except **symbolic formula fitting**, and an MLP with **B-spline activations** matched or beat KAN there too, so the advantage comes from the spline basis rather than the architecture.
+- The same study found KANs **forget more**, not less, in standard class-incremental continual learning.
+- Swapping KAN layers into CNNs or Transformers usually gives no gain on real benchmarks once compute is controlled, and training is more sensitive to grid size, grid range and initialisation. Inputs that drift outside the spline grid make the edge functions extrapolate badly.
+- Many variants replace B-splines with faster bases (radial basis functions in FastKAN, Chebyshev or Fourier polynomials, rational functions) to recover GPU efficiency; this blurs the line between a KAN and an MLP with learnable activations.
+
+**When to reach for one**
+
+- **Good fit:** low-dimensional scientific or engineering regression where an interpretable or symbolic answer is the goal (physics-informed modelling, discovering laws from simulation data, compact surrogate models), with domain experts in the loop.
+- **Poor fit:** high-dimensional perception, language, or any large-scale production model where throughput, mature tooling and well-understood optimisation matter. A tuned MLP, gradient-boosted trees for tabular data, or classic symbolic regression (PySR) are strong baselines to beat first.
+
+**Interview one-liner:** a KAN puts learnable spline functions on edges and plain sums on nodes, inspired by the Kolmogorov-Arnold theorem; it is a nice tool for small interpretable scientific models, but under fair compute budgets MLPs match or beat it on most tasks and run far faster.
 
 ---
 
