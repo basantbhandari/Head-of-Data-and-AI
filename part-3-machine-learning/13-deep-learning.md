@@ -4,7 +4,7 @@ _Part III — Machine Learning_
 
 Backpropagation, activations, normalization, residual networks, sequence models, generative models and the practicalities of training deep networks.
 
-This chapter contains **79 questions**.
+This chapter contains **84 questions**.
 
 ## Contents
 
@@ -87,6 +87,11 @@ This chapter contains **79 questions**.
 - **13.77** [What is early stopping actually doing from an optimization perspective?](#1377-what-is-early-stopping-actually-doing-from-an-optimization-perspective)
 - **13.78** [How would you debug a neural network whose loss suddenly becomes NaN?](#1378-how-would-you-debug-a-neural-network-whose-loss-suddenly-becomes-nan)
 - **13.79** [What are Graph Neural Networks (GNNs)?](#1379-what-are-graph-neural-networks-gnns)
+- **13.80** [What is geometric deep learning, and how do symmetry, invariance and equivariance unify CNNs, GNNs and Transformers?](#1380-what-is-geometric-deep-learning-and-how-do-symmetry-invariance-and-equivariance-unify-cnns-gnns-and-transformers)
+- **13.81** [What are equivariant neural networks, and where are they used in practice?](#1381-what-are-equivariant-neural-networks-and-where-are-they-used-in-practice)
+- **13.82** [How do Graph Attention Networks work, and how do they differ from GCNs?](#1382-how-do-graph-attention-networks-work-and-how-do-they-differ-from-gcns)
+- **13.83** [What are modern Hopfield networks, and how are they related to Transformer attention?](#1383-what-are-modern-hopfield-networks-and-how-are-they-related-to-transformer-attention)
+- **13.84** [How is a Restricted Boltzmann Machine trained, and what is contrastive divergence?](#1384-how-is-a-restricted-boltzmann-machine-trained-and-what-is-contrastive-divergence)
 
 ---
 
@@ -3134,6 +3139,296 @@ $$
 **Graph classification:** Classify an entire graph.
 
 GNNs are especially useful when **relationships between entities contain predictive information**, which conventional tabular models may fail to capture.
+
+### 13.80 What is geometric deep learning, and how do symmetry, invariance and equivariance unify CNNs, GNNs and Transformers?
+
+**Geometric deep learning (GDL)** is the framework (Bronstein, Bruna, Cohen and Veličković, 2021) that explains most successful architectures as one recipe: pick the **domain** your data lives on, identify its **symmetry group**, and build layers that respect that symmetry. CNNs, GNNs and Transformers are the same blueprint applied to different domains.
+
+**Key definitions**
+
+For a transformation $g$ from a group $G$ acting on the input:
+
+- **Invariance:** the output does not change, $f(g \cdot x) = f(x)$. A cat classifier should say "cat" wherever the cat is.
+- **Equivariance:** the output changes in the same way as the input, $f(g \cdot x) = g \cdot f(x)$. Shift the image and the feature map shifts by the same amount; permute the nodes and the node embeddings are permuted the same way.
+
+Equivariance keeps information in intermediate layers. Invariance is applied once, at the end, when you need a single answer.
+
+**The blueprint**
+
+1. Stack **local equivariant layers** (convolution, message passing, attention), each followed by a pointwise nonlinearity.
+2. Optionally add **local pooling / coarsening** to build a multi-scale hierarchy (scale separation).
+3. Finish with a **global invariant pooling** (global average, sum or mean readout) when the task needs an invariant output.
+
+The other two principles are **geometric stability** (small deformations of the input should cause small changes in the output) and **scale separation** (learn local interactions, then compose them). Together they explain why these models beat the curse of dimensionality: the symmetry prior cuts the hypothesis space massively.
+
+**The "5 Gs" and the architectures they produce**
+
+| Domain | Symmetry group | Architecture |
+| --- | --- | --- |
+| Grids (images, audio) | Translation | CNN |
+| Groups / homogeneous spaces (sphere, 3D) | Rotations, roto-translations | Group-equivariant CNNs, spherical CNNs |
+| Graphs and sets | Permutation of nodes | GNNs, DeepSets |
+| Geodesics / manifolds (meshes) | Isometries | Geodesic and mesh CNNs |
+| Gauges (local frames on manifolds) | Gauge transformations | Gauge-equivariant CNNs |
+
+**Where Transformers fit**
+
+Self-attention without positional encodings is **permutation-equivariant**: it is a GNN over a **fully connected graph** in which the attention weights are learned edge weights. Positional encodings deliberately break that symmetry to inject sequence order. In this view a Transformer is a GNN with a complete graph plus a position prior; a GAT is attention restricted to the given edges.
+
+**Why it matters in practice**
+
+- **Sample efficiency:** baking in the right symmetry means the model does not have to learn it from data (no need to augment every rotation of a molecule).
+- **Architecture choice becomes a modelling question:** "What transformations should not change my answer?" For tabular rows, the answer may be none, which is why gradient boosting often wins there.
+- **Failure mode:** the wrong prior hurts. Full rotation invariance makes "6" and "9" indistinguishable; translation equivariance is wrong where absolute position matters (e.g. medical images with a fixed anatomical frame). Large data can sometimes substitute for priors, which is why ViTs with weak priors match CNNs only at scale.
+
+**Interview one-liner:** GDL says architectures are defined by the symmetries they respect: CNNs are translation-equivariant, GNNs and Transformers are permutation-equivariant, and the final readout makes the prediction invariant.
+
+### 13.81 What are equivariant neural networks, and where are they used in practice?
+
+An **equivariant neural network** is built so that transforming the input by a symmetry (rotation, translation, reflection, permutation) transforms the output in a predictable, matching way, guaranteed by construction rather than learned from augmentation. In applied ML the term usually means networks equivariant to **3D Euclidean symmetries**: the groups $E(3)$ (rotations, translations, reflections) or $SE(3)$ (no reflections).
+
+**Why not just augment the data?**
+
+- Augmentation only gives *approximate* symmetry and only for the rotations you sampled; equivariance is exact for all of them.
+- It wastes capacity and data learning something you already know.
+- For physical quantities it is essential: if you rotate a molecule, predicted **forces** must rotate with it (equivariant) while predicted **energy** must not change (invariant). A model that violates this produces unphysical simulations.
+
+**Main design families**
+
+- **Invariant-feature models** (SchNet, DimeNet): feed only distances and angles, which are already invariant. Simple, but can lose directional information.
+- **Scalar-vector models** like **E(n)-equivariant GNNs (EGNN, Satorras et al. 2021)**: each node carries features $h_i$ and coordinates $x_i$. Messages use only the invariant squared distance, and coordinates are updated along relative position vectors:
+
+$$
+m_{ij} = \phi_e\left(h_i, h_j, \lVert x_i - x_j \rVert^2, a_{ij}\right)
+$$
+
+$$
+x_i' = x_i + C \sum_{j \neq i} (x_i - x_j)\, \phi_x(m_{ij}), \qquad h_i' = \phi_h\left(h_i, \sum_{j} m_{ij}\right)
+$$
+
+  Because $x_i - x_j$ rotates with the input and the weights $\phi_x(m_{ij})$ are invariant, the update is equivariant without any spherical harmonics. It is cheap and works in any dimension $n$.
+- **Tensor-field / irreducible-representation models** (Tensor Field Networks, SE(3)-Transformer, NequIP, MACE, the e3nn library): features are typed by their rotation order (scalars, vectors, higher-order tensors) and combined with Clebsch–Gordan tensor products. More expressive and very data-efficient, but heavier compute.
+- **Group-equivariant CNNs** for images (rotation/reflection-equivariant filters) in microscopy, satellite and medical imaging.
+
+**Where they are used**
+
+- **Molecular property prediction and machine-learned interatomic potentials:** NequIP and MACE reach DFT-level accuracy with orders of magnitude less training data, enabling molecular dynamics at scale.
+- **Protein structure and design:** AlphaFold 2's structure module uses an SE(3)-equivariant invariant point attention; diffusion models such as RFdiffusion generate backbones equivariantly.
+- **Drug discovery:** docking, conformer generation, equivariant diffusion for 3D molecule generation.
+- **Physics and simulation:** particle systems, fluid and N-body dynamics, crystal/materials discovery.
+- **Point clouds and robotics:** LiDAR perception, grasping and pose estimation where the object's orientation is arbitrary.
+
+**Trade-offs**
+
+| Gain | Cost |
+| --- | --- |
+| Exact symmetry, physically consistent outputs | More complex layers, harder to implement and debug |
+| Big data efficiency, better extrapolation to unseen poses | Higher-order tensor products are slow and memory-heavy |
+| Fewer parameters spent on learning symmetry | Wrong or overly strict symmetry hurts (chirality needs $SE(3)$, not $E(3)$) |
+
+**Decision rule:** use equivariance when the symmetry is genuinely exact (physics, geometry) and data is scarce. With huge datasets and approximate symmetries, a plain Transformer plus augmentation can be competitive; AlphaFold 3, for instance, dropped strict equivariance in parts of its architecture.
+
+### 13.82 How do Graph Attention Networks work, and how do they differ from GCNs?
+
+A **Graph Attention Network (GAT, Veličković et al. 2018)** is a message-passing GNN in which each node computes **learned, data-dependent weights** over its neighbours instead of using fixed weights derived from the graph structure.
+
+**GCN aggregation (fixed weights)**
+
+$$
+h_i' = \sigma\left( \sum_{j \in \mathcal{N}(i) \cup \{i\}} \frac{1}{\sqrt{d_i d_j}}\, W h_j \right)
+$$
+
+The weight of neighbour $j$ depends only on node degrees, so every neighbour of equal degree contributes equally, whatever its features.
+
+**GAT attention coefficients**
+
+For each edge, score the pair, then normalise with a softmax over the neighbourhood:
+
+$$
+e_{ij} = \operatorname{LeakyReLU}\left( a^\top \left[ W h_i \,\Vert\, W h_j \right] \right)
+$$
+
+$$
+\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})}, \qquad h_i' = \sigma\left( \sum_{j \in \mathcal{N}(i)} \alpha_{ij} W h_j \right)
+$$
+
+Here $\Vert$ is concatenation and $a$ is a learned vector. Attention is **masked** to existing edges, so cost is $O(\lvert E \rvert)$, not $O(N^2)$ as in a Transformer.
+
+**Multi-head attention**
+
+$K$ independent heads stabilise training. Hidden layers **concatenate** the heads; the output layer **averages** them:
+
+$$
+h_i' = \Big\Vert_{k=1}^{K} \sigma\left( \sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{k} W^{k} h_j \right)
+$$
+
+**GATv2: fixing static attention**
+
+Brody et al. showed that because $a^\top[W h_i \Vert W h_j]$ splits into $a_1^\top W h_i + a_2^\top W h_j$ and LeakyReLU is monotonic, the **ranking of neighbours is the same for every query node**. That is *static* attention: one globally "best" neighbour type wins everywhere. GATv2 moves the nonlinearity inside:
+
+$$
+e_{ij} = a^\top \operatorname{LeakyReLU}\left( W \left[ h_i \,\Vert\, h_j \right] \right)
+$$
+
+Now the score is a genuine function of the pair, giving **dynamic** attention, at the same parameter cost. GATv2 is the safer default and is available in PyG and DGL as `GATv2Conv`.
+
+**GAT vs GCN**
+
+| | GCN | GAT / GATv2 |
+| --- | --- | --- |
+| Neighbour weights | Fixed (degree-normalised) | Learned per edge from features |
+| Inductive to new graphs | Originally used transductively; works inductively | Yes, naturally |
+| Heterophily / noisy edges | Averages in bad neighbours | Can down-weight irrelevant neighbours |
+| Cost and memory | Lowest (sparse matmul) | Higher: per-edge scores, $K$ heads |
+| Interpretability | None | Attention weights (treat with caution) |
+
+**Over-smoothing**
+
+Both suffer from it: repeated neighbourhood averaging drives node embeddings towards the same vector, so accuracy usually peaks at 2–4 layers. Attention slows it but does not remove it, since $\alpha_{ij}$ is still a convex combination. Mitigations: residual/skip connections, jumping knowledge, PairNorm, DropEdge, and shallow-but-wide models. A related issue is **over-squashing**: information from exponentially many distant nodes is compressed into a fixed-size vector, which graph rewiring or graph Transformers address.
+
+**When to use which**
+
+- **GCN or GraphSAGE:** large, homophilous graphs, tight latency/memory budgets, strong baseline.
+- **GATv2:** neighbours differ in relevance (fraud graphs with noisy links, citation graphs with mixed topics, knowledge graphs), or you need edge-level importance.
+- **Caveat:** attention weights are not faithful explanations; validate with ablations before showing them to a fraud analyst as "the reason".
+
+### 13.83 What are modern Hopfield networks, and how are they related to Transformer attention?
+
+**Modern Hopfield networks** (dense associative memories) replace the quadratic energy of the classical Hopfield network with a **sharply peaked, higher-order or exponential interaction**, which raises storage capacity from linear to exponential in the dimension. The continuous version of Ramsauer et al. (2020) has an update rule that is *exactly* softmax attention.
+
+**From classical to dense**
+
+- Classical energy is quadratic in the overlaps between state $\xi$ and stored patterns $x_\mu$, so patterns interfere and capacity is about $0.14N$.
+- **Krotov and Hopfield (2016)** used $E = -\sum_\mu F(x_\mu^\top \xi)$ with a polynomial $F(z)=z^n$, giving capacity growing like $N^{n-1}$. **Demircigil et al. (2017)** used $F(z)=e^z$ for exponential capacity in binary networks.
+- A sharper $F$ makes each memory's energy well narrow, so wells interfere far less.
+
+**The continuous modern Hopfield network**
+
+Store $N$ patterns as columns of $X \in \mathbb{R}^{d \times N}$, with state $\xi \in \mathbb{R}^d$ and inverse temperature $\beta$:
+
+$$
+E(\xi) = -\frac{1}{\beta} \log \sum_{\mu=1}^{N} \exp\left(\beta\, x_\mu^\top \xi\right) + \frac{1}{2} \xi^\top \xi + \text{const}
+$$
+
+Minimising it with the concave-convex procedure gives the update:
+
+$$
+\xi^{\text{new}} = X \operatorname{softmax}\left( \beta X^\top \xi \right)
+$$
+
+Properties proved in the paper:
+
+- It converges to stationary points of the energy, and retrieval usually happens in **one update**.
+- Capacity is **exponential** in the dimension $d$ for well-separated patterns (under a relaxed, $\epsilon$-close notion of retrieval).
+- $\beta$ controls the regime: large $\beta$ retrieves a single stored pattern; small $\beta$ gives a **metastable state** that averages similar patterns; very small $\beta$ gives a global average.
+
+**The link to attention**
+
+Treat the state patterns as queries and the stored patterns as keys and values, with learned projections:
+
+$$
+Q = R W_Q, \quad K = Y W_K, \quad V = K W_V
+$$
+
+$$
+Z = \operatorname{softmax}\left( \beta\, Q K^\top \right) V
+$$
+
+With $\beta = 1/\sqrt{d_k}$ this is exactly Transformer self-/cross-attention. So **one attention head performs one step of associative memory retrieval**: the query is a noisy cue and the output is the recalled (or blended) memory.
+
+**Insights this view gives**
+
+- Ramsauer et al. found that lower Transformer layers often sit in the *global averaging* regime and higher layers in the *metastable / single-pattern* regime, which motivates pruning or simplifying some heads.
+- It explains why **temperature** and attention entropy matter: too flat and recall blurs; too sharp and gradients vanish.
+- It connects attention to **content-addressable memory**, which is why retrieval-augmented and memory-augmented models fit naturally on top of it.
+
+**Uses in practice**
+
+- **Hopfield layers** (the `hflayers` PyTorch package): `Hopfield`, `HopfieldPooling` (a learned query attends over a set, e.g. pooling a bag of instances) and `HopfieldLayer` (a learned, fixed memory as a lookup table).
+- **Multiple-instance learning** on immune repertoires (DeepRC), where one sample has hundreds of thousands of sequences.
+- **Few-shot and tabular learning**, and memory modules in reinforcement learning.
+- Later work (sparse Hopfield networks with sparsemax/entmax) addresses softmax's inability to retrieve exactly and its metastable blending.
+
+**Interview one-liner:** attention is one gradient-free update of an energy-based associative memory with exponential capacity; $\beta$ decides whether it recalls one memory or averages many.
+
+### 13.84 How is a Restricted Boltzmann Machine trained, and what is contrastive divergence?
+
+An RBM is trained by **maximum likelihood**, but the exact gradient needs an expectation under the model distribution, which is intractable. **Contrastive divergence (CD, Hinton 2002)** approximates that expectation with a Gibbs chain started at the data and run for only $k$ steps.
+
+**Energy, joint and free energy** (binary visible $v$, binary hidden $h$)
+
+$$
+E(v, h) = -a^\top v - b^\top h - v^\top W h, \qquad p(v, h) = \frac{e^{-E(v, h)}}{Z}
+$$
+
+Summing out the hidden units analytically gives the **free energy**:
+
+$$
+F(v) = -a^\top v - \sum_{j} \log\left(1 + e^{\,b_j + v^\top W_{:,j}}\right), \qquad p(v) = \frac{e^{-F(v)}}{Z}
+$$
+
+The partition function $Z$ sums over all $2^{n_v + n_h}$ configurations, so likelihood cannot be computed directly.
+
+**Factorised conditionals** (the payoff of the bipartite structure)
+
+$$
+p(h_j = 1 \mid v) = \sigma\left(b_j + \sum_i v_i W_{ij}\right), \qquad p(v_i = 1 \mid h) = \sigma\left(a_i + \sum_j W_{ij} h_j\right)
+$$
+
+All hidden units can be sampled in parallel given $v$, and vice versa: **block Gibbs sampling**.
+
+**The exact gradient**
+
+$$
+\frac{\partial \log p(v)}{\partial W_{ij}} = \langle v_i h_j \rangle_{\text{data}} - \langle v_i h_j \rangle_{\text{model}}
+$$
+
+The **positive phase** (data term) is cheap. The **negative phase** needs samples from the model, which would require running Gibbs sampling to equilibrium for every update.
+
+**CD-k update**
+
+Start at a training example $v^{(0)}$, alternate $h \sim p(h \mid v)$ and $v \sim p(v \mid h)$ for $k$ steps, and use the end of the chain as the negative sample:
+
+$$
+\Delta W_{ij} = \eta \left( \langle v_i h_j \rangle_{0} - \langle v_i h_j \rangle_{k} \right), \quad \Delta a_i = \eta \left( v_i^{(0)} - v_i^{(k)} \right), \quad \Delta b_j = \eta \left( p_j^{(0)} - p_j^{(k)} \right)
+$$
+
+Intuitively: lower the free energy of the data and raise it for the model's "fantasies" near the data. CD-1 often works well for feature learning. It is **biased**: it does not follow the true likelihood gradient and leaves spurious modes far from the data untouched.
+
+```python
+def cd_k(v0, W, a, b, k=1, lr=1e-2):
+    ph0 = torch.sigmoid(v0 @ W + b)          # positive phase
+    vk = v0
+    for _ in range(k):                         # Gibbs chain from the data
+        hk = torch.bernoulli(torch.sigmoid(vk @ W + b))
+        vk = torch.bernoulli(torch.sigmoid(hk @ W.T + a))
+    phk = torch.sigmoid(vk @ W + b)
+    W += lr * (v0.T @ ph0 - vk.T @ phk) / v0.shape[0]
+    a += lr * (v0 - vk).mean(0)
+    b += lr * (ph0 - phk).mean(0)
+```
+
+**Persistent CD (PCD, Tieleman 2008)**
+
+Keep a set of "fantasy particles" whose chains are **not reset to the data** between updates; each update advances them a few steps. Because weights change slowly, the chains stay close to the model distribution, giving a much better likelihood gradient and better generative samples. Variants: fast-weights PCD, parallel tempering.
+
+**Practical tips (Hinton's practical guide)**
+
+- Use hidden **probabilities** rather than samples for the final statistics to reduce variance; sample hidden states when driving the chain.
+- Small random initial weights, hidden bias near 0, visible bias at $\log(p_i/(1-p_i))$; momentum and weight decay help.
+- **Reconstruction error is a misleading metric.** Monitor the free-energy gap between training and validation data for overfitting, or estimate likelihood with annealed importance sampling.
+- Real-valued inputs need Gaussian–Bernoulli RBMs with a much smaller learning rate.
+
+**Deep Belief Networks**
+
+Hinton, Osindero and Teh (2006) trained a stack of RBMs **greedily layer by layer**: each RBM models the hidden activations of the one below. The stack was then fine-tuned with backpropagation (or wake-sleep for the generative model). This unsupervised pretraining made deep networks trainable at the time and helped launch the deep learning revival.
+
+**Why they faded**
+
+- ReLU, good initialisation (Xavier/He), batch normalisation, dropout and GPUs made deep nets trainable **without** pretraining.
+- Sampling-based training is slow, hard to tune and hard to evaluate (no tractable likelihood).
+- VAEs, GANs, autoregressive models and diffusion models gave better samples with simple gradient training.
+- The legacy remains: energy-based modelling, the positive/negative phase idea in contrastive learning, score matching and diffusion, and RBMs in quantum many-body physics.
 
 ---
 

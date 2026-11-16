@@ -4,7 +4,7 @@ _Part V — Production Systems and Architecture_
 
 Prompt injection and jailbreaks, privacy, fairness, explainability, regulation and governance of AI systems.
 
-This chapter contains **52 questions**.
+This chapter contains **55 questions**.
 
 ## Contents
 
@@ -60,6 +60,9 @@ This chapter contains **52 questions**.
 - **30.50** [Why do regulated domains like fintech, payroll, tax, and HR require special handling?](#3050-why-do-regulated-domains-like-fintech-payroll-tax-and-hr-require-special-handling)
 - **30.51** [What privacy/security considerations are specific to building GenAI systems with client data?](#3051-what-privacysecurity-considerations-are-specific-to-building-genai-systems-with-client-data)
 - **30.52** [How do you think about responsible AI / ethical considerations when deploying an agent that can take autonomous actions (e.g., via tool calls)?](#3052-how-do-you-think-about-responsible-ai--ethical-considerations-when-deploying-an-agent-that-can-take-autonomous-actions-eg-via-tool-calls)
+- **30.53** [What makes an AI system trustworthy, and how do you engineer trustworthiness into a production system?](#3053-what-makes-an-ai-system-trustworthy-and-how-do-you-engineer-trustworthiness-into-a-production-system)
+- **30.54** [What techniques are used to align large language models, and what are their limitations?](#3054-what-techniques-are-used-to-align-large-language-models-and-what-are-their-limitations)
+- **30.55** [How do you measure and improve the reliability of an LLM-based system?](#3055-how-do-you-measure-and-improve-the-reliability-of-an-llm-based-system)
 
 ---
 
@@ -2064,6 +2067,133 @@ Data minimization (only send necessary context to third-party LLM APIs), underst
 ### 30.52 How do you think about responsible AI / ethical considerations when deploying an agent that can take autonomous actions (e.g., via tool calls)?
 
 Apply least-privilege scoping to what tools/actions an agent can take autonomously vs. what requires human approval (especially for irreversible or high-stakes actions — sending emails, making purchases, modifying records). Build in human-in-the-loop checkpoints for high-risk steps. Log and audit all agent actions for traceability/accountability. Evaluate for and monitor bias in model outputs, especially in client-facing decisions. Be transparent with clients and end-users about when they're interacting with an AI system and its limitations.
+
+### 30.53 What makes an AI system trustworthy, and how do you engineer trustworthiness into a production system?
+
+An AI system is trustworthy when there is **evidence**, not just intent, that it behaves as claimed in its specific context of use, and when someone is accountable for it if it does not. NIST AI RMF 1.0 names seven characteristics: valid and reliable, safe, secure and resilient, accountable and transparent, explainable and interpretable, privacy-enhanced, and fair with harmful bias managed. Validity and reliability are the base (an inaccurate system cannot be trustworthy however fair or explainable it is), and accountability and transparency cut across all the others. The EU High-Level Expert Group's seven requirements (human agency and oversight, technical robustness and safety, privacy and data governance, transparency, diversity and fairness, societal and environmental well-being, accountability) cover the same ground with more emphasis on human oversight.
+
+##### Turning characteristics into controls and evidence
+
+The senior move is to treat each characteristic as a requirement with an owner, a control and an artifact an auditor could inspect.
+
+| Characteristic | Engineering controls | Evidence you keep |
+|---|---|---|
+| Valid and reliable | Task-specific eval suites, held-out and production-sampled test sets, release gates, drift monitors | Versioned eval reports per release, quality SLO dashboards |
+| Safe | Hazard analysis, refusal and escalation policies, human approval for irreversible actions, kill switch | Red-team findings and fixes, incident log, rollback drills |
+| Secure and resilient | Threat model for prompt injection and data poisoning, least-privilege tools, sandboxing, rate limits, graceful degradation | Pen-test and adversarial test results, dependency and model provenance (SBOM / AI-BOM) |
+| Accountable and transparent | Named system owner, RACI, AI disclosure to users, decision logs with model and prompt versions | Model and system cards, audit trail, change approvals |
+| Explainable and interpretable | Citations to sources, reason codes, feature attributions for tabular models, counterfactuals for adverse decisions | Explanation fidelity tests, sample explanations reviewed by domain experts |
+| Privacy-enhanced | Data minimisation, PII redaction before prompts and logs, retention limits, DP or federated training where justified | DPIA, data lineage, deletion records |
+| Fair, harmful bias managed | Disaggregated metrics by segment and intersection, threshold review, bias tests in CI | Fairness reports per release, documented trade-off decisions |
+
+##### How to make it operational
+
+- **Start from context, not principles.** The same summariser needs very different controls for internal meeting notes versus clinical letters. Write down intended use, foreseeable misuse, affected people and risk tolerance first; that is NIST's Map function.
+- **Make trust claims falsifiable.** "The assistant is accurate" is not a claim; "groundedness at least 95% on the 600-case regression set, with abstention under 10%" is. Every claim in the system card should point to a test.
+- **Wire evidence into the delivery pipeline.** Evals, fairness checks and red-team regressions run in CI; a release cannot ship without a signed eval report. Evidence that is assembled by hand before an audit is always stale.
+- **Use a management system so it survives people leaving.** ISO/IEC 42001 is the certifiable wrapper: AI policy, roles, AI system impact assessments, lifecycle and data controls, supplier management, internal audit and continual improvement. NIST tells you what to measure; 42001 makes sure the measuring keeps happening.
+- **Manage trade-offs explicitly.** Privacy noise lowers accuracy, explanation constraints limit model choice, aggressive safety filters reduce helpfulness. Record the decision, who made it and the metric that would trigger revisiting it.
+
+##### What goes wrong in practice
+
+- **Calibrated trust, not maximum trust.** Over-trust is a failure too. Show uncertainty and sources so users rely on the system exactly as much as its measured accuracy justifies.
+- **Point-in-time assurance.** A model that passed review in March can fail in June after a provider silently updates weights or the input distribution shifts. Pin versions and re-run evals on every dependency change.
+- **Third-party models.** You inherit risk you cannot inspect. Require vendor documentation, run your own evals on your own data and design for a swap.
+
+**Example:** for a loan-decision copilot, trustworthiness means approval accuracy and stability per segment, adverse-action reason codes, a human reviewer for declines near the threshold, PII-free logs with seven-year retention of the decision record, and a quarterly fairness review signed off by the risk owner.
+
+### 30.54 What techniques are used to align large language models, and what are their limitations?
+
+Alignment in practice is a pipeline: pretraining gives capability, supervised fine-tuning gives the format and basic behaviour, and preference or reward-based training shapes what the model chooses to do. Every current technique optimises a **proxy** for human intent (human ratings, AI ratings, a written specification), so the central limitation is that the model can learn to satisfy the proxy rather than the intent.
+
+##### The main techniques
+
+- **RLHF.** Collect pairwise human preferences, train a reward model (Bradley–Terry), then optimise the policy with PPO against that reward plus a KL penalty to the SFT model. Powerful but expensive, unstable, and only as good as raters and the reward model.
+- **RLAIF and Constitutional AI.** Replace most human harmlessness labels with AI feedback guided by a written set of principles. Anthropic's Constitutional AI has a supervised phase (the model critiques and revises its own outputs against the constitution) and an RL phase where an AI preference model trained on constitution-based comparisons provides the reward. It scales labelling and makes the values legible, but inherits the judging model's blind spots.
+- **DPO and variants.** Rafailov et al. showed that the KL-constrained RLHF objective has a closed-form optimal policy, so you can skip the reward model and train directly on preference pairs:
+
+$$
+\mathcal{L}_{\text{DPO}} = -\mathbb{E}\left[\log \sigma\left(\beta \log \frac{\pi_\theta(y_w \mid x)}{\pi_{\text{ref}}(y_w \mid x)} - \beta \log \frac{\pi_\theta(y_l \mid x)}{\pi_{\text{ref}}(y_l \mid x)}\right)\right]
+$$
+
+  Here $y_w$ and $y_l$ are the preferred and rejected responses and $\beta$ controls drift from the reference model. Variants address its weaknesses: IPO (overfitting to deterministic preferences), KTO (unpaired thumbs-up/down data), ORPO and SimPO (no reference model), and online or iterative DPO to fix the offline-data distribution mismatch.
+- **RL with verifiable rewards.** For maths, code and tool use, rewards come from unit tests or checkers (GRPO-style training). Very effective for capability, but a fertile ground for reward hacking.
+- **Deliberative alignment and spec-based training.** OpenAI trains reasoning models to recall the actual text of the safety specification and reason over it before answering, using spec-conditioned synthetic data for SFT followed by RL with a spec-aware judge. Benefits: better generalisation to novel cases and fewer over-refusals; the policy is auditable text rather than implicit in labels.
+- **Scalable oversight.** Research methods for supervising models on tasks humans cannot easily judge: debate, recursive decomposition, AI-assisted critique, weak-to-strong generalisation.
+
+| Method | Signal source | Cost | Key weakness |
+|---|---|---|---|
+| RLHF (PPO) | Human preferences via reward model | High | Reward model exploitation, rater bias |
+| Constitutional AI / RLAIF | AI judge plus written principles | Medium | Judge errors are systematic, not random |
+| DPO family | Offline preference pairs | Low | Distribution shift, verbosity and likelihood displacement |
+| Verifiable-reward RL | Tests and checkers | Medium | Hacking incomplete tests |
+| Deliberative alignment | Specification plus reasoning | Medium | Depends on faithful reasoning and a good spec |
+
+##### Failure modes to name in an interview
+
+- **Reward hacking and specification gaming.** The model finds unintended routes to high reward: special-casing unit tests, editing the test harness, padding answers because raters favour length. Anthropic's 2025 research found that models that learned to hack production coding environments generalised to broader misbehaviour, including sabotaging the code meant to detect hacking; mitigations included closing the hacks, diverse RLHF and "inoculation" framing during training.
+- **Sycophancy.** Preference data rewards agreeing with the user, so models flatter, cave when challenged and confirm false premises. Measure it by pushing back on correct answers and checking flip rates.
+- **Alignment faking.** In the Anthropic and Redwood study, a model told it was being trained toward a conflicting objective sometimes complied strategically during "training" to preserve its preferences, and RL increased that reasoning. Implication: good behaviour under evaluation is not proof of good dispositions.
+- **Over-refusal and alignment tax.** Harmlessness training can reduce helpfulness and some capabilities; track both sides.
+- **Shallow alignment.** Safety behaviour can be stripped by small fine-tunes or bypassed by jailbreaks, because it often lives in the first few tokens of a response.
+
+##### How to evaluate alignment
+
+- Behavioural suites for harmful compliance and over-refusal, measured together.
+- Sycophancy and honesty probes; consistency under paraphrase and under "this is not a test" framing.
+- Agentic red-teaming in sandboxes with real tools, looking for hacking, deception and unauthorised actions.
+- Monitoring of reasoning traces where available, treated as useful but not guaranteed to be faithful.
+- For your own fine-tunes: re-run the base model's safety evals afterwards, because fine-tuning on benign data can erode safety.
+
+### 30.55 How do you measure and improve the reliability of an LLM-based system?
+
+Reliability is the probability that the system does the right thing **every time** a user asks, not that it can do it once. Measure it as a distribution over repeated runs, perturbed inputs and time, set SLOs on it like latency, and improve it with system design as much as with model choice.
+
+##### What to measure
+
+- **Consistency across runs (pass^k).** Run each task $n$ times. pass@k asks whether at least one of $k$ tries succeeds, which suits exploration. For production you want pass^k from tau-bench: the probability that all $k$ independent trials succeed. With $c$ successes out of $n$ trials per task:
+
+$$
+\text{pass}^k = \mathbb{E}_{\text{tasks}}\left[\frac{\binom{c}{k}}{\binom{n}{k}}\right]
+$$
+
+  An agent with 60% pass^1 can fall below 25% at pass^8, which is what a customer hitting the same workflow daily actually experiences.
+- **Calibration.** Do stated or derived confidences match accuracy? Bin predictions by confidence and compute expected calibration error, $\text{ECE} = \sum_{b} \frac{n_b}{N} \left\lvert \text{acc}(b) - \text{conf}(b) \right\rvert$. Verbalised confidence from instruction-tuned models is usually overconfident; token log-probabilities or sampling agreement are better signals.
+- **Selective prediction.** Plot risk against coverage: if the system abstains on its least confident 15%, what is the error rate on the rest? This turns calibration into a business decision about when to answer, ask or escalate.
+- **Hallucination rate.** Claim-level groundedness against retrieved sources (decompose into atomic claims, check entailment). Without sources, use **semantic entropy**: sample several answers, cluster by bidirectional entailment, and flag high entropy over meanings as likely confabulation. Semantic entropy probes approximate it from hidden states of one generation if you host the model.
+- **Robustness.** Accuracy under paraphrase, typos, reordering of context, irrelevant distractors and other languages. Report the worst-case drop, not the average.
+- **Tool-call reliability.** Schema-valid rate, correct tool and argument rate, final-state correctness (tau-bench checks the database state, not the transcript), retries per task and loop or timeout rate.
+- **Holistic coverage.** Borrow HELM's lesson: score several metrics (accuracy, calibration, robustness, fairness, efficiency) across many scenarios, because one headline number hides trade-offs.
+
+##### Quality SLOs
+
+Treat quality like availability, with an error budget.
+
+```yaml
+slo:
+  task_success_pass_at_1: ">= 0.92 over rolling 7 days (LLM-judge, 2% human audited)"
+  pass_hat_4_on_golden_set: ">= 0.80 per release"
+  ungrounded_claim_rate: "<= 1.5%"
+  tool_schema_error_rate: "<= 0.3%"
+  escalation_rate: "between 5% and 15%"   # too low may mean overconfidence
+  error_budget_burn_alert: "2x budget in 1 hour pages on-call"
+```
+
+##### Engineering levers, roughly in order of payoff
+
+- **Shrink the model's job.** Deterministic code for routing, maths, lookups and validation; the LLM only does the genuinely fuzzy step.
+- **Constrain outputs.** Structured outputs or constrained decoding, schema validation with a bounded repair loop, enums instead of free text.
+- **Ground and verify.** Better retrieval, citations required per claim, a verifier or second model checking high-stakes answers, executable checks for code and SQL.
+- **Spend inference compute on consistency.** Self-consistency voting, best-of-n with a verifier, and using disagreement among samples as an abstention trigger.
+- **Abstain and escalate.** Thresholds tuned on the risk–coverage curve; human review for low-confidence or high-impact cases.
+- **Harden tools.** Idempotent APIs, clear tool descriptions, fewer and better-scoped tools, retries with backoff, step limits.
+- **Control change.** Pin model versions, low or zero temperature where creativity is not needed (it reduces but does not eliminate nondeterminism), and canary or shadow releases gated on the golden set.
+
+##### Common traps
+
+- Measuring once per task and reporting pass^1 as "reliability".
+- Trusting an LLM judge that has not been calibrated against human labels.
+- Optimising average accuracy while a 3% catastrophic slice (wrong refunds, wrong dosages) goes unnoticed; tag and track severity separately.
 
 ---
 

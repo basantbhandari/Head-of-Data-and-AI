@@ -4,7 +4,7 @@ _Part III — Machine Learning_
 
 CNNs, modern vision backbones, detection and segmentation, augmentation and vision pipelines.
 
-This chapter contains **31 questions**.
+This chapter contains **32 questions**.
 
 ## Contents
 
@@ -39,6 +39,7 @@ This chapter contains **31 questions**.
 - **15.29** [How would you use CLIP for zero-shot image classification?](#1529-how-would-you-use-clip-for-zero-shot-image-classification)
 - **15.30** [What is ImageNet?](#1530-what-is-imagenet)
 - **15.31** [What is AlexNet and why is it important?](#1531-what-is-alexnet-and-why-is-it-important)
+- **15.32** [How does a Vision Transformer (ViT) work?](#1532-how-does-a-vision-transformer-vit-work)
 
 ---
 
@@ -791,6 +792,50 @@ Its success demonstrated the effectiveness of deep CNNs for large-scale image re
 Compared with sigmoid/tanh, ReLU reduces saturation-related gradient problems and makes deep networks easier to optimize.
 
 AlexNet was a major milestone that helped trigger the modern deep-learning revolution in computer vision.
+
+### 15.32 How does a Vision Transformer (ViT) work?
+
+A ViT treats an image as a sequence of words. It cuts the image into fixed-size patches, projects each patch into a vector, adds position information, and feeds the sequence to a standard Transformer encoder. There are no convolutions in the backbone. The model has to learn locality and spatial structure from data, which is why ViTs are data-hungry but scale very well.
+
+**1. Patch embedding.** An image $x \in \mathbb{R}^{H \times W \times C}$ is split into non-overlapping $P \times P$ patches. The number of patches, which is the sequence length, is:
+
+$$
+N = \frac{H \cdot W}{P^2}
+$$
+
+A $224 \times 224$ image with $P = 16$ gives $N = 196$ tokens; with $P = 14$ it gives 256. Each patch is flattened to a vector of length $P^2 C$ and multiplied by a learned matrix $E \in \mathbb{R}^{(P^2 C) \times D}$. In code this is a single `Conv2d` with kernel size and stride both equal to $P$.
+
+**2. Class token and position embeddings.** A learnable `[CLS]` token is prepended, and learned position embeddings are added so the model knows where each patch came from:
+
+$$
+z_0 = [\,x_{\text{cls}};\ x_p^1 E;\ x_p^2 E;\ \dots;\ x_p^N E\,] + E_{\text{pos}}, \qquad E_{\text{pos}} \in \mathbb{R}^{(N+1) \times D}
+$$
+
+**3. Encoder.** $L$ pre-norm Transformer blocks, each with multi-head self-attention and an MLP, both wrapped in residual connections. The final `[CLS]` state (or the mean of the patch tokens) goes to a linear classification head. ViT-B/16 has 12 layers, $D = 768$ and about 86M parameters.
+
+**Why the cost matters:** self-attention is $O(N^2 D)$. Halving the patch size or doubling the resolution multiplies $N$ by four and attention cost by sixteen. At a new resolution, the position embeddings must be interpolated in 2D before fine-tuning.
+
+**Inductive bias versus data.** A CNN builds in locality and translation equivariance. A ViT only has the patch grid. Every patch can attend to every other patch from layer 1, which gives global context but nothing to prevent overfitting. The original paper found that ViT trained on ImageNet-1k alone underperformed comparable ResNets. Pretrained on ImageNet-21k or the 300M-image JFT dataset, it overtook them. The lesson: with little data, priors win; with lots of data, learned structure wins.
+
+**The family that fixed the weaknesses:**
+
+| Model | Key idea | What it solved |
+| --- | --- | --- |
+| **DeiT** | Strong augmentation and regularisation, plus a *distillation token* that learns from a CNN teacher's predictions alongside the `[CLS]` token | Competitive ViTs trained on ImageNet-1k only, on a single 8-GPU node |
+| **Swin** | Attention within local windows, with windows shifted between layers so information crosses boundaries; patch merging builds a 4-stage hierarchy | Cost linear in image size; multi-scale feature maps for detection and segmentation |
+| **MAE** | Mask about 75% of patches; the encoder sees only visible patches and a light decoder reconstructs pixels | Cheap, scalable self-supervised pretraining with no labels |
+| **DINO / DINOv2** | Self-distillation: a student matches an EMA teacher across augmented crops; DINOv2 adds masked-token objectives and a curated 142M-image dataset | General-purpose frozen features that work with a linear probe for classification, retrieval, depth and segmentation |
+
+DINOv3 (2025) scaled the same recipe to a 7B-parameter teacher with an extra regularizer to keep dense features sharp. Register tokens, extra learnable tokens that soak up global information, remove artefact spikes in ViT attention maps.
+
+**When I would use a ViT:**
+
+- **Default for transfer learning:** a pretrained DINOv2/DINOv3 or CLIP/SigLIP ViT as a frozen or fine-tuned backbone. With pretrained weights the data-hunger argument mostly disappears.
+- **Multimodal systems:** vision-language models use ViT encoders because patch tokens slot directly into an LLM token stream.
+- **Dense prediction at high resolution:** Swin or a hierarchical ViT, or ConvNeXt, since plain ViT attention is quadratic.
+- **Small dataset, training from scratch, or edge hardware:** a CNN usually wins on accuracy per FLOP, latency and simplicity of quantization.
+
+**Common pitfalls:** training from scratch on a few thousand images; forgetting to interpolate position embeddings when changing resolution; using a patch size too coarse for small objects; and judging ViT against a CNN without matching the training recipe.
 
 ---
 

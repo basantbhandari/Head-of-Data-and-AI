@@ -4,7 +4,7 @@ _Part V — Production Systems and Architecture_
 
 Deploying, monitoring and operating ML and LLM systems: drift, versioning, rollout strategies, observability and the managed platforms that support them.
 
-This chapter contains **87 questions**.
+This chapter contains **88 questions**.
 
 ## Contents
 
@@ -95,6 +95,7 @@ This chapter contains **87 questions**.
 - **26.85** [What is hidden technical debt in ML systems, and how do you prevent it?](#2685-what-is-hidden-technical-debt-in-ml-systems-and-how-do-you-prevent-it)
 - **26.86** [How do you change the embedding model behind a production vector index without downtime?](#2686-how-do-you-change-the-embedding-model-behind-a-production-vector-index-without-downtime)
 - **26.87** [How do you build a data flywheel that turns production feedback into better evaluations and models for an LLM application?](#2687-how-do-you-build-a-data-flywheel-that-turns-production-feedback-into-better-evaluations-and-models-for-an-llm-application)
+- **26.88** [How do Ollama, vLLM and SGLang compare, and when would you use each?](#2688-how-do-ollama-vllm-and-sglang-compare-and-when-would-you-use-each)
 
 ---
 
@@ -2994,6 +2995,53 @@ A **data flywheel** is a loop in which production usage generates signals, those
 - **Privacy and licensing:** training on user content needs a lawful basis and contractual permission. Keep a lineage record of which data trained which model.
 
 **Concrete example:** a support assistant logs that 18% of conversations end in a human handoff. Clustering shows a third concern refund policies for a new region whose documents were never indexed. Fixing ingestion and adding 60 evaluation cases cuts handoffs by four points. Months later, 20,000 agent-corrected answers are used to fine-tune a smaller model that matches quality at a third of the cost.
+
+### 26.88 How do Ollama, vLLM and SGLang compare, and when would you use each?
+
+They target different jobs. **Ollama** is a local model runner: one install, `ollama run`, and a model is working on a laptop. **vLLM** and **SGLang** are data-center serving engines built to maximise throughput on GPUs under many concurrent users. The real question is rarely "which is best" but "single developer or production fleet?"
+
+**Architecture:**
+
+- **Ollama:** a Go server around the GGML/llama.cpp family of runtimes, with its own engine for newer and multimodal models, and an MLX-based runner on Apple Silicon since 2026. Models are pulled from a registry as quantized GGUF files and configured with a `Modelfile`. It optimises for low memory footprint and zero configuration rather than batch throughput.
+- **vLLM:** **PagedAttention** stores the KV cache in fixed-size blocks, like virtual memory pages, so memory fragmentation is near zero and many more sequences fit. **Continuous batching** adds and removes requests at every decode step. Automatic prefix caching, chunked prefill and speculative decoding are built in.
+- **SGLang:** also continuous batching and paged memory, but the KV cache is indexed in a **radix tree** (RadixAttention), so any shared prefix (system prompt, few-shot examples, multi-turn history, agent loops) is reused automatically. A low-overhead scheduler and fast grammar-constrained decoding make it strong for structured outputs and multi-call LLM programs.
+
+**Comparison:**
+
+| | Ollama | vLLM | SGLang |
+| --- | --- | --- | --- |
+| Primary target | Laptop, workstation, Apple Silicon, CPU, single GPU | NVIDIA and AMD data-center GPUs; also TPU, Intel, Gaudi and others via plugins | NVIDIA and AMD data-center GPUs; also TPU, Intel, Ascend |
+| Model format | GGUF (Q4_K_M, Q5_K_M, Q8_0 and so on) | Hugging Face weights; FP8, FP4 (NVFP4, MXFP4), INT8, INT4, GPTQ, AWQ; GGUF supported but not the fast path | Hugging Face weights; FP8, FP4, INT4, AWQ, GPTQ |
+| Concurrency | Low: parallel slots per model (default 1) with a queue | High: continuous batching, hundreds of sequences | High: continuous batching plus prefix reuse |
+| Multi-GPU | Splits layers across GPUs only if the model does not fit on one | Tensor, pipeline, data, expert and context parallelism | Tensor, pipeline, data and expert parallelism; prefill/decode disaggregation |
+| Prefix caching | Basic, per slot | Automatic, block hash based | RadixAttention, the strongest for shared prefixes |
+| Structured output | JSON schema via `format` | JSON schema, regex and grammar (xgrammar, guidance) | JSON schema, regex and EBNF (xgrammar by default) |
+| API | Native REST plus OpenAI-compatible `/v1` | OpenAI-compatible server, plus Anthropic Messages and gRPC | OpenAI-compatible server and a native Python frontend |
+| Ease of use | Easiest: install and run | Moderate: GPU drivers, memory tuning | Moderate: similar to vLLM, more knobs |
+
+**Throughput in practice:** on a single GPU with one user, the gap is small. With dozens of concurrent users, vLLM and SGLang deliver many times Ollama's aggregate tokens per second, because one forward pass serves the whole batch. SGLang tends to lead when prompts share long prefixes (RAG templates, agents, few-shot classification) and on large mixture-of-experts models with expert parallelism. vLLM has the broadest model and hardware coverage and the largest ecosystem (KServe, llm-d, Ray Serve). Benchmarks swing between releases, so test on your own model, prompt mix and SLOs.
+
+**All three expose OpenAI-compatible endpoints,** so application code can move between them by changing the base URL:
+
+```python
+from openai import OpenAI
+# Default ports: Ollama 11434, vLLM 8000, SGLang 30000 (all serve under /v1)
+schema = {"type": "object", "properties": {"label": {"type": "string"}}}
+client = OpenAI(base_url=BASE_URL, api_key="unused")  # e.g. the vLLM server on port 8000
+resp = client.chat.completions.create(
+    model="Qwen/Qwen3-8B",
+    messages=[{"role": "user", "content": "Classify this ticket"}],
+    response_format={"type": "json_schema", "json_schema": {"name": "t", "schema": schema}},
+)
+```
+
+**How I decide:**
+
+- **Ollama:** local development, prototyping, offline or privacy-sensitive desktop use, demos, edge boxes, Apple Silicon, or a small internal tool with a handful of users.
+- **vLLM:** the default for production self-hosting on GPUs: a wide model catalogue, many concurrent users, mature Kubernetes integrations and the broadest hardware support.
+- **SGLang:** production workloads dominated by shared prefixes, agentic multi-call pipelines, heavy structured-output use, or very large MoE models where disaggregated prefill/decode and expert parallelism pay off.
+
+**Common mistake:** prototyping on Ollama, then load-testing the same setup with 50 users and concluding that self-hosting is too slow. Ollama's defaults (one parallel slot, 4K context, a 4-bit GGUF) are not a production serving configuration. Another trap is comparing quality across engines without fixing the quantization: a Q4 GGUF and an FP8 checkpoint are different models.
 
 ---
 
