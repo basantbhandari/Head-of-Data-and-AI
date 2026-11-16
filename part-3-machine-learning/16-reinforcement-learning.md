@@ -4,7 +4,7 @@ _Part III — Machine Learning_
 
 MDPs, value-based and policy-based methods, exploration, deep RL, coding exercises and applied RL.
 
-This chapter contains **73 questions**.
+This chapter contains **86 questions**.
 
 ## Contents
 
@@ -81,6 +81,19 @@ This chapter contains **73 questions**.
 - **16.71** [What is the difference between supervised and reinforcement learning?](#1671-what-is-the-difference-between-supervised-and-reinforcement-learning)
 - **16.72** [What are the requirements of reinforcement learning environments?](#1672-what-are-the-requirements-of-reinforcement-learning-environments)
 - **16.73** [How would you describe reinforcement learning?](#1673-how-would-you-describe-reinforcement-learning)
+- **16.74** [How do multi-armed and contextual bandits work, and how do epsilon-greedy, UCB and Thompson sampling compare?](#1674-how-do-multi-armed-and-contextual-bandits-work-and-how-do-epsilon-greedy-ucb-and-thompson-sampling-compare)
+- **16.75** [How do you evaluate a new policy using only logged data from an old one?](#1675-how-do-you-evaluate-a-new-policy-using-only-logged-data-from-an-old-one)
+- **16.76** [What is offline reinforcement learning, and how do methods such as CQL, IQL and Decision Transformer handle distribution shift?](#1676-what-is-offline-reinforcement-learning-and-how-do-methods-such-as-cql-iql-and-decision-transformer-handle-distribution-shift)
+- **16.77** [How do DDPG, TD3 and SAC work for continuous control, and how do they differ?](#1677-how-do-ddpg-td3-and-sac-work-for-continuous-control-and-how-do-they-differ)
+- **16.78** [What is Generalized Advantage Estimation, and how does it trade off bias and variance?](#1678-what-is-generalized-advantage-estimation-and-how-does-it-trade-off-bias-and-variance)
+- **16.79** [What improvements does Rainbow DQN combine, and which matter most?](#1679-what-improvements-does-rainbow-dqn-combine-and-which-matter-most)
+- **16.80** [What is the deadly triad, and why can off-policy learning with function approximation diverge?](#1680-what-is-the-deadly-triad-and-why-can-off-policy-learning-with-function-approximation-diverge)
+- **16.81** [How do policy iteration and value iteration differ, and when does dynamic programming apply?](#1681-how-do-policy-iteration-and-value-iteration-differ-and-when-does-dynamic-programming-apply)
+- **16.82** [How do AlphaZero and MuZero combine Monte Carlo tree search with learned networks?](#1682-how-do-alphazero-and-muzero-combine-monte-carlo-tree-search-with-learned-networks)
+- **16.83** [How do model-based deep RL methods such as Dyna and Dreamer learn and use a world model?](#1683-how-do-model-based-deep-rl-methods-such-as-dyna-and-dreamer-learn-and-use-a-world-model)
+- **16.84** [How do agents explore when rewards are sparse, using intrinsic motivation such as curiosity and random network distillation?](#1684-how-do-agents-explore-when-rewards-are-sparse-using-intrinsic-motivation-such-as-curiosity-and-random-network-distillation)
+- **16.85** [How do behaviour cloning, DAgger and GAIL learn from demonstrations, and what is compounding error?](#1685-how-do-behaviour-cloning-dagger-and-gail-learn-from-demonstrations-and-what-is-compounding-error)
+- **16.86** [How do you debug a reinforcement learning agent that is not learning?](#1686-how-do-you-debug-a-reinforcement-learning-agent-that-is-not-learning)
 
 ---
 
@@ -3314,6 +3327,551 @@ The environment essentially performs:
   - **Policy:** Strategy used to choose actions.
 
 **Example:** In a game, an agent takes actions, receives rewards for good moves, and learns over time which actions lead to better outcomes.
+
+### 16.74 How do multi-armed and contextual bandits work, and how do epsilon-greedy, UCB and Thompson sampling compare?
+
+A **multi-armed bandit** is reinforcement learning with one state: each round you pick one of $K$ arms, observe a reward for that arm only, and try to maximise total reward. A **contextual bandit** adds a feature vector $x_t$ (user, page, time) before each choice, so the best arm can depend on context. Neither has state transitions: today's action does not change tomorrow's context, which is what separates bandits from full RL.
+
+**The objective is regret**, the reward lost against always playing the best arm (or the best arm for each context). Good algorithms have regret that grows sublinearly, so the average loss per round goes to zero. For stochastic $K$-armed bandits the best achievable rate is logarithmic in $T$ when arms are well separated and about $\sqrt{KT}$ in the worst case.
+
+**The three standard strategies:**
+
+- **Epsilon-greedy:** play the arm with the best empirical mean, but with probability $\epsilon$ play a uniformly random arm. Simple, but it explores blindly: it keeps spending traffic on arms that are clearly bad, and with a fixed $\epsilon$ its regret grows linearly. Decaying $\epsilon$ helps, but the schedule needs tuning.
+- **UCB (optimism in the face of uncertainty):** play the arm with the highest optimistic estimate. UCB1 scores arm $a$ as
+
+$$
+\hat{\mu}_a + \sqrt{\frac{2 \ln t}{n_a}}
+$$
+
+  where $n_a$ is how often the arm has been played. Rarely played arms get a large bonus, so exploration is directed at arms that might still be best. It is deterministic, which makes it easy to debug but awkward under delayed feedback, because every server picks the same arm until updates arrive.
+- **Thompson sampling (probability matching):** keep a posterior over each arm's reward, sample one value per arm, and play the arm whose sample is highest. For click/no-click rewards a Beta posterior per arm is enough. Each arm is chosen with the probability that it is the best one. It usually matches or beats UCB in practice, handles batched and delayed updates well because its randomness spreads traffic, and extends naturally to structured models.
+
+| Aspect | Epsilon-greedy | UCB | Thompson sampling |
+|---|---|---|---|
+| How it explores | Random, uniform | Optimism bonus | Posterior sampling |
+| Regret | Linear unless $\epsilon$ decays | Logarithmic, near-optimal | Logarithmic, near-optimal |
+| Tuning | $\epsilon$ and its schedule | Bonus scale | Prior |
+| Delayed or batched updates | Fine | Poor (deterministic) | Good (randomised) |
+| Logged propensities | Easy to compute | Always 0 or 1 | Need Monte Carlo estimation |
+
+**Contextual versions:** **LinUCB** (Li et al., Yahoo! front-page news) assumes the expected reward is linear in the context, fits a ridge regression per arm and adds a confidence bonus $\alpha \sqrt{x^\top A_a^{-1} x}$. Linear Thompson sampling samples the weight vector from a Gaussian posterior instead. With neural features, a common production pattern is a learned embedding plus a Bayesian linear head, or an ensemble used as an approximate posterior.
+
+```python
+import numpy as np
+
+class BetaThompson:
+    def __init__(self, k):
+        self.wins = np.ones(k)
+        self.losses = np.ones(k)
+
+    def choose(self):
+        return int(np.argmax(np.random.beta(self.wins, self.losses)))
+
+    def update(self, arm, reward):
+        self.wins[arm] += reward
+        self.losses[arm] += 1 - reward
+```
+
+**Production pitfalls:**
+- **Non-stationarity:** click rates drift, so use sliding windows or discounted counts, or the posterior becomes overconfident and stops exploring.
+- **Delayed rewards:** conversions that arrive days later make the bandit chase whatever converts fastest.
+- **Log the propensity** (the probability the chosen arm had) at decision time. Without it you cannot evaluate a new policy offline later.
+- **Biased estimates:** adaptive allocation biases the per-arm means, so do not report bandit averages as A/B test effect sizes.
+
+### 16.75 How do you evaluate a new policy using only logged data from an old one?
+
+This is **off-policy evaluation (OPE)**: estimate how a target policy $\pi$ would have performed using data collected by a logging (behaviour) policy $\mu$. The core problem is that you only see the reward for the action the old policy took, so you must either reweight the logged outcomes, model the missing rewards, or combine both.
+
+**Prerequisites (check these before choosing an estimator):**
+- **Logged propensities:** $\mu(a \mid x)$ recorded at decision time, not reconstructed later.
+- **Overlap (support):** wherever $\pi$ puts probability, $\mu$ must also have put non-zero probability. A deterministic old policy gives no information about actions it never took.
+- **No hidden confounders:** everything the old policy used to decide must be in the logged context.
+
+**The main estimators for contextual bandits:**
+
+- **Direct method (DM):** train a reward model $\hat{r}(x, a)$ on logs and average $\hat{r}(x, \pi(x))$. Low variance, but biased wherever the model is wrong, which is typically exactly where $\pi$ differs from $\mu$.
+- **Inverse propensity scoring (IPS):** reweight each logged reward by how much more (or less) likely the new policy was to take that action.
+
+$$
+\hat{V}_{\text{IPS}} = \frac{1}{n}\sum_{i=1}^{n} \frac{\pi(a_i \mid x_i)}{\mu(a_i \mid x_i)}\, r_i
+$$
+
+  Unbiased if propensities are correct, but variance explodes when weights are large.
+- **Self-normalised IPS (SNIPS):** divide by the sum of weights instead of $n$. Slightly biased, much more stable, and a sensible default.
+- **Doubly robust (DR, Dudík, Langford and Li):** use the reward model as a baseline and apply IPS only to its residual. It is unbiased if either the propensities or the reward model is correct, and usually has lower variance than IPS.
+
+$$
+\hat{V}_{\text{DR}} = \frac{1}{n}\sum_{i=1}^{n}\left[\hat{r}(x_i, \pi) + \frac{\pi(a_i \mid x_i)}{\mu(a_i \mid x_i)}\big(r_i - \hat{r}(x_i, a_i)\big)\right]
+$$
+
+- **Clipped or switch estimators:** cap the weights, or fall back to the model when weights exceed a threshold. You trade a bit of bias for a large reduction in variance.
+
+**Sequential (RL) settings** are much harder because weights multiply over time steps, so the variance of trajectory-level importance sampling grows exponentially with horizon. Options are per-decision importance sampling, weighted importance sampling, sequential doubly robust estimators, and **fitted Q evaluation (FQE)**, which learns $Q^\pi$ from logs by bootstrapping and is often the most reliable choice for long horizons, at the cost of model bias.
+
+| Estimator | Bias | Variance | Needs |
+|---|---|---|---|
+| DM | High where model is wrong | Low | Reward model |
+| IPS | None | High | Propensities, overlap |
+| SNIPS | Small | Medium | Propensities, overlap |
+| DR | Low | Low to medium | Both |
+| FQE (sequential) | Model bias | Lower than IS | Q-model, coverage |
+
+**How I would run it in practice:**
+- Report **effective sample size** of the weights alongside every estimate. If 10,000 logged rows behave like 40, the number is meaningless.
+- Report several estimators with **bootstrap confidence intervals**. If DM, SNIPS and DR disagree sharply, the logs do not support this policy.
+- Validate the estimator itself: hold out a past A/B test where both policies ran, and check that OPE would have predicted the measured result.
+- Use OPE to **rank and filter** candidates, then confirm the winner with a live A/B test. It is a screening tool, not a launch decision.
+- Fix logging upstream: keep some randomisation in production (even a few percent) so future policies have support.
+
+### 16.76 What is offline reinforcement learning, and how do methods such as CQL, IQL and Decision Transformer handle distribution shift?
+
+**Offline RL** (batch RL) learns a policy entirely from a fixed dataset of past transitions, with no further interaction with the environment. It is attractive wherever exploration is expensive or unsafe (healthcare, robotics, pricing, recommendations), because many organisations already have years of logged decisions.
+
+**Why naive off-policy RL fails offline:** algorithms like DQN or SAC compute targets with $\max_{a'} Q(s', a')$ or with actions sampled from the current policy. Offline, those actions are often **out of distribution (OOD)**: the dataset never tried them, so their Q-values are pure extrapolation. The maximisation picks exactly the actions whose values are most overestimated, the policy moves towards them, and because no new data arrives the error is never corrected. Learned values climb steadily while real performance collapses. This is the **distributional shift** problem described by Levine et al.: the policy being learned visits states and actions that differ from those in the data.
+
+**The families of fixes:**
+
+- **Policy constraints** (BCQ, BEAR, TD3+BC): keep the learned policy close to the behaviour policy, through a generative model of the data or a behaviour-cloning penalty. TD3+BC simply adds a BC term to the TD3 actor loss and is a strong, simple baseline.
+- **Conservative value estimates (CQL):** Conservative Q-Learning (Kumar et al.) adds a regulariser that pushes Q-values down across all actions (a log-sum-exp, which acts as a soft maximum) and pushes them up on actions present in the dataset:
+
+$$
+\alpha\, \mathbb{E}_{s \sim D}\left[\log \sum_a \exp Q(s,a) - \mathbb{E}_{a \sim D}\, Q(s,a)\right] + \text{TD error}
+$$
+
+  The learned values become a lower bound on the policy's true value, so unseen actions look unattractive. The weight $\alpha$ sets how conservative it is: too high and you get behaviour cloning, too low and you get overestimation again.
+- **In-sample learning (IQL):** Implicit Q-Learning (Kostrikov et al.) never queries an action outside the dataset. It fits a state value $V(s)$ with **expectile regression** on dataset Q-values. An upper expectile (for example $\tau = 0.7$ to $0.9$) approximates the value of the best actions the data supports, without a max over unseen actions. The policy is then extracted with **advantage-weighted regression**: behaviour cloning where each logged action is weighted by $\exp(\beta A(s,a))$. It is simple, stable and fine-tunes well online.
+- **Sequence modelling (Decision Transformer):** Chen et al. drop value functions entirely. A causal transformer is trained on sequences of (return-to-go, state, action) and learns to predict actions conditioned on the return still desired. At test time you prompt it with a high target return. Because it is supervised learning on the data, it does not extrapolate Q-values, but it also cannot reliably **stitch** together good fragments of different suboptimal trajectories, and asking for returns much higher than the data contains does not work.
+
+| Method | How it avoids OOD actions | Strength | Weakness |
+|---|---|---|---|
+| TD3+BC | BC penalty on the actor | Very simple | Tied to data quality |
+| CQL | Penalises Q on unseen actions | Strong on mixed-quality data | Sensitive to $\alpha$; slower |
+| IQL | Never evaluates unseen actions | Stable, good for fine-tuning | Unimodal Gaussian policy limits it |
+| Decision Transformer | Supervised, return-conditioned | Scales like a sequence model | Weak stitching; needs good trajectories |
+
+**Practical advice:**
+- First check **coverage**: offline RL can only improve on behaviour where the data contains variation. A deterministic legacy policy leaves little to learn.
+- Always compare against **behaviour cloning** and filtered BC (clone only top trajectories). On narrow expert data they often win.
+- Model selection is the hard part, since you cannot just run the policy. Use off-policy evaluation (FQE) to pick checkpoints and hyperparameters, then a carefully guarded online test.
+- A common production path is offline pretraining followed by limited, constrained online fine-tuning.
+
+### 16.77 How do DDPG, TD3 and SAC work for continuous control, and how do they differ?
+
+All three are **off-policy actor-critic** methods for continuous action spaces (torques, prices, setpoints). They learn a Q-function from a replay buffer, like DQN, but replace the impossible $\max_a Q(s,a)$ over a continuous space with an **actor network** trained to output actions that the critic rates highly.
+
+**DDPG (Deep Deterministic Policy Gradient, Lillicrap et al.):**
+- A deterministic actor $\mu_\theta(s)$ and a critic $Q_\phi(s,a)$.
+- Critic target: $y = r + \gamma\, Q_{\phi'}(s', \mu_{\theta'}(s'))$, using slowly updated (Polyak-averaged) target networks.
+- Actor update: gradient ascent on $Q_\phi(s, \mu_\theta(s))$, backpropagating through the critic into the actor.
+- Exploration by adding noise (Ornstein-Uhlenbeck in the paper, Gaussian in practice) to actions.
+- Problem: the actor exploits any error peak in the critic, so Q-values are overestimated and training is brittle and seed-sensitive.
+
+**TD3 (Twin Delayed DDPG, Fujimoto et al.)** adds three fixes aimed at that overestimation:
+- **Clipped double Q-learning:** train two critics and use the smaller of their two target values in the Bellman target.
+- **Delayed policy updates:** update the actor and target networks less often than the critics (typically once every two critic updates), so the actor follows a less noisy critic.
+- **Target policy smoothing:** add clipped noise to the target action (commonly noise 0.2 clipped at 0.5), so the critic cannot fit narrow, spurious peaks.
+
+$$
+y = r + \gamma \min_{i=1,2} Q_{\phi_i'}\big(s',\ \mu_{\theta'}(s') + \text{clip}(\epsilon, -c, c)\big)
+$$
+
+**SAC (Soft Actor-Critic, Haarnoja et al.)** changes the objective itself. It maximises reward plus policy entropy:
+
+$$
+J(\pi) = \mathbb{E}\left[\sum_t r_t + \alpha\, \mathcal{H}\big(\pi(\cdot \mid s_t)\big)\right]
+$$
+
+- The actor is **stochastic**: a Gaussian whose sample is squashed by tanh into the action bounds, trained with the reparameterisation trick.
+- Twin critics with the min trick, as in TD3, and a soft Bellman target that subtracts $\alpha \log \pi(a' \mid s')$.
+- Exploration comes from the policy's own randomness, not added noise.
+- The temperature $\alpha$ is usually **tuned automatically** to hold entropy near a target (commonly minus the action dimension), which removes the most sensitive hyperparameter of the original version.
+
+| Aspect | DDPG | TD3 | SAC |
+|---|---|---|---|
+| Policy | Deterministic | Deterministic | Stochastic (squashed Gaussian) |
+| Critics | One | Two, min target | Two, min target |
+| Exploration | Added action noise | Added action noise | Entropy maximisation |
+| Overestimation control | None | Clipped double Q, smoothing | Clipped double Q, entropy |
+| Stability | Brittle | Good | Good, robust to seeds |
+| Main knobs | Noise, learning rates | Noise, delay | Target entropy |
+
+**How to choose:**
+- **SAC** is the usual default for simulated robotics and control: sample-efficient, robust across seeds, and its stochastic policy helps on multi-modal tasks.
+- **TD3** is a strong, slightly simpler and faster alternative, and its deterministic policy is convenient when you need repeatable actions at serving time. TD3+BC is a popular offline RL baseline.
+- **DDPG** is mainly of historical interest; prefer TD3 if you want a deterministic actor.
+- **PPO** (on-policy) can beat all three in wall-clock time when simulation is cheap and massively parallel, because sample efficiency matters less there.
+
+**Production gotchas:** normalise observations and rescale actions to the network's output range; handle time-limit truncation correctly (do not treat a timeout as a terminal state when bootstrapping); evaluate the deterministic mean action of SAC rather than sampled actions; and watch critic values for steady drift upwards, the classic sign of overestimation.
+
+### 16.78 What is Generalized Advantage Estimation, and how does it trade off bias and variance?
+
+**Generalized Advantage Estimation (GAE)**, from Schulman et al., is a way of estimating the advantage $A(s_t, a_t)$ used in policy-gradient and actor-critic methods. It takes an exponentially weighted average of $n$-step advantage estimates, controlled by a parameter $\lambda \in [0, 1]$, which lets you slide smoothly between a low-variance but biased one-step TD estimate and an unbiased but high-variance Monte Carlo estimate. It is the default advantage estimator in PPO and in most RLHF implementations that use a value model.
+
+**Why the advantage matters:** the policy gradient is $\mathbb{E}[\nabla \log \pi(a_t \mid s_t)\, \hat{A}_t]$. A noisy $\hat{A}_t$ means noisy gradients and many samples; a biased one means the policy improves in the wrong direction.
+
+**The construction:** start from the one-step TD error, using the critic $V$:
+
+$$
+\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)
+$$
+
+The $k$-step advantage sums $k$ discounted TD errors. GAE averages all of them with weights $(1-\lambda)\lambda^{k-1}$, which simplifies to
+
+$$
+\hat{A}_t^{\text{GAE}(\gamma,\lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l\, \delta_{t+l}
+$$
+
+**The two extremes:**
+- $\lambda = 0$: $\hat{A}_t = \delta_t$. Only one real reward is used and the rest comes from the critic. Low variance, but biased whenever $V$ is wrong, which early in training is always.
+- $\lambda = 1$: $\hat{A}_t = \sum_l \gamma^l r_{t+l} - V(s_t)$, the Monte Carlo return minus a baseline. Unbiased regardless of critic quality, but the variance of a long sum of random rewards is high.
+- In between, $\lambda$ sets how quickly you stop trusting real rewards and start trusting the critic. Values around 0.9 to 0.97 work well on most tasks, with 0.95 the common default.
+
+**The role of $\gamma$:** GAE treats $\gamma$ as a variance-reduction knob too. A smaller $\gamma$ ignores far-future rewards, reducing variance but biasing the objective towards short-term outcomes regardless of the critic. So $\gamma$ changes what you optimise, while $\lambda$ changes how you estimate it.
+
+| Setting | Bias | Variance | When it suits |
+|---|---|---|---|
+| Low $\lambda$ (0 to 0.8) | Higher | Lower | Accurate critic, long noisy episodes |
+| $\lambda \approx 0.95$ | Moderate | Moderate | General default (PPO) |
+| $\lambda = 1$ | None from critic | Highest | Poor critic, short episodes, sparse terminal reward |
+
+**Computing it** is one backward pass over a rollout, the same recursion as TD($\lambda$):
+
+```python
+def compute_gae(rewards, values, dones, last_value, gamma=0.99, lam=0.95):
+    adv, gae = [0.0] * len(rewards), 0.0
+    for t in reversed(range(len(rewards))):
+        next_v = last_value if t == len(rewards) - 1 else values[t + 1]
+        nonterminal = 1.0 - dones[t]
+        delta = rewards[t] + gamma * next_v * nonterminal - values[t]
+        gae = delta + gamma * lam * nonterminal * gae
+        adv[t] = gae
+    returns = [a + v for a, v in zip(adv, values)]  # targets for the critic
+    return adv, returns
+```
+
+**Common bugs and practical notes:**
+- **Truncation versus termination:** if an episode ends because of a time limit, bootstrap from $V(s_{T})$ instead of zeroing it. Treating timeouts as true terminals biases values downwards.
+- **Advantage normalisation** per batch (zero mean, unit variance) is standard and stabilises PPO.
+- The critic's targets are $\hat{A}_t + V(s_t)$, which are $\lambda$-returns.
+- **In LLM RLHF**, the reward usually arrives only at the final token. With $\gamma = 1$, $\lambda$ controls how much credit relies on the token-level value model. Critic-free methods such as GRPO replace GAE with group-normalised rewards precisely to avoid training that value model.
+
+### 16.79 What improvements does Rainbow DQN combine, and which matter most?
+
+**Rainbow** (Hessel et al., DeepMind) combined six independent extensions of DQN into one agent and showed they are largely complementary: on the 57-game Atari benchmark it reached higher median human-normalised scores than any single extension, and did so with far fewer frames. Its ablations found that **prioritised replay and multi-step returns mattered most**, then distributional learning, with noisy nets next and dueling and double Q-learning contributing least once everything else was present.
+
+**The six components:**
+
+- **Double Q-learning:** select the next action with the online network, evaluate it with the target network, which reduces the overestimation caused by maximising over noisy estimates.
+- **Prioritised experience replay:** sample transitions in proportion to their TD error (with importance-sampling corrections), so the agent replays surprising transitions more often instead of uniformly.
+- **Dueling network:** split the head into a state value $V(s)$ and per-action advantages $A(s,a)$, recombined as $Q = V + A - \text{mean}(A)$. The value of a state can be learned without trying every action in it.
+- **Multi-step returns:** bootstrap after $n$ real rewards instead of one (Rainbow used $n = 3$), which propagates reward faster and reduces dependence on early, inaccurate Q-values.
+- **Distributional RL (C51):** predict a categorical distribution over returns on 51 fixed atoms instead of only the mean, trained with a KL loss on a projected Bellman target. The richer target acts as a strong auxiliary signal.
+- **Noisy nets:** replace epsilon-greedy with learned, parameterised noise in the linear layers, so the agent can learn how much and where to explore, state by state.
+
+**What the ablations showed:**
+
+| Component removed | Effect on median score |
+|---|---|
+| Prioritised replay | Large drop, among the two most important |
+| Multi-step returns | Large drop, among the two most important; hurts early and late learning |
+| Distributional | Clear drop, mainly later in training and on games at or above human level |
+| Noisy nets | Moderate drop overall; helps on some games, hurts on others |
+| Dueling | Little difference in the median |
+| Double Q | Little difference in the median, possibly because the distributional loss and clipped rewards already limit overestimation |
+
+**How to read this as a practitioner:**
+- The components are not independent: double Q matters less because distributional and multi-step updates already damp overestimation. "Least important in Rainbow" does not mean "useless alone".
+- Rainbow adds many hyperparameters (atoms, value range, $n$, priority exponent, noise scale), so it is harder to tune and debug than vanilla DQN.
+- If you add only two things to a DQN, add **multi-step returns** and **prioritised replay**; double DQN is nearly free and worth keeping.
+- Later work moved further: quantile and implicit-quantile distributional heads (QR-DQN, IQN), recurrent replay for partial observability (R2D2), and large-scale agents such as Agent57 and data-efficient variants (Data-efficient Rainbow, BBF) that raise the replay ratio.
+- On a real product, the choice between DQN-family methods and policy-gradient methods depends more on the action space (discrete and moderate in size) and the availability of a simulator than on Atari scores.
+
+### 16.80 What is the deadly triad, and why can off-policy learning with function approximation diverge?
+
+The **deadly triad** (Sutton and Barto) is the combination of three ingredients that together can make value estimates diverge to infinity:
+
+1. **Function approximation:** values come from shared parameters (a linear model or a neural network) rather than a table, so updating one state changes the estimates of others.
+2. **Bootstrapping:** targets are built from the agent's own current estimates, as in TD learning and Q-learning, rather than from complete real returns.
+3. **Off-policy training:** updates follow a distribution of states and actions different from the one generated by the policy being evaluated (replay buffers, greedy targets, logged data).
+
+Any two are safe in the classic theory. Tabular off-policy Q-learning converges; on-policy linear TD converges; Monte Carlo with function approximation (no bootstrapping) is just supervised regression. All three together have no general guarantee.
+
+**Why divergence happens:**
+- With function approximation, updating state $s$ also moves the value of a similar state $s'$.
+- With bootstrapping, the target for $s$ depends on $V(s')$. If an update to $s$ raises $V(s')$, the next target for $s$ is higher, which raises $V(s')$ again: a feedback loop.
+- **On-policy sampling** breaks the loop: states are visited in proportion to how often they actually occur, so if $V(s')$ is overestimated, $s'$ is itself visited and corrected. The TD update is then a contraction under that distribution.
+- **Off-policy sampling** can visit $s$ often and $s'$ rarely or never. The error at $s'$ is never corrected, and the coupled updates can grow without bound. **Baird's counterexample** shows this with only seven states and a linear model: off-policy semi-gradient TD diverges for any positive step size.
+
+**What this looks like in deep RL:** van Hasselt et al. ("Deep Reinforcement Learning and the Deadly Triad") found that unbounded divergence is rare in practice, but **soft divergence** is common: Q-values grow far beyond any plausible return and then sometimes recover. It was worse with plain Q-learning targets, larger networks and strongly prioritised replay (more off-policy), and better with target networks, double Q-learning and longer multi-step returns.
+
+**How each fix targets one leg of the triad:**
+
+| Mitigation | Leg it weakens | How |
+|---|---|---|
+| Target networks | Bootstrapping | Freezes the target, breaking the immediate feedback loop |
+| Double Q-learning, clipped double Q | Bootstrapping | Reduces the overestimation that fuels growth |
+| Multi-step returns, $\lambda$-returns | Bootstrapping | More real reward, less reliance on estimates |
+| Recent or less prioritised replay | Off-policy | Keeps the data distribution closer to the current policy |
+| Importance-sampling corrections (Retrace, V-trace) | Off-policy | Reweight or truncate updates for policy mismatch |
+| Gradient-TD (GTD2, TDC), emphatic TD | All three | Optimise a true objective, with convergence guarantees in the linear case |
+| Conservative or constrained updates (CQL, BC penalties) | Off-policy | Avoid bootstrapping from actions the data does not support |
+| Layer normalisation, smaller step sizes | Function approximation | Limit how far one update spreads to other states |
+
+**Why it matters beyond theory:** offline RL is the extreme case, with no fresh on-policy data at all, which is why its methods are built around conservatism. In production, the warning signs are mean Q-values rising steadily while measured returns stay flat, Q-values exceeding the maximum possible discounted return ($r_{\max}/(1-\gamma)$), and loss that falls while behaviour worsens. Log the predicted Q-values next to realised returns as a standard training dashboard metric.
+
+### 16.81 How do policy iteration and value iteration differ, and when does dynamic programming apply?
+
+Both are dynamic programming (DP) methods that compute an optimal policy for an MDP whose transition probabilities and rewards are fully known. **Policy iteration** alternates between fully evaluating the current policy and then acting greedily with respect to it. **Value iteration** folds both steps into a single Bellman optimality backup per sweep. Policy iteration needs few, expensive iterations. Value iteration needs many cheap ones.
+
+**Policy iteration**
+
+1. **Evaluate:** solve $V^{\pi}(s) = \sum_{s'} P(s' \mid s, \pi(s))\,[R + \gamma V^{\pi}(s')]$. This is a linear system, solved exactly at $O(|S|^3)$ cost or by iterative sweeps.
+2. **Improve:** $\pi'(s) = \arg\max_a \sum_{s'} P(s' \mid s, a)\,[R + \gamma V^{\pi}(s')]$.
+3. Stop when the policy no longer changes. The policy improvement theorem guarantees each new policy is at least as good as the last. Because there are only finitely many deterministic policies, the loop terminates, often after a handful of iterations even for large state spaces.
+
+**Value iteration**
+
+$$
+V_{k+1}(s) = \max_a \sum_{s'} P(s' \mid s, a)\,\big[R(s, a, s') + \gamma V_k(s')\big]
+$$
+
+The backup is a $\gamma$-contraction in the max norm, so the error shrinks by a factor of $\gamma$ every sweep. Each sweep costs $O(|S|^2 |A|)$. With $\gamma = 0.99$, you need hundreds of sweeps for tight convergence. Stop when the largest change falls below $\theta$, then extract the greedy policy. The greedy policy often becomes optimal long before the values converge.
+
+| | Policy iteration | Value iteration |
+| --- | --- | --- |
+| Per-iteration cost | High (full evaluation) | Low (one backup) |
+| Iterations | Few | Many, more as $\gamma \to 1$ |
+| Intermediate output | A valid policy and its exact value | Value estimates that belong to no particular policy |
+| Best when | $\gamma$ near 1, few actions | Cheap sweeps, many actions |
+
+**The spectrum between them.** Modified policy iteration runs only $k$ evaluation sweeps before improving. With $k = 1$ you get value iteration, and as $k \to \infty$ you get policy iteration. Asynchronous DP updates states in any order, for example prioritised by Bellman error, and still converges as long as every state keeps getting updated. Sutton and Barto call the general pattern **generalised policy iteration (GPI)**: evaluation and improvement interact at any granularity. Q-learning, SARSA, actor-critic and PPO are all sampled, approximate versions of GPI.
+
+**When DP applies**
+
+- **The model is known or can be estimated reliably.** Examples are inventory and replenishment, queueing and capacity planning, maintenance scheduling, and simple pricing problems built from explicit demand distributions.
+- **The state space can be enumerated.** That usually means at most tens of millions of states after discretisation. Bellman's curse of dimensionality bites quickly. Ten state variables with 100 levels each give $10^{20}$ states.
+- **You need guarantees.** DP gives an exact optimum and the value of every state, which makes it a strong benchmark for any learned agent.
+
+**When it does not apply.** DP is not an option when the dynamics are unknown, when states are high-dimensional (pixels, text), or when the space is continuous. Then you move to sampled backups (TD, Monte Carlo) or to approximate DP (fitted value iteration with function approximation), or you learn a model and plan in it.
+
+**Production example.** A retailer with 200 stock levels, 20 order quantities and an estimated weekly demand distribution can solve its replenishment MDP exactly with policy iteration in seconds. Training a deep RL agent for that problem would be slower, noisier and harder to audit. A useful senior heuristic is to try DP or a linear-programming formulation before reaching for deep RL whenever the model is tractable.
+
+### 16.82 How do AlphaZero and MuZero combine Monte Carlo tree search with learned networks?
+
+Both use a neural network to make tree search tractable, and both use tree search to produce better training targets for the network. The network supplies a **prior over moves** and a **value estimate** in place of hand-written heuristics and random rollouts. Search then turns those raw guesses into a stronger policy, which becomes the next training target. The difference is that AlphaZero searches using the real game rules, while MuZero searches inside a model it has **learned itself**.
+
+**AlphaZero (Silver et al., 2017–2018)**
+
+- A single network takes the position $s$ and outputs move probabilities $p$ and a scalar value $v$.
+**Search.** Each simulation descends the tree by picking the action that maximises a PUCT score:
+
+$$
+a^* = \arg\max_a \left[ Q(s, a) + c\, P(s, a) \frac{\sqrt{N(s)}}{1 + N(s, a)} \right]
+$$
+
+On reaching a leaf, the network evaluates it once, with no rollout, and the value $v$ is backed up along the path. Training used 800 simulations per move.
+
+- **Self-play targets:** the move is sampled from the root visit counts $\pi$, which are sharper than the raw prior $p$. When the game ends with outcome $z$, every position in it gets the training tuple $(s, \pi, z)$.
+- **Loss:** $(z - v)^2 - \pi^\top \log p + c\lVert\theta\rVert^2$.
+- **Exploration:** Dirichlet noise is added to the root prior, scaled to the typical number of legal moves ($\alpha = 0.3$ in chess, $0.03$ in Go). Early in a game, moves are sampled with a temperature rather than chosen greedily.
+
+The loop is a form of **policy iteration**. Search acts as policy improvement, and fitting the network to the search output is the evaluation step.
+
+**MuZero (Schrittwieser et al., 2020)**
+
+MuZero removes the need for a simulator by learning three functions:
+
+| Function | Role |
+| --- | --- |
+| Representation $h$ | Past observations to a hidden state $s^0$ |
+| Dynamics $g$ | $(s^{k-1}, a^k)$ to $(r^k, s^k)$ |
+| Prediction $f$ | $s^k$ to $(p^k, v^k)$ |
+
+MCTS runs entirely in the latent space, rolling $g$ forward and calling $f$ at each node. Training unrolls the model $K = 5$ steps along real trajectories. At each step it matches the predicted reward, value (an n-step bootstrapped return) and policy (the search visit counts). The hidden state is **never asked to reconstruct the observation**. It only has to be good for predicting reward, value and policy, so it spends no capacity on irrelevant pixels. MuZero matched AlphaZero in chess and shogi, slightly exceeded it in Go, and set a new state of the art on Atari using 50 simulations per move.
+
+**Practical refinements**
+
+- **Reanalyse:** stored trajectories are re-searched with the latest network to refresh their targets, which greatly improves data efficiency. MuZero Unplugged extends the idea to offline RL.
+- **Value and reward scaling:** for Atari, an invertible squashing transform plus categorical value heads keep large and varying returns trainable.
+- Later variants extend the approach. EfficientZero adds self-supervised consistency losses, Sampled MuZero handles large or continuous action spaces, and Stochastic MuZero handles chance events.
+
+**Trade-offs for a practitioner**
+
+- Search-at-inference is expensive. Latency scales with the number of simulations, so a production system needs batched GPU inference and a fixed simulation budget.
+- When an exact, cheap simulator exists, AlphaZero-style search is more reliable because the model cannot be wrong. Use MuZero when the rules are unknown, expensive to simulate, or partly hidden.
+- Self-play with a single opponent can cycle or overfit. Evaluate against fixed reference opponents and past checkpoints.
+
+### 16.83 How do model-based deep RL methods such as Dyna and Dreamer learn and use a world model?
+
+They fit a predictive model of the environment from real experience. They then use that model to generate extra experience or to plan, so the policy improves with far fewer real interactions. The design questions are what the model predicts, which space it predicts in (raw states or a learned latent), and how the policy uses the predictions.
+
+**Dyna (Sutton, 1990)**
+
+Dyna interleaves three processes:
+
+1. **Direct RL:** update $Q$ from each real transition.
+2. **Model learning:** record $(s, a) \to (r, s')$. In the tabular case this is just a lookup table.
+3. **Planning:** perform $n$ extra Q-updates on transitions sampled from the model.
+
+```python
+for step in range(num_steps):
+    a = epsilon_greedy(Q, s)
+    r, s2 = env_step(s, a)
+    q_update(Q, s, a, r, s2)          # direct RL
+    model[(s, a)] = (r, s2)           # model learning
+    for _ in range(n_planning):       # planning with simulated experience
+        ps, pa = random.choice(list(model))
+        pr, ps2 = model[(ps, pa)]
+        q_update(Q, ps, pa, pr, ps2)
+```
+
+Increasing $n$ trades compute for samples. Prioritised sweeping focuses planning on states whose values just changed. Dyna-Q+ adds a bonus for transitions not tried for a long time, so the agent re-checks a model that may be stale when the environment changes. Modern deep variants such as MBPO follow the same pattern. They train an ensemble of neural dynamics models and branch **short** model rollouts from real states into the replay buffer of an off-policy learner such as SAC. Rollouts stay short because model errors compound with horizon.
+
+**Dreamer (Hafner et al., V1 to V3)**
+
+Dreamer learns the model in a compact latent space and trains the policy almost entirely in imagination.
+
+- **World model (RSSM):** a recurrent deterministic state $h_t$ plus a stochastic categorical latent $z_t$. An encoder infers $z_t$ from the observation, and a prior predicts $z_t$ from $h_t$ alone. Heads predict the reward, an episode-continue flag and a reconstruction of the observation.
+- **Losses:** a prediction loss (reconstruction, reward, continue) and two KL terms. One trains the prior towards the posterior, and the other keeps the posterior predictable. Free bits switch the KL terms off once they fall below about one nat, which prevents the latents from collapsing.
+- **Behaviour learning:** starting from real latent states, the actor rolls the model forward about 16 steps. The critic learns λ-returns on these imagined trajectories, and the actor maximises them. No real environment steps are needed for this phase.
+- **DreamerV3 robustness tricks:** symlog-transformed targets, a categorical "twohot" critic and reward head, return normalisation based on percentiles, and 1% uniform mixing in the categoricals. Together these let one fixed set of hyperparameters work across more than 150 tasks. DreamerV3 was the first agent to collect diamonds in Minecraft from scratch, with no human data or curriculum.
+
+**Comparison**
+
+| | Dyna / MBPO | Dreamer | MuZero |
+| --- | --- | --- | --- |
+| Model predicts | Next state and reward | Latent dynamics, reward, observation | Reward, value, policy only |
+| Model is used for | Synthetic replay data | Imagined actor-critic training | Tree search at decision time |
+| Main risk | Compounding state error | Reconstruction wasting capacity | Heavy compute for search |
+
+**Failure modes and how to handle them**
+
+- **Model exploitation:** the policy finds actions where the model is wrongly optimistic. Mitigate with ensembles and uncertainty penalties, short horizons and frequent refits on fresh data.
+- **Objective mismatch:** a model that is accurate on average can still be wrong exactly where decisions matter.
+- **Distribution shift:** the model is only valid near the data it was trained on. Keep collecting on-policy data.
+
+**When to choose it:** real samples are expensive (robots, industrial control, slow simulators) and the dynamics are learnable. If simulation is cheap and fast, a well-tuned model-free method is often simpler and just as good in wall-clock time.
+
+### 16.84 How do agents explore when rewards are sparse, using intrinsic motivation such as curiosity and random network distillation?
+
+When the extrinsic reward is almost always zero, dithering strategies such as $\epsilon$-greedy or entropy bonuses almost never stumble on it. Intrinsic motivation adds a self-generated bonus $r^i_t$ that pays the agent for reaching **novel or surprising** states, and the agent optimises $r_t = r^e_t + \beta\, r^i_t$. Novelty is learnable, so the agent moves systematically into unvisited territory instead of wandering randomly.
+
+**Main families**
+
+| Method | Bonus | Weakness |
+| --- | --- | --- |
+| Count-based (UCB-style) | $\beta / \sqrt{N(s)}$ | Exact counts are meaningless in huge state spaces |
+| Pseudo-counts (Bellemare et al.) | Count derived from a density model's change on observing $s$ | Needs a good density model |
+| Hash counts | Count of a SimHash code of the state | Hash quality decides what counts as "new" |
+| Curiosity / ICM (Pathak et al.) | Forward-model prediction error in a learned feature space | Noisy-TV problem |
+| RND (Burda et al.) | Error predicting a fixed random network's output | Bonus decays and must be normalised |
+
+**Curiosity (ICM).** The agent learns features $\phi(s)$ with an **inverse model**, which predicts $a_t$ from $(\phi(s_t), \phi(s_{t+1}))$. Those features therefore capture only what the agent can influence. A **forward model** predicts $\phi(s_{t+1})$ from $(\phi(s_t), a_t)$, and its error is the bonus. Ignoring uncontrollable pixels such as moving leaves helps. However, any genuinely stochastic transition the agent can trigger stays unpredictable forever. In a "noisy TV" the agent changes channel to random static, gets the bonus every time, and never leaves.
+
+**Random network distillation (RND).** A target network $f$ is randomly initialised and then frozen. A predictor $\hat f$ is trained to match it on visited states:
+
+$$
+r^i_t = \lVert \hat f(s_{t+1}) - f(s_{t+1}) \rVert^2
+$$
+
+Frequently seen states become easy to predict, and novel ones stay expensive. The target is deterministic and lies in the predictor's function class, so the bonus does not reward stochasticity in the transitions. That removes the main cause of the noisy-TV trap. Details that matter in practice:
+
+- **Normalisation:** whiten and clip observations before the target and predictor. Divide the intrinsic reward by a running standard deviation of intrinsic returns.
+- **Two value heads:** use separate critics for the extrinsic and intrinsic streams, with different discounts (0.999 and 0.99 in the paper). The intrinsic stream is **non-episodic**, so dying does not reset curiosity and the agent is not pushed to die on purpose.
+- **Results:** RND scored around 8,000 on average on Montezuma's Revenge, above average human play, with no demonstrations.
+
+**Beyond pure novelty**
+
+- **Go-Explore** keeps an archive of interesting states, returns to them (by resetting the simulator or with a goal-conditioned policy), and explores from there. This avoids *detachment*, where the agent forgets frontiers it has already found.
+- **Episodic novelty (Never Give Up, Agent57)** combines a within-episode memory with RND-style lifelong novelty.
+- **Goal relabelling (HER)** turns failed attempts into successes for other goals in goal-conditioned tasks.
+
+**Production advice**
+
+- First, see whether the sparsity can be designed away. Options are a curriculum (16.54), demonstrations (16.85) or potential-based shaping, which preserves the optimal policy.
+- Curiosity can become the objective itself. Monitor extrinsic and intrinsic returns separately, and anneal $\beta$ or cap the bonus.
+- Bonuses work in simulation. On real hardware, novelty-seeking can mean unsafe states, so pair it with constraints.
+
+### 16.85 How do behaviour cloning, DAgger and GAIL learn from demonstrations, and what is compounding error?
+
+All three learn a policy from expert trajectories instead of a hand-designed reward. **Behaviour cloning (BC)** is plain supervised learning on state–action pairs. **DAgger** fixes BC's distribution-shift problem by querying the expert on states the learner itself visits. **GAIL** learns a policy whose state–action distribution is indistinguishable from the expert's, using an adversarial discriminator as the reward.
+
+**Behaviour cloning.** Fit $\pi_\theta(a \mid s)$ by maximum likelihood on expert pairs $(s, a)$. It is simple, stable and needs no environment access. It works well when data is abundant and covers the states the policy will see, as in many driving and manipulation datasets and in supervised fine-tuning of language models.
+
+**Compounding error.** BC trains on the expert's state distribution but is tested on its own. A small mistake leads to a state the expert never visited. There the policy is less accurate, so it errs again and drifts further away. Ross and Bagnell showed that if the per-step error is $\epsilon$ on expert states, the expected cost over horizon $T$ can grow as $O(\epsilon T^2)$, quadratic rather than linear. A self-driving clone that never saw the car drift towards the kerb has no idea how to recover.
+
+**DAgger (Ross, Gordon and Bagnell, 2011)**
+
+1. Train $\pi_1$ by BC on the expert data $D$.
+2. Roll out the current policy (optionally mixed with the expert) and record the states it visits.
+3. Ask the expert to **label those states** with the correct action, and add them to $D$.
+4. Retrain on the aggregated $D$ and repeat.
+
+Because the training data now covers the learner's own state distribution, the error bound becomes linear in $T$ (no-regret online learning). The cost is an expert who can be queried on demand. That is easy when the expert is a planner, an oracle with privileged information (common in sim-to-real robotics), or a larger "teacher" model. It is hard when a human must label rollouts frame by frame. Variants such as HG-DAgger let a human take over only when needed.
+
+**GAIL (Ho and Ermon, 2016).** This is inverse RL (16.32) without explicitly recovering a reward. A discriminator $D(s, a)$ learns to tell expert pairs from policy pairs. The policy is trained with RL, using a reward such as $-\log D(s, a)$, to fool it. At the optimum the policy's occupancy measure matches the expert's. The agent interacts with the environment, so it learns from its own states and recovers from mistakes without an online expert. It can also succeed from just a few trajectories.
+
+| | BC | DAgger | GAIL |
+| --- | --- | --- | --- |
+| Environment interaction | None | Yes | Yes, many samples |
+| Expert needed during training | No | Yes, interactive | No |
+| Handles compounding error | No | Yes | Yes |
+| Stability | High | High | GAN-style instability |
+| Main risk | Drift off-distribution | Labelling cost | Discriminator overfitting, reward hacking |
+
+**Practical guidance**
+
+- Start with BC. Mitigate drift with more diverse data, noise injected into the expert's demonstrations so recovery behaviour gets recorded (DART), and action chunking or history-aware models such as the diffusion policies used in modern robot learning.
+- Add DAgger-style correction when an expert can be queried cheaply.
+- Use GAIL or AIRL when you have a simulator and few demonstrations. AIRL recovers a reward that transfers better.
+- A common recipe in robotics and LLMs is BC pre-training followed by RL fine-tuning against a learned or true reward.
+- Check the demonstrations themselves. Inconsistent or multimodal experts make a unimodal Gaussian policy average two good actions into one bad one.
+
+### 16.86 How do you debug a reinforcement learning agent that is not learning?
+
+Assume a bug before assuming a hard problem. Debug from the bottom up: environment, then the learning code on trivially easy tasks, then a known-good baseline, then diagnostics, then hyperparameters. RL fails silently. A broken agent often still produces a plausible-looking reward curve, and seed variance can hide or fake progress, as Henderson et al. showed in "Deep RL that Matters".
+
+**1. Verify the environment**
+
+- Run the Gymnasium or Stable-Baselines3 environment checker. It catches observation and space mismatches, wrong dtypes and broken `reset` seeding.
+- Play a few episodes by hand and with a random policy. Is the reward reachable at all? Is a random agent's return what you expect?
+- Check **terminated vs truncated**. A time-limit truncation is not a real terminal state. Bootstrapping from it with value 0 biases the value function. Gymnasium's API separates the two flags precisely for this reason.
+- Look for reward bugs: wrong sign, reward delivered one step late, or reward leaked into the observation.
+
+**2. Test the learner on problems with known answers.** Use "probe" environments:
+
+| Probe | Expected behaviour |
+| --- | --- |
+| One step, constant reward +1 | Value converges to 1; otherwise the value loss is broken |
+| Reward depends on the observation | Value tracks the observation; otherwise the network ignores inputs |
+| Two steps, reward at end | Value equals $\gamma$ at step 1; otherwise discounting is broken |
+| Reward depends on the action | The policy picks the right action; otherwise the policy gradient is broken |
+
+Then reproduce a published result on CartPole or Pendulum with your code. If a reference implementation such as Stable-Baselines3 solves your environment and yours does not, the bug is in your code.
+
+**3. Read the right diagnostics, not just the return**
+
+- **Policy entropy:** collapsing early means premature convergence. If it never falls, the policy is not learning.
+- **Approximate KL and clip fraction (PPO):** values near zero mean the policy is barely updating. Spikes mean the learning rate is too high.
+- **Explained variance of the critic:** stuck near 0 or negative means the value function is useless, so the advantages are noise.
+- **Q-values (DQN, SAC):** values growing without bound mean overestimation or a missing terminal mask.
+- **Gradient norms, action histograms and observation statistics:** saturated tanh outputs, a single action used constantly, or unnormalised inputs.
+- **Videos:** watch the agent. Reward hacking is often obvious in a few seconds of footage.
+
+**4. Check the usual suspects.** "What Matters in On-Policy RL" (Andrychowicz et al.) trained more than 250,000 agents and found that implementation choices outweigh the choice of algorithm:
+
+- Normalise observations, and scale or clip rewards (`VecNormalize`). Save its statistics with the model.
+- Initialise the final policy layer with small weights so early actions are near-uniform.
+- Use a sensible learning rate (around $3 \times 10^{-4}$ with Adam), GAE with $\lambda \approx 0.9$–$0.95$, and $\gamma$ matched to the task horizon.
+- Make sure the action space is scaled to $[-1, 1]$ for continuous control.
+
+**5. Run experiments honestly**
+
+- Use at least 5–10 seeds and report the mean with confidence intervals or the interquartile mean. A single "it worked" run is anecdote.
+- Change one thing at a time, and log the config, code version and seed for every run.
+- Compare against the random baseline and a simple heuristic policy, not just against the previous run.
+
+**Illustrative example.** Suppose a PPO agent's return was flat. Explained variance was about −0.5, and the two-step probe failed. The rollout code never applied the done-mask, so GAE and the value targets bootstrapped across episode boundaries, mixing returns from unrelated episodes. Fixing the mask brought explained variance to 0.8, and the agent learned within an hour. No hyperparameter search would have found that.
 
 ---
 
