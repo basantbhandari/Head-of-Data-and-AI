@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,686 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,687 interview questions with worked answers, in 31 chapters across 6 parts._
 
 Last updated 2026-11-16.
 
@@ -97,8 +97,8 @@ _Taking data and AI systems to production: services, operations, infrastructure,
 | 27. [AI Infrastructure and Inference Optimization](part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md) | 62 |
 | 28. [Machine Learning System Design](part-5-production-systems/28-machine-learning-system-design.md) | 27 |
 | 29. [Generative AI System Design](part-5-production-systems/29-generative-ai-system-design.md) | 49 |
-| 30. [AI Safety, Security and Responsible AI](part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) | 55 |
-| **Part total** | **318** |
+| 30. [AI Safety, Security and Responsible AI](part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) | 56 |
+| **Part total** | **319** |
 
 ### Part VI — Professional Practice
 
@@ -109,4 +109,4 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 44 |
 | **Part total** | **44** |
 
-**Total: 1,686 questions.**
+**Total: 1,687 questions.**

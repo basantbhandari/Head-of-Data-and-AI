@@ -4,7 +4,7 @@ _Part V — Production Systems and Architecture_
 
 Prompt injection and jailbreaks, privacy, fairness, explainability, regulation and governance of AI systems.
 
-This chapter contains **55 questions**.
+This chapter contains **56 questions**.
 
 ## Contents
 
@@ -63,6 +63,7 @@ This chapter contains **55 questions**.
 - **30.53** [What makes an AI system trustworthy, and how do you engineer trustworthiness into a production system?](#3053-what-makes-an-ai-system-trustworthy-and-how-do-you-engineer-trustworthiness-into-a-production-system)
 - **30.54** [What techniques are used to align large language models, and what are their limitations?](#3054-what-techniques-are-used-to-align-large-language-models-and-what-are-their-limitations)
 - **30.55** [How do you measure and improve the reliability of an LLM-based system?](#3055-how-do-you-measure-and-improve-the-reliability-of-an-llm-based-system)
+- **30.56** [What is the technological singularity, and how should an AI engineer think about it?](#3056-what-is-the-technological-singularity-and-how-should-an-ai-engineer-think-about-it)
 
 ---
 
@@ -2194,6 +2195,53 @@ slo:
 - Measuring once per task and reporting pass^1 as "reliability".
 - Trusting an LLM judge that has not been calibrated against human labels.
 - Optimising average accuracy while a 3% catastrophic slice (wrong refunds, wrong dosages) goes unnoticed; tag and track severity separately.
+
+### 30.56 What is the technological singularity, and how should an AI engineer think about it?
+
+The **technological singularity** is the hypothesised point at which AI becomes able to improve itself faster than humans can, triggering a runaway "intelligence explosion" that produces **superintelligence** and changes the world so quickly that what comes after cannot be predicted from what came before. It is a forecast and a thought experiment, not an established result, and a good answer separates the idea, the evidence and the engineering implications.
+
+**Where the idea comes from**
+
+- **John von Neumann (1950s):** Stanisław Ulam recalled him talking about ever-accelerating technological progress approaching "some essential singularity" in human history.
+- **I. J. Good (1965):** an "ultraintelligent machine" could design even better machines, causing an **intelligence explosion**. The first such machine would be "the last invention that man need ever make", provided it is docile enough to tell us how to keep it under control.
+- **Vernor Vinge (1993):** popularised the term and predicted superhuman intelligence within thirty years.
+- **Ray Kurzweil (2005, 2024):** extrapolated exponential trends in computing to predict human-level AI around 2029 and the singularity around 2045.
+- **Nick Bostrom (2014):** framed the risks of superintelligence and the **control problem**.
+
+**Core concepts**
+
+- **AGI vs ASI:** artificial general intelligence matches humans across most cognitive tasks. Artificial superintelligence exceeds them by a wide margin.
+- **Recursive self-improvement:** a system that improves its own design, training or successors, so each generation builds a better one.
+- **Takeoff speed:** a **hard (fast) takeoff** goes from human-level to superhuman in days or months. A **soft (slow) takeoff** happens over years, with AI gradually accelerating the economy and research.
+
+**Arguments that it is plausible**
+
+- **Scaling laws:** capability has improved predictably with compute, data and parameters, and algorithmic efficiency gains compound on top of hardware gains.
+- **AI accelerating AI research:** models already write code, run experiments and generate training data. This is the feedback loop the hypothesis depends on.
+- **Economic feedback:** more capable AI earns more revenue, which funds more compute and research.
+
+**Arguments for scepticism**
+
+- **Bottlenecks:** progress is limited by compute, energy, chip supply, high-quality data and real-world experiments that cannot be sped up by thinking faster.
+- **Diminishing returns:** each capability gain may need exponentially more resources, which gives smooth progress rather than an explosion.
+- **Intelligence is not one number:** being superhuman on benchmarks does not imply general competence, reliability or agency in the physical world.
+- **Track record:** confident dates for human-level AI have been predicted and missed repeatedly since the 1960s.
+
+| View | Core claim | What would change the view |
+| --- | --- | --- |
+| Fast takeoff | Self-improvement compounds suddenly | AI systems doing most of frontier AI research |
+| Slow takeoff | Gradual acceleration over years | Steady benchmark and productivity trends |
+| Sceptical | Bottlenecks prevent an explosion | Progress continuing despite data and energy limits |
+
+**Why it matters in practice**
+
+- **Alignment and control:** if systems may one day exceed human oversight, techniques for specifying goals, detecting deception and keeping humans in control need to mature *before* that point.
+- **Governance:** frontier labs publish safety frameworks (Anthropic's Responsible Scaling Policy, OpenAI's Preparedness Framework, Google DeepMind's Frontier Safety Framework) that tie capability thresholds to required safeguards. The EU AI Act presumes systemic risk for general-purpose models trained with more than $10^{25}$ FLOPs.
+- **Engineering habits that apply today:** run dangerous-capability evaluations, restrict autonomy and tool permissions, log and monitor agent actions, keep a human approval step for consequential decisions, and design systems that can be paused or rolled back.
+
+**How to answer in an interview**
+
+Define the term precisely, give the strongest argument on each side, say where you stand and why, and connect it to work you can do now: evaluations, oversight, containment of agentic systems and honest communication about uncertainty. Avoid both hype ("AGI next year") and dismissal ("it is science fiction"). Interviewers are looking for calibrated reasoning, not a prediction.
 
 ---
 
