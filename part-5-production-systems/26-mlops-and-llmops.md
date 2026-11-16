@@ -4,7 +4,7 @@ _Part V — Production Systems and Architecture_
 
 Deploying, monitoring and operating ML and LLM systems: drift, versioning, rollout strategies, observability and the managed platforms that support them.
 
-This chapter contains **73 questions**.
+This chapter contains **87 questions**.
 
 ## Contents
 
@@ -81,6 +81,20 @@ This chapter contains **73 questions**.
 - **26.71** [What metrics would you monitor for an ML service?](#2671-what-metrics-would-you-monitor-for-an-ml-service)
 - **26.72** [How would you detect data drift automatically?](#2672-how-would-you-detect-data-drift-automatically)
 - **26.73** [How would you roll back a model that performs badly in production?](#2673-how-would-you-roll-back-a-model-that-performs-badly-in-production)
+- **26.74** [How do you make ML experiments reproducible, and what should an experiment tracking system capture?](#2674-how-do-you-make-ml-experiments-reproducible-and-what-should-an-experiment-tracking-system-capture)
+- **26.75** [What is a model registry, and how do you design the promotion workflow from experiment to production?](#2675-what-is-a-model-registry-and-how-do-you-design-the-promotion-workflow-from-experiment-to-production)
+- **26.76** [What are the MLOps maturity levels, and what does continuous training (CT) look like?](#2676-what-are-the-mlops-maturity-levels-and-what-does-continuous-training-ct-look-like)
+- **26.77** [When and how should you retrain models automatically, and how do champion/challenger evaluations gate a new model?](#2677-when-and-how-should-you-retrain-models-automatically-and-how-do-championchallenger-evaluations-gate-a-new-model)
+- **26.78** [What is shadow deployment, and how does it compare with canary releases, interleaving and multi-armed bandits for online evaluation?](#2678-what-is-shadow-deployment-and-how-does-it-compare-with-canary-releases-interleaving-and-multi-armed-bandits-for-online-evaluation)
+- **26.79** [What is point-in-time correctness in a feature store, and how do you build leakage-free training sets?](#2679-what-is-point-in-time-correctness-in-a-feature-store-and-how-do-you-build-leakage-free-training-sets)
+- **26.80** [How do you test ML systems?](#2680-how-do-you-test-ml-systems)
+- **26.81** [How do you monitor a model when ground-truth labels arrive late or never?](#2681-how-do-you-monitor-a-model-when-ground-truth-labels-arrive-late-or-never)
+- **26.82** [How do model serving frameworks such as Triton, KServe, BentoML and Ray Serve compare, and how does dynamic batching improve throughput?](#2682-how-do-model-serving-frameworks-such-as-triton-kserve-bentoml-and-ray-serve-compare-and-how-does-dynamic-batching-improve-throughput)
+- **26.83** [How do you choose an ML pipeline orchestrator, comparing Kubeflow Pipelines, Vertex AI or SageMaker Pipelines, Airflow and Metaflow?](#2683-how-do-you-choose-an-ml-pipeline-orchestrator-comparing-kubeflow-pipelines-vertex-ai-or-sagemaker-pipelines-airflow-and-metaflow)
+- **26.84** [How do you design batch inference at scale?](#2684-how-do-you-design-batch-inference-at-scale)
+- **26.85** [What is hidden technical debt in ML systems, and how do you prevent it?](#2685-what-is-hidden-technical-debt-in-ml-systems-and-how-do-you-prevent-it)
+- **26.86** [How do you change the embedding model behind a production vector index without downtime?](#2686-how-do-you-change-the-embedding-model-behind-a-production-vector-index-without-downtime)
+- **26.87** [How do you build a data flywheel that turns production feedback into better evaluations and models for an LLM application?](#2687-how-do-you-build-a-data-flywheel-that-turns-production-feedback-into-better-evaluations-and-models-for-an-llm-application)
 
 ---
 
@@ -2448,6 +2462,538 @@ Tools: Evidently, WhyLabs, NannyML (estimates performance without labels), Arize
 - Root-cause analysis: data drift, bug in training data, offline/online skew, insufficient evaluation coverage.
 - Add the failing cases to the evaluation/regression suite and strengthen release gates (shadow testing, longer canary).
 - Reprocess or correct decisions made by the bad model if needed (important in finance/healthcare), using prediction logs keyed by model version.
+
+### 26.74 How do you make ML experiments reproducible, and what should an experiment tracking system capture?
+
+An experiment is reproducible when someone else can rebuild the same model, or one that is statistically the same, from a run ID alone. That means pinning **code, data, environment, configuration and randomness**, and having every run record them automatically, not from memory.
+
+**The five things to pin:**
+- **Code:** the git commit SHA, with a flag or a refusal to run when the working tree has uncommitted changes. Notebooks are converted to scripts or run in a pipeline before results count.
+- **Data:** an immutable dataset reference, such as a Delta/Iceberg snapshot ID, a DVC or lakeFS commit, or a content hash of the training files. Record the split definitions and the label snapshot too. "s3://bucket/train/latest" is not a version.
+- **Environment:** a lock file (uv/poetry/conda-lock) and the container image digest, plus the CUDA, cuDNN and driver versions and the GPU type. A different GPU or library version can change results.
+- **Configuration:** every hyperparameter and feature list in a single config object (Hydra, a YAML file, a dataclass) that is logged in full, not just the values someone changed.
+- **Randomness:** seeds for Python, NumPy and the framework, data loader worker seeds, and deterministic kernels where needed (`torch.use_deterministic_algorithms(True)`). Distributed training and some cuDNN kernels stay slightly non-deterministic, so the target is "within noise", which you check by rerunning with three to five seeds.
+
+**What the tracking system should capture per run:**
+
+| Category | Examples |
+|---|---|
+| Lineage | git SHA, dataset version, parent run, pipeline run ID, who launched it |
+| Inputs | full config, hyperparameters, feature set, data statistics (rows, class balance) |
+| Environment | image digest, package versions, hardware, number of workers |
+| Metrics | training/validation curves per step, final metrics overall and per slice, seed variance |
+| Artifacts | model weights, preprocessing objects, tokenizer, model signature, evaluation reports, confusion matrices |
+| Cost and time | wall-clock time, GPU hours, peak memory |
+| Context | tags (ticket, hypothesis), notes on what was learned, including failed runs |
+
+```python
+import mlflow, subprocess
+with mlflow.start_run(run_name="ranker-v7-lr-sweep"):
+    mlflow.set_tags({"git_sha": subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip(),
+                     "dataset_snapshot": "orders_features@v4182"})
+    mlflow.log_params(cfg)
+    # ... train ...
+    mlflow.log_metrics({"val_auc": auc, "val_auc_new_users": auc_new})
+    mlflow.sklearn.log_model(pipeline, "model", signature=signature)
+```
+
+**Tooling:** MLflow (open source, sits next to the Databricks registry), Weights & Biases (strong for deep learning dashboards, sweeps and artifact lineage), Vertex AI Experiments, SageMaker Experiments, Neptune or Comet. Pick one per organisation so that runs can be compared across teams.
+
+**What goes wrong in practice:**
+- Logging is optional and done by hand, so only the "good" runs are recorded. Fix this by logging inside the shared training template or pipeline component.
+- Data is referenced by a mutable path, and three months later the table has been backfilled.
+- Preprocessing lives in a notebook and is not saved with the model.
+- Results come from a single seed, so a 0.3-point "improvement" is just noise.
+
+**Senior test:** pick a production model at random and rebuild it from its registry entry in a clean environment. If that takes more than one command and an hour of compute, the reproducibility story is incomplete.
+
+### 26.75 What is a model registry, and how do you design the promotion workflow from experiment to production?
+
+A **model registry** is the system of record for deployable models. It holds named models, immutable numbered versions, the artifacts and signatures for each version, lineage back to the training run and data, evaluation results, and pointers that say which version serves where. Deployment tools read from the registry, not from someone's laptop or a bucket path.
+
+**What a registry entry should hold:**
+- Artifact plus preprocessing, the input/output signature and the serving image or runtime.
+- Link to the experiment run: code SHA, dataset snapshot, config.
+- Evaluation report: global and per-slice metrics, fairness checks, latency and size benchmarks.
+- Governance metadata: owner, intended use, model card, approval records, risk tier.
+- Deployment pointers: aliases or stages such as `candidate`, `challenger`, `champion`. MLflow has deprecated fixed stages in favour of free-form **aliases** (for example `models:/fraud@champion`), Unity Catalog uses aliases with access control, and SageMaker uses model package groups with an approval status.
+
+**Promotion workflow:**
+
+1. **Register:** the training pipeline, not a human, registers a new version once training finishes, tagged `candidate`, with all lineage attached.
+2. **Automated gates (CI for models):**
+   - Schema and signature compatible with the current feature pipeline.
+   - Offline metrics beat the champion on a frozen holdout and on a fresh recent window, with no regression on critical slices beyond a set tolerance.
+   - Behavioural tests pass: invariance, directional checks, known-bad regression cases.
+   - Latency, memory and model size within the serving budget. The package loads and serves in a staging container.
+   - Bias and fairness checks for regulated use cases.
+3. **Human approval when risk calls for it:** a model risk or domain reviewer signs off in the registry, which records who approved what and when. Low-risk models can be promoted automatically.
+4. **Staged rollout:** set alias `challenger`, deploy to shadow or canary, compare online against the champion on guardrail and business metrics.
+5. **Promote:** move the `champion` alias to the new version. Serving resolves the alias, so promotion and rollback are both a metadata change.
+6. **Archive:** keep the previous champion warm for fast rollback, then archive old versions under a retention policy. Never delete versions that served production decisions in audited domains.
+
+```python
+from mlflow import MlflowClient
+client = MlflowClient()
+client.set_registered_model_alias("fraud_model", "challenger", version=42)
+# after canary passes
+client.set_registered_model_alias("fraud_model", "champion", version=42)
+```
+
+**Design choices to discuss:**
+- **One registry across environments, or one per environment?** A common pattern is a single registry with access controlled by environment, where the exact same artifact moves from dev to staging to prod. Rebuilding the model per environment breaks lineage.
+- **Promote the artifact, not the code.** Retraining in production "with the same code" gives a different model. If you promote code instead (common at level 2 maturity), the production pipeline retrains and the gates run again on its output.
+- **Couple versions:** a model version should name the feature definitions and preprocessing it needs, so deployment can refuse an incompatible combination.
+
+**Failure modes:** aliases moved by hand outside CI, so nobody knows why production changed; gates that compare only global AUC, hiding a regression on a small but important segment; and no link from a prediction log back to the version that produced it.
+
+### 26.76 What are the MLOps maturity levels, and what does continuous training (CT) look like?
+
+The best-known model is Google Cloud's three levels. They describe how much of the path from data to deployed model is automated: **level 0** is manual, **level 1** automates the training pipeline so models retrain continuously, and **level 2** also automates building, testing and deploying the pipeline itself through CI/CD. Microsoft's Azure model uses five levels, but the progression is the same.
+
+| Level | What is automated | Typical symptoms |
+|---|---|---|
+| 0: Manual | Nothing. Notebooks, hand-run scripts, model file handed to engineers | Releases a few times a year; training-serving skew; no monitoring; "only one person knows how to retrain it" |
+| 1: ML pipeline automation | The training pipeline runs end to end on triggers: data validation, feature engineering, training, evaluation, validation, registration | Continuous training; the same pipeline runs in dev and prod; feature store and metadata store in place; models deployed automatically or after approval |
+| 2: CI/CD pipeline automation | Pipeline code is tested, built and deployed automatically; many pipelines run in parallel | Data scientists ship new pipeline versions several times a week; full lineage; monitoring drives triggers |
+
+**Key shift at level 1:** you stop deploying a *model* and start deploying a *training pipeline* that produces models. That is what makes continuous training possible.
+
+**What continuous training looks like:**
+
+1. **Trigger:** a schedule (nightly or weekly), new data arriving (a partition lands), a monitoring signal (drift or performance decay), or a manual run.
+2. **Data extraction and validation:** pull a snapshot and check schema, volumes, null rates and distributions against expectations. The pipeline **stops** on anomalies rather than training on broken data.
+3. **Feature computation:** reuse the same feature definitions that serving uses, with point-in-time correct joins.
+4. **Train and tune:** a fixed or bounded hyperparameter search. Warm-start where it is safe to do so.
+5. **Evaluate:** against the current champion on the same fresh holdout, overall and per slice.
+6. **Validate and register:** infrastructure compatibility, latency, behavioural tests. Register as a candidate with lineage.
+7. **Deploy:** automatically through shadow or canary for low-risk models, or wait for an approval step.
+8. **Monitor:** production metrics feed back into the trigger.
+
+**Level 2 adds** unit tests for feature logic and components, integration tests of the whole pipeline on a sample, building component images, deploying the pipeline definition to the orchestrator, and promoting it through environments, all from a pull request.
+
+**How to use this in a role:**
+- Don't aim for level 2 everywhere. A quarterly-updated model whose input data barely changes is fine at level 1 with a scheduled run. Invest where data changes quickly and models matter commercially: fraud, ranking, pricing.
+- The order of investment that usually pays off is: reproducible training script, then a pipeline orchestrator, then data validation, then a model registry with gates, then monitoring, then triggers driven by monitoring.
+- LLM applications follow a similar ladder, but the artefacts are prompts, retrieval configs and evaluation sets instead of trained weights. "Continuous training" becomes continuous evaluation, plus occasional fine-tuning.
+
+**Failure modes of CT:** an automated pipeline that faithfully retrains on corrupted data, feedback loops where the model learns from its own decisions, and silent promotion of a slightly worse model every week. Validation gates and champion/challenger comparisons are what make CT safe.
+
+### 26.77 When and how should you retrain models automatically, and how do champion/challenger evaluations gate a new model?
+
+Retrain when doing so is expected to improve the business metric enough to justify the cost and risk, and let a **champion/challenger** comparison decide whether the new model actually replaces the old one. Retraining is cheap to trigger. Promotion is where discipline matters.
+
+**When to retrain:**
+
+| Trigger | Good for | Watch out for |
+|---|---|---|
+| Schedule (daily, weekly) | Stable, predictable decay; simple to operate | Wasted compute when nothing changed; too slow for sudden shifts |
+| New data volume | Data arrives in batches, such as new labelled cases | Label delay means "new" data may be weeks old |
+| Performance decay | Labels arrive quickly (clicks, short-horizon outcomes) | Needs reliable labels and a threshold set with statistical care |
+| Drift alert | Labels late or absent | Many drift alerts are upstream data bugs, and retraining on a bug locks it in |
+| Upstream change | New features, a schema change, a new product line | Usually needs a human, not only a retrain |
+
+**Find the right cadence empirically:** train models on data ending at different dates, evaluate each on later periods, and plot performance against model age. If the curve drops 2% after a week, retrain weekly. If it is flat for six months, a quarterly schedule is fine.
+
+**How to retrain safely:**
+- Use a fixed pipeline (see continuous training), not ad hoc scripts.
+- Choose the window deliberately: a sliding window forgets old regimes, an expanding window keeps them, and time-decay sample weights are a middle ground.
+- Validate data before training and halt on anomalies.
+- Watch for feedback loops: if the model's decisions shape the labels (credit approvals, recommendations), keep a small random exploration slice or use counterfactual correction so that training data is not only what the old model chose.
+
+**Champion/challenger gating:**
+
+1. **Same data, same metrics:** score both the champion and the challenger on an identical, recent, out-of-time holdout that neither model trained on.
+2. **Primary metric with a margin:** the challenger must beat the champion by a minimum effect, and the improvement must hold across bootstrap resamples or seeds, not appear from a single number.
+3. **Guardrail slices:** no regression beyond a tolerance on critical segments (new users, high-value customers, each region, protected groups).
+4. **Operational checks:** latency, memory, calibration, prediction distribution not shifted unexpectedly.
+5. **Online stage:** shadow mode to compare predictions on live traffic, then a canary or A/B test against the champion for the business metric.
+6. **Promote or reject automatically,** and record the decision and evidence in the registry.
+
+```python
+def gate(champ, chall, min_lift=0.003, slice_tol=0.005):
+    if chall["auc"] - champ["auc"] < min_lift:
+        return False, "insufficient lift"
+    for s in CRITICAL_SLICES:
+        if champ[s] - chall[s] > slice_tol:
+            return False, f"regression on {s}"
+    if chall["p99_ms"] > SLA_MS:
+        return False, "latency over SLA"
+    return True, "promote"
+```
+
+**Failure modes:** comparing the challenger on fresh data against the champion's old evaluation numbers; small improvements that look significant because of one lucky split; slowly ratcheting worse because each step was "within tolerance" (compare against a fixed reference model as well as the current champion); and alert fatigue from retraining that fails noisily every night.
+
+### 26.78 What is shadow deployment, and how does it compare with canary releases, interleaving and multi-armed bandits for online evaluation?
+
+In **shadow deployment**, a new model receives a copy of live production traffic and makes predictions, but its outputs are only logged and never shown to users or used in decisions. It tests the model on real inputs with zero user risk, but it cannot measure how users react, because users never see its outputs.
+
+**How shadow mode works:**
+- Mirror requests at the gateway or service mesh (Istio mirroring, SageMaker shadow variants, a dual call in application code), usually asynchronously so that shadow latency cannot slow the main path.
+- Log both predictions with a shared request ID, then compare: agreement rate, score distributions, latency, errors, and, once labels arrive, accuracy of both.
+- Good for catching training-serving skew, feature bugs, latency regressions and unexpected prediction shifts before any user is exposed.
+- Costs extra compute. Avoid shadow calls with side effects (sending emails, calling paid APIs, writing to shared state).
+
+**The online evaluation options:**
+
+| Method | What users see | What it measures | Strengths | Limits |
+|---|---|---|---|---|
+| Shadow | Only the old model | Technical behaviour, agreement, offline-style accuracy on live data | Zero user risk; catches pipeline bugs | No causal measure of user impact; doesn't work when the model's output changes later inputs |
+| Canary | Small, growing share sees the new model | Errors, latency, guardrails, early KPI signal | Limits blast radius; standard rollout safety | Small slices give weak statistics; mainly a safety mechanism |
+| A/B test | Users randomised to old or new | Causal effect on business metrics | Gold standard for impact; supports long-term metrics | Needs a lot of traffic and time; one comparison at a time |
+| Interleaving | One mixed ranked list built from both rankers | Which ranker's items users prefer (clicks attributed to each) | Far more sensitive, often reported as 10 to 100 times fewer users needed, because each user compares both | Only for ranking and recommendation; measures preference, not retention or revenue |
+| Multi-armed bandit | Traffic shifts towards the better arm as evidence grows | Cumulative reward | Less regret during the test; good for many variants or short-lived content | Biased effect estimates; poor for slow-arriving or long-term metrics; harder to analyse |
+
+**Interleaving in practice:** team-draft interleaving alternates picks from rankers A and B into one list and credits each click to the ranker that supplied the item. Netflix, Spotify and DoorDash use it as a fast first filter: many candidate rankers are interleaved, and only the winners go to a full A/B test that measures long-term metrics.
+
+**Bandits in practice:** Thompson sampling or UCB fit headline selection, promotions, or choosing among several prompts when the reward is immediate (a click or a thumbs up). Contextual bandits personalise the choice. Don't use them when the success metric arrives weeks later or when you need a clean, unbiased effect estimate for a launch decision.
+
+**How I sequence them for a new ranking model:** offline evaluation, then shadow for a few days (skew, latency, agreement), then interleaving against the champion to filter candidates, then a canary for safety, then an A/B test for the business decision, then a full rollout with a small long-term holdback group.
+
+**Failure modes:** treating shadow agreement as proof of improvement (a better model is supposed to disagree); calling a canary "a test" and launching on 1% of traffic over two hours; and running bandits on metrics with delayed rewards, so traffic chases noise.
+
+### 26.79 What is point-in-time correctness in a feature store, and how do you build leakage-free training sets?
+
+**Point-in-time correctness** means each training example contains only the feature values that were actually known at the moment the prediction would have been made. If a training row for a transaction at 10:05 uses a "transactions in the last hour" feature computed at 11:00, the model learns from the future, looks great offline and disappoints in production. This is **data leakage**, and a time-unaware join is the most common cause.
+
+**How a point-in-time join works:**
+- Start from a **spine** (Feast calls it the entity DataFrame): one row per labelled event with an entity key, an event timestamp and the label.
+- For each row and each feature view, pick the **latest feature value whose timestamp is at or before the event timestamp**. This is an "as-of" join, not an equality join.
+- Apply a **TTL** or maximum age: if the latest value is older than the TTL, return null rather than a stale value. This mirrors what the online store would have served.
+- Feast's `get_historical_features`, Tecton, Databricks Feature Engineering and SageMaker Feature Store all implement this. You can also write it yourself in SQL.
+
+```sql
+SELECT s.order_id, s.event_ts, s.label, f.avg_basket_30d
+FROM spine s
+LEFT JOIN LATERAL (
+  SELECT avg_basket_30d
+  FROM customer_features f
+  WHERE f.customer_id = s.customer_id
+    AND f.feature_ts <= s.event_ts
+    AND f.feature_ts > s.event_ts - INTERVAL '2 days'   -- TTL
+  ORDER BY f.feature_ts DESC
+  LIMIT 1
+) f ON TRUE;
+```
+Spark, Snowflake and DuckDB offer `ASOF JOIN` or window-function patterns that do the same thing at scale.
+
+**Subtle sources of leakage to design against:**
+- **Event time vs availability time:** a feature computed for day D might only land at 03:00 on D+1. Use the time the value became *available* (Feast's created timestamp, Tecton's processing time) or add an explicit availability lag, not just the logical date.
+- **Overwritten tables:** a dimension table updated in place (current customer segment, current address) leaks future state. Keep history as SCD2 or append-only snapshots.
+- **Backfilled aggregates:** windows recomputed with late data contain events that were not visible at serving time.
+- **Labels inside features:** features derived from the outcome, such as "number of chargebacks" when predicting a chargeback, or a status field updated after the event.
+- **Random splits on time series:** use out-of-time validation, and group splits by entity when the same user appears many times.
+- **Global preprocessing:** scalers, target encodings or vocabularies fitted on the full dataset before splitting. Fit them on training folds only.
+
+**Making it structural, not heroic:**
+- Define features once and use the same definition for offline backfills and online serving.
+- Log features at serving time and train on those logs where possible ("log and wait"). This is leakage-free by construction and removes skew.
+- Automate leakage checks: features with suspiciously high importance, offline/online metric gaps, and feature timestamps later than event timestamps should fail the pipeline.
+- Handle duplicate timestamps deterministically. Ties in the source can make the join pick a different row on each run.
+
+**Interview example:** a fraud model reached 0.97 AUC offline and 0.81 online. The cause was a merchant risk score table refreshed daily and joined on merchant ID only, so training rows saw the score computed after the fraud was reported. Rebuilding the training set with as-of joins and a one-day availability lag brought offline AUC to 0.84, which matched production.
+
+### 26.80 How do you test ML systems?
+
+ML systems need ordinary software tests **plus** tests for data and for learned behaviour, because a model can pass every unit test and still be wrong. Google's "ML Test Score" rubric groups these into four areas: **data tests, model tests, ML infrastructure tests and monitoring tests**. I use that structure and add behavioural testing from NLP practice.
+
+**1. Data tests (before training and on every batch):**
+- Schema: types, required columns, allowed categories.
+- Expectations: ranges, null rates, uniqueness, referential integrity, volume within normal bounds, freshness.
+- Distribution checks against a reference (PSI, KS) with alert thresholds.
+- Feature value checks: every feature in the model is justified, costs what it is worth, and complies with privacy rules.
+- Tools: Great Expectations, Pandera, Soda, dbt tests, TFX Data Validation.
+
+**2. Model tests:**
+- **Quality gates:** beats a simple baseline and the current champion on an out-of-time holdout, overall and per important slice.
+- **Behavioural tests** (the CheckList approach):
+  - **Minimum functionality tests:** simple cases the model must get right ("I love this" is positive).
+  - **Invariance tests:** changes that should *not* change the prediction, such as swapping a person's name or gender in a support ticket, adding whitespace, or using a different currency format.
+  - **Directional expectation tests:** changes that should move the prediction in a known direction. Higher income should not lower a credit score; adding "refund not received" should raise complaint severity.
+- **Regression suite:** every past production incident becomes a test case.
+- **Robustness and fairness:** noise, missing features, adversarial inputs; metric parity across protected groups.
+- **Calibration and staleness:** predicted probabilities match observed rates; measured decay of an older model shows how often to retrain.
+
+```python
+def test_income_monotonic(model, base_applicant):
+    low  = model.predict_proba(base_applicant | {"income": 40_000})[1]
+    high = model.predict_proba(base_applicant | {"income": 90_000})[1]
+    assert high >= low - 1e-3
+
+def test_name_invariance(clf):
+    a = clf("Order 123 from Emily is late")
+    b = clf("Order 123 from Jamal is late")
+    assert a.label == b.label
+```
+
+**3. Infrastructure and pipeline tests:**
+- Unit tests for feature transformations, with fixed inputs and expected outputs.
+- **Training-serving parity test:** compute features for the same entity and time through the offline and online paths and assert they are equal.
+- Pipeline integration test: run the full pipeline on a small sample in CI, including registration and serving a test request.
+- Training reproducibility (two runs land within tolerance), model loading, signature validation, and a quick training sanity check (the model can overfit a tiny batch, the loss decreases).
+- Serving tests: latency and throughput under load, memory, graceful degradation, rollback works.
+
+**4. Monitoring tests (production):** schema and invariants on live inputs, skew between training and serving features, prediction distribution, staleness of the deployed model, and the latency, errors and throughput of the serving system.
+
+**Where each test runs:**
+
+| Stage | Tests |
+|---|---|
+| Pull request | Unit, feature parity on fixtures, tiny-batch training |
+| Training pipeline | Data validation, quality gates, behavioural suite, fairness |
+| Pre-deploy | Load test, shadow comparison, signature checks |
+| Production | Monitoring checks and alerts |
+
+**Senior points:** tests are probabilistic, so set tolerances and run behavioural suites as pass rates (for example, 98% of invariance cases must hold) rather than single asserts. Keep evaluation datasets versioned like code. And remember the trap in ML testing: the dangerous failures are silent, so most of the value is in data and monitoring tests, not unit tests.
+
+### 26.81 How do you monitor a model when ground-truth labels arrive late or never?
+
+When labels are delayed (loan defaults after months, chargebacks after weeks) or never arrive (a declined transaction never shows whether it was fraud), you cannot measure accuracy directly. Instead you combine **proxy signals**, **performance estimation** and **targeted labelling**, and you still join real labels whenever they do arrive.
+
+**1. Monitor the inputs.**
+- Data quality: schema violations, null rates, out-of-range values, upstream volume drops. Many "model problems" are broken pipelines.
+- Feature drift against the training reference (PSI, KS, Jensen-Shannon), weighted by feature importance, plus multivariate drift with a domain classifier.
+- Embedding drift for text and images.
+
+**2. Monitor the outputs.**
+- Prediction distribution, mean score, positive rate, class mix, confidence or entropy. A fraud model whose flag rate jumps from 0.8% to 2.5% overnight needs investigating, whatever the labels later say.
+- Calibration against the historical base rate.
+- Agreement with a reference model or a rules baseline running in shadow.
+
+**3. Estimate performance without labels.**
+- **Confidence-based performance estimation (CBPE):** for a well-calibrated classifier, expected accuracy, precision or AUC can be computed from predicted probabilities. NannyML implements this. It fails when the model is poorly calibrated or under concept drift, because the model's confidence is then wrong in exactly the cases that matter.
+- **Direct loss estimation:** train a second model to predict the primary model's error from its inputs and outputs. Useful for regression.
+- **Importance weighting:** reweight the labelled reference set to resemble current inputs and recompute metrics. Works for covariate shift only.
+
+**4. Use early and proxy labels.**
+- Short-horizon proxies that correlate with the final label: 30-day delinquency as an early read on 12-month default, early dispute filings ahead of chargebacks, a user re-asking a question as a signal of a bad chatbot answer.
+- Validate the proxy against the true label on historical data before trusting it.
+
+**5. Create labels deliberately.**
+- **Human review** of a stratified sample, with extra samples where the model is uncertain or where drift is highest.
+- **Exploration or holdout slices** to deal with the selection problem: let a small random share of borderline cases through (or route them to manual review) so you learn the outcomes the model would otherwise hide. Approve-or-decline systems need this, otherwise you only ever see labels for what you approved.
+- For LLM applications, use LLM-as-judge on sampled traffic, calibrated against human ratings, plus implicit feedback (thumbs, edits, retries).
+
+**6. Close the loop when labels arrive.**
+- Store predictions with request ID, model version and features, and join labels as they arrive. Report performance by **prediction cohort** (all predictions from week 32), noting how complete each cohort's labels are.
+
+**Alerting design:**
+
+| Signal | Latency | Reliability | Role |
+|---|---|---|---|
+| Data quality | Minutes | High for pipeline bugs | Page on-call |
+| Prediction drift | Hours | Medium | Investigate |
+| Estimated performance | Hours to days | Depends on calibration | Trigger review or retraining |
+| Proxy labels | Days to weeks | Validated correlation | Early warning |
+| True labels | Weeks to months | Ground truth | Confirm, recalibrate thresholds |
+
+**Pitfall:** retraining automatically on drift alone. Drift without a performance effect is common (a feature the model barely uses), and an upstream bug that looks like drift gets baked into the new model.
+
+### 26.82 How do model serving frameworks such as Triton, KServe, BentoML and Ray Serve compare, and how does dynamic batching improve throughput?
+
+They solve different layers of the problem. **Triton** is a high-performance inference *server* that runs models efficiently on GPUs. **KServe** is a Kubernetes *control plane* for deploying, scaling and routing model servers. **BentoML** is a Python-first *packaging and serving* framework. **Ray Serve** is a Python-native *distributed serving library* that excels at composing many models and business logic. They are often combined, for example KServe deploying Triton, or Ray Serve calling vLLM.
+
+| | Triton Inference Server | KServe | BentoML | Ray Serve |
+|---|---|---|---|---|
+| What it is | C++ inference server with multiple backends (TensorRT, ONNX Runtime, PyTorch, TensorFlow, Python, TensorRT-LLM, vLLM) | Kubernetes CRD (`InferenceService`) that runs model servers, including Triton, vLLM, sklearn, XGBoost and custom ones | Python framework to define a service, build a "Bento" image and deploy it anywhere or on BentoCloud | Library on the Ray cluster; deployments are Python classes with autoscaling replicas |
+| Strengths | Maximum GPU throughput, dynamic batching, concurrent model instances, ensembles, metrics | Standard deployment API, scale-to-zero with Knative, canary traffic split, transformers/explainers, inference graphs, multi-model serving | Very fast path from a notebook to an API; adaptive batching; good developer experience | Composition of many models and logic in one Python app; fractional GPUs; shares a cluster with Ray Data and Ray Train |
+| Weak spots | Configuration-heavy; Python logic is less natural | Needs a Kubernetes and Knative/Istio skill set; it is not a fast runtime by itself | Peak performance below a tuned Triton setup | Operating a Ray cluster; debugging distributed Python |
+| Choose when | Latency and cost per GPU matter most | You run a platform on Kubernetes for many teams | A small team needs to ship custom Python models quickly | Pipelines of models (retrieval, ranking, LLM) and Python business logic |
+
+For LLMs specifically, the runtime is usually vLLM, SGLang or TensorRT-LLM, wrapped by one of these for deployment and routing.
+
+**Dynamic batching:**
+
+GPUs are throughput machines. A single request uses a fraction of the compute, while the cost of reading the weights from memory is almost the same for one input as for thirty-two. **Dynamic (server-side) batching** collects individual requests that arrive close together and runs them as one batch.
+
+- Triton waits up to `max_queue_delay_microseconds` to fill a batch, prefers certain sizes, and sends what it has when the delay expires.
+- BentoML's adaptive batching tunes the batch window automatically from observed latency.
+- Ray Serve's `@serve.batch` decorator batches calls to a method using `max_batch_size` and `batch_wait_timeout_s`.
+
+```
+# Triton config.pbtxt
+max_batch_size: 64
+dynamic_batching {
+  preferred_batch_size: [16, 32]
+  max_queue_delay_microseconds: 2000
+}
+instance_group [{ count: 2, kind: KIND_GPU }]
+```
+
+**The trade-off:** batching adds queueing delay to every request in exchange for much higher throughput. Under light load the delay is pure cost. Under heavy load, batching *reduces* tail latency because queues drain faster. Tune using measured load: sweep the queue delay and batch size with a load generator (Triton's `perf_analyzer`) and choose the setting that maximises throughput while meeting the p99 SLO.
+
+**Continuous batching for LLMs:** request-level batching wastes capacity because sequences finish at different times. LLM servers batch at the token level: finished sequences leave and new ones join at every decode step. That is why vLLM and TensorRT-LLM achieve much higher throughput than a plain batch window.
+
+**Pitfalls:** padding waste when inputs vary in length (bucket by length); a batch window longer than the latency budget; one slow request holding up a batch; and autoscaling on CPU when the real signal is queue depth or GPU utilisation.
+
+### 26.83 How do you choose an ML pipeline orchestrator, comparing Kubeflow Pipelines, Vertex AI or SageMaker Pipelines, Airflow and Metaflow?
+
+Choose on **who writes the pipelines, where compute runs, and what the organisation already operates**, not on feature checklists. Most orchestrators can run a training DAG. They differ in ML-specific features (artifact tracking, caching, GPU steps), developer experience, and operational burden.
+
+| | Kubeflow Pipelines (KFP) | Vertex AI Pipelines / SageMaker Pipelines | Airflow | Metaflow |
+|---|---|---|---|---|
+| Model | Containerised steps on Kubernetes, defined with the KFP Python SDK | Managed services. Vertex runs KFP-format pipelines serverlessly; SageMaker has its own SDK | General-purpose scheduler of tasks defined in Python DAGs | Python flows of steps, created at Netflix; runs locally, on AWS Batch or Kubernetes, and deploys to Step Functions or Argo |
+| ML features | Artifact lineage, step caching, metadata store, per-step GPUs | Native integration with each cloud's training, registry, endpoints, experiments and model monitoring | Few built in; relies on operators and external tracking | Artifact versioning of every step variable, `@resources` for GPUs, resume from a failed step, cards |
+| Ops burden | High: you run Kubernetes and Kubeflow | Low: fully managed, pay per run | Medium; low with managed Airflow (MWAA, Cloud Composer, Astronomer) | Low to medium |
+| Developer experience | Container-centric; slower local loop | Good inside the cloud console; tied to the cloud | Familiar to data engineers; DAGs are less natural for experimentation | Excellent for data scientists; local and cloud runs use the same code |
+| Lock-in | Portable across Kubernetes clusters | High | Low | Low |
+| Best fit | Platform teams standardised on Kubernetes, multi-cloud or on-premises | Teams committed to GCP or AWS who want the least operations | Organisations already running Airflow for data pipelines; batch scoring | Data-science-led teams who want fast iteration on many models |
+
+**Questions I ask:**
+1. **Who are the authors?** Data scientists favour Metaflow or managed SDKs. Data engineers already know Airflow or Dagster.
+2. **Where is compute and data?** If everything is in one cloud and the team is small, the managed service saves months. Hybrid or on-premises GPUs push towards KFP or Metaflow on Kubernetes.
+3. **Do we need ML lineage and caching?** KFP, Vertex, SageMaker and Metaflow record artifacts per step. With Airflow you add MLflow or W&B.
+4. **Event triggers and scale:** hundreds of models retrained daily, dynamic fan-out per country or customer, and triggering on data arrival.
+5. **Who will be on call?** An open-source Kubernetes stack without a platform team becomes a liability.
+
+**Common architecture:** Airflow or Dagster stays the *data* orchestrator (ingestion, dbt, feature tables) and triggers an ML pipeline (Vertex, SageMaker, KFP or Metaflow) when inputs are ready. This keeps scheduling in one place and lets ML steps use specialised features. Avoid running heavy training inside Airflow workers; Airflow should launch the work elsewhere and wait.
+
+**Other options worth naming:** Dagster (asset-centric, strong lineage, popular for combined data and ML), Prefect, Flyte (strongly typed, Kubernetes-native, used at Lyft and Spotify), ZenML (an abstraction layer over several orchestrators), and Databricks Workflows when the lakehouse is the platform.
+
+**Failure modes:** choosing Kubeflow for a three-person team and spending a year operating it; writing business logic inside orchestrator-specific code so steps cannot be tested locally (keep steps as plain, tested Python functions or containers); and running two parallel orchestration stacks with no shared lineage.
+
+### 26.84 How do you design batch inference at scale?
+
+Batch inference scores large numbers of records on a schedule and publishes the results for later lookup. At scale, the design goal is **high throughput at low cost with correctness guarantees**: every eligible entity scored exactly once, with the right model and features, and nothing published until it has been validated.
+
+**Reference architecture:**
+
+1. **Trigger:** the orchestrator starts when upstream feature tables for the partition are complete, not just at a clock time.
+2. **Resolve versions:** read the `champion` model version from the registry and pin it for the run, together with the feature snapshot. Record both in the output.
+3. **Build the scoring set:** select the entities to score (all active customers, or only those whose features changed) with point-in-time features as of the run time.
+4. **Distributed scoring:**
+   - CPU models (trees, linear): Spark with a `mapInPandas` or pandas UDF, broadcasting the model once per executor, or warehouse-native scoring (Snowpark, BigQuery ML, Databricks `ai_query`).
+   - GPU and deep learning models: Ray Data `map_batches` with an actor pool that loads the model once per GPU and streams data, so CPU preprocessing and GPU inference overlap. For LLM batch work, run vLLM offline or use provider batch APIs, which are typically about half price with a 24-hour turnaround.
+5. **Validate output:** row counts against input, null rates, score distribution against the previous run, share of entities scored. Fail if the checks fail.
+6. **Publish atomically:** write to a new partition or table version and swap a view or pointer, then sync to the online key-value store (Redis, DynamoDB, Cassandra) if applications read it in real time.
+7. **Monitor:** run duration, cost, skipped entities, drift of predictions over time.
+
+```python
+import ray
+class Scorer:
+    def __init__(self):
+        self.model = load_model("models:/ranker@champion").to("cuda")
+    def __call__(self, batch):
+        batch["score"] = self.model.predict(batch["features"])
+        return batch
+
+ds = ray.data.read_parquet("s3://features/dt=2026-11-15/")
+ds.map_batches(Scorer, batch_size=2048, num_gpus=1, concurrency=8) \
+  .write_parquet("s3://scores/dt=2026-11-15/run=8841/")
+```
+
+**Throughput and cost levers:**
+- Load the model once per worker, never per row. Use large batches and vectorised inference.
+- Right-size partitions so that work is spread evenly; deal with skewed keys.
+- Use spot or preemptible instances with **idempotent, checkpointed** work units, so a lost node only reruns its shard.
+- Score only changed entities (incremental scoring) when features change slowly.
+- Use a lighter export (ONNX, TensorRT, quantised) for the batch path if quality holds.
+- Prune columns and push filters into the reader.
+
+**Correctness concerns:**
+- **Idempotency:** a rerun overwrites the same partition, never appends duplicates.
+- **Consistency:** one model version per run. Don't let the alias move halfway through.
+- **Same transforms as training:** package preprocessing with the model to avoid skew.
+- **Freshness contract:** consumers must know the score's as-of time and what happens when the job is late (serve yesterday's scores, fall back to a default).
+- **Backfills:** design the job to score any historical date with the model and features of that date, for audits and for evaluating new models.
+
+**Failure modes:** a model loaded inside a UDF for every row; an out-of-memory error from collecting results to the driver; partial results published after a mid-run failure; an upstream table landing late, so the job scores stale features "successfully"; and the online store holding scores from two different model versions after a partial sync.
+
+### 26.85 What is hidden technical debt in ML systems, and how do you prevent it?
+
+The idea comes from Sculley et al.'s 2015 paper "Hidden Technical Debt in Machine Learning Systems". ML gives fast wins, but it carries long-term maintenance costs that ordinary code-level tools don't reveal. The model code is a small box in a large system of data collection, feature extraction, configuration, serving and monitoring, and most of the debt sits in that surrounding system.
+
+**Main forms of debt and how to counter each:**
+
+| Debt | What it looks like | Prevention |
+|---|---|---|
+| **Entanglement (CACE: "changing anything changes everything")** | Adding, removing or rescaling one feature changes how the model uses all the others; no input is truly independent | Treat any change as a new model; full evaluation and gating for every change; ablation studies; isolated models where it makes sense |
+| **Correction cascades** | Model B is trained to patch model A's output for a new domain, then C patches B; improving A breaks B and C | Add features or train a combined model instead of stacking corrections; document model dependencies |
+| **Undeclared consumers** | Other teams quietly read a model's scores or a feature table; changes break them or create hidden feedback | Access control on prediction and feature outputs; registered consumers and data contracts; lineage tooling |
+| **Unstable data dependencies** | Inputs come from another system whose semantics change (a new upstream model version, a recoded category) | Versioned, contract-bound inputs; freeze copies of upstream signals; data validation on every run |
+| **Underutilised data dependencies** | Legacy, bundled or epsilon features that barely help but add risk and cost | Leave-one-feature-out evaluations; regular feature pruning; a cost for each feature |
+| **Feedback loops** | The model influences its own future training data (recommendations, credit approvals, pricing); also hidden loops through two systems that affect each other | Exploration or holdout traffic; log propensities; counterfactual evaluation; watch for interacting systems |
+| **Glue code** | 95% of the code adapts data to and from generic ML packages | Wrap libraries in clean, shared APIs; use standard pipeline components |
+| **Pipeline jungles** | Data preparation grown incrementally into a tangle of scrapes, joins and intermediate files | Design feature pipelines holistically; feature store or a declarative transformation layer; end-to-end tests |
+| **Dead experimental code paths** | Flags and branches left from old experiments | Remove experiments on a schedule; track flags with owners and expiry dates |
+| **Configuration debt** | Thousands of lines of config, poorly reviewed, with hidden dependencies between settings | Config as code: validated schemas, code review, diffs between runs, sensible defaults |
+| **Changes in the external world** | Fixed thresholds, prediction bias, drift | Monitoring of prediction bias, action limits, alerts on drift and upstream producers |
+
+**Abstraction debt and smells:** few good abstractions for ML systems (compare relational algebra for databases), plus "smells" such as plain-old-data types (raw floats and strings with no meaning attached), multi-language stacks and prototypes promoted to production.
+
+**How I prevent it as a leader:**
+- **Make debt visible:** score systems with the ML Test Score rubric or a similar production-readiness checklist and review it quarterly.
+- **Platform over heroics:** shared feature store, pipeline templates, registry, monitoring and evaluation harness, so each team does not rebuild glue.
+- **Ownership:** every model, feature and dataset has an owner, consumers are registered, and deprecation is planned.
+- **Budget for it:** reserve time each quarter for pruning features, deleting dead paths, upgrading dependencies and retiring unused models. Count retired models as an achievement.
+- **Hiring and culture:** reward simplifications and deletions, not just new models with a 0.5% lift that double maintenance costs.
+
+**LLM-era equivalents:** prompt sprawl without versions, chains of prompts correcting each other (a modern correction cascade), dependencies on provider model versions that change underneath you, unversioned evaluation sets and retrieval indexes built with an embedding model nobody recorded.
+
+### 26.86 How do you change the embedding model behind a production vector index without downtime?
+
+Vectors from different embedding models live in **incompatible spaces**: a query embedded by the new model cannot be compared with documents embedded by the old one, even when the dimensions match. So you cannot swap the model in place. You build a second index with the new embeddings, keep it current, validate it, and switch traffic atomically. It is a blue-green deployment for an index.
+
+**Step-by-step migration:**
+
+1. **Evaluate offline first.** Build a sample index with the new model and measure recall@k, nDCG and end-to-end answer quality on your own labelled queries, not on public benchmark scores. Check per segment: languages, document types, long-tail queries. Also measure the effect on latency, dimensions and storage.
+2. **Create a new index or collection** sized and tuned for the new model (dimension, distance metric, HNSW parameters, quantisation). Version its name, such as `docs_v3_bge_m3`.
+3. **Dual write:** from now on, every document insert, update and delete goes to both indexes, embedded with the respective model. Without dual writes, the new index is stale by the time the backfill finishes.
+4. **Backfill:** re-embed the existing corpus into the new index with a batch job that is idempotent, checkpointed and throttled so it does not starve production. Track progress by document ID and version. For a provider API, batch endpoints are cheaper. For self-hosted models, GPU batch jobs.
+5. **Verify completeness:** document counts and ID sets match, spot-check that metadata and access-control fields came across, and that deletes during the backfill were applied.
+6. **Shadow and compare:** send live queries to both indexes, embedding each query with the model that matches the index. Log overlap of results, retrieval scores and, if possible, LLM-judge quality. Then canary a small share of real traffic on the new index.
+7. **Cut over atomically:** flip an alias (Qdrant, Elasticsearch/OpenSearch and Weaviate support aliases) or a config pointer so that the query embedding model and the index switch **together**. Changing one without the other is the classic outage.
+8. **Keep rollback open:** keep dual writes and the old index for a soak period, then stop writing to the old index and delete it.
+
+```python
+# Config that versions query encoder and index as one unit
+RETRIEVER = {"index_alias": "docs_live", "encoder": "bge-m3@2026-09", "version": 3}
+# cutover = repoint alias docs_live -> docs_v3 and deploy matching encoder together
+```
+
+**Costs and trade-offs:**
+- Storage and write cost roughly double during the migration window, which can last days or weeks for large multi-tenant corpora.
+- Re-embedding cost scales with corpus size. Estimate tokens times price, or GPU hours, before committing.
+- **Alternatives** when a full re-embed is too expensive: a learned adapter that maps new query vectors into the old space (useful as a temporary bridge, with some quality loss), or lazy re-embedding, which is hard to do without mixing spaces. For quality-critical retrieval, plan the full re-embed.
+
+**Related details people miss:**
+- Chunking changes often come with model changes. Treat chunking, embedding model and index as one versioned artifact.
+- Rerankers, similarity thresholds and hybrid-search weights were tuned for the old score distribution, so retune them.
+- Cached query embeddings and semantic caches must be invalidated or namespaced by model version.
+- Store the embedding model version as metadata on every vector, so mixed indexes can be detected.
+- Pin hosted embedding models to dated versions. A provider silently updating a model has the same effect as an unplanned migration.
+
+### 26.87 How do you build a data flywheel that turns production feedback into better evaluations and models for an LLM application?
+
+A **data flywheel** is a loop in which production usage generates signals, those signals are turned into curated evaluation sets and training data, and the improved system attracts more usage and better signals. For LLM applications the first and most valuable output is usually **better evaluations**, then better prompts and retrieval, and only later fine-tuned models.
+
+**The loop:**
+
+1. **Capture everything, with consent and privacy controls.** Log traces with inputs, retrieved context, prompts, tool calls, outputs, model and prompt versions, latency and cost (Langfuse, LangSmith, Arize Phoenix, OpenTelemetry-based tracing). Redact PII and honour retention and opt-out rules; enterprise customers often forbid training on their data.
+2. **Collect feedback signals.**
+   - Explicit: thumbs up or down, ratings, reported issues, corrections.
+   - Implicit: copying or accepting an answer, edits to a draft (the edit itself is gold for training), retries and rephrasing, escalation to a human agent, abandoning the session, task completion.
+   - Automatic: LLM-as-judge scores for groundedness and relevance on sampled traffic, guardrail hits, tool errors.
+3. **Triage and mine failures.** Cluster low-scoring traces by topic or embedding, find failure categories (retrieval misses, wrong tool, format errors, refusals, hallucinations), and size them by frequency and impact. This is error analysis, and it tells you what to fix.
+4. **Curate evaluation sets.** Turn representative failures and important successes into versioned test cases with reference answers or grading rubrics. Keep a stable "golden" set for regression testing and a rotating set from recent traffic. Human experts label or review, and judge prompts are calibrated against them.
+5. **Improve the cheapest lever first:** prompt changes, retrieval fixes (chunking, hybrid search, reranking, missing documents), tool descriptions, guardrails, routing. Each change must pass the evaluation suite in CI.
+6. **Fine-tune when the data justifies it:** use accepted outputs and human corrections for supervised fine-tuning, pairs of preferred and rejected answers for preference tuning (DPO), or distil a large model's good outputs into a smaller, cheaper model for a narrow task.
+7. **Ship safely:** offline evaluation, shadow or canary, A/B test on product metrics, then monitor. New traffic restarts the loop.
+
+**Making the flywheel actually spin:**
+- **Design the product for feedback:** edit-in-place, accept or reject buttons and citations that users can click give much richer signals than a rarely used thumbs icon.
+- **Close the loop operationally:** a weekly review of failure clusters with owners, and a target such as "every production incident becomes an evaluation case within 48 hours".
+- **Version everything together:** dataset version, evaluation suite version, prompt, model and index, so that improvements are attributable.
+- **Measure the flywheel:** growth in evaluation coverage, time from failure to fix, the share of traffic covered by tests, quality and cost trends.
+
+**Risks to manage:**
+- **Biased feedback:** thumbs come mostly from unhappy or highly engaged users; correct for this with sampling, not raw counts.
+- **Feedback loops and reward hacking:** optimising for thumbs up can produce flattering or overly long answers. Keep human-validated quality metrics as guardrails.
+- **Judge drift:** periodically re-check the LLM judge against human labels.
+- **Data leakage between training and evaluation:** keep evaluation cases out of fine-tuning data, or the scores become meaningless.
+- **Privacy and licensing:** training on user content needs a lawful basis and contractual permission. Keep a lineage record of which data trained which model.
+
+**Concrete example:** a support assistant logs that 18% of conversations end in a human handoff. Clustering shows a third concern refund policies for a new region whose documents were never indexed. Fixing ingestion and adding 60 evaluation cases cuts handoffs by four points. Months later, 20,000 agent-corrected answers are used to fine-tune a smaller model that matches quality at a third of the cost.
 
 ---
 
