@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,687 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,702 interview questions with worked answers, in 31 chapters across 6 parts._
 
 Last updated 2026-11-16.
 
@@ -66,9 +66,9 @@ _Classical and deep learning, from first principles to the judgment calls interv
 | 12. [Model Evaluation and Experimentation](part-3-machine-learning/12-model-evaluation-and-experimentation.md) | 58 |
 | 13. [Deep Learning](part-3-machine-learning/13-deep-learning.md) | 84 |
 | 14. [Natural Language Processing](part-3-machine-learning/14-natural-language-processing.md) | 30 |
-| 15. [Computer Vision](part-3-machine-learning/15-computer-vision.md) | 32 |
+| 15. [Computer Vision](part-3-machine-learning/15-computer-vision.md) | 47 |
 | 16. [Reinforcement Learning](part-3-machine-learning/16-reinforcement-learning.md) | 73 |
-| **Part total** | **531** |
+| **Part total** | **546** |
 
 ### Part IV — Generative AI and LLM Engineering
 
@@ -109,4 +109,4 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 44 |
 | **Part total** | **44** |
 
-**Total: 1,687 questions.**
+**Total: 1,702 questions.**

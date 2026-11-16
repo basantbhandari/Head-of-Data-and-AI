@@ -4,7 +4,7 @@ _Part III — Machine Learning_
 
 CNNs, modern vision backbones, detection and segmentation, augmentation and vision pipelines.
 
-This chapter contains **32 questions**.
+This chapter contains **47 questions**.
 
 ## Contents
 
@@ -40,6 +40,21 @@ This chapter contains **32 questions**.
 - **15.30** [What is ImageNet?](#1530-what-is-imagenet)
 - **15.31** [What is AlexNet and why is it important?](#1531-what-is-alexnet-and-why-is-it-important)
 - **15.32** [How does a Vision Transformer (ViT) work?](#1532-how-does-a-vision-transformer-vit-work)
+- **15.33** [How do two-stage and one-stage object detectors differ, and what are anchor-based and anchor-free detectors?](#1533-how-do-two-stage-and-one-stage-object-detectors-differ-and-what-are-anchor-based-and-anchor-free-detectors)
+- **15.34** [How does DETR perform object detection with Transformers, and what problems did later variants solve?](#1534-how-does-detr-perform-object-detection-with-transformers-and-what-problems-did-later-variants-solve)
+- **15.35** [What are semantic, instance and panoptic segmentation, and which architectures are used for each?](#1535-what-are-semantic-instance-and-panoptic-segmentation-and-which-architectures-are-used-for-each)
+- **15.36** [Which loss functions and metrics are used for image segmentation, and when do you choose each?](#1536-which-loss-functions-and-metrics-are-used-for-image-segmentation-and-when-do-you-choose-each)
+- **15.37** [How do you detect small objects and handle severe class imbalance in object detection?](#1537-how-do-you-detect-small-objects-and-handle-severe-class-imbalance-in-object-detection)
+- **15.38** [What is open-vocabulary detection and segmentation, and how do models like Grounding DINO and SAM 2 work?](#1538-what-is-open-vocabulary-detection-and-segmentation-and-how-do-models-like-grounding-dino-and-sam-2-work)
+- **15.39** [How do multi-object tracking algorithms such as SORT, DeepSORT and ByteTrack work?](#1539-how-do-multi-object-tracking-algorithms-such-as-sort-deepsort-and-bytetrack-work)
+- **15.40** [How would you debug a computer vision model that performs well offline but poorly in production?](#1540-how-would-you-debug-a-computer-vision-model-that-performs-well-offline-but-poorly-in-production)
+- **15.41** [How does self-supervised learning work for vision, and how do contrastive, distillation-based and masked-image methods compare?](#1541-how-does-self-supervised-learning-work-for-vision-and-how-do-contrastive-distillation-based-and-masked-image-methods-compare)
+- **15.42** [How do you fine-tune a vision model when you have very little labelled data?](#1542-how-do-you-fine-tune-a-vision-model-when-you-have-very-little-labelled-data)
+- **15.43** [How do classical feature detectors such as Harris, SIFT and ORB work, and when does classical computer vision still beat deep learning?](#1543-how-do-classical-feature-detectors-such-as-harris-sift-and-orb-work-and-when-does-classical-computer-vision-still-beat-deep-learning)
+- **15.44** [How do monocular depth estimation, NeRF and 3D Gaussian Splatting work, and when would you use each?](#1544-how-do-monocular-depth-estimation-nerf-and-3d-gaussian-splatting-work-and-when-would-you-use-each)
+- **15.45** [How do video understanding models capture motion and time?](#1545-how-do-video-understanding-models-capture-motion-and-time)
+- **15.46** [How do you optimise and deploy a computer vision model on edge devices?](#1546-how-do-you-optimise-and-deploy-a-computer-vision-model-on-edge-devices)
+- **15.47** [How do you design a labelling strategy for a computer vision project, including active learning and handling label noise?](#1547-how-do-you-design-a-labelling-strategy-for-a-computer-vision-project-including-active-learning-and-handling-label-noise)
 
 ---
 
@@ -836,6 +851,582 @@ DINOv3 (2025) scaled the same recipe to a 7B-parameter teacher with an extra reg
 - **Small dataset, training from scratch, or edge hardware:** a CNN usually wins on accuracy per FLOP, latency and simplicity of quantization.
 
 **Common pitfalls:** training from scratch on a few thousand images; forgetting to interpolate position embeddings when changing resolution; using a patch size too coarse for small objects; and judging ViT against a CNN without matching the training recipe.
+
+### 15.33 How do two-stage and one-stage object detectors differ, and what are anchor-based and anchor-free detectors?
+
+A **two-stage** detector first proposes a few hundred to a few thousand candidate regions, then classifies and refines each one. A **one-stage** detector predicts classes and boxes densely over a feature map in a single pass. **Anchor-based** detectors regress offsets from a fixed set of prior boxes. **Anchor-free** detectors predict boxes directly from points or centres. These are two separate design choices, so all four combinations exist.
+
+**Two-stage (Faster R-CNN family)**
+
+- A backbone with an FPN produces multi-scale features. A **Region Proposal Network (RPN)** slides over them, scores anchors as object or background and regresses them into proposals.
+- **RoIAlign** (RoIPool in the original) crops a fixed-size feature for each proposal. A second head classifies it and refines the box.
+- Strengths: accurate localisation and a natural extension to masks (Mask R-CNN) and keypoints. Weaknesses: more latency, harder to export, and the proposal step is a separate thing to tune.
+
+**One-stage (SSD, YOLO, RetinaNet, FCOS)**
+
+- Every feature-map location predicts class scores and box parameters at the same time. SSD predicts from several feature scales. YOLO started with a coarse grid and has since moved to multi-scale, anchor-free heads.
+- The weakness was always **class imbalance**: tens of thousands of easy background locations swamp a handful of objects. RetinaNet's **focal loss** closed most of the accuracy gap with two-stage detectors.
+
+**Anchor-based vs anchor-free**
+
+| | Anchor-based | Anchor-free |
+| --- | --- | --- |
+| Examples | Faster R-CNN, SSD, RetinaNet, YOLOv2–v5, YOLOv7 | CornerNet, CenterNet, FCOS, YOLOX, YOLOv8 and later |
+| Prediction | Offsets from preset boxes (scales × aspect ratios) | Distances from a point to the four box sides, or a centre heatmap plus size |
+| Positives | IoU between anchor and ground truth above a threshold | Points inside the box or centre region, or learned assignment (SimOTA, TAL) |
+| Pain points | Anchor sizes must match the dataset; many hyperparameters | Ambiguous points where objects overlap; needs good assignment |
+
+- **FCOS** predicts the distances (l, t, r, b) to the box edges at every location and adds a **centre-ness** branch so that low-quality boxes far from the centre get lower scores.
+- **CenterNet** ("Objects as Points") predicts a heatmap of object centres plus width and height. Peak extraction replaces most of the NMS work.
+
+**Where the field is now.** The real accuracy driver turned out to be **label assignment**, not anchors. ATSS showed that once positives are chosen the same way, anchor-based and anchor-free RetinaNet/FCOS perform about the same. Modern YOLOs use task-aligned assignment and decoupled heads. YOLOv10 added consistent one-to-one assignment so that NMS can be dropped, and Ultralytics YOLO26 ships NMS-free by default and also removes Distribution Focal Loss to simplify export. DETR-style detectors (15.34) go further and drop anchors and NMS altogether.
+
+**How to choose in practice**
+
+- Real-time or edge with standard objects: a modern one-stage anchor-free detector (YOLO, RTMDet) or a real-time DETR.
+- Highest accuracy, small datasets, or you need masks and keypoints from the same model: a two-stage detector or a DETR-family model with a strong backbone.
+- Unusual aspect ratios (text lines, poles, ships in satellite images): anchor-free, or anchors re-clustered on your own boxes with k-means.
+
+### 15.34 How does DETR perform object detection with Transformers, and what problems did later variants solve?
+
+DETR (DEtection TRansformer) treats detection as **set prediction**. A CNN backbone and a Transformer encoder build global image features. A decoder turns a fixed set of learned **object queries** (100 in the paper) into exactly that many predictions, and each one is a class (or "no object") plus a box. Training uses **Hungarian matching**, a one-to-one assignment between predictions and ground truths, so no anchors and no NMS are needed.
+
+**How it works**
+
+1. Backbone (ResNet) → features, flattened into tokens with positional encodings.
+2. Encoder: self-attention over all tokens gives global context, which helps with large objects and reasoning about the whole scene.
+3. Decoder: object queries cross-attend to the image tokens and self-attend to each other, so they learn not to predict the same object twice.
+4. Matching: the Hungarian algorithm finds the cheapest one-to-one assignment, using a cost built from class probability, L1 box distance and generalised IoU. Matched queries get classification and box losses. Unmatched queries learn "no object".
+
+**Problems with the original DETR**
+
+- **Very slow convergence:** around 500 epochs on COCO, against roughly 36 for Faster R-CNN. Each query starts by attending to the whole image and only slowly learns where to look.
+- **Weak on small objects:** global attention is quadratic in the number of tokens, so DETR uses only a low-resolution feature map and has no multi-scale features.
+- **Unstable matching early in training:** a query's target can switch between epochs.
+
+**What later variants fixed**
+
+| Variant | Key idea | Problem addressed |
+| --- | --- | --- |
+| Deformable DETR | Each query attends to a few learned sampling points (4 per head per level) around a reference point, across several feature scales | Convergence (about 10× fewer epochs) and small objects |
+| Conditional DETR, DAB-DETR | Queries carry explicit spatial priors; DAB uses 4D anchor boxes refined layer by layer | Makes queries interpretable and speeds up training |
+| DN-DETR | Feed noised ground-truth boxes to the decoder and train it to reconstruct them | Stabilises bipartite matching |
+| DINO | Contrastive denoising, mixed query selection, look-forward-twice box refinement | Became the strongest closed-set DETR; basis for Grounding DINO |
+| H-DETR, Co-DETR | Add auxiliary one-to-many matching during training only | One-to-one matching gives too few positive samples |
+| RT-DETR | Efficient hybrid encoder (attention within one scale, CNN fusion across scales), IoU-aware query selection | Real-time speed that beats YOLOs of similar size, with no NMS |
+| RT-DETRv2, D-FINE, DEIM | Bag of training tricks; fine-grained distribution refinement of box edges; denser matching | Better accuracy and faster training at the same latency |
+
+**Why it matters in production**
+
+- **NMS-free output** has a fixed shape, which makes it easy to export to TensorRT or ONNX, gives deterministic latency and avoids crowd-scene suppression errors.
+- **The number of queries caps detections.** A scene with 500 objects (dense retail shelves, cells) needs more queries or a different model.
+- **Training cost** is still higher than for a YOLO. For fine-tuning, start from a strong pretrained checkpoint (DINO, RT-DETR, D-FINE) and use the framework's recipes rather than training from scratch.
+- DETR's query-based design spread to segmentation (Mask2Former), tracking (MOTR) and open-vocabulary detection (Grounding DINO). This shared design is a big reason it matters beyond COCO numbers.
+
+### 15.35 What are semantic, instance and panoptic segmentation, and which architectures are used for each?
+
+**Semantic** segmentation gives every pixel a class but does not separate objects of the same class. **Instance** segmentation gives a separate mask to each countable object ("thing") and ignores background. **Panoptic** segmentation does both: every pixel gets a class, and pixels of things also get an instance ID. Amorphous regions like sky or road ("stuff") get only a class.
+
+| Task | Output | Typical metric | Classic architectures | Modern choices |
+| --- | --- | --- | --- | --- |
+| Semantic | H×W class map | mIoU | FCN, U-Net, DeepLabv3+, PSPNet | SegFormer, Mask2Former, UperNet on ViT/ConvNeXt |
+| Instance | Set of (mask, class, score) | Mask AP | Mask R-CNN, YOLACT | Mask2Former, YOLO-seg, RTMDet-Ins |
+| Panoptic | Class map + instance IDs, no overlaps | PQ | Panoptic FPN, Panoptic-DeepLab | Mask2Former, OneFormer |
+
+**Semantic segmentation architectures**
+
+- **U-Net:** a symmetric encoder-decoder with skip connections that concatenate high-resolution encoder features into the decoder. It works with little data and is still the default in medical imaging. nnU-Net automates its configuration and is a hard baseline to beat.
+- **DeepLabv3+:** **atrous (dilated) convolutions** keep resolution without losing receptive field. **ASPP** (Atrous Spatial Pyramid Pooling) captures context at several rates, and a light decoder sharpens boundaries using low-level features.
+- **SegFormer:** a hierarchical Transformer encoder with an all-MLP decoder. Strong accuracy for its size, and it handles different input resolutions well.
+
+**Instance segmentation architectures**
+
+- **Mask R-CNN:** Faster R-CNN plus a small FCN mask head that predicts a 28×28 mask per RoI. **RoIAlign** (bilinear sampling with no rounding) was critical for mask quality. Masks are predicted per class, which separates mask quality from classification.
+- **Real-time:** YOLO-seg variants predict mask prototypes plus per-instance coefficients (the YOLACT idea), so mask cost is almost constant.
+- Weaknesses: the 28×28 masks are coarse at boundaries (PointRend refines them), and the box-first design fails when the box is wrong.
+
+**Panoptic segmentation architectures**
+
+- **Panoptic FPN:** a Mask R-CNN instance branch plus a semantic branch on the same FPN, merged by heuristics that resolve overlaps.
+- **Mask2Former:** one architecture for all three tasks. A pixel decoder produces per-pixel embeddings. A Transformer decoder with **masked attention** (each query attends only inside its current predicted mask) produces N queries, and each query outputs a class and a mask. Changing the task means changing only the training labels and the inference merge. OneFormer adds a task token so one trained model can do all three.
+
+**How to decide**
+
+- Need area, coverage or boundaries but not counts (land cover, road surface, tumour volume): **semantic**.
+- Need to count or measure individual objects (cells, fruit, defects): **instance**.
+- Robotics and autonomous driving need full scene understanding: **panoptic**.
+- With little labelled data, combine a strong pretrained backbone with SAM-assisted labelling (15.38) before considering architecture changes. Label quality at boundaries usually limits mIoU more than the model does.
+
+### 15.36 Which loss functions and metrics are used for image segmentation, and when do you choose each?
+
+Start with **cross-entropy**, add a **region-overlap loss** (Dice or Lovász) when the foreground is small or the metric is IoU-like, and add **boundary-aware** terms only when boundary accuracy is the business requirement. Choose the metric that matches the decision: mIoU or Dice for area, boundary F-score for outlines, mask AP or PQ for instances.
+
+**Loss functions**
+
+- **Pixel-wise cross-entropy (CE):** stable and well-calibrated. Every pixel counts equally, so with 98% background the model can score well while missing small structures. Fixes include class weights (e.g. inverse frequency or median frequency balancing) and **OHEM** (train only on the hardest pixels).
+- **Focal loss:** down-weights easy pixels:
+
+$$
+\text{FL}(p_t) = -\alpha_t (1 - p_t)^{\gamma} \log(p_t)
+$$
+
+  With $\gamma = 2$, a pixel predicted correctly at $p_t = 0.9$ contributes 100× less than under CE.
+- **Dice loss:** directly optimises overlap and ignores true negatives, so it is robust to foreground/background imbalance:
+
+$$
+\mathcal{L}_{\text{Dice}} = 1 - \frac{2\sum_i p_i g_i + \epsilon}{\sum_i p_i + \sum_i g_i + \epsilon}
+$$
+
+  Drawbacks: noisy gradients on tiny or empty masks, and poor calibration. Compute it per image or per batch, and keep the $\epsilon$ smoothing.
+- **Tversky / Focal Tversky:** weight false negatives and false positives differently ($\alpha$, $\beta$). Use when a miss costs much more than a false alarm, for example lesions.
+- **Lovász-Softmax:** a convex surrogate that directly optimises the Jaccard index. Good for squeezing the last mIoU points during fine-tuning.
+- **Boundary / Hausdorff-distance losses:** penalise distance from the true contour. Use as an add-on later in training for thin structures (vessels, cracks, roads).
+- **Compound losses:** CE + Dice is the default in nnU-Net and many medical pipelines. Mask2Former-style models use per-query CE/focal + Dice on masks after Hungarian matching.
+
+```python
+loss = 1.0 * F.cross_entropy(logits, target, weight=class_w) \
+     + 1.0 * dice_loss(logits.softmax(1), one_hot(target))
+```
+
+**Metrics**
+
+| Metric | What it measures | Use when |
+| --- | --- | --- |
+| Pixel accuracy | Fraction of pixels correct | Almost never alone; inflated by background |
+| IoU / mIoU | Overlap per class, averaged over classes | Standard for semantic segmentation (Cityscapes, ADE20K) |
+| Dice / F1 | $2\lvert A \cap B \rvert / (\lvert A \rvert + \lvert B \rvert)$, monotonic with IoU | Medical imaging convention |
+| Boundary F-score, Boundary IoU | Agreement within a few pixels of contours | Outlines matter (matting, measurement) |
+| Hausdorff distance (HD95) | Worst-case contour distance, 95th percentile | Surgical or radiotherapy margins |
+| Mask AP | Detection-style AP using mask IoU | Instance segmentation (COCO) |
+| PQ | Segmentation quality × recognition quality | Panoptic segmentation |
+
+**Pitfalls seen in practice**
+
+- **Averaging choices change the number.** mIoU per image vs over the whole dataset, and how empty classes are handled, can shift results by several points. Fix the protocol before comparing models.
+- **Empty masks:** Dice is undefined or 0/0 when both prediction and ground truth are empty. Decide the rule explicitly (usually count it as 1).
+- **Mean hides the tail.** Report per-class IoU and slices by object size, because a 0.85 mIoU can hide a 0.3 on the class that matters.
+- **Optimised loss ≠ product metric.** If the product measures area (e.g. corrosion percentage), also track absolute area error, not just IoU.
+
+### 15.37 How do you detect small objects and handle severe class imbalance in object detection?
+
+Small objects fail because they **vanish in downsampled features** and get **few positive training samples**. Imbalance fails because **background and frequent classes dominate the gradient**. Fix resolution and feature scale first, then sampling and the loss, then inference tricks such as tiling. Measure each step on AP_small and per-class AP, not overall mAP.
+
+**Small objects: why they are hard**
+
+- A 12×12 pixel object becomes less than one cell at stride 32. The backbone has averaged it away.
+- IoU is very sensitive to small shifts: a 3-pixel offset on a 10-pixel box drops IoU sharply, so assignment rarely picks such objects as positives.
+- Labels for tiny objects are noisier and less consistent.
+
+**Fixes, roughly in order of payoff**
+
+- **Increase input resolution**, or keep native resolution and **tile**. Resizing a 4K image down to 640 throws away the object.
+- **High-resolution feature levels:** an **FPN** (top-down path with lateral connections) gives semantically strong features at fine strides. Add a P2 (stride 4) head for very small targets, accepting the extra compute.
+- **Slicing-aided inference (SAHI):** run the detector on overlapping tiles (e.g. 640×640 with 20% overlap) plus optionally the full image, map the boxes back and merge them with NMS or NMM (non-maximum merging). Use **slicing-aided fine-tuning** too, so that training sees objects at the scale they appear in tiles.
+- **Better assignment and box loss:** ATSS, TAL or SimOTA give small objects a fair number of positives. Normalised Wasserstein Distance or similar penalties are smoother than IoU for tiny boxes.
+- **Augmentation:** copy-paste of small instances, mosaic, and scale jitter that does not shrink objects further.
+- **Anchors** (if used): re-cluster anchor sizes on your own data.
+
+**Severe class imbalance**
+
+There are two kinds: **foreground vs background** (the detector's built-in imbalance) and **between classes** (long-tailed datasets like LVIS or rare defect types).
+
+- **Focal loss** (RetinaNet) handles the first: $\text{FL} = -\alpha_t (1 - p_t)^{\gamma} \log p_t$ with $\gamma = 2$ and $\alpha = 0.25$ as the paper defaults. Initialise the classifier bias so the starting foreground probability is about 0.01, or training diverges early.
+- **Repeat factor sampling** (as used for LVIS) oversamples images that contain rare classes. It is simple and works well.
+- **Loss re-weighting:** equalisation loss or seesaw loss reduce the suppressive gradients that frequent classes send to rare ones.
+- **Data:** targeted collection, synthetic or copy-pasted rare instances, and hard negative mining for false-alarm classes.
+- **Decouple representation from classifier:** train normally, then re-balance only the classification head.
+- **Thresholds per class:** after training, pick operating points per class on validation data, because a single global confidence threshold suits frequent classes.
+
+**Evaluation discipline**
+
+- Report AP_small/medium/large, per-class AP and recall at the operating confidence, plus the frequent/common/rare split for long-tailed sets.
+- Tiling raises recall but also false positives at tile edges and multiplies latency by the number of tiles. Budget for it: a 4K frame at 640 tiles with overlap can be 20+ forward passes.
+- **Example:** in aerial vehicle detection, moving from full-image inference at 1024 to a P2 head plus tiled training and SAHI inference typically gives large gains in AP_small, while overall mAP moves much less. That is why you look at the size slices.
+
+### 15.38 What is open-vocabulary detection and segmentation, and how do models like Grounding DINO and SAM 2 work?
+
+**Open-vocabulary** models detect or segment categories described in **free text at inference time**, including ones never labelled in their detection training data. They do this by aligning region features with a language embedding space. **Grounding DINO** detects boxes for any text phrase. **SAM 2** segments and tracks whatever you point at in images and videos, but it is class-agnostic. Combining them gives text-prompted masks and tracks.
+
+**The core idea**
+
+- A closed-set detector ends in a fixed classifier with K outputs. An open-vocabulary detector replaces it with a **similarity between region embeddings and text embeddings**, so any phrase can be a class.
+- The knowledge comes from **image-text pretraining** (CLIP-style) and **grounding data** (phrases linked to boxes), often expanded with pseudo-labels.
+
+**OWL-ViT and OWLv2**
+
+- Take a CLIP-style ViT and drop the final pooling. **Every output token** predicts a box and a class embedding, and the class logits are dot products with text-query embeddings. Image queries (an example crop) also work, which is useful for one-shot detection.
+- OWLv2 scales training with **self-training**: an existing detector pseudo-labels about a billion web images, which improves rare-class performance substantially.
+
+**Grounding DINO**
+
+- Built on the DINO detector (15.34). An image backbone (Swin) and a text backbone (BERT) are fused **early and deeply**:
+  1. A **feature enhancer** applies image-to-text and text-to-image cross-attention.
+  2. **Language-guided query selection** picks the image tokens most relevant to the text as decoder queries.
+  3. A **cross-modality decoder** attends to both image and text features. Each output box is scored against each text token.
+- Trained on detection, grounding and caption data. It is strong zero-shot (the paper reports 52.5 AP on COCO without COCO training data) and handles referring expressions ("the red cup on the left"). Prompt with short, period-separated class names. Long prompts and rare words degrade results.
+
+**SAM 2**
+
+- Extends SAM (promptable segmentation) to video. Prompts are points, boxes or masks on any frame.
+- A **Hiera** image encoder runs once per frame. **Memory attention** conditions the current frame on a **memory bank**: memories from recent frames and from prompted frames, plus **object pointers** (compact per-object tokens). A memory encoder writes each new prediction into the bank, and an occlusion head predicts whether the object is visible.
+- It runs as a **streaming** model, so it processes arbitrarily long videos frame by frame, and a user can add a corrective click on any frame. Trained on the SA-V dataset of tens of thousands of videos with hundreds of thousands of masklets.
+- Meta's **SAM 3** (late 2025) adds **concept prompts**: give a short noun phrase and it returns masks and IDs for every matching instance, which brings open-vocabulary detection into the SAM family directly.
+
+**Production patterns**
+
+- **Auto-labelling:** Grounding DINO boxes → SAM masks → human review → fine-tune a small closed-set model (YOLO, RT-DETR) that is cheap to serve. This is the most common real use.
+- **Text-prompted tracking:** detect with text on keyframes, then SAM 2 propagates masks.
+- **Caveats:** heavy compute; scores are not calibrated across prompts, so thresholds must be tuned per class; prompt wording changes results; weak on domain-specific vocabulary (part numbers, medical terms) and small objects. Open-vocabulary models are excellent for bootstrapping and long-tail coverage. When the class list is fixed and latency matters, a fine-tuned closed-set detector usually wins.
+
+### 15.39 How do multi-object tracking algorithms such as SORT, DeepSORT and ByteTrack work?
+
+All three follow **tracking-by-detection**: run a detector on every frame, **predict** where each existing track will be, **associate** detections to tracks, then **update**, start or end tracks. They differ in which cues they use for association and which detections they allow into it.
+
+**SORT (Simple Online and Realtime Tracking)**
+
+- **Motion model:** each track has a **Kalman filter** with a constant-velocity state (box centre, area, aspect ratio and their velocities).
+- **Association:** build a cost matrix of 1 − IoU between predicted track boxes and detections, solve it with the **Hungarian algorithm**, and reject matches below an IoU threshold.
+- **Life cycle:** unmatched detections start tentative tracks. Tracks unmatched for `max_age` frames are deleted.
+- Very fast. Weakness: IoU alone causes **identity switches** after occlusions or when objects cross paths.
+
+**DeepSORT**
+
+- Adds an **appearance embedding** from a re-identification (Re-ID) CNN for each detection. Each track keeps a gallery of recent embeddings.
+- Cost combines **cosine distance** of appearance with **Mahalanobis distance** from the Kalman prediction, which is used to gate implausible matches.
+- **Matching cascade:** recently seen tracks get priority, and an IoU stage handles the rest.
+- Much fewer ID switches across occlusions. Costs a Re-ID forward pass per detection, and appearance fails on look-alike objects (uniforms, identical products).
+
+**ByteTrack**
+
+- Key insight: **low-confidence detections are often real objects that are occluded**. Throwing them away (as most trackers did) creates fragmented tracks.
+- **Two-stage association:**
+  1. Match **high-score** detections to all tracks (IoU, optionally with appearance).
+  2. Match **low-score** detections only to tracks left unmatched, using IoU. Unmatched low-score boxes are discarded as background.
+- New tracks start only from high-score detections. Simple, fast, and strong on MOT17/MOT20.
+
+**Later improvements**
+
+- **OC-SORT:** observation-centric fixes for Kalman drift during occlusion. It re-updates the track along a virtual path when the object reappears and uses motion direction consistency. Better for non-linear motion (dancing, sports).
+- **BoT-SORT:** ByteTrack plus **camera motion compensation** (global motion estimated between frames and applied to predictions), a better Kalman state, and optional Re-ID. A default tracker in Ultralytics.
+- **End-to-end trackers** (MOTR, MOTRv2) carry DETR queries across frames. Elegant, but heavier, and usually not better than a strong detector plus ByteTrack in practice.
+
+**Metrics**
+
+- **MOTA** is dominated by detection errors (FP, FN), with ID switches a small term.
+- **IDF1** measures how consistently identities are kept.
+- **HOTA** balances detection and association and is now the preferred single number.
+
+**Production tips**
+
+- **Detector quality dominates.** A better detector improves tracking more than any tracker change.
+- Tune the **detection thresholds** (high and low), **track buffer** (how long to keep lost tracks) and **match thresholds** to the frame rate. At lower FPS, motion per frame is larger and IoU matching fails.
+- Moving cameras (drones, vehicles) need camera motion compensation. Long occlusions or re-entry into the scene need Re-ID.
+- For counting (people crossing a line), measure **ID switches** on your own footage, because each switch can double-count.
+
+### 15.40 How would you debug a computer vision model that performs well offline but poorly in production?
+
+Assume the **input is different** until proven otherwise. Most offline-to-production gaps in computer vision come from **preprocessing mismatches**, **data drift** (camera, lighting, scene), or a **metric that did not match the product requirement**. Real model bugs are less common. Debug in order: reproduce, compare inputs, check the serving pipeline, then the data, then the model.
+
+**1. Reproduce on real production inputs**
+
+- Log raw production frames (sampled, with privacy controls) together with model inputs, outputs and metadata (camera ID, time, firmware).
+- Label a few hundred production samples. Without labelled production data you are guessing. Compute the same metrics as offline, sliced by camera, time of day and object size.
+
+**2. Training-serving skew in preprocessing (the most common cause)**
+
+| Check | Typical bug |
+| --- | --- |
+| Colour order | BGR from OpenCV vs RGB in training |
+| Normalisation | Missing mean/std, or values left in 0–255 vs 0–1 |
+| Resize | Letterbox padding in training vs stretch in serving; different interpolation |
+| Orientation | EXIF rotation ignored; portrait images sideways |
+| Compression | Training on PNG, serving on heavily compressed JPEG or H.264 video frames |
+| Box mapping | Coordinates not mapped back from letterboxed input to the original frame |
+| Precision | FP16/INT8 export loses accuracy; quantisation calibrated on unrepresentative images |
+
+A fast test: run the **same image** through the training code and the production endpoint and compare the input tensors and outputs. Any difference beyond small float noise is a bug.
+
+**3. Serving and post-processing**
+
+- Confidence and NMS thresholds differ between the eval script and the serving config.
+- Export bugs in ONNX or TensorRT: operations not supported, or NMS handled differently. Compare outputs layer by layer if needed.
+- Batching or padding effects, dropped frames under load, timeouts that silently return empty results.
+
+**4. Data and domain drift**
+
+- **Covariate shift:** new cameras, lenses, resolutions, night/IR mode, weather, motion blur, dirty lenses, different mounting angles.
+- **Label shift:** class frequencies in production differ from the validation set, so the thresholds are wrong even when the model is fine.
+- **Evaluation leakage offline:** near-duplicate frames from the same video in train and test inflate offline scores. Split by video, site or camera, not by frame.
+- Monitoring signals without labels: embedding drift between production and training images, confidence histograms, detections per frame, and image statistics (brightness, blur score).
+
+**5. Model weaknesses exposed by production**
+
+- Error analysis on a labelled production sample: group errors into missed small objects, confusions between classes, localisation errors, duplicates and background false positives. Tools like FiftyOne help.
+- Fix with **targeted data**, not blind retraining: collect hard cases (active learning on low-confidence or disagreement frames), use augmentation that simulates the real conditions (blur, compression, low light), then fine-tune.
+
+**6. Prevent recurrence**
+
+- Ship preprocessing **inside** the exported model or as one shared library used by both training and serving.
+- Golden-image tests in CI that compare training and serving outputs.
+- Shadow deployment on live traffic before switching, and per-camera dashboards with alerts on drift.
+- Hold-out sets defined by deployment conditions (new site, night, rain), and gating on those slices before release.
+
+**Illustrative example:** a defect detector scores 0.92 mAP offline and misses half the defects on the line. The cause is the production camera's JPEG quality setting plus a stretch resize that changed the defect's aspect ratio. Fixing preprocessing recovered most of the gap. Fine-tuning on 400 labelled line images with compression augmentation recovered the rest.
+
+### 15.41 How does self-supervised learning work for vision, and how do contrastive, distillation-based and masked-image methods compare?
+
+Self-supervised learning (SSL) builds a training signal from the images themselves. You pick a pretext task that can only be solved if the network learns useful structure, such as "these two crops come from the same photo" or "fill in the hidden patches". Then you throw away the pretext head and keep the encoder. The three main families differ in what they predict and in how they stop the encoder from *collapsing* to a constant output.
+
+**1. Contrastive (SimCLR, MoCo).** Two augmented views of the same image are positives, and every other image in the batch is a negative. The InfoNCE loss pulls positives together and pushes negatives apart:
+
+$$
+\mathcal{L} = -\log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}{\sum_{k \neq i} \exp(\text{sim}(z_i, z_k)/\tau)}
+$$
+
+- **SimCLR** showed that the augmentation recipe (random crop plus strong colour jitter) and a projection MLP after the encoder matter more than architecture. It needs very large batches (4096+) to get enough negatives.
+- **MoCo** decouples negatives from batch size. It keeps a queue of keys produced by a *momentum encoder* whose weights are an exponential moving average (EMA) of the query encoder, so the queued keys stay consistent.
+- **Weakness:** negatives that are really the same class ("false negatives") get pushed apart, and the learned invariances are only as good as the augmentations you hand-pick.
+
+**2. Distillation / non-contrastive (BYOL, DINO, DINOv2).** No negatives at all. A student network predicts the output of an EMA teacher on a different view. Collapse is avoided by asymmetry, not by repulsion: BYOL adds a predictor head on the student only, and DINO centres and sharpens the teacher's softmax output. DINO also uses multi-crop: the teacher sees only global crops and the student also sees small local crops, which forces local-to-global correspondence. That is why DINO attention maps segment objects without any labels. DINOv2 adds a masked-patch objective (from iBOT), a KoLeo regulariser to spread features out, and careful data curation.
+
+**3. Masked image modelling (MAE, BEiT, I-JEPA).** Hide most of the patches and predict what is missing.
+
+- **MAE** reconstructs raw pixels. Images are highly redundant, so a high mask ratio is needed to make the task hard; it also makes the encoder cheap because it only processes visible tokens.
+- **I-JEPA** predicts the *embeddings* of masked blocks from a context block, using an EMA target encoder. It skips pixel detail and needs no hand-crafted augmentations. The paper reports a ViT-H/14 trained in under 1,200 GPU hours, more than 10 times cheaper than MAE at similar linear-probe accuracy.
+
+**How they compare in practice:**
+
+| Family | Signal | Frozen features (linear probe, k-NN, retrieval) | After full fine-tuning | Main cost |
+| --- | --- | --- | --- | --- |
+| Contrastive | Instance discrimination with negatives | Good, strongly global | Good | Large batches or queues, augmentation tuning |
+| Distillation | Match EMA teacher across views | Best; also strong dense features | Very good | Fiddly to stabilise (centring, temperature, EMA schedule) |
+| Masked pixels | Reconstruct pixels | Weak; features need fine-tuning | Very good | Cheap per step, long schedules |
+| Masked embeddings | Predict latent of masked region | Good | Very good | Masking strategy matters |
+
+**The key insight:** contrastive and distillation methods learn *invariance*, so they give semantic, linearly separable features. Pixel reconstruction learns *what images look like*, keeping low-level detail that fine-tuning later turns into semantics. That explains MAE's well-known gap between poor linear-probe and strong fine-tune accuracy.
+
+**How I would choose in industry:** rarely pretrain from scratch. Start from a public DINOv2/DINOv3 backbone for frozen features, retrieval, or dense tasks. Run *domain-adaptive* SSL only when your images are far from web photos (medical slides, satellite, industrial X-ray) and you have millions of unlabelled images. MAE-style continued pretraining is often the cheapest win there because it needs no augmentation design. Watch for augmentations that destroy the signal you care about: colour jitter on a task where colour is the defect will teach the model to ignore exactly that.
+
+### 15.42 How do you fine-tune a vision model when you have very little labelled data?
+
+Start from the strongest pretrained backbone you can afford, change as few weights as possible, and use every unlabelled image you have. With 10 to 1,000 labels the real enemies are overfitting and an unreliable validation set, not model capacity.
+
+**A ladder of options, cheapest first:**
+
+1. **Zero-shot or open-vocabulary.** A CLIP/SigLIP classifier or an open-vocabulary detector (Grounding DINO, OWL-ViT) may already be good enough, and it gives you a baseline.
+2. **Frozen features plus a light head.** Extract DINOv2 embeddings and train logistic regression, k-NN, or a prototype classifier (class mean embeddings). This is robust with 5 to 50 examples per class, trains in seconds, and is hard to overfit.
+3. **Linear probe, then fine-tune (LP-FT).** Train the head with the backbone frozen first, then unfreeze with a small learning rate. Fine-tuning straight away with a random head sends large gradients into the backbone and distorts pretrained features, which hurts out-of-distribution accuracy.
+4. **Parameter-efficient fine-tuning.** LoRA on attention layers, adapters, visual prompt tuning, or tuning only biases and norm layers. You train less than 1% of the weights, which acts as strong regularisation and lets you keep one adapter per customer or site.
+5. **Full fine-tuning** only with a few thousand labels or a big domain shift, using layer-wise learning rate decay so early layers move less than later ones.
+
+**Regularisation that actually matters at small scale:**
+
+- Strong but *label-preserving* augmentation (RandAugment, Mixup/CutMix for classification, copy-paste for detection and segmentation).
+- Early stopping on a held-out set, weight decay, label smoothing, and fewer epochs than you think.
+- Keep BatchNorm statistics frozen with tiny batches, or use a backbone with LayerNorm/GroupNorm.
+
+**Using unlabelled data:**
+
+- **Self-training / pseudo-labelling:** train a teacher, label the unlabelled pool, keep only high-confidence predictions, and retrain a student with strong augmentation. FixMatch combines weak-augmentation pseudo-labels with strong-augmentation consistency.
+- **Domain-adaptive pretraining:** continue SSL (MAE or DINO-style) on your unlabelled domain images before fine-tuning.
+- **Foundation-model labelling:** use SAM, an open-vocabulary detector or a VLM to draft labels and have humans correct them, which is faster than labelling from scratch.
+- **Synthetic data:** rendered or diffusion-generated images help for rare defects, but always validate on real images only.
+
+**Evaluation is the hard part.** With 50 labels, one mislabelled test image moves accuracy by 2 points. Use repeated stratified k-fold cross-validation, report confidence intervals, split by *source* (patient, camera, production batch) to avoid leakage between near-duplicate frames, and look at every error by hand.
+
+**Concrete example:** a factory has 80 images of a new scratch defect and 20,000 unlabelled parts. I would start with DINOv2 features and a logistic-regression head plus an anomaly-detection score (PatchCore-style nearest-neighbour distance on normal parts), add LoRA fine-tuning once labels reach a few hundred, and use the model's uncertain cases to choose the next images for labelling.
+
+**Failure modes:** the model learns a shortcut such as background, scanner, or a ruler in medical images; validation leaks through duplicates; and pseudo-labels reinforce early mistakes (confirmation bias), especially on minority classes.
+
+### 15.43 How do classical feature detectors such as Harris, SIFT and ORB work, and when does classical computer vision still beat deep learning?
+
+Classical detectors find points that can be located precisely and found again in another image, then describe each point with a compact vector. They are hand-designed from image gradients, need no training data, run on a CPU, and come with geometric guarantees. That is why they still sit underneath SLAM, panorama stitching, structure-from-motion and camera calibration.
+
+**Harris corner detector.** A corner is a point where shifting a small window in *any* direction changes the intensity a lot. Harris summarises local gradients in a $2 \times 2$ structure tensor and scores each pixel:
+
+$$
+M = \sum_{\text{window}} w(x,y) \begin{bmatrix} I_x^2 & I_x I_y \\ I_x I_y & I_y^2 \end{bmatrix}, \qquad R = \det(M) - k\,(\operatorname{tr} M)^2
+$$
+
+Two large eigenvalues mean a corner, one large eigenvalue means an edge, and two small ones mean a flat region. Harris is rotation invariant but **not scale invariant**: a corner at one zoom level becomes a curve at another. Shi-Tomasi ("good features to track") uses the smaller eigenvalue instead and feeds the KLT tracker.
+
+**SIFT (Scale-Invariant Feature Transform).**
+
+1. **Scale space:** blur the image at increasing scales and take differences of Gaussians (DoG), which approximate the Laplacian.
+2. **Keypoints:** local extrema across position *and* scale, refined to sub-pixel accuracy; low-contrast and edge-like points are rejected.
+3. **Orientation:** the dominant gradient direction in the neighbourhood is assigned, which makes the descriptor rotation invariant.
+4. **Descriptor:** a 4×4 grid of 8-bin gradient histograms gives a 128-dimensional vector, normalised for illumination robustness.
+
+Matching uses nearest neighbours plus Lowe's **ratio test**: accept a match only if the best distance is clearly smaller than the second best.
+
+**ORB (Oriented FAST and Rotated BRIEF).** Built for speed and free use. FAST finds corners by checking a ring of 16 pixels around a candidate, Harris scores rank them, an image pyramid gives some scale coverage, and an intensity centroid gives orientation. BRIEF describes the patch with 256 binary intensity comparisons, so matching uses Hamming distance (XOR plus popcount). It is one to two orders of magnitude faster than SIFT and powers ORB-SLAM.
+
+**The geometry step is what makes them useful.** Matches are fed to RANSAC to fit a homography, fundamental or essential matrix, rejecting outliers, and then bundle adjustment. Each step is interpretable and gives measurable reprojection error.
+
+**When classical still wins:**
+
+- **Precise geometry:** calibration, metrology, stitching and visual odometry need sub-pixel accuracy and explicit geometric models.
+- **Tiny compute budgets:** microcontrollers, battery-powered sensors, or 1 kHz industrial lines where a 2 ms CPU pipeline beats any network.
+- **Controlled environments:** fixed lighting and fixtures, where thresholding, template matching, blob analysis or Hough transforms solve the task deterministically.
+- **No training data, or certification:** a deterministic algorithm is easier to validate in regulated settings.
+- **Within-scene matching:** SIFT remains a strong baseline for matching the same rigid scene.
+
+**Where deep learning wins:** large viewpoint or lighting changes, day-to-night, textureless surfaces, and anything semantic. Learned matchers (SuperPoint with SuperGlue or LightGlue, dense matchers such as LoFTR) are now the default in modern structure-from-motion.
+
+**The production answer is usually hybrid:** a learned detector or matcher feeding classical RANSAC and bundle adjustment, or a CNN for detection followed by classical subpixel edge fitting for measurement.
+
+### 15.44 How do monocular depth estimation, NeRF and 3D Gaussian Splatting work, and when would you use each?
+
+They answer different questions. **Monocular depth** guesses per-pixel distance from a single image. **NeRF** and **3D Gaussian Splatting (3DGS)** reconstruct one specific scene from many posed photos so you can render it from new viewpoints.
+
+**Monocular depth estimation (MiDaS, Depth Anything).** Depth from one image is mathematically ambiguous, so the network learns priors such as perspective, object size, occlusion and texture gradients.
+
+- **MiDaS** made the field practical by training on many mixed datasets with a *scale-and-shift-invariant* loss, so datasets with incompatible depth units could be combined. The output is **relative** (affine-invariant inverse) depth: correct ordering and shape, but no metres.
+- **Depth Anything** scaled this with a DINOv2 encoder and a DPT decoder, using a teacher to pseudo-label tens of millions of unlabelled images. **V2** trains the teacher only on synthetic images, whose depth labels are precise on thin structures and edges, and then distils into smaller students through pseudo-labelled real images.
+- **Metric depth** (Depth Anything metric heads, Metric3D, Depth Pro, UniDepth) needs fine-tuning on metric data or knowledge of the camera intrinsics, because focal length and real-world scale are ambiguous.
+- **Use it for:** augmented-reality occlusion, background blur, robotics priors, and 2D-to-3D effects. One forward pass, real time. **Do not** trust it for safety-critical metric distance without a LiDAR, stereo or known-object-size anchor.
+
+**NeRF (Neural Radiance Fields).** A small MLP maps a 3D position and viewing direction to colour and density. To render a pixel, you cast a ray, sample points along it, query the MLP, and alpha-composite:
+
+$$
+C(\mathbf{r}) = \sum_{i} T_i \left(1 - e^{-\sigma_i \delta_i}\right) \mathbf{c}_i, \qquad T_i = \exp\Big(-\sum_{j<i} \sigma_j \delta_j\Big)
+$$
+
+Training minimises the photometric error against the input photos. Positional encoding (Fourier features) lets the MLP represent high frequencies. Camera poses come from structure-from-motion (COLMAP). The original was slow: hours to train and seconds per frame. Instant-NGP's hash-grid encoding cut training to minutes, and Mip-NeRF 360 handled unbounded scenes.
+
+**3D Gaussian Splatting.** It replaces the implicit MLP with millions of explicit 3D Gaussians, each with a position, an anisotropic covariance (scale and rotation), opacity, and view-dependent colour stored as spherical harmonics. They are initialised from the SfM point cloud, projected to 2D and alpha-blended by a fast tile-based rasteriser that is fully differentiable. Adaptive density control clones and splits Gaussians where reconstruction error is high and prunes transparent ones. The result is NeRF-level quality with real-time rendering (30+ fps at 1080p) and training in tens of minutes.
+
+**Comparison:**
+
+| | Monocular depth | NeRF | 3DGS |
+| --- | --- | --- | --- |
+| Input | One image | 50 to 300 posed images of one scene | Same as NeRF |
+| Output | Depth map | Implicit field, novel views | Explicit Gaussians, novel views |
+| Generalises to new scenes | Yes | No, per-scene optimisation | No, per-scene optimisation |
+| Rendering speed | One pass | Slow (fast with hash grids) | Real time, even in browsers and on mobile |
+| Storage | Model only | Small (MLP weights) | Large (hundreds of MB, compressible) |
+| Editing and integration | Not applicable | Hard | Easier: explicit primitives, game-engine plugins |
+
+**How I would choose:** monocular depth for any single-image, real-time or per-frame need. 3DGS as the default for capturing a real place or product for viewing (digital twins, real estate, e-commerce, VFX). NeRF-style fields when you need a smooth continuous field, compact storage, or clean surface extraction (SDF variants such as NeuS).
+
+**Production failure modes:** bad SfM poses ruin both NeRF and 3DGS; moving objects, reflections and changing exposure cause floaters; 3DGS can look great from training views and break from novel angles that were not covered. Plan the capture (overlap, fixed exposure, no motion blur) as carefully as the model.
+
+### 15.45 How do video understanding models capture motion and time?
+
+A video model must learn appearance (what is in each frame) and dynamics (how it changes). Averaging per-frame features recognises "a kitchen" but cannot tell "opening a drawer" from "closing a drawer". The architectures differ in where and how cheaply they mix information across time.
+
+**1. Two-stream networks.** One CNN sees RGB frames and another sees stacked optical flow, with predictions fused at the end. Explicit flow gives motion directly, but computing flow is expensive and the two streams fuse late.
+
+**2. 3D convolutions (C3D, I3D).** Kernels extend over time (for example 3×3×3), so motion is learned directly. **I3D** "inflated" ImageNet-pretrained 2D filters into 3D by repeating them along time and dividing by the temporal depth, which lets a video model start from image weights. The Kinetics dataset made this training practical. Cost grows with frames times pixels. **R(2+1)D** factorises a 3D conv into a spatial 2D conv followed by a temporal 1D conv, which is cheaper and easier to optimise.
+
+**3. SlowFast.** Inspired by the primate visual system. A **slow pathway** samples few frames with many channels to capture semantics. A **fast pathway** samples about 8 times more frames ($\alpha = 8$) with only about 1/8 of the channels ($\beta = 1/8$) to capture fast motion cheaply. Lateral connections feed fast into slow. The fast path adds roughly 20% of compute.
+
+**4. Video transformers (TimeSformer, ViViT, Video Swin).** Videos become spatiotemporal patch tokens. Full joint attention over $T \times N$ tokens is too expensive, so **TimeSformer** uses *divided space-time attention*: in each block, a patch first attends to the same location in other frames (temporal), then to other patches in its own frame (spatial). This cuts cost from $O((TN)^2)$ to $O(TN(T+N))$ and performed best among their variants. ViViT factorises the encoder instead; Video Swin uses local 3D windows.
+
+**5. Self-supervised video pretraining (VideoMAE, V-JEPA).** **VideoMAE** masks 90 to 95% of tokens with *tube masking*, the same spatial mask across all frames. Without tubes the model could copy a patch from the next frame instead of reasoning about motion. It is very data-efficient: it works on datasets of a few thousand clips. V-JEPA predicts masked regions in embedding space instead of pixels.
+
+**6. Frame sampling plus a language model.** Vision-language models encode a sparse set of frames and let the LLM reason over time. Good for description and question answering, weak on fine-grained motion.
+
+**Appearance bias is the big trap.** On Kinetics, a single frame often reveals the action (a pool means swimming). On **Something-Something V2**, where labels like "pushing something left to right" depend only on motion, frame-based models fail. Always test whether your model beats a shuffled-frame or single-frame baseline; if it does not, it is not using time.
+
+**Practical trade-offs:**
+
+| Need | Good choice |
+| --- | --- |
+| Real-time on edge, short actions | 2D CNN with temporal shift module or X3D |
+| Fine-grained motion | SlowFast or VideoMAE-pretrained ViT |
+| Long videos (minutes to hours) | Clip-level features plus a temporal model over clips, or memory-augmented transformers |
+| Open-ended questions | Frame sampling plus VLM |
+| Temporal localisation | Clip features plus a temporal action detection head |
+
+**Production details:** video decoding is often the real bottleneck, so decode on GPU (NVDEC) and sample frames before decoding where possible. Match frame rate and clip length between training and serving; a model trained on 16 frames at 2-frame stride behaves differently at stride 8.
+
+### 15.46 How do you optimise and deploy a computer vision model on edge devices?
+
+Treat it as co-design between the model, the compiler and the target chip. Fix the hardware and latency budget first, choose an architecture that runs well on that chip, then compress and compile, and measure on the real device at every step. FLOPs are a poor guide to latency at the edge.
+
+**1. Pin down the constraints.** Target device and accelerator (Jetson GPU, phone NPU, Intel CPU or iGPU, Coral or Hailo NPU, microcontroller), latency budget per frame including pre- and post-processing, memory, power and thermal limits, and the accuracy floor.
+
+**2. Pick an edge-friendly architecture.** MobileNetV3/V4, EfficientNet-Lite, RepVGG-style re-parameterised nets, YOLO nano and small variants, or small ViT hybrids such as MobileViT and EfficientViT. Avoid operators the accelerator does not support; an unsupported op can push the whole graph back to the CPU. Depthwise convolutions are low in FLOPs but memory-bound on some GPUs. Lowering input resolution is often the single biggest win.
+
+**3. Compress.**
+
+- **Quantisation.** FP32 to FP16 is nearly free. INT8 makes weights 4 times smaller than FP32 and, as a rule of thumb, gives 2 to 4 times faster inference on hardware with integer units; always measure on the target device.
+  - *Post-training quantisation (PTQ)* with a few hundred representative calibration images. Use per-channel weight scales; calibrate on real production-like images, not random ones.
+  - *Quantisation-aware training (QAT)* when PTQ loses more than about 1 point: fake-quant nodes simulate rounding during fine-tuning.
+  - Keep sensitive layers (first conv, detection head, softmax or attention) in higher precision when needed.
+- **Pruning.** Structured pruning (whole channels or heads) gives real speedups; unstructured sparsity rarely does, except for NVIDIA's 2:4 pattern on Ampere and newer.
+- **Knowledge distillation.** Train the small student to match a big teacher's logits or features. This often recovers most of the accuracy lost by shrinking.
+
+**4. Compile for the runtime.**
+
+| Target | Runtime | Notes |
+| --- | --- | --- |
+| NVIDIA Jetson or GPU | TensorRT | Layer fusion, kernel auto-tuning, FP16/INT8 with calibration; engines are tied to GPU and TensorRT version |
+| Intel CPU, iGPU, NPU | OpenVINO | NNCF for PTQ and QAT |
+| Android and iOS, microcontrollers | LiteRT (formerly TensorFlow Lite), Core ML | GPU or NNAPI-style delegates; Core ML for the Apple Neural Engine |
+| Cross-platform | ONNX Runtime | Execution providers for CUDA, TensorRT, OpenVINO, CoreML, QNN |
+| Dedicated NPUs | Vendor SDKs (Hailo, Qualcomm QNN, Rockchip) | Strict operator sets |
+
+The usual path is PyTorch → ONNX (fixed opset, static shapes where possible) → vendor runtime.
+
+```python
+import torch
+model.eval()
+dummy = torch.randn(1, 3, 640, 640)
+torch.onnx.export(model, dummy, "detector.onnx", opset_version=17,
+                  input_names=["images"], output_names=["boxes"])
+# then, on the Jetson:
+# trtexec --onnx=detector.onnx --int8 --calib=calib.cache --saveEngine=detector.plan
+```
+
+**5. Optimise the whole pipeline, not just the model.** Resize, colour conversion and normalisation on the CPU in Python can cost more than inference. Use hardware decoders and zero-copy camera buffers, move pre-processing onto the GPU (or fold normalisation into the first layer), run NMS on the accelerator, batch across cameras, and pipeline capture, inference and post-processing on separate threads.
+
+**6. Validate and operate.**
+
+- Compare compiled-model outputs against the PyTorch reference on a golden set (mAP, not just a few images); quantisation errors often hit small objects first.
+- Benchmark p50 and p99 latency on the device under sustained load, because thermal throttling appears after minutes.
+- Ship models with version pinning and over-the-air updates with rollback, and log low-confidence samples back for retraining.
+
+**Common failures:** pre-processing mismatch between training and device (BGR vs RGB, resize method, normalisation constants), unsupported operators silently falling back to CPU, calibrating INT8 on unrepresentative images, and dynamic shapes that disable optimisations.
+
+### 15.47 How do you design a labelling strategy for a computer vision project, including active learning and handling label noise?
+
+Treat labels as a product with a specification, a budget, a quality process and a feedback loop. Do not treat them as a one-off purchase. Most CV projects are limited by label consistency rather than model choice, so the strategy decides which images get labelled, how, by whom, and how errors are caught.
+
+**1. Write the labelling specification before anyone labels.**
+
+- Decide the **task granularity** the product needs: image tags are cheapest, boxes cost several times more, and polygons or masks cost much more again. Do not buy masks if boxes answer the business question.
+- Define every class with positive and negative examples, plus the hard rules: occlusion, truncation at the image edge, minimum object size, groups ("crowd" flag), ambiguous cases, and an explicit "unsure" option.
+- Run a **pilot**: 200 images labelled by 3 or more annotators, measure agreement (Cohen's or Fleiss' kappa for classes, IoU between annotators for boxes), and revise the guide until agreement stabilises. Inter-annotator agreement is roughly the ceiling for model performance.
+
+**2. Choose what to label first.**
+
+- Start with a **diverse** seed set, not random frames: deduplicate near-identical video frames, then cluster embeddings (DINOv2 or CLIP) and sample across clusters, sites, cameras, times of day and weather.
+- Over-sample rare but costly cases deliberately.
+- Freeze a **gold test set** early, labelled by experts with adjudication, and never use it for selection.
+
+**3. Speed up labelling with models.** Pre-label with the current model, SAM for masks, or an open-vocabulary detector, and have humans correct. This often cuts cost by half or more. The risk is *anchoring*: annotators accept plausible but wrong pre-labels. Audit a sample labelled from scratch to measure that bias.
+
+**4. Active learning loop.** Train, score the unlabelled pool, send the most valuable images to annotators, retrain, repeat.
+
+- **Uncertainty sampling:** lowest max-probability, smallest margin between top two classes, highest entropy. For detection, aggregate box-level uncertainty per image.
+- **Disagreement:** ensembles or MC-dropout (query-by-committee), or augmentation inconsistency.
+- **Diversity:** core-set selection or k-means over embeddings, so a batch does not contain 500 copies of the same hard case.
+- **Hybrid** (uncertainty within diverse clusters, as in BADGE) is the robust default.
+- **Pitfalls:** pure uncertainty sampling picks outliers, blurred and unlabelable images; the selected set is biased, so evaluate only on the random gold set; and with a strong pretrained backbone, random sampling is a surprisingly hard baseline. Measure whether active learning beats random on your data before building the machinery.
+
+**5. Handle label noise.**
+
+- **Prevent:** clear guide, annotator training, qualification tests, gold questions mixed into tasks, and consensus or review for hard classes.
+- **Detect:** *confident learning* (cleanlab-style) flags examples where out-of-fold predicted probability disagrees strongly with the given label; high-loss examples, annotator disagreement, and embedding outliers or duplicates with conflicting labels.
+- **Review, do not auto-delete:** send flagged items back for adjudication; many "noisy" labels are actually rare valid cases.
+- **Train robustly** when noise remains: label smoothing, early stopping (networks memorise noise late in training), robust losses such as generalised cross-entropy, or co-teaching with two networks selecting small-loss samples for each other.
+- **Track noise per annotator and per class**; systematic confusion (two similar defect types) usually means the guide is wrong, not the people.
+
+**6. Run it as a feedback loop.** Version labels with the guide version they followed, track cost per label and agreement over time, and route production low-confidence predictions, user corrections and drift alerts back into the queue.
+
+**Concrete budget example:** 50,000 unlabelled images and money for 5,000 box labels. I would spend about 500 on a diverse seed set and gold test set, about 3,500 over five active-learning rounds of 700, and keep about 1,000 for re-labelling flagged noisy items and new classes that appear after launch.
 
 ---
 
