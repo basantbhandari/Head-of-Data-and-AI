@@ -4,7 +4,7 @@ _Part II — Data Engineering_
 
 Warehouses, lakes and lakehouses, storage formats, cloud data platforms, data quality, security and governance. These questions test whether a candidate can design a data platform, not just operate one.
 
-This chapter contains **35 questions**.
+This chapter contains **45 questions**.
 
 ## Contents
 
@@ -43,6 +43,16 @@ This chapter contains **35 questions**.
 - **4.33** [What is "Data Compaction" in a streaming context?](#433-what-is-data-compaction-in-a-streaming-context)
 - **4.34** [How do you handle "Schema Drift" automatically?](#434-how-do-you-handle-schema-drift-automatically)
 - **4.35** [Where do you see the future of Data Engineering?](#435-where-do-you-see-the-future-of-data-engineering)
+- **4.36** [What are open table formats (Apache Iceberg, Delta Lake, Apache Hudi), and what problems do they solve on top of Parquet files in object storage?](#436-what-are-open-table-formats-apache-iceberg-delta-lake-apache-hudi-and-what-problems-do-they-solve-on-top-of-parquet-files-in-object-storage)
+- **4.37** [How do snapshots, time travel and optimistic concurrency work in Iceberg or Delta Lake?](#437-how-do-snapshots-time-travel-and-optimistic-concurrency-work-in-iceberg-or-delta-lake)
+- **4.38** [What is the difference between copy-on-write and merge-on-read tables, and when would you pick each?](#438-what-is-the-difference-between-copy-on-write-and-merge-on-read-tables-and-when-would-you-pick-each)
+- **4.39** [Compare Apache Iceberg, Delta Lake and Apache Hudi. How would you choose between them?](#439-compare-apache-iceberg-delta-lake-and-apache-hudi-how-would-you-choose-between-them)
+- **4.40** [How do you implement the GDPR "right to be forgotten" in a data lake or lakehouse?](#440-how-do-you-implement-the-gdpr-right-to-be-forgotten-in-a-data-lake-or-lakehouse)
+- **4.41** [How do you implement fine-grained access control (row-level security, column masking, tag-based policies) on a data platform?](#441-how-do-you-implement-fine-grained-access-control-row-level-security-column-masking-tag-based-policies-on-a-data-platform)
+- **4.42** [What is a semantic (metrics) layer and why do organisations adopt one?](#442-what-is-a-semantic-metrics-layer-and-why-do-organisations-adopt-one)
+- **4.43** [How do you control and optimise cost on a cloud data platform (warehouse and lakehouse FinOps)?](#443-how-do-you-control-and-optimise-cost-on-a-cloud-data-platform-warehouse-and-lakehouse-finops)
+- **4.44** [How would you design a real-time clickstream analytics pipeline for a large e-commerce site?](#444-how-would-you-design-a-real-time-clickstream-analytics-pipeline-for-a-large-e-commerce-site)
+- **4.45** [How would you design a data platform for a mid-size company from scratch, and what would you build vs buy?](#445-how-would-you-design-a-data-platform-for-a-mid-size-company-from-scratch-and-what-would-you-build-vs-buy)
 
 ---
 
@@ -376,6 +386,449 @@ Since I answered this same question just above — is there a specific part you'
 ### 4.35 Where do you see the future of Data Engineering?
 
 **The field is moving toward Data Observability (automated monitoring), the rise of AI-augmented pipelines, and the unification of batch and stream processing into a single "Lakehouse" architecture.**
+
+### 4.36 What are open table formats (Apache Iceberg, Delta Lake, Apache Hudi), and what problems do they solve on top of Parquet files in object storage?
+
+An open table format is a metadata layer that turns a pile of Parquet files in S3, ADLS or GCS into a real table. It records which files make up the table at each point in time, the schema, partitioning and file statistics. That brings atomic commits, row-level updates, schema evolution and fast planning to object storage, while the data stays in open files that any engine can read.
+
+**What goes wrong with "just Parquet in a folder"**
+
+- **No atomicity.** A job that fails halfway leaves partial files behind, and readers see a half-written table. Object stores have no multi-file transaction.
+- **No isolation.** A reader that lists a directory while a writer is overwriting it can see old and new files mixed together.
+- **Expensive planning.** Engines have to `LIST` thousands of prefixes to find files. On object storage this is slow and costs money per call.
+- **No row-level changes.** You cannot `UPDATE`, `DELETE` or `MERGE` one customer. You rewrite the whole partition by hand.
+- **Fragile schema changes.** Renaming or reordering a column breaks readers that match columns by name or position.
+- **Partitioning leaks into queries.** Hive-style `dt=2026-11-16` folders mean users have to filter on the partition column explicitly, and changing the partition scheme means rewriting the table.
+
+**What the table format adds**
+
+| Capability | How it is achieved |
+| --- | --- |
+| ACID commits | A new table version becomes visible through one atomic step: a log entry (Delta, Hudi timeline) or a catalog pointer swap (Iceberg) |
+| Snapshot isolation | Readers pin a version and only see files listed in it |
+| Fast planning | Manifests or checkpoints list files with min/max stats, so engines prune files without listing directories |
+| Row-level DML | Copy-on-write rewrites, or merge-on-read delete files, deletion vectors and log files |
+| Schema evolution | Columns tracked by ID (Iceberg, Delta column mapping), so renames and drops are safe |
+| Time travel | Old snapshots stay readable until they are expired |
+| Hidden or evolving partitioning | Iceberg derives partitions from transforms like `day(ts)`; Delta liquid clustering and Iceberg partition evolution avoid rewrites |
+
+**Senior-level points**
+
+- **The catalog matters as much as the format.** Something has to own the "current version" pointer and enforce access. That is why REST catalogs (Polaris, Unity Catalog, Glue, Nessie) are now central to lakehouse design.
+- **Maintenance is your job.** Table formats create small files, delete files and old snapshots. Without scheduled compaction, snapshot expiry and orphan-file cleanup, query performance and storage cost both degrade.
+- **The format does not replace the engine.** Concurrency limits, merge performance and feature support (for example Iceberg v3 deletion vectors) depend on which engine and version you run.
+
+A typical example: a nightly CDC `MERGE` into a 5 TB customer table used to be a full partition rewrite with a "do not query between 2 and 4 am" warning. On Iceberg or Delta it becomes a transactional `MERGE` that touches only the affected files, and readers never see a half-applied state.
+
+### 4.37 How do snapshots, time travel and optimistic concurrency work in Iceberg or Delta Lake?
+
+Both formats treat a table as a sequence of immutable versions. Each commit writes new data files plus new metadata describing the full set of live files, then publishes that version atomically. Readers query whichever version is current, or an older one for time travel. Writers never lock the table. They assume no conflict, then check for one at commit time and retry if needed.
+
+**Delta Lake**
+
+- The `_delta_log/` directory holds numbered JSON commits (`00000000000000000042.json`). Each commit lists `add` and `remove` file actions, metadata changes and commit info.
+- Every N commits a **checkpoint** (Parquet) summarises the whole state, so readers load the latest checkpoint plus a few JSON files instead of replaying the full history.
+- A commit is atomic because writing version `N+1` uses put-if-absent semantics. Only one writer can create that file. On S3 this historically needed a coordination service such as DynamoDB, or the platform's own commit service.
+
+**Apache Iceberg**
+
+- A three-level tree: `metadata.json` (schema, partition specs, snapshot list) points to a **manifest list** per snapshot, which points to **manifests**, which list data and delete files with column stats.
+- The catalog stores a pointer to the current `metadata.json`. A commit is a **compare-and-swap** on that pointer: "move from v41 to v42 only if it is still v41."
+
+**Optimistic concurrency, step by step**
+
+1. The writer reads version $N$ and records what it read (files, predicates).
+2. It writes new data files. This is the slow part and it involves no locks.
+3. It tries to commit $N+1$. If another writer committed first, it re-reads the new state and checks whether those changes **conflict** with its own: did they delete or rewrite files it read or plans to remove? Did they add rows matching its `MERGE` or `DELETE` predicate?
+4. If there is no logical conflict, it rebases and retries the commit. Only metadata is rewritten; the data files are reused. If there is a conflict, it fails, for example with Delta's `ConcurrentAppendException` or Iceberg's `CommitFailedException`.
+
+Blind appends almost never conflict. Two `MERGE` jobs on the same partitions often do. Delta's row-level concurrency (with deletion vectors and row tracking) and Iceberg's per-operation isolation levels (`serializable` vs `snapshot`) reduce false conflicts.
+
+**Time travel**
+
+```sql
+-- Delta
+SELECT * FROM sales VERSION AS OF 1520;
+SELECT * FROM sales TIMESTAMP AS OF '2026-11-01';
+RESTORE TABLE sales TO VERSION AS OF 1520;
+
+-- Iceberg (Spark)
+SELECT * FROM sales FOR SYSTEM_VERSION AS OF 849230111;
+SELECT * FROM sales FOR SYSTEM_TIME AS OF '2026-11-01 00:00:00';
+```
+
+Time travel works only while the old files still exist. Delta `VACUUM` and Iceberg `expire_snapshots` plus `remove_orphan_files` delete them, so retention is a policy decision that trades auditability against storage cost and GDPR obligations.
+
+**What goes wrong in production**
+
+- **Commit storms.** Many small streaming writers, or a long compaction job racing with ingestion, cause repeated retries. Fix it by batching commits, separating partitions, or scheduling compaction for quiet partitions.
+- **Metadata bloat.** Thousands of snapshots and manifests slow planning. Expire snapshots and rewrite manifests regularly.
+- **Vacuuming too aggressively.** A retention below the longest-running query or stream lag deletes files that are still in use and breaks readers.
+
+### 4.38 What is the difference between copy-on-write and merge-on-read tables, and when would you pick each?
+
+They are two strategies for applying updates and deletes to immutable files. **Copy-on-write (CoW)** rewrites every data file that contains a changed row at write time, so reads stay simple and fast. **Merge-on-read (MoR)** writes only the change, as delete files, deletion vectors or row-based log files, and reconciles it with the base files at query time until compaction folds it in.
+
+**How each works**
+
+- **CoW:** to update 10 rows spread across 3 Parquet files of 512 MB each, the engine rewrites all 3 files (about 1.5 GB) and the commit swaps old files for new ones.
+- **MoR in Iceberg:** writes position delete files (in v3, deletion vectors stored as bitmaps in Puffin files) or equality delete files, plus new data files for the updated rows.
+- **MoR in Delta:** deletion vectors mark removed rows in existing files, and updated rows go into new files.
+- **MoR in Hudi:** each file group has a base Parquet file plus Avro log files. A compaction service periodically merges them. Hudi also offers a *read-optimized* query that reads only base files: fast, but slightly stale.
+
+**Trade-offs**
+
+| Dimension | Copy-on-write | Merge-on-read |
+| --- | --- | --- |
+| Write cost | High (write amplification) | Low (write only the delta) |
+| Write latency | Slower, can't keep up with high-rate upserts | Fast, suits streaming and CDC |
+| Read cost | Lowest, plain columnar scans | Higher until compaction (merge or delete-apply) |
+| Operational burden | Low | Needs compaction scheduling and monitoring |
+| Concurrency conflicts | More (rewrites large files) | Fewer (smaller footprint) |
+| Freshness | Commit = fully optimised | Fresh data, but read-optimised views lag |
+
+**How I decide**
+
+- **Pick CoW** for read-heavy tables with infrequent, batched changes: daily-loaded fact tables, gold aggregates, dimension tables refreshed once a day, anything that many BI dashboards hit.
+- **Pick MoR** for write-heavy or low-latency upsert workloads: CDC from OLTP databases every minute, streaming dedup or upserts, GDPR deletes scattered across many files, or tables where updates touch a tiny fraction of rows in many files.
+- **Hybrid is normal.** Ingest bronze/silver CDC tables as MoR with aggressive compaction, and build gold tables as CoW. In Iceberg you can even set the mode per operation (`write.delete.mode`, `write.update.mode`, `write.merge.mode`).
+
+```sql
+ALTER TABLE silver.orders SET TBLPROPERTIES (
+  'write.merge.mode'  = 'merge-on-read',
+  'write.delete.mode' = 'merge-on-read',
+  'write.update.mode' = 'copy-on-write'
+);
+```
+
+**Failure modes**
+
+- **MoR without compaction** is the most common lakehouse performance incident. Delete files and log files pile up, every query merges them, and latency degrades slowly until someone notices. Monitor delete-file counts per partition and alert on them.
+- **CoW on high-frequency CDC** leads to runaway compute and storage churn, plus constant commit conflicts with readers' compaction.
+- Engine support varies. Some readers ignore delete files or don't support v3 deletion vectors yet, so check every engine that reads the table before switching modes.
+
+### 4.39 Compare Apache Iceberg, Delta Lake and Apache Hudi. How would you choose between them?
+
+All three give you ACID tables on object storage, and their core features have largely converged: row-level deletes, time travel, schema evolution, and deletion vectors with a shared encoding in Iceberg v3 and Delta. In 2026 the choice depends less on features and more on **which engines and catalog you standardise on**, and **what your write pattern looks like**.
+
+**Comparison**
+
+| Dimension | Apache Iceberg | Delta Lake | Apache Hudi |
+| --- | --- | --- | --- |
+| Origin | Netflix, Apache project | Databricks, Linux Foundation | Uber, Apache project |
+| Metadata model | metadata.json → manifest lists → manifests, pointer in a catalog | Ordered JSON log plus Parquet checkpoints | Timeline of instants plus a metadata table |
+| Engine breadth | Widest: Spark, Flink, Trino, Snowflake, BigQuery, Athena, Redshift, DuckDB, Dremio | Strongest in Spark/Databricks, good elsewhere via delta-rs and connectors | Spark and Flink first, read support elsewhere |
+| Catalog story | Iceberg REST spec (Polaris, Unity, Glue, Nessie, Snowflake Horizon) | Unity Catalog; Iceberg REST via UniForm | Hive/Glue metastore; less standardised |
+| Partitioning | Hidden partitioning, partition evolution | Liquid clustering, generated columns | Partition paths plus record-level indexes |
+| Updates | CoW or MoR (delete files, v3 deletion vectors) | CoW or deletion vectors | CoW or MoR with log files and async compaction |
+| Distinct strengths | Engine neutrality, spec-driven, row lineage in v3 | Tight Databricks integration, Change Data Feed, mature tooling | Record keys, indexes, incremental pulls, non-blocking concurrency for streaming upserts |
+| Watch-outs | Catalog choice is now where lock-in lives; maintenance is yours | Best features often arrive on Databricks first | Smaller ecosystem, more tuning knobs |
+
+**How I would choose**
+
+1. **Start from the engines.** If Databricks is your main platform, Delta is the natural default. If you run several engines (Snowflake for BI, Spark for ML, Trino for ad hoc, Flink for streaming), Iceberg is the safest neutral choice because nearly every engine and catalog supports it natively.
+2. **Look at the write pattern.** For very high-rate keyed upserts and incremental pipelines (CDC from many OLTP tables, Flink-based ingestion), Hudi's record index and MoR design are purpose-built. Iceberg with Flink and Delta with streaming MERGE also handle this well at moderate volume.
+3. **Pick the catalog, not just the format.** Governance, credential vending and cross-engine access come from the catalog. Choosing Unity, Polaris, Glue or Horizon is a longer-term commitment than the file format.
+4. **Plan for interoperability.** Delta UniForm writes Iceberg-compatible metadata, and Apache XTable translates metadata between all three. These help with reads across ecosystems, but treat them as bridges, not as a way to avoid choosing a primary write format.
+5. **Check what your managed services support.** Feature support differs by engine version (for example v3 deletion vectors, row lineage, MoR reads). A format is only as good as the oldest engine that has to read it.
+
+**A typical answer in an interview:** "On a Databricks-centred platform I'd use Delta with Unity Catalog and turn on UniForm so Snowflake and Trino can read gold tables. On a multi-engine or multi-cloud platform I'd use Iceberg with a REST catalog. I'd use Hudi only for a write-heavy CDC layer where its indexing clearly pays off, and I'd still expose curated data as Iceberg or Delta."
+
+### 4.40 How do you implement the GDPR "right to be forgotten" in a data lake or lakehouse?
+
+Article 17 requires you to erase a person's personal data without undue delay (generally within one month of the request) from every place it lives: raw files, curated tables, derived features, backups, logs and ML training sets. In a lakehouse the hard part is that storage is immutable and copies are everywhere. A `DELETE` statement alone is not enough, because the old files and snapshots still contain the data.
+
+**1. Know where the data is**
+
+- Maintain a PII inventory: tag columns as personal data in the catalog, and record the subject identifier (customer_id, email hash) for each table.
+- Use lineage to find every downstream table, feature store, extract and model derived from those sources. If you cannot list where a person's data flows, you cannot prove you erased it.
+
+**2. Design to make deletion cheap**
+
+- **Pseudonymise early.** Replace direct identifiers in bronze with a surrogate key, and keep the mapping (key ↔ email, name, address) in one small, tightly controlled lookup table. Most tables then hold only the surrogate.
+- **Crypto-shredding.** Encrypt each person's PII with a per-subject key held in a KMS or vault. Erasure means destroying the key, which makes every copy, including backups and old snapshots, unreadable. It is powerful but complex: key management at scale, performance, and legal sign-off that shredded ciphertext counts as erased.
+- **Cluster or partition by subject where possible**, so a delete rewrites few files.
+- **Avoid PII in places that are hard to clean**: Kafka topics with infinite retention, log files, free-text fields, and file names.
+
+**3. Run a deletion pipeline**
+
+```sql
+-- requests table filled by the privacy/CRM system
+MERGE INTO silver.customers t
+USING (SELECT customer_id FROM privacy.erasure_requests
+       WHERE status = 'APPROVED') r
+ON t.customer_id = r.customer_id
+WHEN MATCHED THEN DELETE;
+
+-- Delta: physically remove rows hidden by deletion vectors, then old files
+REORG TABLE silver.customers APPLY (PURGE);
+VACUUM silver.customers RETAIN 168 HOURS;
+
+-- Iceberg (Spark procedures): rewrite affected files, drop old snapshots
+CALL cat.system.rewrite_data_files(table => 'silver.customers',
+     where => 'customer_id IN (...)');
+CALL cat.system.expire_snapshots(table => 'silver.customers',
+     older_than => TIMESTAMP '2026-11-09 00:00:00');
+```
+
+- Process requests in **batches** (daily or weekly). One MERGE per request rewrites the same files hundreds of times.
+- Propagate **bronze → silver → gold → features → exports**, and delete from source systems, queues and landing buckets too.
+- **Snapshots and time travel**: the data is not gone until old versions are expired and unreferenced files removed. Set retention so the full cycle (delete, purge, vacuum or expire) finishes inside your legal deadline.
+- **Backups and replicas**: either keep them short-lived, or re-apply deletions on restore by replaying the erasure log.
+- **ML models**: record which training snapshot each model used. Policy usually requires excluding the person from future retraining. Whether a trained model must be retrained immediately is a legal question, so document the decision.
+
+**4. Prove it**
+
+Keep an audit log of each request with timestamps for every system it was applied to. Run a verification query afterwards to confirm zero matching rows. Regulators and auditors ask for evidence, not intent.
+
+**Common mistakes:** stopping at `DELETE` without purge or vacuum, forgetting CDC streams that re-insert the deleted customer the next day (keep a suppression list), and leaving the data in exports sent to third parties.
+
+### 4.41 How do you implement fine-grained access control (row-level security, column masking, tag-based policies) on a data platform?
+
+Fine-grained access control means deciding access at the level of rows and columns, not just whole tables. A sales rep in Germany sees only German customers, an analyst sees `email` masked, and a privacy officer sees everything. At scale the only maintainable way to do this is **attribute-based access control (ABAC)**: classify data with tags, define a few central policies against those tags and user attributes, and let the platform enforce them in every engine.
+
+**Building blocks**
+
+- **RBAC baseline:** roles or groups get privileges on catalogs, schemas and tables. Grant to groups, never to individuals.
+- **Row-level security:** a row filter or row access policy is a function evaluated per query that returns true or false for each row, based on the user's groups or a mapping table.
+- **Column masking:** a masking function returns the real value, a partial mask (`****1234`), a hash or NULL, depending on who is asking.
+- **Tags and classification:** columns tagged `pii=email` or `sensitivity=high`, ideally set by automated classification scanners plus human review.
+- **Tag-based policies:** the policy is attached to the tag, not to each column, so any new column tagged `pii=email` is masked automatically.
+
+**Example (Snowflake syntax)**
+
+```sql
+CREATE MASKING POLICY mask_email AS (val STRING) RETURNS STRING ->
+  CASE WHEN IS_ROLE_IN_SESSION('PII_READER') THEN val
+       ELSE REGEXP_REPLACE(val, '.+@', '***@') END;
+
+ALTER TAG governance.pii_email SET MASKING POLICY mask_email;
+
+CREATE ROW ACCESS POLICY region_rls AS (region STRING) RETURNS BOOLEAN ->
+  EXISTS (SELECT 1 FROM governance.user_region m
+          WHERE m.role_name = CURRENT_ROLE() AND m.region = region);
+
+ALTER TABLE sales.orders ADD ROW ACCESS POLICY region_rls ON (region);
+```
+
+Databricks Unity Catalog does the same with row filters and column masks (SQL UDFs), plus ABAC policies defined at catalog or schema level against governed tags. BigQuery has row access policies and policy tags for column-level security.
+
+**Design principles**
+
+- **Enforce in the platform, not in the BI tool.** Security that lives only in Tableau or Power BI disappears the moment someone connects a notebook. Policies should sit in the catalog so every engine and path gets them.
+- **Mapping tables over hardcoded logic.** Keep user-to-region or user-to-cost-centre entitlements in a governed table fed from HR or IAM, so access changes without code deploys.
+- **Classify automatically, review by humans.** Scan new tables for PII patterns, propose tags, require owner confirmation.
+- **Keep policy functions simple.** Each one runs on every query. A row filter with a heavy subquery can slow dashboards dramatically. Prefer lookups against small, cached mapping tables.
+- **Test policies like code.** Write policies in Terraform or dbt, review them in pull requests, and add tests that run queries as specific roles and assert the expected rows and masked values.
+
+**Pitfalls**
+
+- **Inference attacks:** masking a column does not stop someone from filtering or joining on it. Restrict filtering on sensitive columns, or use aggregation policies and minimum group sizes.
+- **Conflicting policies:** some platforms block the query when two masks apply to the same column for the same user. Design a single policy per tag.
+- **Feature gaps:** filters and masks can limit time travel, cloning, materialized views, or external engines reading the raw files directly. Make sure no one can bypass policies by reading the underlying storage path. Lock down bucket access and use credential vending.
+- **Audit:** log who queried which sensitive columns. Access reviews and incident investigations depend on it.
+
+### 4.42 What is a semantic (metrics) layer and why do organisations adopt one?
+
+A semantic layer is a governed definition of business concepts (entities, dimensions, measures and metrics such as "net revenue" or "active customer") that sits between the warehouse and every consumer. Tools ask for "net revenue by region, last quarter" and the layer generates the correct SQL. The goal is **one definition, computed the same way everywhere**: dashboards, notebooks, spreadsheets, reverse ETL and increasingly AI agents.
+
+**The problem it solves**
+
+- Five dashboards show five different revenue numbers because each analyst wrote the joins, filters (refunds? test accounts? currency?) and time logic slightly differently.
+- Metric logic is buried in BI tools, so switching tools or adding a new consumer means re-implementing everything.
+- LLM-based "chat with your data" tools hallucinate joins and definitions when they only see raw tables. A semantic layer gives them a vetted vocabulary to query.
+
+**What it contains**
+
+- **Semantic models / entities:** tables, their grain, primary and foreign keys, so the layer knows how to join safely and avoid fan-out double counting.
+- **Dimensions:** categorical and time attributes, including time grains (day, week, fiscal quarter).
+- **Measures and metrics:** simple aggregations, ratios, cumulative and derived metrics, with filters baked in.
+- **Access:** query APIs (SQL, JDBC, GraphQL or REST), caching, and governance (who can see which metric).
+
+```yaml
+semantic_models:
+  - name: orders
+    model: ref('fct_orders')
+    entities:
+      - { name: order_id, type: primary }
+      - { name: customer, type: foreign, expr: customer_id }
+    dimensions:
+      - { name: ordered_at, type: time, type_params: { time_granularity: day } }
+      - { name: region, type: categorical }
+    measures:
+      - { name: gross_amount, agg: sum, expr: amount }
+      - { name: refund_amount, agg: sum, expr: refunded_amount }
+metrics:
+  - name: net_revenue
+    type: derived
+    type_params:
+      expr: gross - refunds
+      metrics: [ { name: gross_amount, alias: gross }, { name: refund_amount, alias: refunds } ]
+```
+
+**Main options**
+
+| Type | Examples | Notes |
+| --- | --- | --- |
+| Transformation-layer | dbt Semantic Layer (MetricFlow, open source) | Metrics versioned next to models |
+| Standalone / headless | Cube, AtScale | Caching and APIs for many tools |
+| BI-native | Looker LookML, Power BI semantic models | Excellent inside one tool, weaker outside it |
+| Warehouse-native | Snowflake semantic views, Databricks metric views | Definitions close to the data and governance |
+
+An industry effort to make definitions portable between tools (the Open Semantic Interchange specification, now an Apache incubator project) is emerging, which reduces the lock-in risk of picking one.
+
+**Adoption advice**
+
+- **Start with the 10 to 20 metrics the executive team argues about,** each with a named owner and a written definition. Do not try to model everything.
+- **Model clean marts first.** A semantic layer on top of messy tables just centralises the mess.
+- **Treat metrics as code:** pull requests, tests comparing results against known values, and change logs when a definition changes.
+- **Watch performance and cost.** Generated SQL can be inefficient. Use caching or pre-aggregations for hot dashboards.
+- **Failure mode:** buying a semantic layer while every team keeps its own BI logic. Adoption needs a mandate ("certified metrics come only from the layer") and BI tools wired into it.
+
+### 4.43 How do you control and optimise cost on a cloud data platform (warehouse and lakehouse FinOps)?
+
+Cloud data cost is driven mostly by **compute** (warehouses, clusters, serverless queries), then storage and data movement. You control it with three loops: **visibility** (who spends what, and on which workload), **guardrails** (limits that stop runaway spend), and **optimisation** (making each workload cheaper). Treat cost as an engineering metric with owners, like latency.
+
+**1. Visibility and accountability**
+
+- Tag every warehouse, cluster, job and query with team, product and environment. Use query tags, cluster tags and separate warehouses per workload.
+- Build a cost model from billing and usage views (Snowflake `ACCOUNT_USAGE`, Databricks system billing tables, BigQuery `INFORMATION_SCHEMA.JOBS`) and publish showback or chargeback dashboards per team.
+- Track unit costs that the business understands: cost per dashboard, per pipeline run, per 1,000 orders processed, per model training run.
+
+**2. Guardrails**
+
+- **Budgets and alerts:** Snowflake resource monitors, Databricks budgets, BigQuery custom quotas per user or project.
+- **Timeouts:** statement timeouts on warehouses, and maximum bytes billed on BigQuery queries.
+- **Policies:** cluster policies that cap node types and sizes, force auto-termination, and require tags. Forbid all-purpose clusters for scheduled jobs.
+- **Separate dev from prod**, with smaller defaults and stricter limits in dev.
+
+**3. Compute optimisation**
+
+- **Right-size and auto-suspend.** Idle warehouses are the most common waste. Use short auto-suspend (around 60 seconds) for bursty workloads, longer where the cache pays off. Downsize until runtime starts to grow meaningfully.
+- **Scale out for concurrency, up for complexity.** Multi-cluster warehouses handle many small BI queries. A larger size helps only if queries spill to disk or scan a lot.
+- **Use job clusters and serverless** for scheduled pipelines, and spot or preemptible instances for fault-tolerant Spark work.
+- **Make pipelines incremental.** Replacing full refreshes with incremental models or CDC merges often cuts transformation cost by 5 to 10 times.
+- **Fix the top queries.** Usually 20 queries drive most of the spend. Look for full scans, exploding joins, `SELECT *` in BI, and dashboards refreshing every 5 minutes for nobody.
+- **Prune data.** Partitioning, clustering or liquid clustering, and file compaction so queries read less data.
+- **Materialise wisely.** Pre-aggregate hot dashboards, but audit materialised views and serverless features (auto-clustering, search optimisation, Snowpipe), which bill continuously in the background.
+
+**4. Storage and data movement**
+
+- Lifecycle rules for raw landing zones, tiering cold data to infrequent-access or archive classes.
+- Shorten time travel and fail-safe retention on transient or staging tables. Vacuum or expire snapshots on lakehouse tables.
+- Drop unused tables. Query-history access logs reveal tables nobody has read in 90 days.
+- Watch egress: cross-region or cross-cloud reads and replication can quietly dominate the bill.
+
+**5. Commercial levers**
+
+Committed-use discounts or capacity contracts once usage is stable. Re-benchmark engines for heavy workloads. Moving one large transformation from a warehouse to Spark on a lakehouse, or the reverse, can change costs dramatically.
+
+**Pitfalls:** chasing small storage savings while compute dominates, optimising without unit metrics (so growth looks like waste), and guardrails so strict they break production. Pair hard limits on dev with alert-first limits on prod.
+
+### 4.44 How would you design a real-time clickstream analytics pipeline for a large e-commerce site?
+
+A good answer goes **requirements → ingestion → processing → storage → serving → late data → scaling → monitoring**. The standard design: SDKs send events to a collector, the collector writes to Kafka, Flink (or Spark Structured Streaming) enriches and aggregates the stream, a real-time OLAP store serves fresh metrics, and an Iceberg or Delta lakehouse holds the full history for batch analytics and ML.
+
+**1. Requirements (clarify first)**
+
+- **Scale:** for example 50 million daily users, about 2 billion events per day, peaks of 200k events per second during sales, 1 to 2 KB per event, so roughly 3 to 4 TB per day raw.
+- **Use cases and freshness:** live dashboards (conversion, revenue, funnel) under 10 seconds; personalisation features under 1 second; daily reporting and ML on full history.
+- **Correctness:** at-least-once delivery plus deduplication; exact revenue numbers must reconcile with the orders database.
+- **Privacy:** consent flags, PII minimisation, deletion support.
+
+**2. Ingestion**
+
+- Web and mobile SDKs batch events and send them to a stateless **collector** behind a load balancer. The collector validates against a schema registry (Avro or Protobuf), adds server timestamp and IP-derived geo, and drops or anonymises fields if consent is missing.
+- Events go to **Kafka** (or Kinesis or Pub/Sub), keyed by `session_id` or `user_id` so each session stays in order within a partition. Partitions are sized for peak (for example 256+), with replication factor 3 and 7-day retention for replay.
+- Invalid events go to a **dead-letter topic**, not into the void.
+- Each event carries a client-generated `event_id` for deduplication.
+
+**3. Stream processing (Flink)**
+
+- **Dedup** on `event_id` with keyed state and TTL (for example 24 hours).
+- **Enrich**: bot filtering, user-agent parsing, joining product and campaign dimensions from compacted Kafka topics or broadcast state.
+- **Sessionise** with session windows (30-minute inactivity gap).
+- **Aggregate** with event-time tumbling windows (1 minute) for KPIs, and compute real-time features (views in last 5 minutes per user).
+- Checkpoint to object storage with exactly-once sinks (transactional Kafka producers, idempotent upserts).
+
+**4. Storage and serving**
+
+| Layer | Technology | Purpose |
+| --- | --- | --- |
+| Raw event log | Iceberg/Delta bronze (via Flink or Kafka Connect sink, commits every 1 to 5 min) | Full history, replay, compliance |
+| Curated | Silver sessions, gold funnels (batch or incremental) | BI, experimentation, ML training |
+| Real-time OLAP | Apache Pinot, Druid or ClickHouse | Sub-second dashboard queries on fresh data |
+| Low-latency features | Redis or online feature store | Personalisation and recommendations |
+
+**5. Late and out-of-order data**
+
+- Use **event time** with watermarks (for example 2 minutes of allowed lateness). Mobile clients that were offline can send events hours late.
+- Moderately late events update window results via upserts into the OLAP store. Very late events go to a side output that is written to the lakehouse, and nightly batch jobs recompute the affected partitions. Batch is the source of truth for reporting, streaming for freshness.
+- Watch for client clock skew: keep both client and server timestamps, and clamp obviously wrong values.
+
+**6. Scaling and resilience**
+
+- Collectors and Flink scale horizontally. Kafka partitions cap parallelism, so provision for peak.
+- Use hot-key mitigation (for example a viral product page) with key salting and two-stage aggregation.
+- Backpressure: Kafka absorbs bursts, so consumer lag grows instead of losing data. Autoscale Flink on lag.
+- Replay: reprocess from Kafka retention or the bronze table after a bug fix.
+
+**7. Monitoring**
+
+- Pipeline health: consumer lag, checkpoint duration and failures, end-to-end latency (event time to queryable), DLQ rate.
+- Data health: event volume against expected baseline by platform and event type, schema violations, null rates, and a daily reconciliation of streamed revenue against the orders database.
+- Alerts that page on lag or freshness SLO breaches, not on every spike.
+
+**Trade-offs to mention:** Kappa (one streaming codebase plus replay) versus Lambda (streaming for speed, batch for correctness). Paying for a real-time OLAP store only for genuinely live use cases. And stating explicitly that sub-second personalisation and 10-second dashboards are different SLOs with different paths.
+
+### 4.45 How would you design a data platform for a mid-size company from scratch, and what would you build vs buy?
+
+For a mid-size company (say 200 to 2,000 employees, a data team of 5 to 20, terabytes rather than petabytes), the right platform is mostly **bought and assembled**, with engineering time spent on data modelling, quality and business value. Build only what differentiates the business or what no product does well. Start with use cases and constraints, not tools.
+
+**1. Start with requirements**
+
+- **Use cases for the first 12 months:** management reporting, product analytics, finance reconciliation, maybe one ML use case such as churn or demand forecasting.
+- **Sources:** SaaS tools (CRM, ads, payments), one or two OLTP databases, event tracking.
+- **Constraints:** cloud provider already in use, data residency, compliance (GDPR, SOC 2), budget, and team skills (SQL-heavy or Python-heavy).
+- **Non-functional needs:** freshness (daily vs hourly vs real-time), number of users, uptime expectations.
+
+**2. Reference architecture**
+
+| Layer | Default choice | Build or buy |
+| --- | --- | --- |
+| Ingestion (SaaS) | Fivetran, Airbyte or cloud-native connectors | Buy; connectors are commodity |
+| Ingestion (databases) | Managed CDC (Debezium on managed Kafka, or vendor CDC) | Buy or configure |
+| Events | Segment, RudderStack or Snowplow | Buy; build only for unusual scale or privacy needs |
+| Storage and compute | Snowflake, BigQuery or Databricks (lakehouse on Iceberg/Delta) | Buy |
+| Transformation | dbt with medallion-style layers | Adopt open source; build the models |
+| Orchestration | Airflow (managed), Dagster or Prefect, or platform-native jobs | Buy managed |
+| Quality and observability | dbt tests, plus an observability tool if needed | Mostly buy or configure |
+| Catalog and governance | Platform catalog (Unity, Horizon, Dataplex) | Buy; build classification rules |
+| BI and semantic layer | Looker, Power BI, or a semantic layer plus BI tool | Buy; build certified metrics |
+| ML | Platform ML tools, MLflow, a feature store only if needed | Buy or adopt; build models |
+
+**3. What to build**
+
+- The **data models** themselves: conformed dimensions, core facts, and certified metrics. This is where the business value is.
+- **Conventions and templates:** naming, layering, a dbt project structure, CI checks, and pipeline templates so new sources follow one pattern.
+- **Glue and automation:** Terraform for all infrastructure, CI/CD, cost dashboards, and access provisioning workflows.
+- **Domain-specific logic** no vendor understands, such as a pricing engine or proprietary scoring.
+
+**4. Decision criteria for build vs buy**
+
+- Is it a **differentiator**? If not, buy.
+- **Total cost of ownership:** a "free" open-source tool needs on-call engineers. One engineer at about \$150k a year is often more expensive than the SaaS licence it replaces.
+- **Lock-in and exit cost:** prefer open formats (Parquet, Iceberg or Delta), SQL-based transformations and open orchestration, so the warehouse or vendor can be swapped later.
+- **Team skills and hiring:** pick tools the market knows.
+- **Security and compliance:** SSO, audit logs, data residency, and the vendor's certifications.
+
+**5. Phased rollout**
+
+1. **First 90 days:** ingestion for the top sources, warehouse or lakehouse, dbt, orchestration, and one high-value dashboard trusted by leadership. Set up IaC, CI and access control from day one.
+2. **Months 3 to 9:** data quality tests and observability, a catalog, cost monitoring, self-service for analysts, and a semantic layer for key metrics.
+3. **Months 9 to 18:** streaming only where a use case needs it, ML platform capabilities, data contracts with source teams, and domain ownership if the organisation is large enough.
+
+**Common mistakes:** building a Kubernetes-plus-Spark platform when a managed warehouse would do; buying ten tools before having one trusted metric; skipping governance until an audit forces it; and having no owner for each dataset. A senior candidate frames success in business terms: time to answer a new question, trust in the numbers, and cost per insight, not in the number of tools deployed.
 
 ---
 

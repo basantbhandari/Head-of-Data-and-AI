@@ -4,7 +4,7 @@ _Part II — Data Engineering_
 
 Relational fundamentals, SQL, indexing, normalization, dimensional modeling and NoSQL trade-offs.
 
-This chapter contains **37 questions**.
+This chapter contains **49 questions**.
 
 ## Contents
 
@@ -45,6 +45,18 @@ This chapter contains **37 questions**.
 - **5.35** [What is the difference between UNION and UNION ALL?](#535-what-is-the-difference-between-union-and-union-all)
 - **5.36** [Assuming you have a two-column table of users and their friends coupled with a two-column table of users and their liked pages. Write a SQL query to make recommendations using pages that your friends have liked when it should not recommend pages that you have liked.](#536-assuming-you-have-a-two-column-table-of-users-and-their-friends-coupled-with-a-two-column-table-of-users-and-their-liked-pages-write-a-sql-query-to-make-recommendations-using-pages-that-your-friends-have-liked-when-it-should-not-recommend-pages-that-you-have-liked)
 - **5.37** [When can SQL indexing make a SELECT query slower?](#537-when-can-sql-indexing-make-a-select-query-slower)
+- **5.38** [Compare Kimball, Inmon and Data Vault modeling approaches. When would you choose each?](#538-compare-kimball-inmon-and-data-vault-modeling-approaches-when-would-you-choose-each)
+- **5.39** [What is the grain of a fact table, and what are transaction, periodic snapshot and accumulating snapshot fact tables?](#539-what-is-the-grain-of-a-fact-table-and-what-are-transaction-periodic-snapshot-and-accumulating-snapshot-fact-tables)
+- **5.40** [What are conformed dimensions and the bus matrix, and why do they matter?](#540-what-are-conformed-dimensions-and-the-bus-matrix-and-why-do-they-matter)
+- **5.41** [How do you implement an SCD Type 2 dimension with a MERGE statement?](#541-how-do-you-implement-an-scd-type-2-dimension-with-a-merge-statement)
+- **5.42** [How do you solve a "gaps and islands" problem in SQL?](#542-how-do-you-solve-a-gaps-and-islands-problem-in-sql)
+- **5.43** [How would you sessionize clickstream events in SQL with a 30-minute inactivity timeout?](#543-how-would-you-sessionize-clickstream-events-in-sql-with-a-30-minute-inactivity-timeout)
+- **5.44** [How do you deduplicate rows and keep only the latest record per key?](#544-how-do-you-deduplicate-rows-and-keep-only-the-latest-record-per-key)
+- **5.45** [What are transaction isolation levels and the anomalies each prevents? How does MVCC work?](#545-what-are-transaction-isolation-levels-and-the-anomalies-each-prevents-how-does-mvcc-work)
+- **5.46** [How do you read a query execution plan, and how do nested loop, hash and merge joins differ?](#546-how-do-you-read-a-query-execution-plan-and-how-do-nested-loop-hash-and-merge-joins-differ)
+- **5.47** [What are the common NULL pitfalls in SQL?](#547-what-are-the-common-null-pitfalls-in-sql)
+- **5.48** [How do partitioning and clustering work in cloud data warehouses like BigQuery and Snowflake, and how do they enable pruning?](#548-how-do-partitioning-and-clustering-work-in-cloud-data-warehouses-like-bigquery-and-snowflake-and-how-do-they-enable-pruning)
+- **5.49** [How would you write a cohort retention query?](#549-how-would-you-write-a-cohort-retention-query)
 
 ---
 
@@ -1211,6 +1223,650 @@ WHERE NOT EXISTS (
   SELECT ...;
   ```
 - Check whether the optimizer chooses **Sequential Scan, Index Scan, or Index Only Scan**.
+
+### 5.38 Compare Kimball, Inmon and Data Vault modeling approaches. When would you choose each?
+
+All three answer the same question: how to turn many operational sources into a trustworthy analytical layer. They differ in where the integration happens and who the model is optimized for. Kimball optimizes for business users and query speed. Inmon optimizes for one normalized, integrated enterprise truth. Data Vault optimizes for auditability, parallel loading and absorbing change.
+
+**Kimball (bottom-up, dimensional)**
+
+- Build star schemas one business process at a time (orders, shipments, payments), tied together by conformed dimensions on a bus matrix.
+- The warehouse *is* the collection of dimensional marts. There is no separate normalized layer.
+- Strength: fast time to value, intuitive for BI tools and analysts, good query performance.
+- Weakness: hard to retrofit when sources or business rules change a lot. Without strong governance of conformed dimensions, you get inconsistent marts.
+
+**Inmon (top-down, Corporate Information Factory)**
+
+- Build a normalized (roughly 3NF), subject-oriented enterprise data warehouse first. Then derive departmental dimensional marts from it.
+- Strength: one integrated, non-redundant model of the enterprise. It is a strong base for many downstream consumers.
+- Weakness: long upfront modeling effort, slower delivery, and many joins for analysts unless marts exist.
+
+**Data Vault 2.0 (hybrid, raw-then-business)**
+
+- **Hubs** hold unique business keys. **Links** hold relationships between hubs. **Satellites** hold descriptive attributes with full history. Keys are usually hashes of business keys, so tables can load in parallel without a central sequence.
+- Loading is insert-only, so every value that ever arrived is kept with its load timestamp and record source. A raw vault stores data as received. A business vault adds derived rules. Dimensional marts (often views) sit on top for consumption.
+- Strength: auditability, resilience to new sources, easy automation (dbt packages and code generators), parallel loading.
+- Weakness: many tables and joins, a steep learning curve, and you still need a dimensional layer for users. On a small team it is overkill.
+
+| Aspect | Kimball | Inmon | Data Vault 2.0 |
+| --- | --- | --- | --- |
+| Core model | Star schemas | 3NF EDW plus marts | Hubs, links, satellites plus marts |
+| Delivery | Incremental, fast | Slow upfront | Medium; automation helps |
+| History | SCD types in dimensions | In EDW design | Native, insert-only |
+| Handles source churn | Poorly | Moderately | Very well |
+| End-user friendliness | High | Low (EDW), high (marts) | Low (vault), high (marts) |
+
+**How to decide**
+
+- **Kimball:** most analytics teams with a handful of sources, a strong BI focus and a need to ship quickly. This is the default for a modern dbt and cloud warehouse stack.
+- **Inmon-style normalized core:** a large enterprise where many systems (not only BI) consume an integrated master model, and where the business has the patience for upfront design.
+- **Data Vault:** regulated industries (banking, insurance, healthcare) needing full audit trails, dozens of sources that change often, or mergers bringing new systems regularly.
+
+In practice, many mature platforms are hybrids. The lakehouse Bronze layer holds raw data, a Data Vault or normalized Silver layer handles integration, and Kimball stars in Gold serve consumption. The senior answer is to pick the lightest approach that meets the audit and change requirements, not the most elaborate one.
+
+### 5.39 What is the grain of a fact table, and what are transaction, periodic snapshot and accumulating snapshot fact tables?
+
+The **grain** is a precise business statement of what one row in a fact table represents, for example "one row per order line per order" or "one row per account per day". Declaring the grain comes before choosing dimensions or measures. Every dimension and fact must be true at that grain, and grains must never be mixed in one table.
+
+**Why grain matters**
+
+- It decides which dimensions are possible. A daily account snapshot cannot carry a `transaction_type` dimension.
+- It decides which measures are additive. Mixing order-header totals with line amounts double-counts.
+- Choose the **lowest atomic grain** the source supports. You can always aggregate up, but you can never drill below what you stored.
+
+**The three fact table types**
+
+| Type | Grain | Row lifecycle | Typical measures | Example |
+| --- | --- | --- | --- | --- |
+| Transaction | One row per event | Insert only | Fully additive (amount, quantity) | Each POS line item, each click |
+| Periodic snapshot | One row per entity per period | Insert one row per period | Semi-additive balances and levels | Daily account balance, monthly inventory |
+| Accumulating snapshot | One row per process instance | Inserted, then updated as milestones occur | Milestone dates, lag durations, counts | Order fulfillment: ordered, picked, shipped, delivered |
+
+**Transaction fact tables**
+
+- The most common type and the most granular. Rows appear only when something happens, so sparse activity means sparse rows.
+- Answers "what happened" questions, but "what was the state on date X" needs a scan of all history.
+
+**Periodic snapshot fact tables**
+
+- A row exists for every entity in every period, *even when nothing happened*. This makes the table dense and predictable.
+- Balances are **semi-additive**: you can sum across accounts but not across time. Across time you take the period-end value or an average.
+- Example: `fact_account_daily(account_key, date_key, balance, txn_count)`.
+
+**Accumulating snapshot fact tables**
+
+- Models a pipeline with a defined start and end. It has several date foreign keys (role-playing date dimensions such as `order_date_key`, `ship_date_key`, `delivery_date_key`).
+- Rows are **updated** as each milestone is reached, and lag facts like `days_to_ship` are filled in.
+- Great for funnel and SLA analysis ("average days from approval to funding"). It is awkward when processes loop back or have no fixed milestones.
+
+**Production considerations**
+
+- Accumulating snapshots need `MERGE`/update logic. On lakehouse formats this means file rewrites, so partition carefully or rebuild from the transaction fact.
+- Many teams store the transaction fact as the system of record and **derive** snapshots from it. This keeps one source of truth and makes reprocessing simple.
+- A fourth pattern worth mentioning is the **factless fact table** (see 5.26), which records events or coverage with no numeric measure.
+
+### 5.40 What are conformed dimensions and the bus matrix, and why do they matter?
+
+A **conformed dimension** is one dimension (same keys, same attribute names, same values and definitions) shared by several fact tables, or a strict subset of one. The **bus matrix** is the planning grid that shows which business processes (rows) use which conformed dimensions (columns). Together they are what turns separate star schemas into one integrated warehouse instead of a set of data silos.
+
+**Conformed dimensions**
+
+- `dim_customer`, `dim_product` and `dim_date` are defined once and reused by `fact_orders`, `fact_returns` and `fact_support_tickets`.
+- **Shrunken conformed dimensions** are allowed. A `dim_month` derived from `dim_date`, or a `dim_brand` rolled up from `dim_product`, conforms if its attributes and values match the base dimension exactly.
+- **Conformed facts** are the companion idea: a measure such as `net_revenue` must have the same definition everywhere it appears, or it must be renamed.
+
+**Why it matters: drill-across**
+
+Because both facts share the same dimension values, you can query each fact separately at a common grain and join the results. This is called drilling across.
+
+```sql
+WITH sales AS (
+  SELECT p.category, SUM(f.net_amount) AS revenue
+  FROM fact_orders f JOIN dim_product p ON f.product_key = p.product_key
+  GROUP BY p.category
+),
+returns AS (
+  SELECT p.category, SUM(r.refund_amount) AS refunds
+  FROM fact_returns r JOIN dim_product p ON r.product_key = p.product_key
+  GROUP BY p.category
+)
+SELECT s.category, s.revenue, r.refunds, r.refunds / NULLIF(s.revenue, 0) AS return_rate
+FROM sales s LEFT JOIN returns r USING (category);
+```
+
+Never join two fact tables directly row to row. Their grains differ and the join fans out. Aggregate each one to the shared dimension grain first.
+
+**The bus matrix**
+
+| Business process | Date | Customer | Product | Store | Promotion | Employee |
+| --- | --- | --- | --- | --- | --- | --- |
+| Retail sales | X | X | X | X | X | X |
+| Returns | X | X | X | X |  | X |
+| Inventory snapshot | X |  | X | X |  |  |
+| Support tickets | X | X | X |  |  | X |
+
+- It is the enterprise architecture blueprint *and* the delivery roadmap. Each row is a deliverable mart. The columns show which dimensions must be built once and governed.
+- Columns used by many rows (Date, Customer, Product) are the highest-value conformance investments.
+
+**What goes wrong without them**
+
+- Marketing's "active customer" and Finance's "active customer" disagree, and executives stop trusting dashboards.
+- Each team builds its own `dim_customer` with different keys, so cross-process analysis needs fragile mapping tables.
+- In a data mesh, conformed dimensions become shared domain data products with clear ownership. The governance problem does not disappear just because ownership is distributed.
+
+**Senior angle:** conformance is mainly an organizational problem. It needs a data steward per dimension, agreed definitions in a semantic layer or metrics catalog, and tests that fail when values drift.
+
+### 5.41 How do you implement an SCD Type 2 dimension with a MERGE statement?
+
+The standard trick is to `MERGE` a staged change set that contains **each changed key twice**: once to match and expire the current row, and once with a NULL merge key so that it falls into `WHEN NOT MATCHED` and inserts the new version. Brand-new keys appear once and are inserted. Unchanged keys are filtered out before the merge so they cost nothing.
+
+**Target table**
+
+```sql
+CREATE TABLE dim_customer (
+  customer_sk   BIGINT GENERATED ALWAYS AS IDENTITY,
+  customer_id   VARCHAR NOT NULL,      -- natural key
+  name          VARCHAR,
+  city          VARCHAR,
+  row_hash      VARCHAR,               -- hash of tracked attributes
+  valid_from    TIMESTAMP NOT NULL,
+  valid_to      TIMESTAMP NOT NULL DEFAULT '9999-12-31',
+  is_current    BOOLEAN NOT NULL DEFAULT TRUE
+);
+```
+
+**The MERGE (ANSI-style; works with minor changes in Snowflake, Databricks, BigQuery, SQL Server, PostgreSQL 15+)**
+
+```sql
+MERGE INTO dim_customer t
+USING (
+  -- 1) rows that will expire existing versions or insert brand-new keys
+  SELECT s.customer_id AS merge_key, s.*
+  FROM stg_customer s
+  UNION ALL
+  -- 2) a second copy of CHANGED rows with a NULL key, forcing an insert
+  SELECT NULL AS merge_key, s.*
+  FROM stg_customer s
+  JOIN dim_customer d
+    ON d.customer_id = s.customer_id AND d.is_current
+  WHERE d.row_hash <> s.row_hash
+) src
+ON t.customer_id = src.merge_key AND t.is_current
+WHEN MATCHED AND t.row_hash <> src.row_hash THEN
+  UPDATE SET valid_to = src.change_ts, is_current = FALSE
+WHEN NOT MATCHED THEN
+  INSERT (customer_id, name, city, row_hash, valid_from, valid_to, is_current)
+  VALUES (src.customer_id, src.name, src.city, src.row_hash,
+          src.change_ts, '9999-12-31', TRUE);
+```
+
+**How each case is handled**
+
+- **New key:** no current row matches, so it is inserted as current.
+- **Changed key:** copy 1 matches and the current row is closed with `valid_to = change_ts`. Copy 2 has a NULL key, cannot match, and is inserted as the new current row.
+- **Unchanged key:** copy 1 matches but the `row_hash` condition is false, so nothing happens. Copy 2 is never generated.
+
+**Design choices that matter**
+
+- **Hash the tracked columns** (for example `md5(concat_ws('|', coalesce(name,''), coalesce(city,'')))`). Coalesce NULLs first, or a change from NULL to a value is missed.
+- Use a **high-date sentinel** (`9999-12-31`) instead of NULL for `valid_to`. Point-in-time joins then become a simple `BETWEEN` without NULL handling.
+- Use **half-open intervals**: `valid_from <= ts AND ts < valid_to`. This avoids double matches at boundaries.
+- **Deduplicate the staging set** to one row per key per load (see 5.44). Otherwise MERGE fails with "multiple source rows matched", or two versions become current.
+- Mix SCD types per column: Type 1 columns (such as a corrected spelling) are updated in place across all versions, while Type 2 columns create versions.
+
+**Late-arriving changes**
+
+A change with an effective timestamp *older* than the current version breaks the simple pattern. Options:
+
+- **Reject and reprocess:** detect `change_ts < current.valid_from` and route the row to a correction job.
+- **Splice:** find the version whose interval contains the late timestamp, close it at that time, insert the late version with `valid_to` set to the next version's `valid_from`, and re-key any facts that fall in the affected window.
+- **Rebuild:** in a lakehouse, it is often simpler and safer to recompute the dimension for the affected keys from the full change log with window functions, using `LEAD(change_ts)` to set `valid_to`. This is idempotent by construction.
+
+dbt snapshots implement this pattern for you (`dbt_valid_from`, `dbt_valid_to`), and Databricks Lakeflow offers `AUTO CDC ... STORED AS SCD TYPE 2` with ordering by a sequence column. Interviewers still expect you to be able to write the MERGE by hand.
+
+### 5.42 How do you solve a "gaps and islands" problem in SQL?
+
+A gaps-and-islands problem asks you to find runs of consecutive values (islands) and breaks between them (gaps): consecutive login days, uninterrupted subscription periods, sensor outages. The classic solution subtracts a `ROW_NUMBER()` from the ordered value. Within a consecutive run, both increase by one each step, so the difference stays constant and becomes a group identifier.
+
+**Example: longest streak of consecutive login days per user**
+
+```sql
+WITH days AS (               -- 1) one row per user per day (dedupe multiple logins)
+  SELECT DISTINCT user_id, CAST(login_ts AS DATE) AS login_date
+  FROM logins
+),
+grouped AS (                 -- 2) date minus row number is constant inside a streak
+  SELECT user_id, login_date,
+         login_date - CAST(ROW_NUMBER() OVER (
+             PARTITION BY user_id ORDER BY login_date) AS INT) AS grp
+  FROM days
+),
+islands AS (                 -- 3) collapse each island
+  SELECT user_id, grp,
+         MIN(login_date) AS streak_start,
+         MAX(login_date) AS streak_end,
+         COUNT(*)        AS streak_days
+  FROM grouped
+  GROUP BY user_id, grp
+)
+SELECT user_id, MAX(streak_days) AS longest_streak
+FROM islands
+GROUP BY user_id;
+```
+
+How it works for one user:
+
+| login_date | row_number | login_date minus row_number |
+| --- | --- | --- |
+| Jan 1 | 1 | Dec 31 |
+| Jan 2 | 2 | Dec 31 |
+| Jan 3 | 3 | Dec 31 |
+| Jan 7 | 4 | Jan 3 |
+| Jan 8 | 5 | Jan 3 |
+
+Two islands: Jan 1 to 3 (three days) and Jan 7 to 8 (two days).
+
+**Alternative: LAG plus running sum (more flexible)**
+
+```sql
+SELECT user_id, login_date,
+       SUM(CASE WHEN login_date = prev_date + 1 THEN 0 ELSE 1 END)
+         OVER (PARTITION BY user_id ORDER BY login_date) AS island_id
+FROM (
+  SELECT user_id, login_date,
+         LAG(login_date) OVER (PARTITION BY user_id ORDER BY login_date) AS prev_date
+  FROM days
+) t;
+```
+
+Each row that does not continue the previous one starts a new island, and the running sum numbers the islands. Use this form when the "consecutive" rule is more complex than plus one: a tolerance of up to two days, business days only, or timestamps with a threshold (which is exactly how sessionization works, see 5.43).
+
+**Finding the gaps instead**
+
+```sql
+SELECT user_id, prev_date + 1 AS gap_start, login_date - 1 AS gap_end
+FROM (SELECT user_id, login_date,
+             LAG(login_date) OVER (PARTITION BY user_id ORDER BY login_date) AS prev_date
+      FROM days) t
+WHERE login_date > prev_date + 1;
+```
+
+**Pitfalls**
+
+- **Duplicates break the ROW_NUMBER trick.** Two logins on the same day give the same date two different row numbers, which splits the island. Deduplicate first, or use `DENSE_RANK`.
+- **Date arithmetic is dialect-specific**: `DATEADD(day, -rn, d)` in Snowflake and SQL Server, `DATE_SUB(d, INTERVAL rn DAY)` in BigQuery, plain `date - int` in PostgreSQL.
+- **Time zones:** "a day" must be defined in the user's local zone, or streaks break at midnight UTC.
+- **Performance:** both methods need one sort per partition. On billions of rows, partition and cluster by `user_id` and date, or compute streaks incrementally (carry the open streak forward each day) instead of rescanning history.
+
+### 5.43 How would you sessionize clickstream events in SQL with a 30-minute inactivity timeout?
+
+Sessionization is a gaps-and-islands problem on timestamps. Order each user's events by time, flag an event as a session start when the gap since the previous event is more than 30 minutes (or there is no previous event), and take a running sum of those flags to get a session number.
+
+```sql
+WITH ordered AS (
+  SELECT user_id, event_ts, event_name, page_url,
+         LAG(event_ts) OVER (PARTITION BY user_id ORDER BY event_ts, event_id) AS prev_ts
+  FROM events
+),
+flagged AS (
+  SELECT *,
+         CASE WHEN prev_ts IS NULL
+                OR event_ts > prev_ts + INTERVAL '30 minutes'
+              THEN 1 ELSE 0 END AS is_new_session
+  FROM ordered
+),
+numbered AS (
+  SELECT *,
+         SUM(is_new_session) OVER (
+           PARTITION BY user_id ORDER BY event_ts, event_id
+           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS session_seq
+  FROM flagged
+)
+SELECT user_id,
+       user_id || '-' || CAST(session_seq AS VARCHAR) AS session_id,
+       MIN(event_ts)                                  AS session_start,
+       MAX(event_ts)                                  AS session_end,
+       COUNT(*)                                       AS events,
+       MIN_BY(page_url, event_ts)                     AS landing_page   -- Snowflake/Databricks; use ARRAY_AGG ... LIMIT 1 in BigQuery
+FROM numbered
+GROUP BY user_id, session_seq;
+```
+
+**Details that interviewers probe**
+
+- **Tie-breaker in the ORDER BY.** Events with identical timestamps need a deterministic secondary key (`event_id`), or session numbers can change between runs.
+- **Explicit frame.** `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` avoids the default `RANGE` frame, which treats ties as peers and gives every tied row the same running total.
+- **Stable session IDs.** `user_id` plus a sequence number shifts if earlier events arrive late. A hash of `user_id` and `session_start` is more stable, but still changes if a late event lands before the start.
+- **Extra session boundaries.** Many products also start a new session at midnight, when the marketing source (UTM campaign) changes, or after a maximum session length. Add these as further `OR` conditions in the flag.
+- **Identity stitching.** Anonymous `device_id` events often need mapping to `user_id` after login *before* sessionizing. Otherwise one visit splits into two sessions.
+
+**Incremental processing in production**
+
+Re-sessionizing all history every day is expensive. The usual pattern:
+
+1. Process only new events plus a **lookback window** (for example, the last two hours of already-processed events per active user). A session that was open at the last run can then continue or merge.
+2. `MERGE` the recomputed sessions for affected users, replacing the sessions that overlap the window.
+3. Accept that very late events (beyond the lookback) either open a separate session or trigger a targeted backfill. Decide which, and document it.
+
+**Streaming alternative:** Spark Structured Streaming (`session_window`), Flink and Beam provide native session windows with a gap duration and watermarks. Use them when sessions must be available within minutes. Use the SQL version for batch analytics and as a reference implementation to reconcile against.
+
+**Performance:** the query needs one shuffle and sort by `user_id` and time. Partition the events table by date and cluster by `user_id`, and filter to the date range plus lookback, so the warehouse prunes most of the data.
+
+### 5.44 How do you deduplicate rows and keep only the latest record per key?
+
+Rank the rows within each key by recency with `ROW_NUMBER()` and keep rank 1. In warehouses that support `QUALIFY` (Snowflake, BigQuery, Databricks, DuckDB, Teradata), this is a single clean statement. Elsewhere, wrap the window function in a subquery.
+
+```sql
+-- Snowflake / BigQuery / Databricks
+SELECT *
+FROM raw_customers
+QUALIFY ROW_NUMBER() OVER (
+          PARTITION BY customer_id
+          ORDER BY updated_at DESC, _ingested_at DESC, _source_offset DESC
+        ) = 1;
+
+-- Portable (PostgreSQL, SQL Server, etc.)
+SELECT *
+FROM (
+  SELECT r.*,
+         ROW_NUMBER() OVER (PARTITION BY customer_id
+                            ORDER BY updated_at DESC, _ingested_at DESC) AS rn
+  FROM raw_customers r
+) t
+WHERE rn = 1;
+```
+
+**Tie-breakers are the senior detail**
+
+- If two rows share the same `updated_at`, `ROW_NUMBER` picks one arbitrarily, and the choice can differ between runs. That makes the pipeline non-deterministic and hard to debug.
+- Always add tie-breakers until the ordering is unique: ingestion time, CDC log sequence number (LSN), Kafka partition and offset, file name and row position.
+- With CDC feeds, order by the **source commit sequence**, not the wall-clock timestamp. Clocks on different source nodes can disagree.
+- Handle **deletes** explicitly: if the latest record is a delete or tombstone (`op = 'D'`), filter it out *after* ranking. If you filter first, an older version comes back to life.
+
+**Choosing the right function**
+
+| Need | Use |
+| --- | --- |
+| Exactly one row per key | `ROW_NUMBER()` |
+| All rows tied for latest | `RANK()` |
+| Latest value of one column only | `MAX_BY(col, updated_at)` / `ARG_MAX` / `ARRAY_AGG(... ORDER BY ... LIMIT 1)[OFFSET(0)]` |
+| Exact duplicate rows (all columns equal) | `SELECT DISTINCT` or `GROUP BY` all columns |
+
+**PostgreSQL shortcut:** `SELECT DISTINCT ON (customer_id) * FROM raw_customers ORDER BY customer_id, updated_at DESC;`. It is concise and fast with a matching index, but it is PostgreSQL-only.
+
+**Deleting duplicates in place**
+
+```sql
+-- PostgreSQL: delete all but the newest row per key
+DELETE FROM raw_customers r
+USING (
+  SELECT ctid, ROW_NUMBER() OVER (PARTITION BY customer_id
+                                  ORDER BY updated_at DESC) AS rn
+  FROM raw_customers
+) d
+WHERE r.ctid = d.ctid AND d.rn > 1;
+```
+
+In cloud warehouses, in-place deletes are expensive file rewrites. It is usually better to rebuild the table with `CREATE OR REPLACE TABLE ... AS SELECT ... QUALIFY`, or to deduplicate inside the incremental `MERGE` source.
+
+**Production practices**
+
+- Deduplicate as close to ingestion as possible (Bronze to Silver), and do it **before** any `MERGE`. Duplicate source keys make MERGE fail or produce nondeterministic updates.
+- For incremental loads, deduplicate only the new batch and then merge against the target, instead of re-ranking the entire history every run.
+- Add a uniqueness test (dbt `unique`, or a `COUNT(*) > 1` check) on the key in the output model, so a regression is caught rather than silently doubling revenue.
+- Distinguish *technical* duplicates (replays, at-least-once delivery) from *business* duplicates (the same customer under two IDs). The second is an entity-resolution problem, not a `ROW_NUMBER` problem.
+
+### 5.45 What are transaction isolation levels and the anomalies each prevents? How does MVCC work?
+
+Isolation levels define how much one transaction can observe the effects of other concurrent transactions. Stronger levels prevent more anomalies but cost more in blocking, aborts and retries. MVCC (multi-version concurrency control) is how most modern databases provide isolation without readers and writers blocking each other: each transaction reads a consistent snapshot of row versions.
+
+**The anomalies**
+
+- **Dirty read:** reading another transaction's uncommitted write.
+- **Non-repeatable read:** re-reading a row returns a different value because another transaction committed an update in between.
+- **Phantom read:** re-running a range query returns new or missing rows because another transaction inserted or deleted matching rows.
+- **Lost update:** two transactions read, modify and write the same row, and one overwrite silently discards the other.
+- **Write skew:** two transactions read overlapping data, write *different* rows, and together violate an invariant. Classic example: two doctors each check that someone else is on call, then both go off call.
+
+**ANSI levels versus what PostgreSQL actually does**
+
+| Level | Dirty read | Non-repeatable | Phantom | Write skew | PostgreSQL behavior |
+| --- | --- | --- | --- | --- | --- |
+| Read Uncommitted | Possible (ANSI) | Possible | Possible | Possible | Treated as Read Committed |
+| Read Committed | Prevented | Possible | Possible | Possible | **Default.** New snapshot per statement |
+| Repeatable Read | Prevented | Prevented | Possible (ANSI) | Possible | Snapshot isolation. Also prevents phantoms; raises serialization errors on concurrent updates of the same row |
+| Serializable | Prevented | Prevented | Prevented | Prevented | Serializable Snapshot Isolation (SSI). Detects dangerous read/write dependencies and aborts one transaction |
+
+Other engines differ. MySQL InnoDB defaults to Repeatable Read and uses gap locks. SQL Server defaults to locking Read Committed unless snapshot isolation is enabled. Oracle's "Serializable" is snapshot isolation, so it allows write skew. Snowflake supports only Read Committed for table data. Always check the specific engine rather than trusting the ANSI table.
+
+**How MVCC works (PostgreSQL model)**
+
+- Every row version (tuple) carries `xmin` (the creating transaction ID) and `xmax` (the deleting or updating transaction ID).
+- An `UPDATE` does not overwrite. It marks the old version's `xmax` and writes a new version.
+- A transaction takes a **snapshot**: the set of transaction IDs that were committed when it started. A version is visible if its `xmin` is committed in the snapshot and its `xmax` is not.
+- Readers never block writers and writers never block readers. Writers still block other writers on the same row.
+- **Cost:** dead versions pile up and must be removed by `VACUUM`. Long-running transactions hold back the cleanup horizon, which causes table and index bloat. Transaction-ID wraparound must be prevented by freezing. Oracle and MySQL keep old versions in undo logs instead of in the table.
+
+**Practical guidance**
+
+- Read Committed is fine for most OLTP work, but **prevent lost updates explicitly**. Use atomic updates (`SET qty = qty - 1`), `SELECT ... FOR UPDATE`, or optimistic locking with a version column.
+- Use Serializable for invariants that span rows (inventory, bookings, balances), and **always wrap the transaction in retry logic**. Serialization failures (SQLSTATE `40001`) are expected behavior, not bugs.
+- Keep transactions short. Long transactions under MVCC cause bloat. Under Serializable they raise abort rates.
+- In lakehouse table formats (Delta Lake, Iceberg), commits use optimistic concurrency on table snapshots. Concurrent writers to the same files conflict and must retry, which is the same idea at file granularity.
+
+### 5.46 How do you read a query execution plan, and how do nested loop, hash and merge joins differ?
+
+An execution plan is the tree of physical operators the optimizer chose for your SQL. Read it from the innermost or leaf nodes (scans) upward to the root, and compare the optimizer's **estimated** row counts with the **actual** ones. Large misestimates are the root cause of most bad plans, because the join algorithm, join order and memory grants all depend on those estimates.
+
+**Reading a PostgreSQL plan**
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT c.name, SUM(o.amount)
+FROM orders o JOIN customers c ON c.id = o.customer_id
+WHERE o.order_date >= DATE '2026-01-01'
+GROUP BY c.name;
+```
+
+```text
+HashAggregate  (cost=..rows=500) (actual time=..rows=480 loops=1)
+  ->  Hash Join  (rows=20000) (actual rows=1950000)       <- 100x misestimate
+        Hash Cond: (o.customer_id = c.id)
+        ->  Index Scan using orders_date_idx on orders o
+              Index Cond: (order_date >= '2026-01-01')
+              Buffers: shared hit=120 read=48000
+        ->  Hash  ->  Seq Scan on customers c
+```
+
+**What to look for**
+
+- **Estimated versus actual rows** at each node. A 10x or worse gap suggests stale statistics (`ANALYZE`), correlated predicates (extended statistics), or functions hiding a column from the optimizer.
+- **Where the time goes.** Actual time is cumulative per node, and you must multiply by `loops` for inner sides of nested loops.
+- **Buffers read versus hit**, and spills: `Sort Method: external merge Disk` or hash batches greater than 1 mean `work_mem` was exceeded.
+- **Scan type:** Seq Scan, Index Scan, Index Only Scan (check heap fetches) or Bitmap Heap Scan, and whether filters are applied as index conditions or as post-scan filters.
+- In cloud warehouses, use the query profile instead: partitions scanned versus total, bytes spilled to remote storage, exploding joins (output rows much larger than input), and skewed workers.
+
+**The three join algorithms**
+
+| Algorithm | How it works | Best when | Cost profile | Weakness |
+| --- | --- | --- | --- | --- |
+| Nested loop | For each outer row, look up matching inner rows (ideally via an index) | Small outer input; indexed inner side; `LIMIT` queries; non-equi joins | About outer rows times the cost of an inner lookup | Disastrous when the outer input is underestimated and is actually large |
+| Hash join | Build a hash table on the smaller input, then probe it with each row of the larger | Large, unsorted inputs; equality joins | About linear in both inputs; needs memory for the build side | Equality joins only; spills to disk if the build side exceeds memory |
+| Merge join | Sort both inputs on the join key (or read them pre-sorted), then walk them together | Inputs already sorted (indexes, clustered keys); very large inputs; also needs sorted output | Linear after sorting; sorting costs n log n | Expensive sorts if inputs are not already ordered |
+
+**Distributed engines add a dimension:** Spark, Snowflake and BigQuery choose between a **broadcast** join (copy the small table to every worker) and a **shuffle/partitioned** hash join (redistribute both sides by key). Skewed keys cause a few tasks to run far longer than the rest. Fixes include salting, Spark AQE skew-join handling, or filtering out hot keys such as NULL.
+
+**Typical fixes, in order**
+
+1. Refresh statistics and fix the misestimate (rewrite non-sargable predicates, add extended statistics).
+2. Add or adjust an index so the right access path exists.
+3. Reduce data earlier (filter or aggregate before the join, prune partitions).
+4. Only as a last resort, use hints or planner settings, and document why. These freeze a plan that may become wrong as data grows.
+
+### 5.47 What are the common NULL pitfalls in SQL?
+
+NULL means "unknown", not "empty" or zero. SQL uses three-valued logic (TRUE, FALSE, UNKNOWN), and `WHERE`, `JOIN ON` and `HAVING` keep only rows that evaluate to TRUE. Most NULL bugs come from forgetting that any comparison with NULL, including `NULL = NULL`, yields UNKNOWN.
+
+**1. `NOT IN` with a NULL in the subquery returns nothing**
+
+```sql
+-- If ANY blocked_users.user_id is NULL, this returns zero rows
+SELECT * FROM users
+WHERE id NOT IN (SELECT user_id FROM blocked_users);
+```
+
+`x NOT IN (1, NULL)` expands to `x <> 1 AND x <> NULL`. The second term is UNKNOWN, so the whole predicate is never TRUE. Use `NOT EXISTS` instead, which behaves correctly and is usually planned as an efficient anti-join:
+
+```sql
+SELECT * FROM users u
+WHERE NOT EXISTS (SELECT 1 FROM blocked_users b WHERE b.user_id = u.id);
+```
+
+**2. `COUNT(*)` versus `COUNT(col)` versus `COUNT(DISTINCT col)`**
+
+- `COUNT(*)` counts rows. `COUNT(col)` counts non-NULL values. `COUNT(DISTINCT col)` ignores NULLs too.
+- A "percentage of users with email" computed as `COUNT(email) / COUNT(*)` is correct. Swapping them silently changes the meaning.
+
+**3. Aggregates ignore NULLs**
+
+- `AVG(score)` averages only non-NULL rows. If NULL actually means zero, the average is inflated. Use `AVG(COALESCE(score, 0))` only when that is the true business meaning.
+- `SUM` over zero rows (or all NULLs) returns NULL, not 0. Wrap it in `COALESCE(SUM(x), 0)` for reports.
+
+**4. NULLs in joins**
+
+- `a.key = b.key` never matches NULL keys, so rows with NULL keys vanish from inner joins and fail to match in outer joins.
+- To treat NULLs as equal, use `IS NOT DISTINCT FROM` (PostgreSQL, Snowflake, Databricks, BigQuery), `<=>` (MySQL and Spark), or `EQUAL_NULL` (Snowflake).
+- In distributed joins, a large number of NULL keys all hash to the same partition and cause **skew**. Filter them out, or salt them, before the join.
+
+**5. Filters on the outer table of a LEFT JOIN**
+
+```sql
+-- Turns the LEFT JOIN into an INNER JOIN: unmatched rows have o.status = NULL
+SELECT ... FROM customers c LEFT JOIN orders o ON o.customer_id = c.id
+WHERE o.status = 'paid';
+-- Correct: put the predicate in the ON clause
+... LEFT JOIN orders o ON o.customer_id = c.id AND o.status = 'paid';
+```
+
+**6. Negations and inequality filters drop NULLs**
+
+`WHERE country <> 'US'` excludes rows where `country` is NULL. Analysts expect them to be included. Write `WHERE country IS DISTINCT FROM 'US'` or `WHERE country <> 'US' OR country IS NULL`.
+
+**7. Other traps**
+
+- `CASE WHEN col = NULL` is never true. Use `IS NULL`.
+- String concatenation with `||` returns NULL if any part is NULL (in PostgreSQL and the standard). Use `CONCAT` or `CONCAT_WS`, or `COALESCE` each part.
+- `GROUP BY`, `DISTINCT` and `UNION` treat all NULLs as one group, which is inconsistent with `=`.
+- Sorting: NULLs sort last ascending in PostgreSQL and Oracle, but first in SQL Server and MySQL. Be explicit with `NULLS FIRST` or `NULLS LAST`.
+- `UNIQUE` constraints usually allow many NULLs (PostgreSQL 15+ offers `NULLS NOT DISTINCT`).
+- Hash-based change detection: `md5(a || b)` becomes NULL when any column is NULL, so changes are missed. Coalesce first.
+
+**Senior practice:** decide in the model what NULL means for each column (unknown, not applicable, or not yet happened). Use explicit "Unknown" members (for example key `-1`) in dimensions so fact foreign keys are never NULL, and add `not_null` tests on keys.
+
+### 5.48 How do partitioning and clustering work in cloud data warehouses like BigQuery and Snowflake, and how do they enable pruning?
+
+Both warehouses store tables as large immutable columnar blocks and keep metadata about each block, including min and max values per column. **Pruning** means using that metadata and the query's filters to skip blocks that cannot contain matching rows. Partitioning and clustering exist to make pruning effective by physically co-locating rows with similar values. Pruning cuts bytes scanned, which is both your latency and, on BigQuery on-demand pricing, your bill.
+
+**BigQuery**
+
+- **Partitioning** splits a table into segments by a `DATE`, `TIMESTAMP` or `DATETIME` column (hourly, daily, monthly or yearly), by ingestion time, or by an integer range. There is a per-table limit on the number of partitions, so very high-cardinality partition keys are not possible.
+- **Clustering** sorts data within each partition (or within an unpartitioned table) by up to **four columns**. Order matters: filters on the first clustering column prune best. BigQuery re-clusters automatically in the background at no charge.
+- Partition pruning is visible *before* the query runs (the dry-run byte estimate is accurate). Clustering pruning happens at run time, so the estimate shows an upper bound and the actual bytes billed are lower.
+- `require_partition_filter = TRUE` rejects queries that do not filter on the partition column. It is a cheap guardrail against accidental full scans.
+
+```sql
+CREATE TABLE analytics.events (
+  event_ts TIMESTAMP, user_id STRING, event_name STRING, country STRING
+)
+PARTITION BY DATE(event_ts)
+CLUSTER BY user_id, event_name
+OPTIONS (require_partition_filter = TRUE, partition_expiration_days = 400);
+```
+
+**Snowflake**
+
+- There are no user-defined partitions. Every table is automatically divided into **micro-partitions** of roughly 50 to 500 MB uncompressed, stored in columnar format, with per-column min and max values, distinct counts and other metadata.
+- Pruning works on any column whose values are naturally ordered by load order. Event tables loaded daily prune well on date with no extra work.
+- When load order does not match filter patterns, define a **clustering key** (`ALTER TABLE events CLUSTER BY (event_date, account_id)`). **Automatic Clustering** then reorganizes micro-partitions in the background, billed as serverless credits.
+- Measure with `SYSTEM$CLUSTERING_INFORMATION` (average clustering depth and overlap) and, more importantly, with the query profile's "partitions scanned versus partitions total".
+
+| Aspect | BigQuery | Snowflake |
+| --- | --- | --- |
+| Coarse unit | Partition (user-defined column) | None; micro-partitions are automatic |
+| Fine organization | Clustering, up to 4 columns, free automatic re-clustering | Optional clustering key, paid Automatic Clustering |
+| Pruning metadata | Partition boundaries plus block-level min and max | Micro-partition min and max per column |
+| Visible in | Bytes processed, execution details | Partitions scanned versus total in the query profile |
+
+**What defeats pruning**
+
+- Wrapping the filter column in a function or cast, such as `WHERE CAST(account_id AS STRING) = '42'` or `WHERE UPPER(country) = 'US'`. The engine can no longer compare the literal with the stored min and max values. Write the predicate directly against the raw column instead.
+- Filtering via a join or a subquery value that is not known at compile time. Some engines can prune dynamically at run time, but not always.
+- Clustering on a very high-cardinality column like a UUID (no value locality), or on a very low-cardinality column like a boolean (everything overlaps).
+- Lots of small, frequent writes that fragment clustering faster than background maintenance can repair.
+
+**How to choose keys:** partition (BigQuery) or lead the clustering key (Snowflake) with the column almost every query filters on, typically event date. Then add one to three columns used in selective filters or joins, ordered from lower to higher cardinality. Do not bother clustering small tables. Snowflake recommends clustering keys mainly for multi-terabyte tables, and on small BigQuery tables the savings are negligible. In Snowflake especially, the maintenance credits can outweigh the scan savings. Validate the choice with real query history, not intuition.
+
+The same concepts apply to lakehouse formats: Iceberg hidden partitioning and sort orders, and Delta Lake liquid clustering, both prune files using column statistics in table metadata.
+
+### 5.49 How would you write a cohort retention query?
+
+A cohort retention query groups users by when they first did something (usually signup or first purchase month), then measures what share of each cohort is still active in each following period. The output is the familiar triangle: cohorts as rows, "months since start" as columns, and retention percentages in the cells.
+
+**Monthly retention by signup cohort**
+
+```sql
+WITH cohorts AS (                         -- 1) one row per user: their cohort
+  SELECT user_id, DATE_TRUNC('month', MIN(event_ts)) AS cohort_month
+  FROM events
+  WHERE event_name = 'signup'
+  GROUP BY user_id
+),
+activity AS (                             -- 2) distinct active months per user
+  SELECT DISTINCT user_id, DATE_TRUNC('month', event_ts) AS activity_month
+  FROM events
+  WHERE event_name IN ('session_start', 'purchase')   -- define "active" explicitly
+),
+cohort_activity AS (                      -- 3) month offset since cohort start
+  SELECT c.cohort_month,
+         DATEDIFF('month', c.cohort_month, a.activity_month) AS month_number,
+         a.user_id
+  FROM cohorts c
+  JOIN activity a ON a.user_id = c.user_id
+               AND a.activity_month >= c.cohort_month
+),
+cohort_size AS (
+  SELECT cohort_month, COUNT(*) AS users FROM cohorts GROUP BY cohort_month
+)
+SELECT ca.cohort_month,
+       cs.users                                          AS cohort_users,
+       ca.month_number,
+       COUNT(DISTINCT ca.user_id)                        AS active_users,
+       ROUND(100.0 * COUNT(DISTINCT ca.user_id) / cs.users, 1) AS retention_pct
+FROM cohort_activity ca
+JOIN cohort_size cs USING (cohort_month)
+GROUP BY ca.cohort_month, cs.users, ca.month_number
+ORDER BY ca.cohort_month, ca.month_number;
+```
+
+`DATEDIFF('month', a, b)` is Snowflake and Databricks syntax. In BigQuery use `DATE_DIFF(b, a, MONTH)`. In PostgreSQL use `(EXTRACT(YEAR FROM age(b, a)) * 12 + EXTRACT(MONTH FROM age(b, a)))`, or compute month indexes as `year * 12 + month` and subtract.
+
+Pivot the result in the BI tool, or with conditional aggregation (`MAX(CASE WHEN month_number = 1 THEN retention_pct END) AS m1`, and so on), to get the triangle.
+
+**Definitions to agree on before writing SQL**
+
+- **Cohort event:** signup, first purchase, or first use of a feature. Different events answer different questions.
+- **"Active":** any event, or a meaningful one (purchase, core action)? Counting page views inflates retention.
+- **Classic (bounded) versus rolling (unbounded) retention.** Classic counts users active *in* month N. Rolling counts users active in month N *or later*. Rolling is always at least as high, so label it clearly.
+- **Period:** calendar months are easy to explain but uneven (a user who signs up on the 31st gets one day of "month 0"). Day-number offsets (day 1, 7, 30) from each user's own start date are more precise for product analytics.
+
+**Pitfalls**
+
+- **Incomplete recent cohorts.** The latest cohort has not had time to reach month 6. Show blanks, not zeros, and do not average incomplete cells into a "retention curve".
+- **Missing month 0 or gaps.** Cohorts with zero activity in a month disappear from an inner join. Generate the full cohort-by-offset grid with a date spine and `LEFT JOIN` if you need explicit zeros.
+- **Time zones and late events** shift users between months. Use a consistent business time zone.
+- **Revenue retention** (net revenue retention) uses the same structure but sums revenue instead of counting distinct users. It can exceed 100% through expansion.
+
+**At scale:** precompute a `user_activity_monthly` table (one row per user per active month) incrementally, partitioned by month. The retention query then becomes a cheap aggregation, and adding a new month only touches new data.
 
 ---
 

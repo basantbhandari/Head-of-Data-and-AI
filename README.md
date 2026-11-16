@@ -2,9 +2,9 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,593 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,645 interview questions with worked answers, in 31 chapters across 6 parts._
 
-Last updated 2026-11-15.
+Last updated 2026-11-16.
 
 ---
 
@@ -38,8 +38,8 @@ _The mathematical, statistical and software-engineering bedrock that every other
 |---|---:|
 | 1. [Mathematics, Probability and Statistics](part-1-foundations/01-mathematics-probability-and-statistics.md) | 53 |
 | 2. [Python Engineering](part-1-foundations/02-python-engineering.md) | 95 |
-| 3. [Computer Science and Software Design](part-1-foundations/03-computer-science-and-software-design.md) | 18 |
-| **Part total** | **166** |
+| 3. [Computer Science and Software Design](part-1-foundations/03-computer-science-and-software-design.md) | 26 |
+| **Part total** | **174** |
 
 ### Part II — Data Engineering
 
@@ -47,11 +47,11 @@ _Designing, storing, moving and governing data at scale: the platform that every
 
 | Chapter | Questions |
 |---|---:|
-| 4. [Data Engineering Fundamentals and Architecture](part-2-data-engineering/04-data-engineering-fundamentals-and-architecture.md) | 35 |
-| 5. [SQL, Databases and Data Modeling](part-2-data-engineering/05-sql-databases-and-data-modeling.md) | 37 |
-| 6. [Distributed Processing and Streaming](part-2-data-engineering/06-distributed-processing-and-streaming.md) | 35 |
-| 7. [Pipelines and Orchestration](part-2-data-engineering/07-pipelines-and-orchestration.md) | 19 |
-| **Part total** | **126** |
+| 4. [Data Engineering Fundamentals and Architecture](part-2-data-engineering/04-data-engineering-fundamentals-and-architecture.md) | 45 |
+| 5. [SQL, Databases and Data Modeling](part-2-data-engineering/05-sql-databases-and-data-modeling.md) | 49 |
+| 6. [Distributed Processing and Streaming](part-2-data-engineering/06-distributed-processing-and-streaming.md) | 47 |
+| 7. [Pipelines and Orchestration](part-2-data-engineering/07-pipelines-and-orchestration.md) | 29 |
+| **Part total** | **170** |
 
 ### Part III — Machine Learning
 
@@ -109,7 +109,7 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 44 |
 | **Part total** | **44** |
 
-**Total: 1,593 questions.**
+**Total: 1,645 questions.**
 
 ---
 
