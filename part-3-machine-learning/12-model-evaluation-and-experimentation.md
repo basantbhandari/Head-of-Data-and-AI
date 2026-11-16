@@ -122,7 +122,9 @@ These are standard metrics for evaluating classification models, built from four
 
 ##### Accuracy
 
-`Accuracy = (TP + TN) / (TP + TN + FP + FN)`
+$$
+\text{Accuracy} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}}
+$$
 
 - The fraction of **all correct** predictions — both positives and negatives
 - **Simple and intuitive**, but misleading on **imbalanced datasets**
@@ -132,7 +134,9 @@ These are standard metrics for evaluating classification models, built from four
 
 ##### Precision
 
-`Precision = TP / (TP + FP)`
+$$
+\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}
+$$
 
 - Of all the items the model **predicted as positive**, what fraction were **actually positive**?
 - Answer: "When the model says yes, how often is it right?"
@@ -143,7 +147,9 @@ These are standard metrics for evaluating classification models, built from four
 
 ##### Recall (Sensitivity / True Positive Rate)
 
-`Recall = TP / (TP + FN)`
+$$
+\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}
+$$
 
 - Of all the items that were **actually positive**, what fraction did the model **correctly identify**?
 - Answers: "Of all the real positives, how many did the model catch?"
@@ -154,7 +160,9 @@ These are standard metrics for evaluating classification models, built from four
 
 ##### F1 Score
 
-`F1 = 2 × (Precision × Recall) / (Precision + Recall)`
+$$
+F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
 
 - The **harmonic mean** of precision and recall — combines both into a single number
 - Harmonic mean (rather than simple average) penalizes extreme imbalance between precision and recall — a model with 100% precision but 1% recall gets a low F1, not a mediocre-looking 50%
@@ -175,10 +183,10 @@ These are standard metrics for evaluating classification models, built from four
 
 | Metric | Formula | Answers | Best when... |
 | --- | --- | --- | --- |
-| Accuracy | (TP+TN)/(All) | How often is the model right overall? | Classes are balanced |
-| Precision | TP/(TP+FP) | When it says positive, is it right? | False positives are costly |
-| Recall | TP/(TP+FN) | Did it catch all actual positives? | False negatives are costly |
-| F1 Score | 2·P·R/(P+R) | Balanced measure of both | Need one number, imbalanced data |
+| Accuracy | $(\text{TP} + \text{TN}) / \text{All}$ | How often is the model right overall? | Classes are balanced |
+| Precision | $\text{TP} / (\text{TP} + \text{FP})$ | When it says positive, is it right? | False positives are costly |
+| Recall | $\text{TP} / (\text{TP} + \text{FN})$ | Did it catch all actual positives? | False negatives are costly |
+| F1 Score | $2PR / (P + R)$ | Balanced measure of both | Need one number, imbalanced data |
 
 ##### Relevance to LLM Evaluation
 
@@ -205,7 +213,7 @@ These are standard metrics for evaluating classification models, built from four
 
 **Multi-class version:**
 
-- Expands to an N×N grid; diagonal = correct, off-diagonal shows which specific classes get confused with each other
+- Expands to an $N \times N$ grid; diagonal = correct, off-diagonal shows which specific classes get confused with each other
 
 **Used for:** classification-style LLM tasks (moderation, intent detection, sentiment analysis) — not applicable to open-ended generation.
 
@@ -213,14 +221,14 @@ These are standard metrics for evaluating classification models, built from four
 
 ##### Common Classification Evaluation Metrics
 
-- **Accuracy**: `(TP+TN)/Total` — overall correctness; misleading on imbalanced data
-- **Precision**: `TP/(TP+FP)` — of predicted positives, how many were correct
-- **Recall**: `TP/(TP+FN)` — of actual positives, how many were caught
-- **F1 Score**: `2·P·R/(P+R)` — harmonic mean of precision & recall
+- **Accuracy**: $(\text{TP} + \text{TN}) / \text{Total}$ — overall correctness; misleading on imbalanced data
+- **Precision**: $\text{TP} / (\text{TP} + \text{FP})$ — of predicted positives, how many were correct
+- **Recall**: $\text{TP} / (\text{TP} + \text{FN})$ — of actual positives, how many were caught
+- **F1 Score**: $2PR / (P + R)$ — harmonic mean of precision & recall
 - **Confusion Matrix**: table of TP/TN/FP/FN, foundation for above metrics
 - **ROC-AUC**: plots True Positive Rate vs. False Positive Rate across thresholds; AUC = overall separability (1.0 = perfect, 0.5 = random)
 - **PR-AUC**: precision vs. recall across thresholds; better than ROC-AUC for highly imbalanced data
-- **Specificity**: `TN/(TN+FP)` — true negative rate, how well negatives are identified
+- **Specificity**: $\text{TN} / (\text{TN} + \text{FP})$ — true negative rate, how well negatives are identified
 - **Log Loss (Cross-Entropy)**: penalizes confident wrong predictions, uses predicted probabilities not just labels
 
 **Choosing a metric depends on:** class balance, cost of false positives vs. false negatives, and whether probability calibration matters.
@@ -300,7 +308,7 @@ These are standard metrics for evaluating classification models, built from four
 
 **Other useful metrics:**
 
-- **Confusion Matrix (N×N)**: shows exactly which classes get confused with which others
+- **Confusion Matrix ($N \times N$)**: shows exactly which classes get confused with which others
 - **Cohen's Kappa**: agreement between predicted/actual, adjusted for chance
 - **Matthews Correlation Coefficient (multi-class version)**: balanced single-score metric robust to imbalance
 - **Top-k Accuracy**: correct if true label is among the top-k predicted classes (common in NLP/vision with many classes)
@@ -342,7 +350,7 @@ These are standard metrics for evaluating classification models, built from four
 ##### ROC Curve
 
 - **Receiver Operating Characteristic curve**: plots **True Positive Rate (Recall)** vs. **False Positive Rate** at every possible classification threshold
-- `TPR = TP/(TP+FN)`, `FPR = FP/(FP+TN)`
+- $\text{TPR} = \text{TP} / (\text{TP} + \text{FN})$, $\text{FPR} = \text{FP} / (\text{FP} + \text{TN})$
 - As the threshold changes, both TPR and FPR shift — the curve traces this trade-off across all thresholds
 
 ##### AUC (Area Under the Curve)
@@ -399,11 +407,11 @@ These are standard metrics for evaluating classification models, built from four
 
 ##### Common Regression Evaluation Metrics
 
-- **MAE (Mean Absolute Error)**: `mean(|actual - predicted|)` — average magnitude of errors, easy to interpret, robust to outliers
-- **MSE (Mean Squared Error)**: `mean((actual - predicted)²)` — penalizes larger errors more heavily due to squaring
-- **RMSE (Root Mean Squared Error)**: `√MSE` — same units as the target variable, easier to interpret than MSE while still penalizing large errors
-- **R² (R-squared / Coefficient of Determination)**: proportion of variance in the target explained by the model; ranges roughly 0–1 (can be negative for very poor fits); 1 = perfect fit
-- **Adjusted R²**: R² adjusted for number of predictors — penalizes adding useless features, useful for comparing models with different feature counts
+- **MAE (Mean Absolute Error)**: $\operatorname{mean}(\lvert \text{actual} - \text{predicted} \rvert)$ — average magnitude of errors, easy to interpret, robust to outliers
+- **MSE (Mean Squared Error)**: $\operatorname{mean}((\text{actual} - \text{predicted})^2)$ — penalizes larger errors more heavily due to squaring
+- **RMSE (Root Mean Squared Error)**: $\sqrt{\text{MSE}}$ — same units as the target variable, easier to interpret than MSE while still penalizing large errors
+- **$R^2$ (R-squared / Coefficient of Determination)**: proportion of variance in the target explained by the model; ranges roughly 0–1 (can be negative for very poor fits); 1 = perfect fit
+- **Adjusted $R^2$**: $R^2$ adjusted for number of predictors — penalizes adding useless features, useful for comparing models with different feature counts
 - **MAPE (Mean Absolute Percentage Error)**: average absolute error as a percentage of actual values — scale-independent, but unstable when actual values are near zero
 - **Huber Loss**: combines MAE and MSE — quadratic for small errors, linear for large errors, robust to outliers while still differentiable
 
@@ -411,10 +419,10 @@ These are standard metrics for evaluating classification models, built from four
 
 - **MAE**: when outliers shouldn't dominate the error signal
 - **RMSE/MSE**: when large errors are especially undesirable and should be penalized more
-- **R²**: when you want to know how well the model explains variance relative to a baseline
+- **$R^2$**: when you want to know how well the model explains variance relative to a baseline
 - **MAPE**: when comparing errors across different scales/units (e.g., forecasting)
 
-**Rule of thumb:** use RMSE/MAE for absolute error magnitude, R² for explanatory power, MAPE for scale-independent comparison — and check for outliers before choosing, since MSE/RMSE are sensitive to them.
+**Rule of thumb:** use RMSE/MAE for absolute error magnitude, $R^2$ for explanatory power, MAPE for scale-independent comparison — and check for outliers before choosing, since MSE/RMSE are sensitive to them.
 
 ### 12.12 What's the difference between MAE, MSE, and RMSE?
 
@@ -422,9 +430,9 @@ These are standard metrics for evaluating classification models, built from four
 
 | Metric | Formula | Key Trait |
 | --- | --- | --- |
-| **MAE** | `mean(\|actual - predicted\|)` | Average absolute error; treats all errors linearly |
-| **MSE** | `mean((actual - predicted)²)` | Squares errors → penalizes large errors much more; not in original units |
-| **RMSE** | `√MSE` | Same as MSE but square-rooted back to original units — easier to interpret |
+| **MAE** | $\operatorname{mean}(\lvert \text{actual} - \text{predicted} \rvert)$ | Average absolute error; treats all errors linearly |
+| **MSE** | $\operatorname{mean}((\text{actual} - \text{predicted})^2)$ | Squares errors → penalizes large errors much more; not in original units |
+| **RMSE** | $\sqrt{\text{MSE}}$ | Same as MSE but square-rooted back to original units — easier to interpret |
 
 **Key differences:**
 
@@ -481,9 +489,9 @@ These are standard metrics for evaluating classification models, built from four
 
 …that cost. The note above ends mid-sentence. The intended closing point: **the offline metric should be a proxy for the business cost of errors.** In practice:
 
-- **Separate the optimization metric from the reporting metric.** Train on a differentiable loss (log loss, MSE), select models on the metric that reflects the cost (PR-AUC, recall@precision≥X, cost-weighted error), and report a business KPI (fraud $ caught, tickets deflected).
+- **Separate the optimization metric from the reporting metric.** Train on a differentiable loss (log loss, MSE), select models on the metric that reflects the cost (PR-AUC, recall@precision≥X, cost-weighted error), and report a business KPI (fraud \$ caught, tickets deflected).
 - **Use constraint-style metrics when there's a hard requirement.** For example, "maximize recall subject to precision ≥ 95%" or "maximize precision at a review capacity of 500 cases/day" (precision@k).
-- **Cost-weighted evaluation.** With an explicit cost matrix (C_FP, C_FN), choose the threshold that minimizes `C_FP·FP + C_FN·FN`, not the default 0.5.
+- **Cost-weighted evaluation.** With an explicit cost matrix ($C_{\text{FP}}$, $C_{\text{FN}}$), choose the threshold that minimizes $C_{\text{FP}} \cdot \text{FP} + C_{\text{FN}} \cdot \text{FN}$, not the default 0.5.
 - **Ranking/recommendation:** NDCG@k, MAP, MRR. **Forecasting:** MAPE/sMAPE (beware zeros), or MASE. **LLM/generation:** task success rate, groundedness/faithfulness and human or LLM-as-judge preference, not just BLEU/ROUGE.
 - **Validate the offline–online link.** Confirm with an A/B test that gains in the offline metric move the online KPI. If they don't, the metric is the wrong proxy.
 
@@ -530,15 +538,15 @@ These are standard metrics for evaluating classification models, built from four
 
 **Most common form: K-Fold Cross-Validation**
 
-- Split data into `k` equal folds
-- Train on `k-1` folds, test on the remaining fold
-- Repeat `k` times, each fold used once as the test set
-- Average the results across all `k` runs for a final performance estimate
+- Split data into $k$ equal folds
+- Train on $k-1$ folds, test on the remaining fold
+- Repeat $k$ times, each fold used once as the test set
+- Average the results across all $k$ runs for a final performance estimate
 
 **Other variants:**
 
 - **Stratified K-Fold**: preserves class proportions in each fold — important for imbalanced data
-- **Leave-One-Out (LOOCV)**: k = number of samples; each sample tested individually (expensive, used for small datasets)
+- **Leave-One-Out (LOOCV)**: $k$ = number of samples; each sample tested individually (expensive, used for small datasets)
 - **Time Series Cross-Validation**: respects temporal order (train on past, test on future) — no random shuffling
 
 ##### Why It's Important
@@ -603,7 +611,7 @@ Harder than supervised evaluation since there are no ground-truth labels to comp
 
 - **Silhouette Score**: measures how similar a point is to its own cluster vs. other clusters; ranges -1 to 1, higher is better
 - **Davies-Bouldin Index**: ratio of within-cluster to between-cluster distances; lower is better
-- **Inertia / Within-Cluster Sum of Squares (WCSS)**: used in the **Elbow Method** to help pick number of clusters (k) in k-means
+- **Inertia / Within-Cluster Sum of Squares (WCSS)**: used in the **Elbow Method** to help pick number of clusters ($k$) in k-means
 - **Calinski-Harabasz Index**: ratio of between-cluster to within-cluster dispersion; higher is better
 
 **External metrics (when ground-truth labels exist, for validation purposes):**
@@ -639,7 +647,7 @@ Harder than supervised evaluation since there are no ground-truth labels to comp
 - **Silhouette Score**: how similar a point is to its own cluster vs. nearest other cluster; range -1 to 1, higher = better-defined clusters
 - **Davies-Bouldin Index**: ratio of within-cluster to between-cluster distance; lower = better
 - **Calinski-Harabasz Index**: between-cluster vs. within-cluster dispersion ratio; higher = better
-- **Inertia (WCSS)**: sum of squared distances to cluster centroids; used in **Elbow Method** to pick optimal k
+- **Inertia (WCSS)**: sum of squared distances to cluster centroids; used in **Elbow Method** to pick optimal $k$
 
 **External metrics (if true labels are available):**
 
@@ -655,7 +663,7 @@ Harder than supervised evaluation since there are no ground-truth labels to comp
 
 **Choosing k (number of clusters):**
 
-- Elbow method (inertia), silhouette analysis across different k values, or domain knowledge
+- Elbow method (inertia), silhouette analysis across different $k$ values, or domain knowledge
 
 **Rule of thumb:** combine an internal metric (like silhouette score) with visual inspection and domain validation — clustering "correctness" is inherently more subjective without ground truth labels.
 
@@ -791,21 +799,21 @@ Document each hypothesis and its result. Fix the largest error bucket first.
 - **Accuracy:**
 
   - Measures the overall percentage of correctly classified observations.
-  - (TP + TN) / ( TP + TN + FP + FN )
+  - $\frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}}$
 - **Precision (P):**
 
   - Measures how precise my positive predictions are.
-  - TP / (TP + FP)
+  - $\frac{\text{TP}}{\text{TP} + \text{FP}}$
   - Matters most when false positives are costly
 - **Recall (Sensitivity, R):**
 
   - Measures how many of the actual positives did I find/recall
-  - TP / (TP + FN)
+  - $\frac{\text{TP}}{\text{TP} + \text{FN}}$
   - Matters most when false negatives are costly
 - **F1-Score:**
 
   - Harmonic mean of precision and recall; useful for imbalanced datasets.
-  - 2 \* P \* R / ( P + R )
+  - $\frac{2 \cdot P \cdot R}{P + R}$
 - **ROC-AUC (Receiver Operating Characteristic - Area Under the Curve, binary classification):**
 
   - ROC
@@ -903,7 +911,7 @@ From these four values, we can calculate **Accuracy, Precision, Recall, and F1-s
 
 - **Sensitivity**, also called **Recall** or **True Positive Rate (TPR)**
 - How many of the actual positives did I recall/find?
-- TP / (TP + FN)
+- $\frac{\text{TP}}{\text{TP} + \text{FN}}$
 - High sensitivity means the model produces **fewer false negatives**
 
 **Example:**
@@ -916,7 +924,7 @@ If there are 100 actual positive cases and the model correctly finds 90 of them,
 
 - **Specificity**, also called **True Negative Rate (TNR)**
 - **How many of the actual negatives did I** find?
-- **TN / (TN + FP)**
+- $\frac{\text{TN}}{\text{TN} + \text{FP}}$
 - High specificity means the model produces **fewer false positives**.
 
 **Example:**
@@ -928,14 +936,14 @@ If there are 100 actual negative cases and the model correctly identifies 90 of 
 #### Precision
 
 - **Precision** measures how precise my positive prediction are?
-- Formula: **TP / (TP + FP)**
+- Formula: $\frac{\text{TP}}{\text{TP} + \text{FP}}$
 - High precision means **fewer false positives**.
 
 #### Recall
 
 - **Recall** is also called **Sensitivity**.
 - It measures how many of the **actual positives did I recall/find?**
-- Formula: **TP / (TP + FN)**
+- Formula: $\frac{\text{TP}}{\text{TP} + \text{FN}}$
 - High recall means **fewer false negatives**.
 
 ### 12.30 Why is the ROC in a curve important?
@@ -987,9 +995,9 @@ The **classification threshold** determines when a predicted probability is conv
 
 Common methods include:
 
-- **Default threshold (0.5):** Predict positive if probability ≥ 0.5; otherwise negative.
+- **Default threshold (0.5):** Predict positive if probability $\ge 0.5$; otherwise negative.
 - **ROC Curve:** Choose the threshold that provides a good balance between **True Positive Rate (TPR)** and **False Positive Rate (FPR)**.
-- **Youden’s J Statistic:** Selects the threshold that maximizes **TPR − FPR**.
+- **Youden’s J Statistic:** Selects the threshold that maximizes $\text{TPR} - \text{FPR}$.
 - **Precision-Recall Curve:** Useful for imbalanced datasets; choose a threshold that provides the desired **precision-recall trade-off**.
 - **F1 Score:** Select the threshold that gives the highest **F1 score** when balancing precision and recall is important.
 - **Cost-Based Thresholding:** Choose a threshold based on the different costs of **false positives and false negatives**.
@@ -1034,9 +1042,9 @@ The better one depends on which mistake is less costly.
 
 #### How Is Data Divided in Cross-Validation?
 
-- In **k-fold cross-validation**, the dataset is divided into **k equal or nearly equal parts called folds**.
-- The model is trained on **k − 1 folds** and tested on the **remaining fold**.
-- This process is repeated **k times**, so every fold is used once as the validation set.
+- In **k-fold cross-validation**, the dataset is divided into **$k$ equal or nearly equal parts called folds**.
+- The model is trained on **$k - 1$ folds** and tested on the **remaining fold**.
+- This process is repeated **$k$ times**, so every fold is used once as the validation set.
 - The performance from all folds is then **averaged** to get the final evaluation.
 
 **Example: 5-Fold Cross-Validation**
@@ -1051,7 +1059,7 @@ The better one depends on which mistake is less costly.
 Clustering has no single "accuracy" because there is usually no ground truth. Use two families of metrics:
 
 **Internal metrics (no labels)** — judge compactness and separation:
-- **Silhouette score** ($-1$ to $1$): $(b-a)/\max(a,b)$, where $a$ is mean intra-cluster distance and $b$ the mean distance to the nearest other cluster. Higher is better.
+- **Silhouette score** ($-1$ to $1$): $\frac{b - a}{\max(a, b)}$, where $a$ is mean intra-cluster distance and $b$ the mean distance to the nearest other cluster. Higher is better.
 - **Davies–Bouldin index**: average similarity between each cluster and its most similar one. Lower is better.
 - **Calinski–Harabasz**: ratio of between-cluster to within-cluster dispersion. Higher is better.
 - **Inertia / WCSS**: used in the elbow method; always decreases with $k$, so only useful comparatively.
@@ -1107,7 +1115,7 @@ It depends on *why* you are reducing dimensions:
 
 **2. Information retained.**
 - **PCA:** explained variance ratio, cumulative variance (e.g. keep 95%), scree plot.
-- **Reconstruction error:** project down and back up ($\hat X = $ `inverse_transform`) and compute MSE. This works for PCA, autoencoders and kernel PCA (approximate pre-image).
+- **Reconstruction error:** project down and back up ($\hat X =$ `inverse_transform`) and compute MSE. This works for PCA, autoencoders and kernel PCA (approximate pre-image).
 
 **3. Neighbourhood/structure preservation** (for manifold methods such as t-SNE, UMAP, Isomap):
 - **Trustworthiness and continuity**: are the k-nearest neighbours preserved?
@@ -1125,7 +1133,7 @@ trustworthiness(X, X_emb, n_neighbors=10)
 
 ### 12.39 What is the ROC-AUC curve? List some of its benefits.
 
-The **ROC curve** plots the **True Positive Rate** (recall) against the **False Positive Rate** ($FP/(FP+TN)$) as the classification threshold sweeps from 1 to 0. **AUC** is the area under it: the probability that the model ranks a random positive above a random negative. 0.5 is random and 1.0 is perfect.
+The **ROC curve** plots the **True Positive Rate** (recall) against the **False Positive Rate** ($\text{FP} / (\text{FP} + \text{TN})$) as the classification threshold sweeps from 1 to 0. **AUC** is the area under it: the probability that the model ranks a random positive above a random negative. 0.5 is random and 1.0 is perfect.
 
 **Benefits:**
 - **Threshold-independent:** summarizes ranking quality over all thresholds, which is useful before the business has picked an operating point.
@@ -1211,12 +1219,12 @@ cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),
 
 | Metric | Formula (idea) | Notes |
 | --- | --- | --- |
-| **MAE** | mean of $\lvert y-\hat y\rvert$ | Same units as target, robust to outliers, median-optimal |
-| **MSE** | mean of $(y-\hat y)^2$ | Penalizes large errors heavily; differentiable, used as a loss |
+| **MAE** | mean of $\lvert y - \hat{y} \rvert$ | Same units as target, robust to outliers, median-optimal |
+| **MSE** | mean of $(y - \hat{y})^2$ | Penalizes large errors heavily; differentiable, used as a loss |
 | **RMSE** | $\sqrt{\text{MSE}}$ | Same units as target, still outlier-sensitive |
-| **$R^2$** | $1-\frac{SS_{res}}{SS_{tot}}$ | Share of variance explained; can be negative on test data |
+| **$R^2$** | $1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}$ | Share of variance explained; can be negative on test data |
 | **Adjusted $R^2$** | penalizes extra features | For comparing linear models with different feature counts |
-| **MAPE** | mean of $\lvert (y-\hat y)/y\rvert$ | Scale-free and business-friendly, but explodes near $y=0$ and is asymmetric |
+| **MAPE** | mean of $\lvert (y - \hat{y}) / y \rvert$ | Scale-free and business-friendly, but explodes near $y = 0$ and is asymmetric |
 | **sMAPE / WAPE** | normalized variants | Safer alternatives for forecasting |
 | **RMSLE** | RMSE on $\log(1+y)$ | Relative errors; good for targets spanning orders of magnitude (prices, counts) |
 | **Huber / quantile loss** | hybrid / asymmetric | Robust fitting; quantile (pinball) loss for prediction intervals |
@@ -1227,10 +1235,10 @@ cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),
 
 **Threshold-based (from the confusion matrix):**
 
-- **Accuracy** = (TP+TN)/all. Misleading with class imbalance.
-- **Precision** = TP/(TP+FP): of what we flagged, how much was right. Use when false positives are costly (spam filter hiding real mail).
-- **Recall / sensitivity** = TP/(TP+FN): how much of the positive class we caught. Use when misses are costly (fraud, cancer screening).
-- **Specificity** = TN/(TN+FP).
+- **Accuracy** = $(\text{TP} + \text{TN}) / \text{all}$. Misleading with class imbalance.
+- **Precision** = $\text{TP} / (\text{TP} + \text{FP})$: of what we flagged, how much was right. Use when false positives are costly (spam filter hiding real mail).
+- **Recall / sensitivity** = $\text{TP} / (\text{TP} + \text{FN})$: how much of the positive class we caught. Use when misses are costly (fraud, cancer screening).
+- **Specificity** = $\text{TN} / (\text{TN} + \text{FP})$.
 - **F1** = harmonic mean of precision and recall; **F-beta** weights recall $\beta$ times as much.
 - **MCC (Matthews correlation)**: balanced single number that stays honest under imbalance.
 - **Cohen's kappa**: agreement corrected for chance.
@@ -1253,13 +1261,17 @@ cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),
 
 **$R^2$** measures the fraction of the target's variance explained by the model:
 
-$R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$
+$$
+R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}
+$$
 
 Its problem: on training data, **adding any feature never decreases $R^2$**, even a column of random noise, because least squares can always set its coefficient to zero or exploit chance correlation.
 
 **Adjusted $R^2$** penalizes the number of predictors $p$ relative to sample size $n$:
 
-$R^2_{adj} = 1 - (1-R^2)\frac{n-1}{n-p-1}$
+$$
+R^2_{\text{adj}} = 1 - (1 - R^2) \frac{n - 1}{n - p - 1}
+$$
 
 It only increases if a new feature improves the fit more than would be expected by chance; useless features make it drop.
 
@@ -1272,7 +1284,7 @@ It only increases if a new feature improves the fit more than would be expected 
 
 ### 12.46 What is ROC-AUC, and what are its limitations?
 
-**ROC curve:** plots **TPR (recall)** against **FPR** = FP/(FP+TN) as the classification threshold sweeps from 1 to 0. **AUC** is the area under it. It equals the probability that a randomly chosen positive is scored higher than a randomly chosen negative (equivalent to the Mann-Whitney U statistic). 0.5 is random and 1.0 is perfect.
+**ROC curve:** plots **TPR (recall)** against **FPR** = $\text{FP} / (\text{FP} + \text{TN})$ as the classification threshold sweeps from 1 to 0. **AUC** is the area under it. It equals the probability that a randomly chosen positive is scored higher than a randomly chosen negative (equivalent to the Mann-Whitney U statistic). 0.5 is random and 1.0 is perfect.
 
 **Why it's popular:** threshold-independent, scale-invariant (only ranking matters), and insensitive to class prior, so it is comparable across datasets with different base rates.
 
@@ -1291,7 +1303,7 @@ It only increases if a new feature improves the fit more than would be expected 
 
 Use **PR-AUC (average precision)** when the **positive class is rare** and you care mainly about how well the model finds positives, not about the negatives.
 
-**Why:** ROC uses FPR = FP/(FP+TN). With 1M negatives and 1k positives, 10k false positives is only a 1% FPR, so the ROC curve looks great. **Precision** = TP/(TP+FP) exposes that same situation: 10k false alarms against 1k true positives means precision under 10%. PR curves ignore true negatives entirely, so they reflect what an analyst reviewing alerts actually experiences.
+**Why:** ROC uses $\text{FPR} = \text{FP} / (\text{FP} + \text{TN})$. With 1M negatives and 1k positives, 10k false positives is only a 1% FPR, so the ROC curve looks great. **Precision** = $\text{TP} / (\text{TP} + \text{FP})$ exposes that same situation: 10k false alarms against 1k true positives means precision under 10%. PR curves ignore true negatives entirely, so they reflect what an analyst reviewing alerts actually experiences.
 
 **Choose PR-AUC when**
 
@@ -1341,7 +1353,7 @@ An **ablation study** removes or changes one component at a time to measure its 
 
 | Metric | Prefer it when | Main idea |
 | --- | --- | --- |
-| **F1** | You need a **binary decision** and care about both precision and recall | `2PR/(P+R)` |
+| **F1** | You need a **binary decision** and care about both precision and recall | $2PR / (P + R)$ |
 | **ROC-AUC** | You care about **ranking quality** across thresholds, especially with reasonably balanced classes | Probability that a positive ranks above a negative |
 | **PR-AUC** | The positive class is **rare/imbalanced** and detecting positives matters | Measures precision-recall tradeoff |
 | **Log Loss** | You care about **probability quality**, not just correct labels | Penalizes confident wrong predictions heavily |

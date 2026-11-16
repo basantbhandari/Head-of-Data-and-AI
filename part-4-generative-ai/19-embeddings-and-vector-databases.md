@@ -150,10 +150,10 @@ These metrics measure how similar or different two vectors are in **vector searc
 
 - Measures the **angle/direction** between two vectors.
 - Focuses on whether vectors point in a similar direction, not their magnitude.
-- Range: **1 to 1**.
-  - `1` → same direction
-  - `0` → orthogonal/unrelated
-  - `1` → opposite direction
+- Range: **$-1$ to $1$**.
+  - $1$ → same direction
+  - $0$ → orthogonal/unrelated
+  - $-1$ → opposite direction
 - Common for **text embeddings** and semantic search.
 - Higher value means more similar.
 
@@ -324,7 +324,7 @@ If a database contains **10 million vectors**:
 
 - **Embedding dimensionality** is the number of numerical values in an embedding vector.
 - For example:
-  - 384-dimensional → `[x₁, x₂, ..., x₃₈₄]`
+  - 384-dimensional → $[x_1, x_2, \ldots, x_{384}]$
   - 768-dimensional → 768 values
   - 1536-dimensional → 1536 values
 - Each dimension represents a learned feature of the data, although individual dimensions usually don't have simple human-interpretable meanings.
@@ -759,9 +759,11 @@ Hybrid search can retrieve **both exact terminology and semantically related con
 
 A system can combine normalized scores:
 
-`Final Score = α × Keyword Score + (1 − α) × Vector Score`
+$$
+\text{Final Score} = \alpha \times \text{Keyword Score} + (1 - \alpha) \times \text{Vector Score}
+$$
 
-The weight `α` controls how much importance is given to keyword versus semantic retrieval.
+The weight $\alpha$ controls how much importance is given to keyword versus semantic retrieval.
 
 Another common approach is **Reciprocal Rank Fusion (RRF)**, which combines rankings from the two retrieval systems rather than directly combining their raw scores.
 
@@ -1048,7 +1050,9 @@ If the new model produces a different representation, maintain a separate index 
 
 **InfoNCE** (from Contrastive Predictive Coding, van den Oord et al., 2018) is the standard **contrastive loss**. Given an anchor $q$, one positive $k^+$ and $N-1$ negatives, it is a softmax cross-entropy that asks the model to pick out the positive:
 
-$$\mathcal{L} = -\log \frac{\exp(\text{sim}(q, k^+)/\tau)}{\sum_{j=1}^{N} \exp(\text{sim}(q, k_j)/\tau)}$$
+$$
+\mathcal{L} = -\log \frac{\exp(\text{sim}(q, k^+)/\tau)}{\sum_{j=1}^{N} \exp(\text{sim}(q, k_j)/\tau)}
+$$
 
 - $\text{sim}$ is usually cosine similarity (dot product of L2-normalized embeddings).
 - $\tau$ is the **temperature**. A low $\tau$ sharpens the distribution and focuses on hard negatives; a high $\tau$ makes it smoother. It is often learned (CLIP).

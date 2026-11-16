@@ -122,7 +122,7 @@ This chapter contains **36 questions**.
 
 **Detection**
 
-- **Statistical**: Z-score (>3 std dev), IQR method (below Q1−1.5×IQR or above Q3+1.5×IQR)
+- **Statistical**: Z-score ($\lvert z \rvert > 3$ std dev), IQR method (below $Q_1 - 1.5 \times \text{IQR}$ or above $Q_3 + 1.5 \times \text{IQR}$)
 - **Visualization**: Box plots, scatter plots, histograms
 - **Model-based**: Isolation Forest, DBSCAN, LOF (Local Outlier Factor)
 
@@ -155,8 +155,8 @@ This chapter contains **36 questions**.
 
 **Common techniques**
 
-- **Standardization (Z-score)**: (x − mean) / std → mean=0, std=1; handles outliers better
-- **Normalization (Min-Max)**: (x − min) / (max − min) → scales to \[0,1\]; sensitive to outliers
+- **Standardization (Z-score)**: $\frac{x - \text{mean}}{\text{std}}$ → $\text{mean} = 0$, $\text{std} = 1$; handles outliers better
+- **Normalization (Min-Max)**: $\frac{x - \min}{\max - \min}$ → scales to $[0, 1]$; sensitive to outliers
 - **Robust Scaling**: uses median and IQR → robust to outliers
 
 **Not needed for**
@@ -188,7 +188,7 @@ This chapter contains **36 questions**.
 **K-Fold Target Encoding**
 
 - Fixes leakage by computing target encoding using out-of-fold data (K-fold CV approach)
-- For each fold, encode using target means computed from the other K−1 folds
+- For each fold, encode using target means computed from the other $K - 1$ folds
 - Reduces overfitting risk compared to naive target encoding
 - More robust for high-cardinality categorical features in production models
 
@@ -245,9 +245,9 @@ This chapter contains **36 questions**.
 
 **Mathematical transformations**
 
-- Ratios, differences, sums (e.g., price/sqft, income−expenses)
+- Ratios, differences, sums (e.g., $\text{price} / \text{sqft}$, $\text{income} - \text{expenses}$)
 - Log, square root, power transforms (handle skewness)
-- Polynomial features (x², x³, interaction terms x1×x2)
+- Polynomial features ($x^2$, $x^3$, interaction terms $x_1 \times x_2$)
 
 **Date/time features**
 
@@ -496,17 +496,17 @@ gender<-factor(c("Male","Female","Male"))
 - **Box-Cox transformation** is a statistical technique used to **transform data so that it is closer to a normal distribution**.
 - It is mainly used when the data is **skewed** or when the variance is not constant.
 - It works by applying a **power transformation** to the data.
-- The transformation uses a parameter called **lambda (λ)**.
-- Different values of λ produce different transformations.
-- The value of λ is usually chosen to find the transformation that gives the **best approximation to normality**.
+- The transformation uses a parameter called **lambda ($\lambda$)**.
+- Different values of $\lambda$ produce different transformations.
+- The value of $\lambda$ is usually chosen to find the transformation that gives the **best approximation to normality**.
 - Box-Cox requires the data to contain **positive values**.
 
 **Common transformations:**
 
-- λ = 1 → No major transformation
-- λ = 0 → Log transformation
-- λ = 0.5 → Square-root transformation
-- λ = -1 → Reciprocal transformation
+- $\lambda = 1$ → No major transformation
+- $\lambda = 0$ → Log transformation
+- $\lambda = 0.5$ → Square-root transformation
+- $\lambda = -1$ → Reciprocal transformation
 
 **Simple terms:**
 
@@ -628,7 +628,7 @@ Lasso adds an L1 penalty, $\min_\beta \frac{1}{2n}\lVert y - X\beta\rVert^2 + \a
 
 **Steps:**
 1. **Standardize the features.** The penalty is scale-dependent, and unscaled features get penalized unevenly.
-2. **Choose α by cross-validation** (`LassoCV`, or `LogisticRegression(penalty="l1")` for classification). A larger α means fewer features. Use the "1-SE rule" (the largest α within one standard error of the best CV score) if you want a sparser, more robust set.
+2. **Choose $\alpha$ by cross-validation** (`LassoCV`, or `LogisticRegression(penalty="l1")` for classification). A larger $\alpha$ means fewer features. Use the "1-SE rule" (the largest $\alpha$ within one standard error of the best CV score) if you want a sparser, more robust set.
 3. **Keep the features with $\beta_j \ne 0$.** Optionally plot the **regularization path** to see the order in which features enter.
 4. Optionally **refit** an unpenalized or different model on the selected features (relaxed Lasso), because Lasso shrinks the surviving coefficients.
 
@@ -651,12 +651,12 @@ selected = X.columns[pipe[1].get_support()]
 
 ### 10.27 What is the difference between standard scaler and minmax scaler? What will you do if there is a categorical variable?
 
-**StandardScaler** (z-score): $x' = (x - \mu)/\sigma$, giving zero mean and unit variance with an unbounded range.
-**MinMaxScaler**: $x' = (x - x_{min})/(x_{max} - x_{min})$, mapping to a fixed range, usually $[0,1]$.
+**StandardScaler** (z-score): $x' = \frac{x - \mu}{\sigma}$, giving zero mean and unit variance with an unbounded range.
+**MinMaxScaler**: $x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}$, mapping to a fixed range, usually $[0,1]$.
 
 | | StandardScaler | MinMaxScaler |
 | --- | --- | --- |
-| Output range | Unbounded (mostly −3 to 3) | Bounded [0, 1] |
+| Output range | Unbounded (mostly $-3$ to $3$) | Bounded $[0, 1]$ |
 | Outliers | Affected (mean/std), but less squashed | Very sensitive: one outlier compresses everything else |
 | Good for | Linear/logistic regression, SVM, PCA, roughly Gaussian features, gradient descent | Neural nets that expect bounded inputs, image pixels, KNN with known bounds |
 | Shape | Preserved (not made normal) | Preserved |
@@ -890,7 +890,9 @@ Examples:
 
 Suppose:
 
-$\text{Age}=25,\quad \text{Income}=100000$
+$$
+\text{Age} = 25,\quad \text{Income} = 100000
+$$
 
 Income dominates the Euclidean distance simply because its numerical scale is much larger.
 
@@ -921,11 +923,15 @@ Scaling generally makes gradient descent converge more efficiently.
 
 For L1/L2:
 
-$L = Loss + \lambda\sum_i |w_i|$
+$$
+L = \text{Loss} + \lambda \sum_i \lvert w_i \rvert
+$$
 
 or
 
-$L = Loss + \lambda\sum_i w_i^2$
+$$
+L = \text{Loss} + \lambda \sum_i w_i^2
+$$
 
 Without scaling, a feature's numerical unit can affect the size of its weight and therefore how strongly regularization affects it.
 
@@ -942,15 +948,21 @@ Without scaling, a feature's numerical unit can affect the size of its weight an
 
 A tree typically asks questions like:
 
-$x < 50000?$
+$$
+x < 50000\,?
+$$
 
 If you transform the feature:
 
-$x' = x/1000$
+$$
+x' = x / 1000
+$$
 
 the equivalent split is:
 
-$x' < 50$
+$$
+x' < 50
+$$
 
 The ordering of values hasn't changed, so the tree can make essentially the same splits.
 

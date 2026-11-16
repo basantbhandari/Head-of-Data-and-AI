@@ -137,7 +137,7 @@ Next turn → memory retriever (profile + top-k episodic) → inject into prompt
 
 #### Design decisions
 - **What to write:** an extraction LLM decides what is worth saving, scoring importance. On conflict, newer information wins but history is kept (versioned facts).
-- **Retrieval:** score = similarity × recency decay × importance. Cap the injected memory tokens.
+- **Retrieval:** $\text{score} = \text{similarity} \times \text{recency decay} \times \text{importance}$. Cap the injected memory tokens.
 - **User control:** users can view, edit and delete memories ("forget this"). Respect GDPR deletion, encrypt per user, and never store sensitive categories without consent.
 - **Hygiene:** a periodic consolidation job merges duplicates and expires stale items.
 
@@ -465,7 +465,7 @@ Appeals → human review → labels → retraining
 - **Per-policy thresholds:** tuned on precision/recall to match harm severity. CSAM gets high recall; borderline political speech gets high precision plus human review.
 - **LLM-based moderation:** policy as a prompt means quick policy updates without retraining. It can also generate a rationale for the decision.
 - **Context features:** user history, account age, virality, and conversation context (sarcasm, reclaimed slurs).
-- **Human review:** queues prioritised by reach × severity, reviewer wellness tooling (blurring), and inter-rater agreement tracking.
+- **Human review:** queues prioritised by $\text{reach} \times \text{severity}$, reviewer wellness tooling (blurring), and inter-rater agreement tracking.
 
 #### Monitoring
 - **Metrics:** prevalence (sampled), precision/recall per policy and language, appeal overturn rate, time to action.
@@ -810,7 +810,7 @@ Define degradation tiers ahead of time, from full to minimal functionality, and 
 
 ### 29.32 Design an AI-powered search engine for an e-commerce platform.
 
-**Requirements.** 10M+ SKUs, natural-language queries ("waterproof hiking boots under $150 for wide feet"), latency under 200 ms, and the goal of maximising conversion.
+**Requirements.** 10M+ SKUs, natural-language queries ("waterproof hiking boots under \$150 for wide feet"), latency under 200 ms, and the goal of maximising conversion.
 
 ```text
 Query → query understanding (spell-correct, NER: brand/size/price, category classifier,
@@ -867,7 +867,7 @@ Conflicts come from stale versions, different scopes (regional policies), differ
 
 #### At retrieval
 - **Filtering:** by applicable scope (user region, product version) before ranking.
-- **Ranking:** relevance × authority × recency boosts.
+- **Ranking:** $\text{relevance} \times \text{authority} \times \text{recency}$ boosts.
 - **Diversity:** retrieve with diversity (MMR) so conflicting viewpoints are visible rather than accidentally hidden.
 
 #### At generation
@@ -884,15 +884,15 @@ Conflicts come from stale versions, different scopes (regional policies), differ
 ### 29.35 How do you approach capacity planning for an AI system?
 
 #### 1. Model the demand
-- **Usage profile:** DAU × requests per user × peak factor (peak-to-average is often 2–4x). Measure input and output tokens per request, which are the real units.
-- **Example:** 1M DAU × 10 req = 10M req/day. Average is about 116 req/s and peak about 400 req/s. At 1,500 input and 300 output tokens, peak is about 600K input tokens/s and 120K output tokens/s.
+- **Usage profile:** $\text{DAU} \times \text{requests per user} \times \text{peak factor}$ (peak-to-average is often 2–4x). Measure input and output tokens per request, which are the real units.
+- **Example:** $10^{6}\ \text{DAU} \times 10\ \text{req} = 10^{7}$ req/day. Average is about $10^{7} / 86{,}400 \approx 116$ req/s and peak about 400 req/s. At 1,500 input and 300 output tokens, peak is about $400 \times 1{,}500 = 600\text{K}$ input tokens/s and $400 \times 300 = 120\text{K}$ output tokens/s.
 
 #### 2. Benchmark supply
 - **Load test:** test the actual model, hardware and engine (for example 70B FP8 on H100 with vLLM) to find sustainable tokens/s per GPU at your SLO (p95 TTFT and TPOT), not maximum throughput. Prefill and decode have different costs, and long contexts consume KV cache, which limits concurrency.
 
 #### 3. Compute the fleet
-- **Fleet size:** GPUs = peak tokens/s ÷ tokens/s per GPU at SLO, plus headroom (20–30%), N+1 per AZ, and capacity for failover regions.
-- **Other components:** include embedding models, rerankers, vector DB memory (vectors × dims × bytes plus index overhead), and the gateway.
+- **Fleet size:** $\text{GPUs} = \frac{\text{peak tokens/s}}{\text{tokens/s per GPU at SLO}}$, plus headroom (20–30%), N+1 per AZ, and capacity for failover regions.
+- **Other components:** include embedding models, rerankers, vector DB memory ($\text{vectors} \times \text{dims} \times \text{bytes}$ plus index overhead), and the gateway.
 
 #### 4. Optimise and decide
 - **Caching:** prefix and response caching lower the effective load.
@@ -1040,7 +1040,7 @@ Data: sales history, inventory, competitor prices (scraped), demand signals (tra
 - **Causality matters:** observational data is confounded (prices rose *because* demand was high). Use randomised experiments, instrumental variables, or double ML to estimate elasticity.
 - **Exploration vs exploitation:** Thompson sampling or contextual bandits for continuous learning, with constrained exploration ranges.
 - **Real-time vs batch:** ride-hailing surge needs streaming supply/demand within seconds. Retail repricing can be hourly or daily batch.
-- **Guardrails:** price floors and ceilings, rate-of-change limits, kill switches, and anomaly detection (competitor-scrape glitches can cause price wars or $0.01 errors).
+- **Guardrails:** price floors and ceilings, rate-of-change limits, kill switches, and anomaly detection (competitor-scrape glitches can cause price wars or \$0.01 errors).
 - **Ethics and legal:** avoid discriminatory personalised pricing on protected attributes, comply with price-gouging laws during emergencies, and maintain transparency.
 - **LLM role:** minor, such as competitor product matching (entity resolution) and explaining price changes to merchandisers.
 
@@ -1164,7 +1164,7 @@ Stream ingest → sampler: keyframes every 1–2s (adaptive: more for high-risk/
 ```
 
 #### Key design points
-- **Cost control:** analysing every frame of 100K streams is unaffordable. Use adaptive sampling, cheap first-pass models, and escalate to heavier VLM or LLM analysis only for flagged segments. Prioritise by reach (viewer count × risk).
+- **Cost control:** analysing every frame of 100K streams is unaffordable. Use adaptive sampling, cheap first-pass models, and escalate to heavier VLM or LLM analysis only for flagged segments. Prioritise by reach ($\text{viewer count} \times \text{risk}$).
 - **Latency:** the end-to-end detect-to-action target is under 10 s for severe categories. Use stream processing (Kafka/Flink) and colocate inference with ingest.
 - **Temporal reasoning:** single frames mislead, so aggregate over windows and use video-clip models for actions (fights, self-harm).
 - **Human reviewers:** live queues with stream playback from the flagged timestamp, plus SLAs and reviewer-wellness tooling.

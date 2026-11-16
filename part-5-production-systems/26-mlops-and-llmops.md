@@ -800,28 +800,29 @@ Break the cost into **usage, infrastructure, and operational costs**.
    - Context reduction
 8. **Calculate unit economics**
 
-```txt
-Monthly Cost =
-LLM Cost
-+ Embedding/Reranking Cost
-+ Compute
-+ Storage
-+ Network
-+ Monitoring
-+ Other Operational Costs
-```
+$$
+\begin{aligned}
+\text{Monthly Cost} = {} & \text{LLM Cost} \\
+& + \text{Embedding/Reranking Cost} \\
+& + \text{Compute} \\
+& + \text{Storage} \\
+& + \text{Network} \\
+& + \text{Monitoring} \\
+& + \text{Other Operational Costs}
+\end{aligned}
+$$
 
 Then calculate:
 
-```txt
-Cost per request = Monthly Cost / Monthly Requests
-```
+$$
+\text{Cost per request} = \frac{\text{Monthly Cost}}{\text{Monthly Requests}}
+$$
 
 and, where useful:
 
-```txt
-Cost per user = Monthly Cost / Monthly Active Users
-```
+$$
+\text{Cost per user} = \frac{\text{Monthly Cost}}{\text{Monthly Active Users}}
+$$
 
 ##### Example
 
@@ -1964,9 +1965,9 @@ Start from the problem and constraints, not the algorithm.
 
 | Type | What changes | Example |
 | --- | --- | --- |
-| **Data / covariate drift** | P(X): input distribution | New user demographics, a new app version changes feature values |
-| **Concept drift** | P(Y \| X): the relationship itself | Fraudsters change tactics; "normal" spending changes after inflation |
-| **Label / prior drift** | P(Y): base rates | Churn rate jumps during a recession |
+| **Data / covariate drift** | $P(X)$: input distribution | New user demographics, a new app version changes feature values |
+| **Concept drift** | $P(Y \mid X)$: the relationship itself | Fraudsters change tactics; "normal" spending changes after inflation |
+| **Label / prior drift** | $P(Y)$: base rates | Churn rate jumps during a recession |
 | **Upstream / data-quality issues** | Pipelines | A feature becomes null, units change from cents to dollars |
 
 **Detection:**
@@ -2117,7 +2118,7 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 ### 26.53 How do you ensure your model is scalable and performs well with large datasets?
 
 **Training on large data:**
-- Choose algorithms that scale: mini-batch SGD-trained models, GBDT with histogram binning (LightGBM), distributed implementations (XGBoost on Spark/Dask, PyTorch DDP/FSDP). Avoid O(n²) methods (kernel SVMs, exact kNN) at scale. Use approximate versions (ANN, random features).
+- Choose algorithms that scale: mini-batch SGD-trained models, GBDT with histogram binning (LightGBM), distributed implementations (XGBoost on Spark/Dask, PyTorch DDP/FSDP). Avoid $O(n^2)$ methods (kernel SVMs, exact kNN) at scale. Use approximate versions (ANN, random features).
 - Efficient data handling: columnar formats, partitioning, streaming data loaders, out-of-core and incremental learning (`partial_fit`), sampling where learning curves show diminishing returns.
 - Cache and reuse feature computation; vectorise; push heavy joins to Spark or the warehouse.
 
@@ -2256,11 +2257,17 @@ I would check:
 
 **Key types:**
 
-$\text{Covariate shift: } P(X) \text{ changes}$
+$$
+\text{Covariate shift: } P(X) \text{ changes}
+$$
 
-$\text{Label shift: } P(Y) \text{ changes}$
+$$
+\text{Label shift: } P(Y) \text{ changes}
+$$
 
-$Concept drift: P(Y∣X) changes$
+$$
+\text{Concept drift: } P(Y \mid X) \text{ changes}
+$$
 
 ### 26.65 What is the difference between covariate shift, label shift, and concept drift?
 
@@ -2269,8 +2276,8 @@ $Concept drift: P(Y∣X) changes$
 | Type | What changes? | Example |
 | --- | --- | --- |
 | **Covariate shift** | $P(X)$ changes | Customer demographics change, but the relationship to fraud stays the same |
-| **Label shift** | $P(Y)$ changes | Fraud rate increases from 1% → 5%, but $P(X\mid Y)$ stays similar |
-| **Concept drift** | $P(Y\mid X)$ changes | The same customer behavior that previously indicated fraud no longer does |
+| **Label shift** | $P(Y)$ changes | Fraud rate increases from 1% → 5%, but $P(X \mid Y)$ stays similar |
+| **Concept drift** | $P(Y \mid X)$ changes | The same customer behavior that previously indicated fraud no longer does |
 
 ### 26.66 How would you handle training-serving skew?
 

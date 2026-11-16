@@ -92,7 +92,7 @@ Video embeddings are built offline when a video is uploaded (the text encoder us
 
 **Clarify:** a social feed (posts from friends, pages and groups, plus unconnected recommended content). Hundreds of millions of DAU. The feed refreshes on every app open.
 
-**Framing:** rank the candidate posts by a value model: `score = Σ wᵢ · P(actionᵢ)`, where the actions are like, comment, share, dwell over N seconds, hide and report (with negative weights). This is multi-task learning with one head per action. Integrity classifiers act as filters or demotions.
+**Framing:** rank the candidate posts by a value model: $\text{score} = \sum_i w_i \cdot P(\text{action}_i)$, where the actions are like, comment, share, dwell over N seconds, hide and report (with negative weights). This is multi-task learning with one head per action. Integrity classifiers act as filters or demotions.
 
 **Features:** viewer-author affinity (past interactions, closeness), post features (type, age, media, engagement velocity, text and image embeddings), viewer features (interests, activity level), and context (time, device, network). Sequence features from recent sessions capture short-term interest.
 
@@ -156,7 +156,7 @@ online:  anchor listing ─► ANN top-k (same market, available for dates) ─�
 
 **Clarify:** when an item is out of stock (e-commerce or grocery substitution), suggest a *substitute* that the customer will accept. Substitutes are not the same as complements: a different-brand milk is a substitute, cereal is a complement.
 
-**Framing:** learn a substitutability score `s(original, candidate, user)`. Labels: accepted versus rejected substitutions (from grocery pickers or the customer approval flow), "viewed A then bought B instead" sessions (a substitute signal), and "bought together" pairs, which act as negatives for substitution because they are complements.
+**Framing:** learn a substitutability score $s(\text{original}, \text{candidate}, \text{user})$. Labels: accepted versus rejected substitutions (from grocery pickers or the customer approval flow), "viewed A then bought B instead" sessions (a substitute signal), and "bought together" pairs, which act as negatives for substitution because they are complements.
 
 **Features:** product taxonomy (same leaf category), attributes (brand, size, unit price, dietary flags such as organic, gluten-free or vegan), text and image embeddings, price-per-unit ratio, user preferences (brand loyalty, dietary history), and stock at the store.
 
@@ -194,7 +194,7 @@ hard constraints: dietary/allergen rules, size bounds, price ceiling
 
 ### 28.8 Design a Machine Learning System for Ad Click Prediction.
 
-**Clarify:** predict pCTR for ads shown in feed or search. Billions of impressions a day, latency under 10 ms per batch of candidates. pCTR feeds the auction (`bid × pCTR × quality`), so **calibration matters as much as ranking**.
+**Clarify:** predict pCTR for ads shown in feed or search. Billions of impressions a day, latency under 10 ms per batch of candidates. pCTR feeds the auction ($\text{bid} \times \text{pCTR} \times \text{quality}$), so **calibration matters as much as ranking**.
 
 **Framing:** binary classification on impressions. Labels: click within a time window. A post-click conversion model (pCVR) is usually trained separately.
 
@@ -208,7 +208,7 @@ Logistic regression + hashed crosses (baseline, very fast)
  → Deep models: Wide & Deep, DeepFM, DCN-v2, DLRM (embedding tables + interaction layers)
 ```
 
-**Training:** continuous or online learning, because ads and users change hourly. **Negative downsampling** of non-clicks cuts cost. After downsampling, recalibrate with `p = p' / (p' + (1−p')/w)`, where `w` is the sampling rate.
+**Training:** continuous or online learning, because ads and users change hourly. **Negative downsampling** of non-clicks cuts cost. After downsampling, recalibrate with $p = \frac{p'}{p' + (1 - p')/w}$, where $w$ is the sampling rate.
 
 **Metrics:** offline normalised cross-entropy (log loss relative to a baseline), AUC, and calibration (predicted versus observed CTR per bucket). Online: revenue, CTR, advertiser ROI, and user experience guardrails such as ad hide rate.
 
@@ -264,7 +264,7 @@ Product quantisation compresses embeddings: 512-dimensional float32 is 2 KB, and
 
 **Clarify:** "People You May Know" on a social network with about 1B users. The goal is accepted connections that lead to engagement, not just sent requests.
 
-**Framing:** link prediction on the social graph. Score `P(request sent ∧ accepted | viewer, candidate)`. Labels: past recommendations shown, then sent and accepted. Negatives are recommendations that were shown and ignored.
+**Framing:** link prediction on the social graph. Score $P(\text{request sent} \land \text{accepted} \mid \text{viewer}, \text{candidate})$. Labels: past recommendations shown, then sent and accepted. Negatives are recommendations that were shown and ignored.
 
 **Candidate generation:** the main source is **friends-of-friends (2-hop)**, which covers most accepted links. Add same school, employer or location, contact-book uploads, and graph-embedding neighbours (node2vec or GNN).
 

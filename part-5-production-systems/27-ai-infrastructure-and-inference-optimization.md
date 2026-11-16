@@ -1369,7 +1369,7 @@ Python remains the *interface* for AI, but more of the *infrastructure underneat
 
 ### 27.34 What are the main techniques for optimizing LLM inference overall (latency, throughput, cost)?
 
-First identify what you are optimizing: **latency** (TTFT, inter-token latency), **throughput** (tokens/s per GPU), or **cost** ($ per 1M tokens). Prefill is compute-bound; decode is **memory-bandwidth-bound** (reading weights and the KV cache for every token).
+First identify what you are optimizing: **latency** (TTFT, inter-token latency), **throughput** (tokens/s per GPU), or **cost** (\$ per 1M tokens). Prefill is compute-bound; decode is **memory-bandwidth-bound** (reading weights and the KV cache for every token).
 
 **Model-level**
 
@@ -1432,7 +1432,9 @@ Per-step attention cost drops from reprocessing $t$ tokens to processing one tok
 
 **Memory cost:**
 
-$$\text{KV bytes} = 2 \times L \times n_{kv\_heads} \times d_{head} \times \text{seq\_len} \times \text{batch} \times \text{bytes}$$
+$$
+\text{KV bytes} = 2 \times L \times n_{\text{kv\_heads}} \times d_{\text{head}} \times \text{seq\_len} \times \text{batch} \times \text{bytes}
+$$
 
 **Example:** LLaMA-2 7B (32 layers, 32 heads × 128, FP16) uses ~0.5 MB per token, so ~2 GB for one 4k-token sequence. At serving scale **the KV cache, not the weights, often limits batch size and context length.**
 
@@ -1494,7 +1496,7 @@ and computes K/V only for **AI**.
 | KV cache size | 1× (baseline) | $G/h$ (e.g. 1/8) | $1/h$ |
 | Decode speed | Slowest (memory-bound) | Fast | Fastest |
 | Quality | Best | Close to MHA | Noticeably lower; can be unstable |
-| Tensor-parallel fit | Easy | Good if $G$ ≥ number of TP shards | KV head must be replicated on every shard |
+| Tensor-parallel fit | Easy | Good if $G \ge$ number of TP shards | KV head must be replicated on every shard |
 | Examples | GPT-3, original Transformer, BERT | LLaMA-2/3 70B, Mistral, Qwen | PaLM, Falcon-7B, StarCoder |
 
 **Why it matters:** in autoregressive inference each generated token reads the full KV cache, so decode throughput is **memory-bandwidth-bound**. Fewer KV heads means less memory traffic, larger batches and longer contexts.
@@ -1538,11 +1540,11 @@ Because it changes **how data moves**, not **what is computed**. Attention on mo
 **What FlashAttention does:**
 
 1. **Tiling** — load blocks of Q, K and V into SRAM and do all the work there.
-2. **Online softmax** — softmax needs the row max and row sum over *all* keys. FlashAttention keeps running statistics $m$ (max) and $\ell$ (sum). When a new block arrives with a larger max, previous partial results are rescaled by $e^{m_{old} - m_{new}}$. This is algebraically **identical** to the full softmax.
+2. **Online softmax** — softmax needs the row max and row sum over *all* keys. FlashAttention keeps running statistics $m$ (max) and $\ell$ (sum). When a new block arrives with a larger max, previous partial results are rescaled by $e^{m_{\text{old}} - m_{\text{new}}}$. This is algebraically **identical** to the full softmax.
 3. **Fusion** — one kernel, so intermediates never touch HBM.
 4. **Recompute in backward** — cheaper than reading a stored $n \times n$ matrix.
 
-**Result:** HBM accesses drop from $\Theta(nd + n^2)$ to $\Theta(n^2 d^2 / M)$ (M = SRAM size). FLOPs actually *increase* slightly because of recomputation, yet wall-clock time falls 2–4×.
+**Result:** HBM accesses drop from $\Theta(nd + n^2)$ to $\Theta(n^2 d^2 / M)$ ($M$ = SRAM size). FLOPs actually *increase* slightly because of recomputation, yet wall-clock time falls 2–4×.
 
 The output is exact up to floating-point rounding: results are not bit-identical because summation order changes, but the method is not an approximation.
 
@@ -1646,10 +1648,10 @@ I start by **profiling** where time goes (preprocessing, network, feature fetch,
 **Speculative decoding** speeds up autoregressive generation without changing the output distribution. A small, fast **draft model** proposes several tokens ahead; the large **target model** checks them all in **one forward pass** and accepts the longest correct prefix.
 
 **Algorithm (per step)**
-1. The draft model generates *k* candidate tokens $x_1..x_k$ autoregressively (cheap).
-2. The target model runs once over the prefix plus all *k* candidates, producing its distributions at every position in parallel.
-3. Each token is accepted with probability $\min(1, p_{target}(x_i)/p_{draft}(x_i))$; at the first rejection, a replacement is sampled from the normalized residual $\max(0, p_{target} - p_{draft})$ and the rest are discarded.
-4. If all *k* are accepted, the target's next-token distribution gives a bonus token for free.
+1. The draft model generates $k$ candidate tokens $x_1, \dots, x_k$ autoregressively (cheap).
+2. The target model runs once over the prefix plus all $k$ candidates, producing its distributions at every position in parallel.
+3. Each token is accepted with probability $\min\left(1, \frac{p_{\text{target}}(x_i)}{p_{\text{draft}}(x_i)}\right)$; at the first rejection, a replacement is sampled from the normalized residual $\max(0, p_{\text{target}} - p_{\text{draft}})$ and the rest are discarded.
+4. If all $k$ are accepted, the target's next-token distribution gives a bonus token for free.
 
 This rejection-sampling scheme guarantees the output is **distributed exactly as if sampled from the target model alone** (with greedy decoding: identical output).
 
@@ -1658,16 +1660,16 @@ This rejection-sampling scheme guarantees the output is **distributed exactly as
 - **EAGLE:** drafts at the feature level for higher acceptance rates.
 - **Lookahead decoding / n-gram (prompt lookup):** draft tokens are copied from the prompt — great for summarization, code edits and RAG.
 
-**Requirements:** the draft must share the tokenizer and agree with the target often (acceptance rate α typically 0.6–0.8). Supported in vLLM, TensorRT-LLM, SGLang and TGI.
+**Requirements:** the draft must share the tokenizer and agree with the target often (acceptance rate $\alpha$ typically 0.6–0.8). Supported in vLLM, TensorRT-LLM, SGLang and TGI.
 
 ### 27.53 How can speculative decoding reduce LLM inference latency?
 
 Decoding in a large LLM is **memory-bandwidth bound**: each new token requires streaming all the weights (and the KV cache) from HBM to compute just one token, so the GPU's arithmetic units sit mostly idle. Speculative decoding converts that idle compute into extra tokens.
 
 **Why it's faster**
-- Verifying *k* draft tokens in one target forward pass costs about the same wall-clock time as generating **one** token (the weights are read once; the extra FLOPs are nearly free when memory bound).
+- Verifying $k$ draft tokens in one target forward pass costs about the same wall-clock time as generating **one** token (the weights are read once; the extra FLOPs are nearly free when memory bound).
 - If on average $\bar{a}$ draft tokens are accepted, each expensive target pass yields $\bar{a}+1$ tokens instead of 1.
-- Expected tokens per target pass with acceptance rate α and draft length k: $\frac{1-\alpha^{k+1}}{1-\alpha}$. With α = 0.8 and k = 4 that is ~3.4 tokens per pass → typical **2–3× lower latency**.
+- Expected tokens per target pass with acceptance rate $\alpha$ and draft length $k$: $\frac{1-\alpha^{k+1}}{1-\alpha}$. With $\alpha = 0.8$ and $k = 4$ that is ~3.4 tokens per pass → typical **2–3× lower latency**.
 - The output is unchanged (exact under rejection sampling), so there is no quality trade-off.
 
 **When it helps / hurts**
@@ -1675,7 +1677,7 @@ Decoding in a large LLM is **memory-bandwidth bound**: each new token requires s
 - Gains shrink at high batch sizes (the GPU is already compute-bound) and with low acceptance rates (creative, high-temperature sampling, or a mismatched draft model).
 - Costs: memory and compute for the draft model, and engineering complexity in batching and KV-cache management.
 
-**Production tuning:** choose a draft model ~10–50× smaller from the same family; tune *k* (3–8); monitor acceptance rate per workload; use n-gram/prompt-lookup drafting for input-grounded tasks (RAG, code editing), where acceptance is very high.
+**Production tuning:** choose a draft model ~10–50× smaller from the same family; tune $k$ (3–8); monitor acceptance rate per workload; use n-gram/prompt-lookup drafting for input-grounded tasks (RAG, code editing), where acceptance is very high.
 
 ### 27.54 What is continuous batching?
 
@@ -1701,15 +1703,19 @@ Decoding in a large LLM is **memory-bandwidth bound**: each new token requires s
 Two things must live in GPU memory (HBM) during inference, and both are large:
 
 **1. Model weights**
-- Memory ≈ params × bytes per param: a 70B model needs ~140 GB in FP16 — more than one 80 GB GPU — so it needs tensor parallelism or quantization.
+- $\text{Memory} \approx \text{params} \times \text{bytes per param}$: a 70B model needs ~140 GB in FP16 — more than one 80 GB GPU — so it needs tensor parallelism or quantization.
 
 **2. KV cache** — grows with batch size × sequence length:
-$\text{KV bytes} = 2 \times n_{layers} \times n_{kv\_heads} \times d_{head} \times \text{seq\_len} \times \text{batch} \times \text{bytes}$
-- Llama-2-70B (80 layers, 8 KV heads with GQA, d=128, FP16): ~0.33 MB per token → a 4k context is ~1.3 GB per sequence. Thirty concurrent requests consume tens of GB.
+
+$$
+\text{KV bytes} = 2 \times n_{\text{layers}} \times n_{\text{kv\_heads}} \times d_{\text{head}} \times \text{seq\_len} \times \text{batch} \times \text{bytes}
+$$
+
+- Llama-2-70B (80 layers, 8 KV heads with GQA, $d_{\text{head}} = 128$, FP16): ~0.33 MB per token → a 4k context is ~1.3 GB per sequence. Thirty concurrent requests consume tens of GB.
 - The KV cache limits **how many concurrent requests (batch size)** you can serve, which directly caps throughput.
 
 **3. Bandwidth, not just capacity**
-- During decode, each token requires reading **all weights plus the KV cache** from HBM, while doing only ~2 FLOPs per parameter. Arithmetic intensity is tiny, so token speed ≈ memory bandwidth / bytes read. An H100 has ~3.35 TB/s HBM but ~1,000 TFLOPS of BF16 compute — compute sits idle.
+- During decode, each token requires reading **all weights plus the KV cache** from HBM, while doing only ~2 FLOPs per parameter. Arithmetic intensity is tiny, so $\text{token speed} \approx \text{memory bandwidth} / \text{bytes read}$. An H100 has ~3.35 TB/s HBM but ~1,000 TFLOPS of BF16 compute — compute sits idle.
 
 **Mitigations**
 - **Quantization** (INT8/INT4/FP8) of weights and the KV cache.
@@ -1719,7 +1725,7 @@ $\text{KV bytes} = 2 \times n_{layers} \times n_{kv\_heads} \times d_{head} \tim
 
 ### 27.56 Compare compute-bound vs memory-bandwidth-bound workloads.
 
-The **roofline model** classifies a workload by its **arithmetic intensity** = FLOPs performed per byte moved from memory.
+The **roofline model** classifies a workload by its **arithmetic intensity**: $\text{arithmetic intensity} = \text{FLOPs performed} / \text{bytes moved from memory}$.
 
 | | Compute-bound | Memory-bandwidth-bound |
 | --- | --- | --- |
@@ -1728,11 +1734,11 @@ The **roofline model** classifies a workload by its **arithmetic intensity** = F
 | Examples | Large matmuls, training with big batches, **LLM prefill**, convolutions | **LLM decode at small batch**, elementwise ops, LayerNorm, softmax, embedding lookups |
 | Faster if you… | add FLOPS, use lower precision math (FP8 tensor cores), better kernels | reduce bytes (quantization, fusion), increase reuse (batching), more bandwidth (HBM3) |
 
-**Ridge point:** peak FLOPS ÷ bandwidth. An H100 has ~990 TFLOPS BF16 and ~3.35 TB/s → ~300 FLOPs/byte. Below that, you are memory bound.
+**Ridge point:** $\text{peak FLOPS} / \text{bandwidth}$. An H100 has ~990 TFLOPS BF16 and ~3.35 TB/s, so $990 \times 10^{12} / 3.35 \times 10^{12} \approx 300$ FLOPs/byte. Below that, you are memory bound.
 
 **LLM example**
 - **Prefill** processes all prompt tokens at once: matrix-matrix products with high intensity → compute-bound.
-- **Decode** at batch 1 is a matrix-vector product: each weight (2 bytes) is used for ~2 FLOPs → intensity ≈ 1 → heavily memory-bound. Increasing the batch raises intensity linearly until it hits the compute roof (often at batch ~100–300).
+- **Decode** at batch 1 is a matrix-vector product: each weight (2 bytes) is used for ~2 FLOPs → intensity $\approx 2 / 2 = 1$ → heavily memory-bound. Increasing the batch raises intensity linearly until it hits the compute roof (often at batch ~100–300).
 
 **Practical implications**
 - Optimizations must match the bottleneck: kernel fusion (FlashAttention) and quantization help memory-bound phases; FP8 and better parallelism help compute-bound ones.
@@ -1743,14 +1749,14 @@ The **roofline model** classifies a workload by its **arithmetic intensity** = F
 
 For a dense Transformer with $N$ parameters:
 
-**Training FLOPs ≈ $6ND$** (D = training tokens)
-- Forward pass ≈ $2N$ FLOPs per token (one multiply plus one add per parameter).
-- Backward pass ≈ $4N$ per token (gradients with respect to both activations and weights).
-- Example: a 7B model on 2T tokens ≈ $6 \times 7\times10^9 \times 2\times10^{12} \approx 8.4\times10^{22}$ FLOPs — a one-time cost, but enormous.
+**Training FLOPs** $\approx 6ND$ ($D$ = training tokens)
+- Forward pass $\approx 2N$ FLOPs per token (one multiply plus one add per parameter).
+- Backward pass $\approx 4N$ per token (gradients with respect to both activations and weights).
+- Example: a 7B model on 2T tokens: $6 \times 7 \times 10^{9} \times 2 \times 10^{12} \approx 8.4 \times 10^{22}$ FLOPs — a one-time cost, but enormous.
 
-**Inference FLOPs ≈ $2N$ per generated token** (forward only)
-- Plus attention cost that grows with context: ≈ $2 \cdot n_{layers} \cdot \text{ctx} \cdot d_{model}$ per token (more for long contexts).
-- Generating 1,000 tokens with a 7B model ≈ $1.4\times10^{13}$ FLOPs.
+**Inference FLOPs** $\approx 2N$ **per generated token** (forward only)
+- Plus attention cost that grows with context: $\approx 2 \cdot n_{\text{layers}} \cdot n_{\text{ctx}} \cdot d_{\text{model}}$ per token (more for long contexts).
+- Generating 1,000 tokens with a 7B model: $2 \times 7 \times 10^{9} \times 1000 \approx 1.4 \times 10^{13}$ FLOPs.
 
 **Key differences**
 - **Scale vs frequency:** training is a one-off cost; inference is paid per request, forever. For a popular product, cumulative inference compute can exceed training compute — which is why teams over-train smaller models (beyond Chinchilla-optimal).
@@ -1758,26 +1764,26 @@ For a dense Transformer with $N$ parameters:
 - **Memory:** training also stores optimizer states, gradients and activations (~16–20 bytes per param with Adam in mixed precision); inference stores weights plus the KV cache.
 - **MoE:** use *active* parameters in both formulas.
 
-**Use in practice:** estimate training cost = FLOPs ÷ (GPUs × peak FLOPS × MFU); estimate inference cost from tokens/day × 2N, then sanity-check against bandwidth limits.
+**Use in practice:** estimate $\text{training time} = \frac{\text{FLOPs}}{\text{GPUs} \times \text{peak FLOPS} \times \text{MFU}}$; estimate inference cost from $\text{tokens/day} \times 2N$, then sanity-check against bandwidth limits.
 
 ### 27.58 How would you estimate the GPU requirements for serving an LLM?
 
 Work through **memory first, then throughput**, then validate with a benchmark.
 
-**1. Weights:** params × bytes. A 70B model: FP16 ≈ 140 GB, FP8/INT8 ≈ 70 GB, INT4 ≈ 35–40 GB.
+**1. Weights:** $\text{params} \times \text{bytes}$. A 70B model: FP16 ≈ 140 GB, FP8/INT8 ≈ 70 GB, INT4 ≈ 35–40 GB.
 
 **2. KV cache per token:** $2 \times n_{layers} \times n_{kv\_heads} \times d_{head} \times \text{bytes}$.
-Llama-3-70B (80 layers, 8 KV heads, d=128, FP16) ≈ 320 KB per token.
-**Total KV** = per-token × (avg context length) × (concurrent sequences). 32 concurrent users × 8k tokens ≈ 84 GB.
+Llama-3-70B (80 layers, 8 KV heads, $d_{\text{head}} = 128$, FP16): $2 \times 80 \times 8 \times 128 \times 2 \approx 320$ KB per token.
+**Total KV:** $\text{KV}_{\text{total}} = \text{KV per token} \times \text{avg context length} \times \text{concurrent sequences}$. For 32 concurrent users at 8k tokens: $32 \times 8192 \times 320\ \text{KB} \approx 84\ \text{GB}$.
 
 **3. Overhead:** activations, CUDA graphs, fragmentation → leave ~10–20% headroom (vLLM's `gpu_memory_utilization` ≈ 0.9).
 
-**4. Memory total → GPU count:** 140 + 84 + ~20 ≈ 244 GB → 4× H100 80 GB (tensor-parallel 4), or 2× H100 with FP8 weights and a smaller KV budget.
+**4. Memory total → GPU count:** $140 + 84 + 20 \approx 244$ GB → 4× H100 80 GB (tensor-parallel 4), or 2× H100 with FP8 weights and a smaller KV budget.
 
 **5. Throughput check (decode is bandwidth-bound):**
-- Tokens/s per sequence ≈ effective bandwidth ÷ bytes read per step. With TP=4 (~13 TB/s aggregate) reading ~140 GB → ~60–90 tokens/s at batch 1 (in practice lower).
+- $\text{tokens/s per sequence} \approx \frac{\text{effective bandwidth}}{\text{bytes read per step}}$. With TP=4 (~13 TB/s aggregate) reading ~140 GB → ~60–90 tokens/s at batch 1 (in practice lower).
 - Batching amortizes weight reads: aggregate throughput rises nearly linearly with batch size until compute-bound or out of KV memory.
-- Required capacity = peak requests/s × avg output tokens ÷ tokens/s per replica → number of replicas.
+- $\text{required replicas} = \frac{\text{peak requests/s} \times \text{avg output tokens}}{\text{tokens/s per replica}}$.
 
 **6. Latency SLOs:** TTFT (prefill, compute-bound; scales with prompt length) and TPOT (decode). Long prompts may need chunked prefill or separate prefill nodes.
 

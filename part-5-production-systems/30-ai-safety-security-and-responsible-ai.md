@@ -698,7 +698,7 @@ During model training, a common approach is **Differentially Private Stochastic 
 - **Clip individual gradients:** Limit each training example’s gradient to a maximum norm.
 - **Add random noise:** Add calibrated Gaussian noise to the aggregated gradients.
 - **Update the model:** Train normally using the noisy gradients.
-- **Track privacy budget:** Measure privacy using parameters such as **ε (epsilon)** and **δ (delta)**.
+- **Track privacy budget:** Measure privacy using parameters such as **$\epsilon$ (epsilon)** and **$\delta$ (delta)**.
 - **Control the trade-off:** More noise generally provides stronger privacy but can reduce model accuracy.
 
 ##### Example
@@ -1229,7 +1229,7 @@ Before placing the system on the EU market or putting it into applicable service
 I would treat **privacy and model utility as an optimization trade-off**: use the strongest privacy protection that still meets the application's risk and regulatory requirements.
 
 - **Define the privacy requirement first:** Determine the required privacy budget and acceptable utility loss based on the sensitivity of the data and application risk.
-- **Tune the privacy budget:** A smaller `ε` generally provides stronger privacy but requires more noise. If the risk assessment permits it, use a less restrictive privacy budget.
+- **Tune the privacy budget:** A smaller $\epsilon$ generally provides stronger privacy but requires more noise. If the risk assessment permits it, use a less restrictive privacy budget.
 - **Optimize DP-SGD:** Tune gradient clipping, noise multiplier, learning rate, batch size, and number of training steps to reduce unnecessary utility loss.
 - **Improve data quality:** Clean noisy data, remove duplicates, improve labels, and ensure representative training data before applying differential privacy.
 - **Increase useful signal:** Where appropriate, use larger datasets or better model architectures so the model can tolerate the privacy noise.
@@ -1507,7 +1507,7 @@ This is a **re-identification risk**: removing obvious identifiers like names or
 - **Minimize data:** Collect and retain only the data actually required.
 - **Remove direct identifiers:** Remove names, emails, phone numbers, IDs, etc.
 - **Generalize quasi-identifiers:** Reduce precision of attributes such as age, location, timestamps, or occupation.
-- **Use k-anonymity where appropriate:** Ensure each released record is indistinguishable from at least `k-1` other records with respect to selected quasi-identifiers.
+- **Use k-anonymity where appropriate:** Ensure each released record is indistinguishable from at least $k-1$ other records with respect to selected quasi-identifiers.
 - **Consider l-diversity/t-closeness:** Prevent sensitive attributes from becoming predictable within supposedly anonymous groups.
 - **Use differential privacy:** Add mathematically calibrated noise to statistical queries or model outputs so individual records have limited influence.
 - **Avoid unique combinations:** Detect combinations of attributes that can uniquely identify individuals.
@@ -1935,7 +1935,7 @@ I would reduce the environmental impact across the **entire AI lifecycle**, from
 **3. Local post-hoc techniques:**
 - **SHAP values** (TreeSHAP is exact and fast for tree models): additive per-prediction attributions, which become reason codes.
 - LIME: a local linear surrogate (less stable).
-- **Counterfactual explanations** (DiCE): "if income were $5k higher, the loan would be approved".
+- **Counterfactual explanations** (DiCE): "if income were \$5k higher, the loan would be approved".
 - Anchors: rule-based local explanations.
 
 **4. Deep learning:** Integrated Gradients, Grad-CAM saliency maps for vision, attention visualisation (with caution), concept-based methods (TCAV). For LLMs: citations and retrieval grounding, chain-of-thought rationales (not faithful by default).

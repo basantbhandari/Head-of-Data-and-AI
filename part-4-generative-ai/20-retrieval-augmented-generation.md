@@ -2825,7 +2825,7 @@ There's no universal best size; chunk size is a hyperparameter tuned against ret
 - **Structure:** split on natural boundaries (headings, sections, paragraphs, table rows, functions) rather than fixed character counts.
 - **Query type:** factoid lookups favour smaller chunks (~200–400 tokens); explanatory/synthesis questions favour larger (~500–1,000).
 - **Embedding limits:** stay well within the model's max input; long inputs dilute embeddings.
-- **Context budget:** chunk size × top-k must fit with the prompt and answer.
+- **Context budget:** $\text{chunk size} \times k$ must fit with the prompt and answer.
 
 **Experiment:**
 1. Build a labelled set (questions, gold passages, gold answers).
@@ -2874,14 +2874,22 @@ Re-tune when the corpus, embedding model or query mix changes.
 These four metrics separate RAG quality into **retrieval** and **generation**:
 
 **Retrieval precision** — of the retrieved chunks, how many are relevant?
-$\text{Precision@k} = \frac{\#\text{relevant in top-}k}{k}$
+
+$$
+\text{Precision@}k = \frac{\#\,\text{relevant in top-}k}{k}
+$$
+
 Low precision = noisy context, more tokens, more distraction.
 
 **Retrieval recall** — of all relevant chunks, how many were retrieved?
-$\text{Recall@k} = \frac{\#\text{relevant in top-}k}{\#\text{relevant total}}$
+
+$$
+\text{Recall@}k = \frac{\#\,\text{relevant in top-}k}{\#\,\text{relevant total}}
+$$
+
 Low recall = the answer isn't in the context, so the LLM can't answer correctly (or hallucinates). Usually the first thing to fix.
 
-**Faithfulness (groundedness)** — are the answer's claims supported by the retrieved context? Split the answer into claims and check each against the context (NLI model or LLM judge): supported / total. Low faithfulness = hallucination, even if the answer happens to be true.
+**Faithfulness (groundedness)** — are the answer's claims supported by the retrieved context? Split the answer into claims and check each against the context (NLI model or LLM judge): $\text{supported claims} / \text{total claims}$. Low faithfulness = hallucination, even if the answer happens to be true.
 
 **Answer relevance** — does the answer address the user's question (not off-topic, evasive or padded)? Measured with an LLM judge, or (RAGAS) by generating questions from the answer and comparing them to the original via embeddings.
 

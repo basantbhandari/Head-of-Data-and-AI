@@ -122,21 +122,25 @@ Fine-tune when you need **consistent behavior or domain-specific capabilities** 
 
 #### How does LoRA work?
 
-For an existing weight matrix **W**, LoRA keeps **W frozen** and learns a low-rank update:
+For an existing weight matrix **$W$**, LoRA keeps **$W$ frozen** and learns a low-rank update:
 
-**W' = W + ΔW**
+$$
+W' = W + \Delta W
+$$
 
-Instead of directly learning the large **ΔW**, LoRA represents it as:
+Instead of directly learning the large **$\Delta W$**, LoRA represents it as:
 
-**ΔW = B × A**
+$$
+\Delta W = BA
+$$
 
-where **A** and **B** are much smaller matrices.
+where **$A$** and **$B$** are much smaller matrices.
 
 During training:
 
 1. **Freeze the original LLM weights.**
 2. Insert LoRA adapters into selected layers, commonly the **attention projections** such as Q, K, V, or O.
-3. Train only the small **A and B matrices**.
+3. Train only the small **$A$ and $B$ matrices**.
 4. During inference, the LoRA update is combined with the original weights.
 
 #### Why is LoRA efficient?
@@ -600,11 +604,13 @@ For example, fine-tuning can teach an enterprise assistant **how to respond**, w
 - Larger batches generally provide more stable gradient estimates but require more memory.
 - If GPU memory is limited, use **gradient accumulation** to achieve a larger effective batch size.
 
-**Effective batch size ≈ batch size × gradient accumulation steps × number of GPUs**
+$$
+\text{Effective batch size} \approx \text{batch size} \times \text{gradient accumulation steps} \times \text{number of GPUs}
+$$
 
 #### 4. LoRA Rank
 
-- **LoRA rank (`r`)** controls the size/capacity of the low-rank update.
+- **LoRA rank ($r$)** controls the size/capacity of the low-rank update.
 - **Lower rank:** fewer parameters, lower memory usage, but potentially less adaptation capacity.
 - **Higher rank:** more parameters and capacity, but higher memory/compute requirements.
 - Common values include **4, 8, 16, 32, or 64**, depending on the task and model.
@@ -709,13 +715,17 @@ Use continual pre-training when:
    - Assign each adapter a weight and combine their updates.
    - Conceptually:
 
-   **ΔW = α₁ΔW₁ + α₂ΔW₂ + ... + αₙΔWₙ**
+   $$
+   \Delta W = \alpha_1 \Delta W_1 + \alpha_2 \Delta W_2 + \cdots + \alpha_n \Delta W_n
+   $$
 
    - This allows you to control how strongly each adapter contributes.
 2. **Merge into the base model**
    - Combine the LoRA updates with the original model weights:
 
-   **W' = W + ΔW**
+   $$
+   W' = W + \Delta W
+   $$
 
    - The resulting model no longer needs the separate LoRA adapter for inference.
 3. **Keep adapters separate**
@@ -1036,7 +1046,7 @@ If a domain-specific fine-tuned LLM loses its general capabilities, I would use 
 
 - **Clarify the labeling rubric:** Give annotators precise criteria for helpfulness, correctness, relevance, safety, and style, with clear examples and edge cases.
 - **Train annotators:** Provide calibration exercises and feedback before they label production data.
-- **Measure agreement:** Track metrics such as **Cohen’s κ**, **Fleiss’ κ**, or **Krippendorff’s α** to identify ambiguous tasks or inconsistent annotators.
+- **Measure agreement:** Track metrics such as **Cohen’s $\kappa$**, **Fleiss’ $\kappa$**, or **Krippendorff’s $\alpha$** to identify ambiguous tasks or inconsistent annotators.
 - **Use multiple annotators:** Have multiple independent annotators rank the same responses rather than relying on a single judgment.
 - **Resolve disagreements:** Send low-agreement examples to expert reviewers or adjudication.
 - **Remove ambiguous samples:** If reasonable annotators cannot agree because the prompt is inherently subjective, exclude or separately categorize the example.
@@ -1174,9 +1184,11 @@ Suppose you're building a **company support chatbot**:
 
 **LoRA** is a parameter-efficient fine-tuning (PEFT) technique that freezes the original LLM weights and learns small **low-rank matrices** instead of updating all parameters.
 
-For a weight matrix WW:
+For a weight matrix $W$:
 
-$W' = W + BA$
+$$
+W' = W + BA
+$$
 
 where, $A$ and $B$ are much smaller matrices.
 

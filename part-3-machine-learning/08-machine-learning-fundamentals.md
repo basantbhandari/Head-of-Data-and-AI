@@ -250,7 +250,7 @@ One weight update, which happens after the model processes one batch.
 
 ### 8.16 If I have 1,000 training examples and a batch size of 100, how many iterations are in one epoch?
 
-10 iterations (1,000 ÷ 100 = 10 batches, and each batch = 1 iteration).
+10 iterations ($1{,}000 \div 100 = 10$ batches, and each batch = 1 iteration).
 
 ### 8.17 If I train for 5 epochs with the setup above, how many total iterations happen?
 
@@ -277,7 +277,7 @@ An optimization method where the model computes the gradient and updates weights
 **Stochastic Gradient Descent (SGD)**
 
 - Variant of gradient descent that updates parameters using one random training sample at a time (instead of full dataset)
-- Update rule: θ = θ − α∇J(θ; xᵢ, yᵢ) for a single sample i
+- Update rule: $\theta = \theta - \alpha \nabla J(\theta; x_i, y_i)$ for a single sample $i$
 - Much faster per update than Batch GD, especially for large datasets
 - Noisy updates — high variance in path to minimum, but noise can help escape local minima/saddle points
 - Requires more iterations to converge, but each iteration is cheap
@@ -305,7 +305,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 ### 8.25 What is the Softmax Activation Function?
 
 - Converts a vector of raw scores (logits) into a probability distribution
-- Formula: softmax(zᵢ) = e\^zᵢ / Σ e\^zⱼ (for all j classes)
+- Formula: $\operatorname{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$ (for all $j$ classes)
 - Output values are between 0 and 1, and sum to 1
 - Used in the output layer for multi-class classification problems
 - Amplifies differences — larger logits get pushed closer to 1, smaller ones toward 0
@@ -369,7 +369,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 | Output | Discrete categories/classes | Continuous numerical value |
 | Example | Spam vs Not Spam, Cat vs Dog | House price, Temperature prediction |
 | Algorithms | Logistic Regression, SVM, Decision Trees | Linear Regression, Ridge, Lasso |
-| Evaluation | Accuracy, Precision, Recall, F1 | MSE, RMSE, MAE, R² |
+| Evaluation | Accuracy, Precision, Recall, F1 | MSE, RMSE, MAE, $R^2$ |
 | Output type | Class labels/probabilities | Real numbers |
 
 #### Regression vs Classification
@@ -380,7 +380,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 | Output can be any numerical value | Output belongs to a fixed set of classes |
 | Example: Predict house **price** | Example: Predict whether a customer will **churn or not** |
 | Common algorithms: Linear Regression, Ridge, Lasso | Common algorithms: Logistic Regression, Decision Tree, SVM |
-| Metrics: MAE, MSE, RMSE, R² | Metrics: Accuracy, Precision, Recall, F1-score |
+| Metrics: MAE, MSE, RMSE, $R^2$ | Metrics: Accuracy, Precision, Recall, F1-score |
 
 **Simple way to remember:**
 
@@ -420,14 +420,14 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 **L1 Loss (Mean Absolute Error)**
 
-- Sum/average of absolute differences: L1 = Σ\|y\_true − y\_pred\|
+- Sum/average of absolute differences: $L_1 = \sum \lvert y_{\text{true}} - y_{\text{pred}} \rvert$
 - Robust to outliers
 - Produces sparse solutions (used in L1 regularization/Lasso)
 - Gradient is constant, not smooth at zero
 
 **L2 Loss (Mean Squared Error)**
 
-- Sum/average of squared differences: L2 = Σ(y\_true − y\_pred)²
+- Sum/average of squared differences: $L_2 = \sum (y_{\text{true}} - y_{\text{pred}})^2$
 - Penalizes larger errors more heavily
 - Sensitive to outliers
 - Smooth gradient, easier to optimize (used in L2 regularization/Ridge)
@@ -438,17 +438,17 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 - Technique to prevent overfitting by adding a penalty term to the loss function based on model weights
 - Discourages overly complex models by shrinking coefficients
-- Controlled by hyperparameter λ (lambda) — higher λ = more penalty
+- Controlled by hyperparameter $\lambda$ (lambda) — higher $\lambda$ = more penalty
 
 **L1 (Lasso)**
 
-- Adds penalty = λ Σ\|wᵢ\|
+- Adds penalty $= \lambda \sum_i \lvert w_i \rvert$
 - Shrinks some coefficients to exactly zero → performs feature selection
 - Produces sparse models
 
 **L2 (Ridge)**
 
-- Adds penalty = λ Σwᵢ²
+- Adds penalty $= \lambda \sum_i w_i^2$
 - Shrinks coefficients toward zero but rarely to exactly zero
 - Handles multicollinearity well, keeps all features
 
@@ -466,14 +466,14 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 - Regularization technique used in neural networks to prevent overfitting
 - Randomly "drops" (deactivates) a fraction of neurons during each training iteration
 - Forces network to not rely on specific neurons, improving generalization
-- Dropout rate (p) typically 0.2–0.5
+- Dropout rate ($p$) typically 0.2–0.5
 - Only applied during training; all neurons active during inference (with scaling)
 
 ### 8.36 What is a Perceptron?
 
 - Simplest form of a neural network — a single-layer binary classifier
 - Takes weighted inputs, sums them, adds bias, passes through activation function (step function)
-- Formula: output = f(Σ(wᵢxᵢ) + b)
+- Formula: $\text{output} = f\left(\sum_i w_i x_i + b\right)$
 - Can only solve linearly separable problems (e.g., fails on XOR)
 - Foundation/building block for multi-layer neural networks (MLPs)
 
@@ -490,8 +490,8 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 > **See also:** [Question 17.74 — What is entropy vs. cross-entropy?](../part-4-generative-ai/17-large-language-model-foundations.md#1774-what-is-entropy-vs-cross-entropy), which covers the same question from another angle.
 
 - Loss function that measures difference between predicted probability distribution and true distribution
-- Formula (binary): L = −\[y log(p) + (1−y) log(1−p)\]
-- Formula (multi-class): L = −Σ yᵢ log(pᵢ)
+- Formula (binary): $L = -\left[y \log(p) + (1 - y) \log(1 - p)\right]$
+- Formula (multi-class): $L = -\sum_i y_i \log(p_i)$
 - Penalizes confident wrong predictions heavily
 - Commonly used with Softmax for classification tasks
 
@@ -540,9 +540,9 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 **Precision, Recall, F1-Score**
 
-- **Precision**: Of predicted positives, how many are actually correct → TP / (TP + FP), how precise are my positive predictions?
-- **Recall**: Of actual positives, how many were correctly identified → TP / (TP + FN), how many of the actual positive did i find/recall?
-- **F1-Score**: Harmonic mean of precision and recall → 2 × (P × R) / (P + R)
+- **Precision**: Of predicted positives, how many are actually correct → $\frac{\text{TP}}{\text{TP} + \text{FP}}$, how precise are my positive predictions?
+- **Recall**: Of actual positives, how many were correctly identified → $\frac{\text{TP}}{\text{TP} + \text{FN}}$, how many of the actual positive did i find/recall?
+- **F1-Score**: Harmonic mean of precision and recall → $\frac{2 \times P \times R}{P + R}$
 - Precision matters when false positives are costly (e.g., spam detection)
 - Recall matters when false negatives are costly (e.g., disease detection)
 - F1 balances both, useful for imbalanced datasets
@@ -570,17 +570,17 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 | Output | Probability distribution over actions | Estimated value (Q-value) |
 | Examples | REINFORCE, PPO, A2C (actor part) | Q-Learning, DQN, SARSA |
 | Convergence | Can converge to local optima, higher variance | More stable but can be less flexible |
-| Exploration | Naturally stochastic (built-in exploration) | Needs explicit strategy (e.g., ε-greedy) |
+| Exploration | Naturally stochastic (built-in exploration) | Needs explicit strategy (e.g., $\varepsilon$-greedy) |
 
 ### 8.45 What is Q-Learning?
 
 - Model-free, value-based reinforcement learning algorithm
-- Learns a Q-value function Q(s, a) representing expected cumulative reward for taking action a in state s
-- **Update rule**: Q(s,a) ← Q(s,a) + α\[r + γ·max Q(s',a') − Q(s,a)\]
-  - α = learning rate, γ = discount factor, r = reward
+- Learns a Q-value function $Q(s, a)$ representing expected cumulative reward for taking action $a$ in state $s$
+- **Update rule**: $Q(s,a) \leftarrow Q(s,a) + \alpha\left[r + \gamma \max_{a'} Q(s',a') - Q(s,a)\right]$
+  - $\alpha$ = learning rate, $\gamma$ = discount factor, $r$ = reward
 - Off-policy — learns optimal policy regardless of agent's actions during exploration
 - Uses a Q-table (or neural network in Deep Q-Learning/DQN) to store/approximate values
-- Agent picks action with highest Q-value (often via ε-greedy for exploration)
+- Agent picks action with highest Q-value (often via $\varepsilon$-greedy for exploration)
 
 ### 8.46 Explain the concept of exploration vs. exploitation.
 
@@ -589,7 +589,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 - **Exploitation**: Choosing the best-known action to maximize immediate reward
 - Too much exploration → slow convergence, inefficient
 - Too much exploitation → risk getting stuck in suboptimal policy (local optima)
-- **Common strategies**: ε-greedy (random action with probability ε), decaying ε, softmax action selection, UCB (Upper Confidence Bound)
+- **Common strategies**: $\varepsilon$-greedy (random action with probability $\varepsilon$), decaying $\varepsilon$, softmax action selection, UCB (Upper Confidence Bound)
 
 ### 8.47 Explain the curse of dimensionality and how to address it.
 
@@ -614,12 +614,12 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 
 - Loss computed independently for each task/branch before combining into total loss
 - Helps each task-specific head learn effectively without being dominated by others
-- Often combined via weighted sum: L\_total = Σ wᵢ × Lᵢ (local losses)
+- Often combined via weighted sum: $L_{\text{total}} = \sum_i w_i L_i$ (local losses)
 
 **Focal Loss**
 
 - Modified cross-entropy loss that down-weights easy/well-classified examples
-- Formula: FL = −α(1−p)\^γ log(p)
+- Formula: $\text{FL} = -\alpha (1 - p)^{\gamma} \log(p)$
 - Focuses training on hard/misclassified examples
 - Useful in multi-task settings with class imbalance across tasks
 
@@ -721,7 +721,7 @@ The main difference is **the type of target (output) variable they predict**:
 | **Example target** | `Spam` / `Not Spam` | House price = `$250,000` |
 | **Output** | Class label or probability | Real-valued number |
 | **Common algorithms** | Logistic Regression, Decision Tree, Random Forest, SVM, Neural Networks | Linear Regression, Decision Tree, Random Forest, SVR, Neural Networks |
-| **Common metrics** | Accuracy, Precision, Recall, F1, ROC-AUC | MAE, MSE, RMSE, R² |
+| **Common metrics** | Accuracy, Precision, Recall, F1, ROC-AUC | MAE, MSE, RMSE, $R^2$ |
 
 #### Simple examples
 
@@ -1167,8 +1167,8 @@ cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
 **Why L2 isn't sparse:** the penalty $\lambda \sum w_j^2$ has gradient $2\lambda w_j$, which shrinks toward zero in proportion to the weight. As $w_j$ gets small the push gets small too, so weights become tiny but almost never exactly zero. Ridge shrinks all coefficients smoothly and spreads weight across correlated features.
 
 **Why L1 is sparse:**
-- **Gradient view:** the penalty $\lambda \sum |w_j|$ has a constant-magnitude (sub)gradient $\lambda \,\text{sign}(w_j)$, so it keeps pushing small weights at the same rate until they reach exactly 0. The solution is the soft-thresholding operator: $w_j = \text{sign}(z)\max(|z| - \lambda, 0)$.
-- **Geometric view:** the constrained problem $\min \text{loss}$ s.t. $\lVert w\rVert_1 \le t$ has a diamond-shaped feasible region with corners on the axes. The elliptical loss contours usually touch it at a corner, where some coordinates are exactly zero. The L2 ball is round, with no corners, so contact points are generically off-axis.
+- **Gradient view:** the penalty $\lambda \sum \lvert w_j \rvert$ has a constant-magnitude (sub)gradient $\lambda \operatorname{sign}(w_j)$, so it keeps pushing small weights at the same rate until they reach exactly 0. The solution is the soft-thresholding operator: $w_j = \operatorname{sign}(z)\max(\lvert z \rvert - \lambda, 0)$.
+- **Geometric view:** the constrained problem $\min \text{loss} \ \text{s.t.}\ \lVert w \rVert_1 \le t$ has a diamond-shaped feasible region with corners on the axes. The elliptical loss contours usually touch it at a corner, where some coordinates are exactly zero. The L2 ball is round, with no corners, so contact points are generically off-axis.
 - **Bayesian view:** L1 equals a Laplace prior (peaked at 0) and L2 a Gaussian prior.
 
 **Practical use:** use L1 for feature selection or interpretability, L2 for stability with multicollinearity, and **Elastic Net** for both (sparse, but it handles groups of correlated features better than Lasso, which picks one arbitrarily).
@@ -1227,7 +1227,7 @@ Models with **high capacity and few built-in constraints** relative to the amoun
 **Prone to overfitting:**
 - **Deep, unpruned decision trees:** can create one leaf per sample. The classic high-variance model.
 - **KNN with small k** (k = 1 memorizes the training set).
-- **Kernel SVM with large γ and large C.**
+- **Kernel SVM with large $\gamma$ and large $C$.**
 - **High-degree polynomial regression** and linear models with many features relative to samples ($p \gg n$) and no regularization.
 - **Large neural networks** trained long on small datasets without dropout, weight decay, augmentation or early stopping.
 - **Gradient boosting** with too many rounds, deep trees or a high learning rate. Boosting keeps fitting residuals, including the noise.
@@ -1454,7 +1454,9 @@ The idea: **learning = compression**. A model that can compress data well must h
 
 Prediction error can be decomposed as:
 
-$\boxed{ \text{MSE}=\text{Bias}^2+\text{Variance}+\text{Irreducible Noise} }$
+$$
+\boxed{\text{MSE} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Noise}}
+$$
 
 - **Bias** → error from overly simple assumptions → **underfitting**
 - **Variance** → error from being too sensitive to training data → **overfitting**
@@ -1462,7 +1464,9 @@ $\boxed{ \text{MSE}=\text{Bias}^2+\text{Variance}+\text{Irreducible Noise} }$
 
 #### As model complexity increases
 
-$\text{Complexity}\uparrow \Rightarrow \text{Bias}\downarrow,\quad \text{Variance}\uparrow$
+$$
+\text{Complexity}\uparrow \Rightarrow \text{Bias}\downarrow,\quad \text{Variance}\uparrow
+$$
 
 So:
 
@@ -1474,7 +1478,9 @@ Complex model → Low bias, high variance
 
 **Goal:** Find a model complexity that minimizes **generalization/test error**.
 
-$Test Error≈Bias^2+Variance+Noise$
+$$
+\text{Test Error} \approx \text{Bias}^2 + \text{Variance} + \text{Noise}
+$$
 
 ### 8.92 Why can a model with lower training loss have worse test performance?
 
@@ -1495,21 +1501,29 @@ Model A fits the training data better, but its test performance is worse because
 
 Training minimizes empirical risk:
 
-$\hat{R}(f)=\frac{1}{n}\sum_{i=1}^{n}L(f(x_i),y_i)$
+$$
+\hat{R}(f) = \frac{1}{n}\sum_{i=1}^{n} L(f(x_i), y_i)
+$$
 
 But what we actually care about is the expected/test risk:
 
-$R(f)=\mathbb{E}_{(x,y)\sim P}[L(f(x),y)]$
+$$
+R(f) = \mathbb{E}_{(x,y)\sim P}\left[L(f(x), y)\right]
+$$
 
 A model can have:
 
-$\hat{R}(f_A)<\hat{R}(f_B)$
+$$
+\hat{R}(f_A) < \hat{R}(f_B)
+$$
 
 while:
 
-$R(f_A)>R(f_B)$
+$$
+R(f_A) > R(f_B)
+$$
 
-because fAf\_A has learned **training-specific patterns/noise** rather than general patterns.
+because $f_A$ has learned **training-specific patterns/noise** rather than general patterns.
 
 #### Why this happens
 
@@ -1609,20 +1623,17 @@ You can detect overfitting using several signals beyond just train vs validation
 
 Consider polynomial regression:
 
-```txt
-y = w₀ + w₁x + w₂x² + ... + w₁₀x¹⁰
-```
+$$
+y = w_0 + w_1 x + w_2 x^2 + \dots + w_{10} x^{10}
+$$
 
 A degree-10 polynomial has **higher capacity** than a degree-2 polynomial because it can represent more functions.
 
 But if the learned degree-10 polynomial happens to have small higher-order coefficients:
 
-```txt
-w₇ ≈ 0
-w₈ ≈ 0
-w₉ ≈ 0
-w₁₀ ≈ 0
-```
+$$
+w_7 \approx 0,\quad w_8 \approx 0,\quad w_9 \approx 0,\quad w_{10} \approx 0
+$$
 
 the **effective complexity of the learned solution** may still be low.
 
@@ -1682,11 +1693,15 @@ Think of regularization as putting a **constraint around the possible weight val
 
 ##### L1 Regularization
 
-$\lambda \sum_i |w_i|$
+$$
+\lambda \sum_i \lvert w_i \rvert
+$$
 
 For two weights $w_1, w_2$:
 
-$|w_1| + |w_2| \leq c$
+$$
+\lvert w_1 \rvert + \lvert w_2 \rvert \leq c
+$$
 
 The constraint forms a **diamond**:
 
@@ -1706,7 +1721,9 @@ The diamond has **sharp corners on the axes**.
 
 Because the optimum often lands on these corners:
 
-$w_1 = 0 \quad \text{or} \quad w_2 = 0$
+$$
+w_1 = 0 \quad \text{or} \quad w_2 = 0
+$$
 
 So **L1 encourages sparse models**, effectively performing feature selection.
 
@@ -1714,11 +1731,15 @@ So **L1 encourages sparse models**, effectively performing feature selection.
 
 ##### L2 Regularization
 
-$\lambda \sum_i w_i^2$
+$$
+\lambda \sum_i w_i^2
+$$
 
 For two weights:
 
-$w_1^2 + w_2^2 \leq c$
+$$
+w_1^2 + w_2^2 \leq c
+$$
 
 The constraint forms a **circle**:
 
@@ -1761,11 +1782,15 @@ A generative model tries to understand **how the data is generated**.
 
 For classification, it can learn:
 
-$P(X\mid Y)P(Y)$
+$$
+P(X \mid Y)\,P(Y)
+$$
 
 and then use Bayes' rule:
 
-$P(Y\mid X)=\frac{P(X\mid Y)P(Y)}{P(X)}$
+$$
+P(Y \mid X) = \frac{P(X \mid Y)\,P(Y)}{P(X)}
+$$
 
 **Example:** Naive Bayes learns what spam and non-spam emails look like, then estimates whether a new email is spam.
 
@@ -1777,15 +1802,21 @@ Generative models can potentially **create new samples** similar to the training
 
 A discriminative model directly learns the relationship between input and target:
 
-$P(Y\mid X)$
+$$
+P(Y \mid X)
+$$
 
 or directly learns a decision boundary:
 
-$f(X)\rightarrow Y$
+$$
+f(X) \rightarrow Y
+$$
 
 **Example:** Logistic regression learns:
 
-$P(\text{spam}\mid\text{email})$
+$$
+P(\text{spam} \mid \text{email})
+$$
 
 without explicitly modeling how spam emails themselves are generated.
 

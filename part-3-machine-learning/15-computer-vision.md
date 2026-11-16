@@ -525,7 +525,7 @@ CNNs encode **priors that match the structure of natural images**:
 
 ### 15.18 Explain convolution, stride, padding, dilation, and receptive field.
 
-- **Convolution** — slide a learned kernel (e.g. 3×3×C_in) over the input and take a dot product at each position, producing one output channel per kernel. It detects the same local pattern everywhere.
+- **Convolution** — slide a learned kernel (e.g. $3 \times 3 \times C_{\text{in}}$) over the input and take a dot product at each position, producing one output channel per kernel. It detects the same local pattern everywhere.
 - **Stride** — how far the kernel moves each step. Stride 2 halves the spatial resolution (cheap downsampling).
 - **Padding** — adds border pixels (usually zeros) so the kernel can be centred on edge pixels and the output size is controlled.
 - **Dilation** — spaces out kernel taps (dilation 2 means a 3×3 kernel covers a 5×5 area). It enlarges the receptive field without more parameters or downsampling; used in segmentation (DeepLab) and WaveNet.
@@ -533,9 +533,15 @@ CNNs encode **priors that match the structure of natural images**:
 
 **Output size:**
 
-$$O = \left\lfloor \frac{I + 2P - D(K-1) - 1}{S} \right\rfloor + 1$$
+$$
+O = \left\lfloor \frac{I + 2P - D(K-1) - 1}{S} \right\rfloor + 1
+$$
 
-**Receptive field** (recursive): $r_l = r_{l-1} + (K_l - 1)\,D_l \prod_{i<l} S_i$.
+**Receptive field** (recursive):
+
+$$
+r_l = r_{l-1} + (K_l - 1)\,D_l \prod_{i<l} S_i
+$$
 
 **Example:** three stacked 3×3 convs (stride 1) have a 7×7 receptive field with fewer parameters and more nonlinearity than one 7×7 conv, which is the VGG insight.
 
@@ -608,9 +614,9 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 
 ### 15.23 Explain IoU, precision, recall, and mAP for object detection.
 
-- **IoU (Intersection over Union)** — overlap between a predicted box and a ground-truth box: $\text{IoU} = \frac{|A \cap B|}{|A \cup B|}$. A prediction counts as a **true positive** if IoU ≥ a threshold (e.g. 0.5) and the class matches. Each ground truth can be matched only once.
-- **Precision** — $TP / (TP + FP)$: of the boxes predicted, how many are correct. Duplicates and wrong boxes are FPs.
-- **Recall** — $TP / (TP + FN)$: of the real objects, how many were found.
+- **IoU (Intersection over Union)** — overlap between a predicted box and a ground-truth box: $\text{IoU} = \frac{\lvert A \cap B \rvert}{\lvert A \cup B \rvert}$. A prediction counts as a **true positive** if $\text{IoU} \geq$ a threshold (e.g. 0.5) and the class matches. Each ground truth can be matched only once.
+- **Precision** — $\text{TP} / (\text{TP} + \text{FP})$: of the boxes predicted, how many are correct. Duplicates and wrong boxes are FPs.
+- **Recall** — $\text{TP} / (\text{TP} + \text{FN})$: of the real objects, how many were found.
 - **AP (Average Precision)** — sort detections by confidence, sweep the threshold, plot the precision-recall curve, and take the area under it (interpolated). Computed **per class**.
 - **mAP** — the mean of AP over classes.
   - **PASCAL VOC:** mAP@0.5.

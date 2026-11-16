@@ -186,11 +186,15 @@ Measure the incremental improvement rather than attributing all improvements to 
 
 A common calculation is:
 
-`ROI = (Total AI Benefit − Total AI Cost) / Total AI Cost`
+$$
+\text{ROI} = \frac{\text{Total AI Benefit} - \text{Total AI Cost}}{\text{Total AI Cost}}
+$$
 
 For example, if an AI automation feature generates the revenue **\$100K/year** and costs **\$30K/year** to operate and maintain:
 
-`ROI = ($100K − $30K) / $30K = 233%`
+$$
+\text{ROI} = \frac{\$100\text{K} - \$30\text{K}}{\$30\text{K}} = 233\%
+$$
 
 ##### 5. Include AI-specific metrics
 

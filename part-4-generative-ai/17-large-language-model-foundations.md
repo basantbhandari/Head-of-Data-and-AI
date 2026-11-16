@@ -282,7 +282,7 @@ This chapter contains **142 questions**.
 
 - **Input embedding + positional encoding:** Tokens are converted to embeddings; since attention has no inherent sense of order, positional encodings are added to inject sequence position information.
 - **Self-attention:** For each token, computes **Query (Q)**, **Key (K)**, **Value (V)** vectors, then calculates attention weights showing how relevant every other token is to the current one:
-  - `Attention(Q, K, V) = softmax(QK^T / √d_k) * V`
+  - $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
 - **Multi-head attention:** Runs several attention operations in parallel (different "heads"), each capturing different types of relationships (syntactic, semantic, positional); outputs are concatenated and combined.
 - **Feedforward network:** Each token's representation (post-attention) passes through a position-wise fully connected layer, applied identically at every position.
 - **Residual connections + layer normalization:** Wrap each sub-layer (attention, feedforward) to stabilize training and enable deeper stacking.
@@ -322,7 +322,7 @@ This chapter contains **142 questions**.
 - **Input Embeddings:** Converts input tokens (words/subwords) into dense vector representations.
 - **Positional Encoding:** Added to embeddings to inject information about token order/position, since self-attention has no inherent sense of sequence order (uses sine/cosine functions or learned embeddings).
 - **Self-Attention (Scaled Dot-Product Attention):** Computes Query (Q), Key (K), Value (V) vectors for each token; determines how much each token should attend to every other token:
-  - `Attention(Q, K, V) = softmax(QK^T / √d_k) * V`
+  - $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
 - **Multi-Head Attention:** Runs multiple attention operations in parallel (different heads), each learning different types of relationships (syntactic, semantic); outputs concatenated and linearly combined.
 - **Masked Self-Attention (Decoder only):** Prevents a token from attending to future tokens, preserving the autoregressive property during generation.
 - **Feedforward Network (FFN):** A position-wise fully connected network (two linear layers with a non-linearity like ReLU/GELU in between) applied independently to each token's representation.
@@ -483,18 +483,18 @@ In **self-attention**, each token is transformed into three vectors:
 
 ##### Attention Calculation
 
-```txt
-Q = XW_Q
-K = XW_K
-V = XW_V
+$$
+Q = XW_Q, \quad K = XW_K, \quad V = XW_V
+$$
 
-Attention(Q, K, V) = softmax(QK^T / √d_k) V
-```
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+$$
 
-- **QKᵀ** → Measures similarity between queries and keys.
-- **√dₖ** → Scaling factor to prevent excessively large values.
+- **$QK^\top$** → Measures similarity between queries and keys.
+- **$\sqrt{d_k}$** → Scaling factor to prevent excessively large values.
 - **Softmax** → Converts scores into attention weights.
-- **× V** → Produces the weighted information.
+- **$\times V$** → Produces the weighted information.
 
 ##### Simple Example
 
@@ -515,11 +515,11 @@ The query for **"it"** can assign higher attention to the key corresponding to *
 - **Key (K):** A vector representing each token's "label" — what kind of information that token offers, used to match against queries.
 - **Value (V):** A vector representing the actual content/information of each token, which gets passed forward if that token is deemed relevant.
 - **How they interact:**
-  - Compute similarity between the current token's Query and every token's Key via dot product: `Q · K^T` — this gives a relevance score for each token pair.
-  - Scale by `√d_k` and apply **softmax** to turn scores into attention weights (summing to 1).
+  - Compute similarity between the current token's Query and every token's Key via dot product: $Q \cdot K^\top$ — this gives a relevance score for each token pair.
+  - Scale by $\sqrt{d_k}$ and apply **softmax** to turn scores into attention weights (summing to 1).
   - Multiply these weights by the corresponding **Value** vectors and sum them up — producing a weighted combination of Values, weighted by how relevant each token was.
-  - Formula: `Attention(Q, K, V) = softmax(QK^T / √d_k) * V`
-- **Where Q, K, V come from:** Each is a learned linear projection of the same input embedding (via separate weight matrices `W_Q`, `W_K`, `W_V`) — so the model learns what aspects of a token to use as its query, key, and value.
+  - Formula: $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
+- **Where Q, K, V come from:** Each is a learned linear projection of the same input embedding (via separate weight matrices $W_Q$, $W_K$, $W_V$) — so the model learns what aspects of a token to use as its query, key, and value.
 - **Self-attention vs. cross-attention:**
   - **Self-attention:** Q, K, V all come from the same sequence (e.g., encoder attending to itself).
   - **Cross-attention:** Q comes from one sequence (e.g., decoder), while K and V come from another (e.g., encoder output) — used to relate two different sequences.
@@ -530,22 +530,22 @@ The query for **"it"** can assign higher attention to the key corresponding to *
 
 - **Self-attention** allows each token to determine how much it should focus on other tokens in the same sequence.
 - Each token is transformed into **Query (Q), Key (K), and Value (V)** vectors.
-- Attention scores are calculated using **QKᵀ**, then normalized with **softmax**.
+- Attention scores are calculated using **$QK^\top$**, then normalized with **softmax**.
 - These scores determine how much each **Value (V)** contributes to the token's output.
 
 ##### Formula
 
-```txt
-Q = XW_Q
-K = XW_K
-V = XW_V
+$$
+Q = XW_Q, \quad K = XW_K, \quad V = XW_V
+$$
 
-Attention(Q, K, V) = softmax(QK^T / √d_k) V
-```
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+$$
 
 ##### Process
 
-**Input → Q, K, V → QKᵀ → Scaling → Softmax → Weighted V → Output**
+**Input → Q, K, V → $QK^\top$ → Scaling → Softmax → Weighted V → Output**
 
 **Interview:**
 
@@ -574,13 +574,13 @@ Attention(Q, K, V) = softmax(QK^T / √d_k) V
 
 ##### Formula
 
-```txt
-Q = X_target W_Q
-K = X_source W_K
-V = X_source W_V
+$$
+Q = X_{\text{target}} W_Q, \quad K = X_{\text{source}} W_K, \quad V = X_{\text{source}} W_V
+$$
 
-CrossAttention(Q, K, V) = softmax(QK^T / √d_k) V
-```
+$$
+\operatorname{CrossAttention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+$$
 
 ##### Self-Attention vs Cross-Attention
 
@@ -608,7 +608,7 @@ The key idea is:
 
 ##### How It Works
 
-- The formula is the same as regular attention: `Attention(Q, K, V) = softmax(QK^T / √d_k) * V`
+- The formula is the same as regular attention: $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
 - The difference is only in the **source** of the vectors:
   - **Query (Q):** Derived from the target/decoder sequence (what it's currently generating/processing).
   - **Key (K) and Value (V):** Derived from the source/encoder sequence (the reference information being attended to).
@@ -639,30 +639,30 @@ The key idea is:
 
 In scaled dot-product attention:
 
-```txt
-Attention(Q, K, V) = softmax(QK^T / √d_k) V
-```
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+$$
 
-- **QKᵀ** produces attention scores.
-- As **dₖ increases**, the dot-product values tend to become larger.
+- **$QK^\top$** produces attention scores.
+- As **$d_k$ increases**, the dot-product values tend to become larger.
 - Large scores make **softmax extremely peaked**, causing very small gradients and unstable learning.
-- Dividing by **√dₖ** keeps the scores at a reasonable scale.
+- Dividing by **$\sqrt{d_k}$** keeps the scores at a reasonable scale.
 - This makes **softmax more stable** and improves gradient flow during training.
 
 #### Interview
 
-> **We divide the attention scores by √dₖ to prevent their magnitude from growing with the dimensionality of the key vectors, which keeps softmax well-behaved and improves training stability.**
+> **We divide the attention scores by $\sqrt{d_k}$ to prevent their magnitude from growing with the dimensionality of the key vectors, which keeps softmax well-behaved and improves training stability.**
 
 #### Why Scale Dot-Product Attention by √dₖ
 
-- **The problem without scaling:** In dot-product attention, the score between a query `Q` and key `K` is computed as `Q · K^T`. As the dimensionality `d_k` of these vectors grows, the **variance of the dot product grows proportionally with `d_k`** (assuming components of Q and K are independent random variables with mean 0 and variance 1, the dot product's variance scales as `d_k`).
-- **Consequence of large dot products:** When `d_k` is large, the raw dot-product scores can become very large in magnitude (either strongly positive or negative).
+- **The problem without scaling:** In dot-product attention, the score between a query $Q$ and key $K$ is computed as $Q \cdot K^\top$. As the dimensionality $d_k$ of these vectors grows, the **variance of the dot product grows proportionally with $d_k$** (assuming components of Q and K are independent random variables with mean 0 and variance 1, the dot product's variance scales as $d_k$).
+- **Consequence of large dot products:** When $d_k$ is large, the raw dot-product scores can become very large in magnitude (either strongly positive or negative).
 - **Effect on softmax:** These large-magnitude scores push the **softmax function into regions where it has extremely small gradients** — softmax saturates when inputs are very large/small, meaning it produces very peaked distributions (close to one-hot) with gradients near zero almost everywhere.
 - **Why this is a problem:** Vanishing gradients through softmax make it very difficult for the model to learn effectively during backpropagation — the attention weights become overly confident too early/inappropriately, and the model struggles to adjust them via gradient descent.
-- **The fix — scaling by √dₖ:** Dividing the dot product by `√d_k` normalizes the variance of the scores back down to approximately 1, regardless of `d_k`:
-  - `Attention(Q, K, V) = softmax(QK^T / √d_k) * V`
+- **The fix — scaling by $\sqrt{d_k}$:** Dividing the dot product by $\sqrt{d_k}$ normalizes the variance of the scores back down to approximately 1, regardless of $d_k$:
+  - $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
   - This keeps the softmax inputs in a reasonable range, avoiding extreme saturation and preserving useful gradients for stable training.
-- **Why √dₖ specifically (not `d_k` itself):** Since variance scales linearly with `d_k`, scaling by the square root of `d_k` (standard deviation) brings the variance of the dot product back down to approximately 1, matching the assumption of unit variance for Q and K components — this is the mathematically appropriate normalization factor.
+- **Why $\sqrt{d_k}$ specifically (not $d_k$ itself):** Since variance scales linearly with $d_k$, scaling by the square root of $d_k$ (standard deviation) brings the variance of the dot product back down to approximately 1, matching the assumption of unit variance for Q and K components — this is the mathematically appropriate normalization factor.
 - **Net effect:** Scaled dot-product attention leads to more stable gradients, better-behaved softmax outputs, and more effective training — this is why the original Transformer paper ("Attention Is All You Need") introduced this scaling as a key design choice over standard (unscaled) dot-product attention.
 
 ### 17.20 What is causal masking?
@@ -671,7 +671,7 @@ Attention(Q, K, V) = softmax(QK^T / √d_k) V
 
 - **Causal masking** prevents a token from attending to **future tokens** during autoregressive generation.
 - It ensures the model can only use the **current and previous tokens**.
-- Typically implemented by setting future attention scores to **−∞** before softmax.
+- Typically implemented by setting future attention scores to **$-\infty$** before softmax.
 
 ##### Example
 
@@ -686,17 +686,15 @@ models     1    1     1     1
 
 ##### Formula
 
-```txt
-Attention(Q, K, V) =
-softmax((QK^T + M) / √d_k) V
-```
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top + M}{\sqrt{d_k}}\right)V
+$$
 
-Where **M** is the causal mask:
+Where **$M$** is the causal mask:
 
-```txt
-M[i,j] = 0      if j ≤ i
-M[i,j] = −∞    if j > i
-```
+$$
+M_{ij} = 0 \ \text{if } j \leq i, \qquad M_{ij} = -\infty \ \text{if } j > i
+$$
 
 **Interview:**
 
@@ -705,7 +703,7 @@ M[i,j] = −∞    if j > i
 ##### Causal Masking
 
 - A technique used in autoregressive Transformers (like GPT-style models) to prevent a token from attending to future tokens — it can only see itself and everything before it
-- Enforces the constraint that predictions for position `i` can only depend on positions `1, 2, ..., i`, never on `i+1, i+2, ...`
+- Enforces the constraint that predictions for position $i$ can only depend on positions $1, 2, \ldots, i$, never on $i+1, i+2, \ldots$
 
 **Why it's needed:**
 
@@ -715,9 +713,9 @@ M[i,j] = −∞    if j > i
 
 **How it works:**
 
-- Before the softmax step in attention, a mask is applied to the raw attention scores (QKᵀ)
-- Positions corresponding to future tokens are set to `∞` (negative infinity)
-- After softmax, `∞` scores become 0 probability — so future tokens contribute nothing to the weighted sum, regardless of how relevant they might look
+- Before the softmax step in attention, a mask is applied to the raw attention scores ($QK^\top$)
+- Positions corresponding to future tokens are set to $-\infty$ (negative infinity)
+- After softmax, $-\infty$ scores become 0 probability — so future tokens contribute nothing to the weighted sum, regardless of how relevant they might look
 - Positions at or before the current one keep their normal computed scores
 
 **Visual example (mask matrix for a 4-token sequence):**
@@ -730,8 +728,8 @@ tok3  [  0     0     0    -∞  ]
 tok4  [  0     0     0     0  ]
 ```
 
-- Each row represents what that token is allowed to attend to (0 = allowed, -∞ = blocked)
-- This creates a lower-triangular pattern — token `i` can only look left (at itself and earlier tokens)
+- Each row represents what that token is allowed to attend to (0 = allowed, $-\infty$ = blocked)
+- This creates a lower-triangular pattern — token $i$ can only look left (at itself and earlier tokens)
 
 **Why this matters for training efficiency:**
 
@@ -755,11 +753,13 @@ tok4  [  0     0     0     0  ]
 
 ##### Formula
 
-```txt
-head_i = Attention(XW_Q^i, XW_K^i, XW_V^i)
+$$
+\text{head}_i = \operatorname{Attention}(XW_Q^i, XW_K^i, XW_V^i)
+$$
 
-MultiHead(X) = Concat(head_1, ..., head_h) W_O
-```
+$$
+\operatorname{MultiHead}(X) = \operatorname{Concat}(\text{head}_1, \ldots, \text{head}_h)\,W_O
+$$
 
 ##### Why Multiple Heads?
 
@@ -785,8 +785,8 @@ Multi-head attention is the mechanism at the core of the Transformer architectur
 
 **How it works, step by step:**
 
-1. **Linear projections**: The input (queries Q, keys K, values V) is projected into multiple lower-dimensional subspaces using separate learned weight matrices for each head. If the model dimension is `d_model` and there are `h` heads, each head typically works in a space of dimension `d_model / h`.
-2. **Parallel attention**: Each head independently computes standard scaled dot-product attention:<br />`Attention(Q, K, V) = softmax(QKᵀ / √d_k) · V`
+1. **Linear projections**: The input (queries Q, keys K, values V) is projected into multiple lower-dimensional subspaces using separate learned weight matrices for each head. If the model dimension is $d_{\text{model}}$ and there are $h$ heads, each head typically works in a space of dimension $d_{\text{model}} / h$.
+2. **Parallel attention**: Each head independently computes standard scaled dot-product attention:<br />$\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
 3. **Concatenation**: The outputs of all heads are concatenated back together.
 4. **Final projection**: The concatenated result is passed through one more learned linear layer to produce the final output, mixing information across heads.
 
@@ -802,7 +802,7 @@ With one head, the attention weights for a given query are a single distribution
 
 **3. Increased model capacity without much added compute**
 
-Because each head operates in a reduced dimension (`d_model / h`), the total computation is similar to one full-dimensional attention operation, but the model gains more expressive power — each head learns its own query/key/value projections, effectively giving the model several "views" of the data for roughly the same cost.
+Because each head operates in a reduced dimension ($d_{\text{model}} / h$), the total computation is similar to one full-dimensional attention operation, but the model gains more expressive power — each head learns its own query/key/value projections, effectively giving the model several "views" of the data for roughly the same cost.
 
 **4. Empirical robustness and stability**
 
@@ -814,7 +814,7 @@ In practice, multi-head attention tends to produce more stable and higher-qualit
 
 - **Feed-Forward Network (FFN)** is the **non-linear transformation layer** inside each Transformer block.
 - It processes each token **independently** after self-attention.
-- Typical structure: FFN(x)=W2σ(W1x+b1)+b2
+- Typical structure: $\text{FFN}(x) = W_2\,\sigma(W_1 x + b_1) + b_2$
 - It usually **expands → activates → compresses** the hidden representation.
 - **Attention:** mixes information **between tokens**.
 - **FFN:** transforms and enriches **each token's representation**.
@@ -838,11 +838,13 @@ x → Self-Attention → Add & Norm → Feed-Forward → Add & Norm → next lay
 
 The FFN itself is a simple two-layer fully connected network applied identically (with shared weights) to every position in the sequence:
 
-`FFN(x) = W₂ · activation(W₁ · x + b₁) + b₂`
+$$
+\text{FFN}(x) = W_2 \cdot \text{activation}(W_1 x + b_1) + b_2
+$$
 
-- **First linear layer (W₁)**: projects the input from `d_model` up to a much larger hidden dimension, typically `4 × d_model` (e.g., 512 → 2048).
+- **First linear layer ($W_1$)**: projects the input from $d_{\text{model}}$ up to a much larger hidden dimension, typically $4 \times d_{\text{model}}$ (e.g., 512 → 2048).
 - **Activation function**: a nonlinearity applied elementwise. Originally ReLU in the first Transformer paper; modern LLMs mostly use variants like GELU or, more commonly now, GLU-based activations such as SwiGLU (used in LLaMA, PaLM, and others).
-- **Second linear layer (W₂)**: projects back down from the large hidden dimension to `d_model`, so the output can be added back into the residual stream.
+- **Second linear layer ($W_2$)**: projects back down from the large hidden dimension to $d_{\text{model}}$, so the output can be added back into the residual stream.
 
 Critically, this network is applied **position-wise** — the exact same weights are used at every token position, but each token passes through independently, with no interaction between positions inside the FFN. All the cross-token mixing already happened in the attention sublayer before it.
 
@@ -852,7 +854,7 @@ Projecting up to a wider hidden dimension gives the network more room to represe
 
 **Why FFNs matter so much**
 
-- **Capacity**: FFNs contain the majority of a Transformer's parameters — often roughly two-thirds of the total, since the hidden dimension is so much larger than `d_model`. Much of what a model "knows" (factual associations, learned patterns) is thought to be stored substantially in these weights.
+- **Capacity**: FFNs contain the majority of a Transformer's parameters — often roughly two-thirds of the total, since the hidden dimension is so much larger than $d_{\text{model}}$. Much of what a model "knows" (factual associations, learned patterns) is thought to be stored substantially in these weights.
 - **Nonlinearity**: Attention itself is fundamentally about weighted averaging (largely linear/convex combinations of value vectors). Without the FFN's nonlinear activation function in between, stacking attention layers wouldn't add much representational power — the FFN is where the real nonlinear transformation happens.
 - **Per-token computation**: It lets the model apply complex, learned transformations to each token's features independently, complementing attention's role of gathering context across tokens.
 
@@ -893,7 +895,7 @@ Projecting up to a wider hidden dimension gives the network more room to represe
 
 The answer above is the same as Q23 (what the context window is and why it matters). It does not explain why the window is limited. The main reasons are:
 
-- **Attention cost grows quadratically.** Standard self-attention scores every token against every other token, so compute and attention memory scale as O(n²) with sequence length. Doubling the context roughly quadruples attention work during prefill.
+- **Attention cost grows quadratically.** Standard self-attention scores every token against every other token, so compute and attention memory scale as $O(n^2)$ with sequence length. Doubling the context roughly quadruples attention work during prefill.
 - **The KV cache grows linearly with length.** The model keeps K and V tensors for every previous token in every layer. At long contexts and large batch sizes, the KV cache (not the weights) often dominates GPU memory and limits how many concurrent requests a server can handle.
 - **Training length and positional encoding.** Models are trained on sequences up to a maximum length. Positional schemes such as RoPE do not extrapolate reliably far beyond it without scaling techniques (position interpolation, YaRN) plus long-context fine-tuning.
 - **Data and training cost.** High-quality long documents are scarcer, and training on long sequences is expensive.
@@ -906,13 +908,13 @@ The answer above is the same as Q23 (what the context window is and why it matte
 ##### 1. Quadratic Compute Cost of Self-Attention
 
 - Standard self-attention computes a relationship score between **every pair of tokens** in the sequence
-- For a sequence of length `n`, this means `n × n` = **O(n²)** score computations
+- For a sequence of length $n$, this means **$n \times n = O(n^2)$** score computations
 - Doubling the sequence length doesn't double the compute — it **quadruples** it
 - This makes very long contexts disproportionately expensive to process, both in training and inference
 
 ##### 2. Quadratic Memory Cost
 
-- The full attention matrix (`QKᵀ`) that gets computed has size `n × n`, which must be held in memory (at least in the standard, non-fused implementation)
+- The full attention matrix ($QK^\top$) that gets computed has size $n \times n$, which must be held in memory (at least in the standard, non-fused implementation)
 - At long sequence lengths, this matrix alone can consume enormous amounts of GPU memory, even before accounting for the model's weights
 
 ##### 3. Growing KV Cache During Generation
@@ -994,7 +996,7 @@ Despite these constraints, context windows have grown substantially through tech
 | Top-k | Top-p |
 | --- | --- |
 | Fixed number of tokens | Dynamic number of tokens |
-| `k` controls candidate count | `p` controls probability mass |
+| $k$ controls candidate count | $p$ controls probability mass |
 | Can be too restrictive or too broad depending on distribution | Adapts to the model's probability distribution |
 
 **Interview answer:**
@@ -1007,7 +1009,9 @@ Despite these constraints, context windows have grown substantially through tech
 - The model converts the final hidden representation into a **logit for each token** in the vocabulary.
 - **Softmax** converts logits into probabilities:
 
-P(token\_i) = e\^(z\_i) / Σ\_j e\^(z\_j)
+$$
+P(\text{token}_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}
+$$
 
 - The next token is then selected using **greedy decoding or sampling** (e.g., temperature, Top-k, Top-p).
 
@@ -1020,9 +1024,9 @@ P(token\_i) = e\^(z\_i) / Σ\_j e\^(z\_j)
 - **Skip/Residual connections** allow the input of a Transformer layer to be **added directly to its output**.
 - Typically:
 
-```txt
-Output = x + Sublayer(x)
-```
+$$
+\text{Output} = x + \text{Sublayer}(x)
+$$
 
 - Transformers use residual connections around **self-attention** and **FFN** layers.
 - **Why they matter:**
@@ -1179,7 +1183,7 @@ Combine outputs
 **Standard Transformer FFN vs. MoE layer:**
 
 - Normal Transformer: every token passes through the _same single_ FFN
-- MoE Transformer: the FFN is replaced by `N` separate expert FFNs (e.g., 8 experts), plus a router
+- MoE Transformer: the FFN is replaced by $N$ separate expert FFNs (e.g., 8 experts), plus a router
 
 **Step by step:**
 
@@ -1317,7 +1321,7 @@ Combine outputs
 ##### Broader Meaning of "Sparse" (Beyond MoE)
 
 - MoE is the most common form of sparsity in LLMs, but "sparse" more generally refers to any technique where not all parameters/connections are used at once:
-  - **Sparse attention**: only computing attention over a subset of token pairs, rather than full O(n²) attention
+  - **Sparse attention**: only computing attention over a subset of token pairs, rather than full $O(n^2)$ attention
   - **Weight pruning**: permanently zeroing out unimportant individual weights (structured or unstructured sparsity), reducing effective parameter count altogether, not just per-input activation
 - MoE is sometimes called **"conditional computation"** — sparsity that's dynamic and input-dependent, rather than a fixed pruned structure
 
@@ -1346,9 +1350,9 @@ Combine outputs
 
 ##### The Problem It Solves
 
-- **Standard attention implementation:** Computes the full `Q·K^T` attention matrix (size `n × n` for sequence length `n`), applies softmax, then multiplies by `V` — this requires **materializing** the full `n × n` attention matrix in GPU memory.
-- **Memory bottleneck:** GPUs have a small amount of very fast memory (**SRAM**) and a much larger amount of slower memory (**HBM** - High Bandwidth Memory). Standard attention repeatedly reads/writes the large `n × n` matrix to/from slow HBM, which becomes the main bottleneck — not the actual compute (FLOPs), but the **memory I/O**.
-- **Quadratic memory usage:** The `n × n` attention matrix grows quadratically with sequence length, making very long sequences memory-prohibitive with standard implementations.
+- **Standard attention implementation:** Computes the full $QK^\top$ attention matrix (size $n \times n$ for sequence length $n$), applies softmax, then multiplies by $V$ — this requires **materializing** the full $n \times n$ attention matrix in GPU memory.
+- **Memory bottleneck:** GPUs have a small amount of very fast memory (**SRAM**) and a much larger amount of slower memory (**HBM** - High Bandwidth Memory). Standard attention repeatedly reads/writes the large $n \times n$ matrix to/from slow HBM, which becomes the main bottleneck — not the actual compute (FLOPs), but the **memory I/O**.
+- **Quadratic memory usage:** The $n \times n$ attention matrix grows quadratically with sequence length, making very long sequences memory-prohibitive with standard implementations.
 
 ---
 
@@ -1364,7 +1368,7 @@ Combine outputs
 
 ##### Why It Matters (Impact)
 
-- **Memory efficiency:** Reduces memory usage from **quadratic** (`O(n²)`) to **linear** (`O(n)`) in sequence length, enabling much longer context windows to be processed.
+- **Memory efficiency:** Reduces memory usage from **quadratic** ($O(n^2)$) to **linear** ($O(n)$) in sequence length, enabling much longer context windows to be processed.
 - **Speed:** Significantly faster than standard attention implementations in practice (2-4x+ speedups reported), since it minimizes slow HBM memory access, which was the true bottleneck (not raw compute).
 - **Enables longer context windows:** Made training and inference with much longer sequences (thousands to hundreds of thousands of tokens) practical, directly enabling the long-context capabilities seen in modern LLMs.
 
@@ -1389,9 +1393,9 @@ Combine outputs
 
 For a single example:
 
-```txt
-L = -log(P(correct class))
-```
+$$
+L = -\log P(\text{correct class})
+$$
 
 For LLMs, it is commonly used for **next-token prediction**:
 
@@ -1456,17 +1460,17 @@ GQA is a variant of attention designed to reduce the memory and speed costs of i
 
 **Quick recap: the problem GQA solves**
 
-In standard Multi-Head Attention (MHA), each of the `h` heads has its own separate set of Query, Key, and Value projections. During autoregressive generation, the model caches the Keys and Values for all previous tokens (the "KV cache") so it doesn't have to recompute them at every new step. But since every head has its own K and V, the cache size scales directly with the number of heads — this becomes a major memory bottleneck for long sequences and large models, and it also limits how much you can batch during inference.
+In standard Multi-Head Attention (MHA), each of the $h$ heads has its own separate set of Query, Key, and Value projections. During autoregressive generation, the model caches the Keys and Values for all previous tokens (the "KV cache") so it doesn't have to recompute them at every new step. But since every head has its own K and V, the cache size scales directly with the number of heads — this becomes a major memory bottleneck for long sequences and large models, and it also limits how much you can batch during inference.
 
 **How GQA works**
 
 GQA sits between two extremes:
 
-1. **Multi-Head Attention (MHA)**: `h` query heads, `h` key heads, `h` value heads. Maximum expressiveness, maximum KV cache size.
-2. **Multi-Query Attention (MQA)**: `h` query heads, but only **1** shared key head and **1** shared value head. Minimal KV cache, but can lose some quality since all query heads are forced to share the same keys/values.
-3. **Grouped-Query Attention (GQA)**: `h` query heads are split into `g` groups, and each group shares a single set of key/value heads. So instead of `h` KV heads (MHA) or 1 KV head (MQA), you have `g` KV heads, where `1 < g < h`.
+1. **Multi-Head Attention (MHA)**: $h$ query heads, $h$ key heads, $h$ value heads. Maximum expressiveness, maximum KV cache size.
+2. **Multi-Query Attention (MQA)**: $h$ query heads, but only **1** shared key head and **1** shared value head. Minimal KV cache, but can lose some quality since all query heads are forced to share the same keys/values.
+3. **Grouped-Query Attention (GQA)**: $h$ query heads are split into $g$ groups, and each group shares a single set of key/value heads. So instead of $h$ KV heads (MHA) or 1 KV head (MQA), you have $g$ KV heads, where $1 < g < h$.
 
-Concretely, if you have 32 query heads and set `g = 8` groups, then every 4 query heads share one K/V head — reducing the KV cache size by 4x compared to full MHA, while still giving more diversity than MQA's single shared K/V.
+Concretely, if you have 32 query heads and set $g = 8$ groups, then every 4 query heads share one K/V head — reducing the KV cache size by 4x compared to full MHA, while still giving more diversity than MQA's single shared K/V.
 
 **Key differences from MHA**
 
@@ -1523,12 +1527,12 @@ Position-dependent rotation
 **Core mechanism:**
 
 - Each Q and K vector is split into pairs of dimensions (treated like 2D coordinates)
-- Each pair is rotated by an angle proportional to the token's position `m` and a frequency specific to that pair: `θ = m × ω_i`
+- Each pair is rotated by an angle proportional to the token's position $m$ and a frequency specific to that pair: $\theta = m \times \omega_i$
 - Different pairs of dimensions rotate at different frequencies — similar in spirit to the sinusoidal encoding's use of multiple frequencies, but applied as a rotation rather than an addition
 
 **The key mathematical property:**
 
-- When you take the dot product of a rotated query (at position `m`) and a rotated key (at position `n`), the result depends only on their **relative distance** `(m - n)`, not their absolute positions
+- When you take the dot product of a rotated query (at position $m$) and a rotated key (at position $n$), the result depends only on their **relative distance** $(m - n)$, not their absolute positions
 - This falls out naturally from rotation math: rotating two vectors by their own angles and then computing their dot product is equivalent to rotating one vector by the _difference_ of the two angles
 
 **Simplified 2D intuition:**
@@ -1551,7 +1555,7 @@ Position-dependent rotation
 
 **3. No added parameters**
 
-- Learned positional embeddings add a full trainable embedding table (`max_seq_len × d_model` parameters)
+- Learned positional embeddings add a full trainable embedding table ($\text{max\_seq\_len} \times d_{\text{model}}$ parameters)
 - RoPE requires no extra learned parameters — it's a fixed mathematical transformation applied at attention time
 
 **4. Compatible with efficient attention mechanisms**
@@ -1577,18 +1581,17 @@ Position-dependent rotation
 #### Layer Normalization
 
 - **Layer Normalization (LayerNorm)** normalizes the activations **across the features of each individual token**, helping keep their values in a stable range.
-- For a token representation x:
+- For a token representation $x$:
 
-```txt
-μ = mean(x)
-σ² = variance(x)
+$$
+\mu = \text{mean}(x), \qquad \sigma^2 = \text{variance}(x)
+$$
 
-x̂ = (x - μ) / √(σ² + ε)
+$$
+\hat{x} = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}}, \qquad \text{output} = \gamma \hat{x} + \beta
+$$
 
-output = γx̂ + β
-```
-
-- **γ (gamma)** and **β (beta)** are learnable parameters.
+- **$\gamma$ (gamma)** and **$\beta$ (beta)** are learnable parameters.
 - In Transformers, LayerNorm helps **stabilize training and improve gradient flow**.
 - Unlike **BatchNorm**, LayerNorm does **not depend on the batch size**.
 
@@ -1603,11 +1606,13 @@ output = γx̂ + β
 - **RMSNorm** is a simplified alternative to **LayerNorm** used in many modern LLMs.
 - Instead of calculating both **mean and variance**, RMSNorm normalizes using only the **root mean square (RMS)** of the activations.
 
-```txt
-RMS(x) = √(mean(x²) + ε)
+$$
+\text{RMS}(x) = \sqrt{\text{mean}(x^2) + \epsilon}
+$$
 
-output = γ · x / RMS(x)
-```
+$$
+\text{output} = \gamma \cdot \frac{x}{\text{RMS}(x)}
+$$
 
 - RMSNorm **does not subtract the mean**, unlike LayerNorm.
 - It is **computationally simpler and faster** while providing similar training stability.
@@ -1632,15 +1637,19 @@ output = γ · x / RMS(x)
 
 ##### The Formula
 
-`RMSNorm(x) = γ × x / RMS(x)`
+$$
+\text{RMSNorm}(x) = \gamma \cdot \frac{x}{\text{RMS}(x)}
+$$
 
 where:
 
-`RMS(x) = √( (1/n) × Σ xᵢ² )`
+$$
+\text{RMS}(x) = \sqrt{\frac{1}{n} \sum_{i=1}^{n} x_i^2}
+$$
 
-- `x` is the input vector (a token's activations)
-- `n` is the number of features
-- `γ` is a learned per-feature scale parameter (no learned shift/bias term, unlike LayerNorm's `β`)
+- $x$ is the input vector (a token's activations)
+- $n$ is the number of features
+- $\gamma$ is a learned per-feature scale parameter (no learned shift/bias term, unlike LayerNorm's $\beta$)
 
 ##### How It Differs from LayerNorm
 
@@ -1648,8 +1657,8 @@ where:
 | --- | --- | --- |
 | Subtract mean (re-centering) | Yes | **No** |
 | Divide by standard deviation | Yes | Divide by RMS instead |
-| Learned scale (γ) | Yes | Yes |
-| Learned shift (β) | Yes | **No** |
+| Learned scale ($\gamma$) | Yes | Yes |
+| Learned shift ($\beta$) | Yes | **No** |
 
 - LayerNorm assumes both the _mean_ and _variance_ of activations matter and need correcting
 - RMSNorm assumes only the _scale_ (magnitude) of activations matters — it re-scales the vector so its RMS is 1, without worrying about centering it around zero
@@ -1673,7 +1682,7 @@ where:
 
 **3. Simplicity**
 
-- Fewer learned parameters (no `β` shift term) and a simpler computation graph
+- Fewer learned parameters (no $\beta$ shift term) and a simpler computation graph
 
 **4. Adopted in leading architectures**
 
@@ -2207,7 +2216,7 @@ PPO also commonly uses a **KL penalty** to prevent the RL-trained model from dri
 
 - **PPO** is a **policy-gradient reinforcement learning algorithm** used to optimize an agent’s policy while preventing excessively large policy updates.
 - It improves training **stability and sample efficiency** by constraining how much the new policy can differ from the old policy.
-- PPO uses a **clipped objective function** that limits the policy probability ratio to a small range, typically **\[1 − ε, 1 + ε\]**.
+- PPO uses a **clipped objective function** that limits the policy probability ratio to a small range, typically **$[1 - \epsilon, 1 + \epsilon]$**.
 - It uses **advantage estimates** to determine whether an action performed better or worse than expected.
 - PPO is **on-policy**, meaning it learns primarily from data collected using the current policy.
 - It is widely used in **continuous-control tasks, robotics, games, and RLHF for language models**.
@@ -2550,15 +2559,15 @@ DLMs typically require **multiple denoising iterations**, so they don't automati
 For each token, LayerNorm calculates the **mean and variance across its feature dimensions**, not across the entire training dataset:
 
 $$
-\text{LayerNorm}(x)=\gamma\frac{x-\mu}{\sqrt{\sigma^2+\epsilon}}+\beta
+\text{LayerNorm}(x) = \gamma \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} + \beta
 $$
 
 where:
 
-- μ = mean of the token's features
-- σ2 = variance of the token's features
-- γ,β = learnable scale and shift parameters
-- ϵ = small value for numerical stability
+- $\mu$ = mean of the token's features
+- $\sigma^2$ = variance of the token's features
+- $\gamma, \beta$ = learnable scale and shift parameters
+- $\epsilon$ = small value for numerical stability
 
 #### BatchNorm vs LayerNorm
 
@@ -2607,21 +2616,21 @@ Transformers process sequences where **batch size and sequence length can vary**
 **Singular Value Decomposition (SVD)** is a matrix factorization technique that decomposes a matrix into **three matrices**:
 
 $$
-A = U\Sigma V^T
+A = U \Sigma V^\top
 $$
 
 Where:
 
-- **A** = original matrix
-- **U** = left singular vectors
-- **Σ** = diagonal matrix containing singular values
-- **V\^T** = transpose of the right singular vectors
+- **$A$** = original matrix
+- **$U$** = left singular vectors
+- **$\Sigma$** = diagonal matrix containing singular values
+- **$V^\top$** = transpose of the right singular vectors
 
 #### Key idea
 
 SVD represents a complex matrix as a combination of **orthogonal directions and their importance (singular values)**.
 
-The singular values in Σ\\Sigma are usually arranged from **largest to smallest**. Larger singular values represent the most important components of the data.
+The singular values in $\Sigma$ are usually arranged from **largest to smallest**. Larger singular values represent the most important components of the data.
 
 #### Applications
 
@@ -2635,38 +2644,38 @@ The singular values in Σ\\Sigma are usually arranged from **largest to smallest
 
 #### SVD for dimensionality reduction
 
-If only the top k singular values are retained:
+If only the top $k$ singular values are retained:
 
 $$
-A \approx U_k\Sigma_kV_k^T
+A \approx U_k \Sigma_k V_k^\top
 $$
 
 This produces a **lower-dimensional approximation** while preserving most of the important information.
 
 ### 17.73 What is KL Divergence?
 
-**KL Divergence (Kullback–Leibler Divergence)** measures how different one probability distribution P is from another distribution Q.
+**KL Divergence (Kullback–Leibler Divergence)** measures how different one probability distribution $P$ is from another distribution $Q$.
 
-It is commonly used to measure the **information loss when Q is used to approximate P**.
+It is commonly used to measure the **information loss when $Q$ is used to approximate $P$**.
 
 #### Formula
 
 For discrete distributions:
 
 $$
-D_{KL}(P\parallel Q)=\sum_x P(x)\log\frac{P(x)}{Q(x)}
+D_{KL}(P \parallel Q) = \sum_x P(x)\log\frac{P(x)}{Q(x)}
 $$
 
 #### Key points
 
-- P = **true/reference distribution**
-- Q = **approximate/estimated distribution**
-- DKL(P∥Q)≥0
-- DKL(P∥Q)=0 when P=Q,  P=Q
+- $P$ = **true/reference distribution**
+- $Q$ = **approximate/estimated distribution**
+- $D_{KL}(P \parallel Q) \geq 0$
+- $D_{KL}(P \parallel Q) = 0$ when $P = Q$
 - It is **not symmetric**:
 
 $$
-D_{KL}(P\parallel Q)\neq D_{KL}(Q\parallel P)
+D_{KL}(P \parallel Q) \neq D_{KL}(Q \parallel P)
 $$
 
 So, KL Divergence is **not a true distance metric**.
@@ -2675,13 +2684,13 @@ So, KL Divergence is **not a true distance metric**.
 
 Suppose:
 
-P=\[0.7,0.3\]
+$P = [0.7, 0.3]$
 
 and
 
-Q=\[0.6,0.4\]
+$Q = [0.6, 0.4]$
 
-KL Divergence tells us how much information is lost when we use Q to represent P.
+KL Divergence tells us how much information is lost when we use $Q$ to represent $P$.
 
 #### Applications in ML
 
@@ -2711,7 +2720,7 @@ KL Divergence tells us how much information is lost when we use Q to represent P
 
 |  | **L1** | **L2** |
 | --- | --- | --- |
-| **Constraint** | $\|w\|_1 = \sum_i \|w_i\| \leq c$ | $\|w\|_2 = \sqrt{\sum_i w_i^2} \leq c$ |
+| **Constraint** | $\lVert w\rVert_1 = \sum_i \lvert w_i\rvert \leq c$ | $\lVert w\rVert_2 = \sqrt{\sum_i w_i^2} \leq c$ |
 | **Shape** | Diamond | Circle |
 | **Boundary** | Sharp corners | Smooth |
 | **Corners on axes?** | Yes | No |
@@ -2804,7 +2813,7 @@ MHA→GQA→MQA
 - **Reward** → feedback from the environment
 - **Policy** → strategy for choosing actions
 
-$St→At→Rt+1,St+1$
+$S_t \rightarrow A_t \rightarrow R_{t+1}, S_{t+1}$
 
 #### Types of RL
 
@@ -2822,7 +2831,7 @@ The action is selected using:
 
 $a^* = \arg\max_a Q^*(s,a)$
 
-**Examples:** Q-Learning, $DQN$.
+**Examples:** Q-Learning, DQN.
 
 **Key idea:**
 
@@ -2832,19 +2841,19 @@ $a^* = \arg\max_a Q^*(s,a)$
 
 **Learn a policy directly** that maps states to actions or action probabilities.
 
-$\pi_\theta(a|s)$
+$\pi_\theta(a \mid s)$
 
 For example:
 
-$s \rightarrow \pi_\theta(a|s)$
+$s \rightarrow \pi_\theta(a \mid s)$
 
 might output:
 
-$P(a_1|s)=0.7,\quad P(a_2|s)=0.2,\quad P(a_3|s)=0.1$
+$P(a_1 \mid s) = 0.7, \quad P(a_2 \mid s) = 0.2, \quad P(a_3 \mid s) = 0.1$
 
 The policy is optimized to maximize expected return:
 
-$J(\pi_\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]$
+$J(\pi_\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]$
 
 **Examples:** REINFORCE, Vanilla Policy Gradient.
 
@@ -2875,9 +2884,9 @@ $J(\pi_\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]$
 
 - **Normal inference:** Dropout **OFF** → deterministic prediction.
 - **MC Dropout:** Dropout **ON** → multiple stochastic predictions → estimate **uncertainty**.
-  ${Normal: } \hat{y}=f(x)$
+  $\text{Normal: } \hat{y} = f(x)$
 
-  ${MC Dropout: } \hat{y}_t=f(x;m_t), \quad t=1,\dots,T$
+  $\text{MC Dropout: } \hat{y}_t = f(x; m_t), \quad t = 1, \dots, T$
 
 **Key idea:** Dropout is normally disabled during inference, but MC Dropout intentionally enables it for uncertainty estimation.
 
@@ -2895,9 +2904,9 @@ A neural network (typically transformer-based) trained on massive text datasets 
 
 At each step, the model computes a probability distribution over its entire vocabulary (every possible next token) conditioned on everything generated so far:
 
-```txt
-P(token_n | token_1, token_2, ..., token_n-1)
-```
+$$
+P(\text{token}_n \mid \text{token}_1, \text{token}_2, \ldots, \text{token}_{n-1})
+$$
 
 So generating a sentence is really a chain of predictions:
 
@@ -3030,7 +3039,7 @@ Despite the critique, autoregressive training is what has powered essentially th
 
 ##### Why It Matters (Impact)
 
-- **Speed:** Dramatically reduces computation per generation step — turns an otherwise `O(n²)` recomputation pattern per step into a much cheaper incremental update, making autoregressive generation practical for real-time use.
+- **Speed:** Dramatically reduces computation per generation step — turns an otherwise $O(n^2)$ recomputation pattern per step into a much cheaper incremental update, making autoregressive generation practical for real-time use.
 - **Standard practice:** Virtually all production LLM inference systems (GPT, Claude, Llama, etc.) use KV caching as a default optimization for text generation.
 
 ---
@@ -3109,8 +3118,8 @@ Despite the critique, autoregressive training is what has powered essentially th
 
 ##### How It Works
 
-1. **Draft generation:** A smaller, much faster model (the "draft model") generates a short sequence of `k` candidate tokens autoregressively (e.g., 4-8 tokens), conditioned on the current context.
-2. **Parallel verification:** The large target model then processes **all `k` draft tokens in a single forward pass** (since verifying multiple tokens in parallel, given they're already generated, is much cheaper than generating them one-by-one autoregressively) — computing what the target model's actual next-token probabilities would have been at each of those positions.
+1. **Draft generation:** A smaller, much faster model (the "draft model") generates a short sequence of $k$ candidate tokens autoregressively (e.g., 4-8 tokens), conditioned on the current context.
+2. **Parallel verification:** The large target model then processes **all $k$ draft tokens in a single forward pass** (since verifying multiple tokens in parallel, given they're already generated, is much cheaper than generating them one-by-one autoregressively) — computing what the target model's actual next-token probabilities would have been at each of those positions.
 3. **Accept/reject mechanism:** Compare the draft model's tokens against the target model's probability distributions:
    - If the target model agrees that a draft token was likely (matches within an acceptance criterion, often using rejection sampling to preserve the target model's exact output distribution), it's **accepted**.
    - As soon as a token is **rejected** (the target model disagrees significantly), all draft tokens after that point are discarded, and the target model's own prediction is used instead for that position.
@@ -3344,7 +3353,7 @@ Concretely: for each query, the model computes a similarity score against _ever
 
 **The trade-off**
 
-This comes at a cost: computing all pairwise interactions is O(n²) in sequence length, since every token attends to every other token. That's the well-known scalability bottleneck of standard attention, and it's why techniques like sparse attention, linear attention approximations, and sliding-window methods exist — they try to preserve the "any-to-any" long-range benefit while cutting down the computation.
+This comes at a cost: computing all pairwise interactions is $O(n^2)$ in sequence length, since every token attends to every other token. That's the well-known scalability bottleneck of standard attention, and it's why techniques like sparse attention, linear attention approximations, and sliding-window methods exist — they try to preserve the "any-to-any" long-range benefit while cutting down the computation.
 
 **One caveat**
 
@@ -3508,13 +3517,15 @@ might get split into something like:
 
 **How it works:**
 
-`P(token) = softmax(logits / T)`
+$$
+P(\text{token}) = \operatorname{softmax}\left(\frac{\text{logits}}{T}\right)
+$$
 
-- Dividing logits by temperature `T` before softmax reshapes the probability distribution
-- **T = 1**: standard softmax, no change — probabilities reflect the model's raw confidence
-- **T \< 1 (e.g., 0.2)**: sharpens the distribution — high-probability tokens become even more dominant, output becomes more deterministic/focused
-- **T > 1 (e.g., 1.5)**: flattens the distribution — probabilities become more uniform, output becomes more random/diverse
-- **T → 0**: approaches greedy decoding (always picks the single highest-probability token)
+- Dividing logits by temperature $T$ before softmax reshapes the probability distribution
+- **$T = 1$**: standard softmax, no change — probabilities reflect the model's raw confidence
+- **$T < 1$ (e.g., 0.2)**: sharpens the distribution — high-probability tokens become even more dominant, output becomes more deterministic/focused
+- **$T > 1$ (e.g., 1.5)**: flattens the distribution — probabilities become more uniform, output becomes more random/diverse
+- **$T \to 0$**: approaches greedy decoding (always picks the single highest-probability token)
 
 **Practical effect:**
 
@@ -3541,12 +3552,12 @@ might get split into something like:
 ##### Skip Connections (Residual Connections)
 
 - A shortcut that adds a layer's input directly to its output, bypassing ("skipping") the transformation the layer performs
-- Formally: `output = x + F(x)`, where `F(x)` is the transformation (e.g., attention or FFN sublayer) and `x` is the original input
+- Formally: $\text{output} = x + F(x)$, where $F(x)$ is the transformation (e.g., attention or FFN sublayer) and $x$ is the original input
 
 **Where they're used in Transformers:**
 
 - Around every sublayer — both the attention block and the feed-forward block
-- Combined with layer normalization, typically as: `x = LayerNorm(x + Sublayer(x))`
+- Combined with layer normalization, typically as: $x = \text{LayerNorm}(x + \text{Sublayer}(x))$
 
 ```txt
 x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add & Norm → next layer
@@ -3559,7 +3570,7 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 **1. Solves the vanishing gradient problem**
 
 - In deep networks, gradients can shrink toward zero as they backpropagate through many layers, making early layers train very slowly or not at all
-- The `+x` term provides a direct path for gradients to flow backward unimpeded, since the derivative of `x + F(x)` with respect to `x` always includes a clean `1`, regardless of how complex `F(x)` is
+- The $+x$ term provides a direct path for gradients to flow backward unimpeded, since the derivative of $x + F(x)$ with respect to $x$ always includes a clean $1$, regardless of how complex $F(x)$ is
 - This makes it possible to train very deep networks (dozens or hundreds of layers) that would otherwise be untrainable
 
 **2. Preserves information across layers**
@@ -3569,7 +3580,7 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 
 **3. Makes learning the identity function easy**
 
-- If a particular layer isn't useful for a given input, the network can effectively learn `F(x) ≈ 0`, making the layer act as a no-op that just passes `x` through
+- If a particular layer isn't useful for a given input, the network can effectively learn $F(x) \approx 0$, making the layer act as a no-op that just passes $x$ through
 - This is much easier than forcing a layer without skip connections to learn to output exactly its input unchanged
 
 **4. Smoother loss landscape**
@@ -3598,9 +3609,11 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 ##### Layer Normalization (LayerNorm) — used in Transformers
 
 - Normalizes across the **feature dimension** for each individual token (not across the batch, unlike BatchNorm)
-- For each token's vector: subtract the mean and divide by the standard deviation across its features, then apply a learned scale (`γ`) and shift (`β`)
+- For each token's vector: subtract the mean and divide by the standard deviation across its features, then apply a learned scale ($\gamma$) and shift ($\beta$)
 
-`LayerNorm(x) = γ × (x - μ) / σ + β`
+$$
+\text{LayerNorm}(x) = \gamma \cdot \frac{x - \mu}{\sigma} + \beta
+$$
 
 - Works independently per token, which fits well with variable-length sequences and autoregressive generation (no dependency on other examples in a batch)
 
@@ -3608,18 +3621,18 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 
 **Post-LN (original Transformer):**
 
-`x = LayerNorm(x + Sublayer(x))` — normalization applied _after_ the residual addition
+$x = \text{LayerNorm}(x + \text{Sublayer}(x))$ — normalization applied _after_ the residual addition
 
 **Pre-LN (most modern LLMs — GPT-2 onward, LLaMA, etc.):**
 
-`x = x + Sublayer(LayerNorm(x))` — normalization applied _before_ the sublayer, inside the residual branch
+$x = x + \text{Sublayer}(\text{LayerNorm}(x))$ — normalization applied _before_ the sublayer, inside the residual branch
 
 - Generally trains more stably, especially at scale, because it keeps the residual stream's growth more controlled across many layers
 
 ##### RMSNorm (increasingly common — LLaMA, Mistral, etc.)
 
 - A simplified variant of LayerNorm
-- Skips the mean-centering step, only rescales by the root-mean-square of the activations: `RMSNorm(x) = γ × x / RMS(x)`
+- Skips the mean-centering step, only rescales by the root-mean-square of the activations: $\text{RMSNorm}(x) = \gamma \cdot x / \text{RMS}(x)$
 - Fewer computations, slightly faster, and works about as well in practice — one reason it's replaced standard LayerNorm in many recent models
 
 ##### Why It Matters
@@ -3637,8 +3650,8 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 
 ##### How It Works
 
-- During each training step, every neuron in a dropout-applied layer is independently set to zero with some probability `p` (the dropout rate, e.g., 0.1 or 0.5)
-- The remaining active neurons are typically scaled up by `1/(1-p)` so the expected total activation stays roughly the same (this is called "inverted dropout")
+- During each training step, every neuron in a dropout-applied layer is independently set to zero with some probability $p$ (the dropout rate, e.g., 0.1 or 0.5)
+- The remaining active neurons are typically scaled up by $1/(1-p)$ so the expected total activation stays roughly the same (this is called "inverted dropout")
 - At **inference time**, dropout is turned off entirely — all neurons are active, and no scaling is needed since it was already handled during training
 
 **Simple analogy:**
@@ -3676,11 +3689,13 @@ x → Self-Attention → (+x) → Add & Norm → Feed-Forward → (+x) → Add &
 
 ##### Why Attention Uses Softmax
 
-Softmax converts raw attention scores (from `QKᵀ`) into a valid probability distribution that determines how much weight each value vector contributes to the output.
+Softmax converts raw attention scores (from $QK^\top$) into a valid probability distribution that determines how much weight each value vector contributes to the output.
 
 ##### What Softmax Does
 
-`softmax(zᵢ) = e^(zᵢ) / Σⱼ e^(zⱼ)`
+$$
+\operatorname{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}
+$$
 
 - Takes a vector of raw scores (which can be any real numbers — positive, negative, large, small) and converts them into values that:
   - Are all **positive** (between 0 and 1)
@@ -3691,7 +3706,7 @@ Softmax converts raw attention scores (from `QKᵀ`) into a valid probability di
 
 **1. Produces a weighted average of values**
 
-- The attention output is computed as a weighted sum: `Σ (attention_weight_i × value_i)`
+- The attention output is computed as a weighted sum: $\sum_i (\text{attention weight}_i \times \text{value}_i)$
 - For this to make sense as an interpretable "blend" of information, the weights need to be non-negative and sum to 1 — otherwise the output could have unbounded scale or weights that partially "cancel out" information in unintuitive ways
 - Softmax guarantees this property automatically
 
@@ -3709,14 +3724,14 @@ Softmax converts raw attention scores (from `QKᵀ`) into a valid probability di
 
 **4. Handles arbitrary raw score ranges**
 
-- `QKᵀ` dot products can range anywhere from large negative to large positive numbers depending on the vectors involved
+- $QK^\top$ dot products can range anywhere from large negative to large positive numbers depending on the vectors involved
 - Softmax maps this unbounded range into a clean, bounded, and normalized distribution, regardless of the raw score magnitude
 
 ##### Connection to the Scaling Factor
 
-- Attention is typically computed as `softmax(QKᵀ / √d_k)`, not just `softmax(QKᵀ)`
-- As the dimension `d_k` grows, dot products tend to grow large in magnitude, which pushes softmax into regions where gradients become extremely small (saturation) — nearly all the probability mass concentrates on one token, and the exponential's derivative flattens out elsewhere
-- Dividing by `√d_k` keeps the scores in a reasonable range before softmax, preventing this saturation and keeping gradients healthy during training
+- Attention is typically computed as $\operatorname{softmax}(QK^\top / \sqrt{d_k})$, not just $\operatorname{softmax}(QK^\top)$
+- As the dimension $d_k$ grows, dot products tend to grow large in magnitude, which pushes softmax into regions where gradients become extremely small (saturation) — nearly all the probability mass concentrates on one token, and the exponential's derivative flattens out elsewhere
+- Dividing by $\sqrt{d_k}$ keeps the scores in a reasonable range before softmax, preventing this saturation and keeping gradients healthy during training
 
 ### 17.105 What does a vector database (Vector DB) store for LLM usage?
 
@@ -3792,7 +3807,7 @@ Inference speed optimization spans several layers: model-level changes, serving 
 **Architecture choices for efficient attention**
 
 - **GQA/MQA** instead of full MHA — shrinks KV cache size, reduces memory-bandwidth bottleneck
-- **Sliding window / sparse attention** — avoids full O(n²) attention cost for long contexts
+- **Sliding window / sparse attention** — avoids full $O(n^2)$ attention cost for long contexts
 
 ##### 2. KV Cache Optimization
 
@@ -3860,7 +3875,7 @@ Popular production-grade inference servers that bundle many of the above:
 ##### Why It Exists
 
 - Transformers process the entire input sequence at once (unlike RNNs, which process token-by-token with a persistent hidden state)
-- Self-attention computes relationships between every pair of tokens, which costs **O(n²)** in compute and memory relative to sequence length `n`
+- Self-attention computes relationships between every pair of tokens, which costs **$O(n^2)$** in compute and memory relative to sequence length $n$
 - This quadratic scaling makes arbitrarily long context computationally expensive, both during training and inference — so models are trained and deployed with a fixed maximum length
 
 ##### What Counts Toward the Context Window
@@ -4123,7 +4138,7 @@ Three distinct approaches to getting an LLM to produce better, more relevant, or
 - **Sliding Window Attention (SWA)** limits each token's attention to a **fixed-size window of nearby tokens** instead of attending to the entire sequence.
 - For example, with a window size of 4, each token attends only to the **4 most recent relevant tokens** rather than all previous tokens.
 - As the model moves through the sequence, the attention window **slides** along the tokens.
-- This reduces attention complexity from **O(n²)** to approximately **O(n × w)**, where `n` is the sequence length and `w` is the window size.
+- This reduces attention complexity from **$O(n^2)$** to approximately **$O(n \times w)$**, where $n$ is the sequence length and $w$ is the window size.
 - It significantly reduces **memory and computation**, making it useful for long-context LLMs.
 - Information can still propagate across distant tokens through **multiple layers**, even though each attention operation is local.
 - A limitation is that tokens **outside the local window cannot directly interact** with each other in the same attention layer.
@@ -4265,11 +4280,11 @@ class BPETokenizer:
 
 **LM head:** the final layer of a language model. It maps each position's final hidden state $h \in \mathbb{R}^{d}$ to **logits over the vocabulary**:
 
-$$\text{logits} = h W_{\text{out}}^\top (+ b), \quad W_{\text{out}} \in \mathbb{R}^{|V| \times d}, \qquad p(\text{next token}) = \text{softmax}(\text{logits}/T)$$
+$$\text{logits} = h W_{\text{out}}^\top (+ b), \quad W_{\text{out}} \in \mathbb{R}^{\lvert V \rvert \times d}, \qquad p(\text{next token}) = \operatorname{softmax}(\text{logits}/T)$$
 
 During training these logits go into cross-entropy against the next token. At inference they feed sampling (greedy, temperature, top-k/top-p). It is usually preceded by a final LayerNorm/RMSNorm.
 
-**Weight tying:** reuse the **input embedding matrix** $E \in \mathbb{R}^{|V| \times d}$ as the output projection, $W_{\text{out}} = E$ (Press & Wolf 2017; Inan et al. 2017).
+**Weight tying:** reuse the **input embedding matrix** $E \in \mathbb{R}^{\lvert V \rvert \times d}$ as the output projection, $W_{\text{out}} = E$ (Press & Wolf 2017; Inan et al. 2017).
 
 ```python
 class TinyLM(nn.Module):
@@ -4282,7 +4297,7 @@ class TinyLM(nn.Module):
 
 **Why tie**
 
-- **Fewer parameters:** $|V| \times d$ can be huge (128k × 4096 ≈ 0.5B params), which matters a lot for small models.
+- **Fewer parameters:** $\lvert V \rvert \times d$ can be huge (128k × 4096 ≈ 0.5B params), which matters a lot for small models.
 - **Regularization and better perplexity:** the input and output token representations live in one space, and rare tokens get gradient signal from both ends.
 - Intuition: a token's output score is the dot product between the context vector and that token's embedding, a natural similarity.
 
@@ -4297,7 +4312,9 @@ class TinyLM(nn.Module):
 
 The core operation is:
 
-$Attention(Q,K,V)=softmax\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+$$
 
 #### Transformer Self-Attention
 
@@ -4311,15 +4328,15 @@ means **$X$ is a matrix of real numbers with $n$ rows and $d_{\text{model}}$ col
 
 we create **Query, Key, and Value** matrices:
 
-$Q=XW_Q,\qquad K=XW_K,\qquad V=XW_V$
+$Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V$
 
-where $W_Q,W_K,W_V$ are learned projection matrices.
+where $W_Q, W_K, W_V$ are learned projection matrices.
 
 #### 1. Compute attention scores
 
-Compare each query with every key using the dot product: $S = QK^T$
+Compare each query with every key using the dot product: $S = QK^\top$
 
-Scale the scores to prevent large values: $S = \frac{QK^T}{\sqrt{d_k}}$
+Scale the scores to prevent large values: $S = \frac{QK^\top}{\sqrt{d_k}}$
 
 where $d_k$ is the dimension of each key vector.
 
@@ -4327,19 +4344,21 @@ where $d_k$ is the dimension of each key vector.
 
 Convert scores into attention probabilities:
 
-$A = \operatorname{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)$
+$A = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)$
 
-Each row of $A $ represents how much one token attends to all tokens.
+Each row of $A$ represents how much one token attends to all tokens.
 
 #### 3. Weighted sum of values
 
-$\boxed{ \operatorname{Attention}(Q,K,V) = \operatorname{softmax} \left( \frac{QK^T}{\sqrt{d_k}} \right)V }$
+$$
+\boxed{\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V}
+$$
 
 So the overall flow is:
 
-$X \rightarrow Q,K,V \rightarrow QK^T \rightarrow \text{Scale} \rightarrow \text{Softmax} \rightarrow AV$
+$X \rightarrow Q, K, V \rightarrow QK^\top \rightarrow \text{Scale} \rightarrow \text{Softmax} \rightarrow AV$
 
-#### Why Q,K,VQ,K,V?
+#### Why Q, K, V?
 
 - **Query:** What information is this token looking for?
 - **Key:** What information does each token contain?
@@ -4349,19 +4368,19 @@ $X \rightarrow Q,K,V \rightarrow QK^T \rightarrow \text{Scale} \rightarrow \text
 
 Instead of performing one attention operation, Transformers use multiple heads:
 
-$head_i = \operatorname{Attention} (XW_Q^i,XW_K^i,XW_V^i)$
+$\text{head}_i = \operatorname{Attention}(XW_Q^i, XW_K^i, XW_V^i)$
 
-Then concatenate them: $\operatorname{MHA}(X) = \operatorname{Concat}(head_1,\ldots,head_h)W_O$
+Then concatenate them: $\operatorname{MHA}(X) = \operatorname{Concat}(\text{head}_1, \ldots, \text{head}_h)\,W_O$
 
 Different heads can learn different relationships, such as syntax, semantic relationships, or long-range dependencies.
 
 ### 17.120 Why divide by $\sqrt{d_k}$?
 
-Scaled dot-product attention is $\text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$. The $\sqrt{d_k}$ is there to keep the **variance of the logits** around 1.
+Scaled dot-product attention is $\operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$. The $\sqrt{d_k}$ is there to keep the **variance of the logits** around 1.
 
 **Derivation:** if the components of $q$ and $k$ are independent with mean 0 and variance 1, then
 
-$$q \cdot k = \sum_{i=1}^{d_k} q_i k_i, \quad \text{Var}(q \cdot k) = d_k.$$
+$$q \cdot k = \sum_{i=1}^{d_k} q_i k_i, \quad \operatorname{Var}(q \cdot k) = d_k.$$
 
 So the standard deviation grows like $\sqrt{d_k}$. With $d_k = 128$ the logits have std ≈ 11.
 
@@ -4373,7 +4392,7 @@ Dividing by $\sqrt{d_k}$ restores unit variance, so the softmax temperature does
 
 ### 17.121 What is the difference between self-attention and cross-attention?
 
-Both use the same operation, $\text{softmax}(QK^\top/\sqrt{d_k})V$. The difference is **where Q, K and V come from**.
+Both use the same operation, $\operatorname{softmax}(QK^\top/\sqrt{d_k})V$. The difference is **where Q, K and V come from**.
 
 | | Self-attention | Cross-attention |
 | --- | --- | --- |
@@ -4391,7 +4410,7 @@ Both use the same operation, $\text{softmax}(QK^\top/\sqrt{d_k})V$. The differen
 
 ### 17.122 Why do Transformers need positional information?
 
-Self-attention is **permutation-equivariant**: it computes weighted sums over a *set* of tokens. If you shuffle the input tokens, the outputs shuffle in the same way, and nothing in $\text{softmax}(QK^\top)V$ depends on order. Without extra information, "dog bites man" and "man bites dog" look identical.
+Self-attention is **permutation-equivariant**: it computes weighted sums over a *set* of tokens. If you shuffle the input tokens, the outputs shuffle in the same way, and nothing in $\operatorname{softmax}(QK^\top)V$ depends on order. Without extra information, "dog bites man" and "man bites dog" look identical.
 
 RNNs get order from sequential processing and CNNs from local kernels. Transformers process all tokens in parallel, so order must be **injected explicitly**.
 
@@ -4462,15 +4481,15 @@ So **time is $O(n^2 d)$** and naïvely **memory is $O(n^2)$** to store the atten
 
 ### 17.126 Explain Multi-Head Attention.
 
-Instead of one attention over the full model width $d_{model}$, run $h$ attentions in parallel, each in a lower-dimensional subspace $d_k = d_{model}/h$.
+Instead of one attention over the full model width $d_{\text{model}}$, run $h$ attentions in parallel, each in a lower-dimensional subspace $d_k = d_{\text{model}}/h$.
 
-$$\text{head}_i = \text{softmax}\left(\frac{(XW_i^Q)(XW_i^K)^\top}{\sqrt{d_k}}\right)XW_i^V$$
+$$\text{head}_i = \operatorname{softmax}\left(\frac{(XW_i^Q)(XW_i^K)^\top}{\sqrt{d_k}}\right)XW_i^V$$
 
-$$\text{MHA}(X) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)\,W^O$$
+$$\operatorname{MHA}(X) = \operatorname{Concat}(\text{head}_1, \dots, \text{head}_h)\,W^O$$
 
 **Steps:**
 
-1. Project the input into Q, K and V (one big matmul in practice), then reshape to $(batch, h, n, d_k)$.
+1. Project the input into Q, K and V (one big matmul in practice), then reshape to $(\text{batch}, h, n, d_k)$.
 2. Compute scaled dot-product attention independently per head, with masks as needed.
 3. Concatenate the heads and mix them with the output projection $W^O$.
 
@@ -4483,7 +4502,7 @@ y = proj(out)
 
 **Cost:** roughly the same FLOPs and parameters as one full-width head, because the dimensions are split, not duplicated.
 
-**Example:** GPT-3 175B uses 96 heads of size 128 ($d_{model} = 12288$). LLaMA-2 70B uses 64 query heads but only 8 KV heads (GQA) to shrink the KV cache.
+**Example:** GPT-3 175B uses 96 heads of size 128 ($d_{\text{model}} = 12288$). LLaMA-2 70B uses 64 query heads but only 8 KV heads (GQA) to shrink the KV cache.
 
 ### 17.127 Why are multiple attention heads useful?
 
@@ -4492,7 +4511,7 @@ A single head produces **one** softmax distribution per token, so it must averag
 - **Different relation types in parallel** — research has found heads specialised in previous-token, syntactic dependency (subject–verb), coreference, positional and **induction heads** (copying patterns, key for in-context learning).
 - **Different representation subspaces** — each head has its own projections, so similarity is measured in different learned spaces.
 - **Avoids averaging away information** — one head attending to two important tokens blurs them; two heads can each focus sharply.
-- **Same cost** — heads split $d_{model}$, so you get this diversity at about the cost of one full-width head, and the computation parallelises well on GPUs.
+- **Same cost** — heads split $d_{\text{model}}$, so you get this diversity at about the cost of one full-width head, and the computation parallelises well on GPUs.
 - **Ensemble-like robustness.**
 
 **Nuance:** many heads are redundant. Michel et al. (2019) pruned a large fraction of heads with little loss, and too many tiny heads ($d_k$ too small) hurts quality. That redundancy motivates **MQA/GQA** (share K/V across heads) and **head pruning** for cheaper inference.
@@ -4621,7 +4640,7 @@ An LLM is trained to produce **plausible next tokens**, not true statements, so 
 
 **Relationship to scaling**
 - **Loss scales smoothly:** pretraining loss decreases predictably as a power law in compute (the scaling laws).
-- **Task metrics can look discontinuous:** a smooth gain in per-token accuracy can turn into a sharp jump on an all-or-nothing metric. If a 5-step problem needs every step right, accuracy ≈ $p^5$, which stays near zero and then rises quickly as $p$ improves.
+- **Task metrics can look discontinuous:** a smooth gain in per-token accuracy can turn into a sharp jump on an all-or-nothing metric. If a 5-step problem needs every step right, accuracy $\approx p^5$, which stays near zero and then rises quickly as $p$ improves.
 - **The "mirage" critique (Schaeffer et al., 2023):** much apparent emergence comes from discontinuous metrics (exact match) and coarse model sampling; with continuous metrics (log-likelihood, partial credit), improvement often looks gradual and predictable.
 
 **Practical view**
@@ -4656,8 +4675,8 @@ $L(N, D) = E + \frac{A}{N^{\alpha}} + \frac{B}{D^{\beta}}$ with $E$ the irreduci
 
 The **Chinchilla principle** (Hoffmann et al., 2022, *Training Compute-Optimal Large Language Models*): for a fixed training compute budget, **model size and number of training tokens should be scaled in equal proportion**.
 
-- Training compute ≈ $C \approx 6 N D$ (N = parameters, D = tokens).
-- Compute-optimal: $N_{opt} \propto C^{0.5}$, $D_{opt} \propto C^{0.5}$.
+- Training compute $C \approx 6 N D$ ($N$ = parameters, $D$ = tokens).
+- Compute-optimal: $N_{\text{opt}} \propto C^{0.5}$, $D_{\text{opt}} \propto C^{0.5}$.
 - Rule of thumb: **~20 training tokens per parameter**.
 
 **Evidence:** Chinchilla (70B params, 1.4T tokens) used the same compute as Gopher (280B params, 300B tokens) and outperformed it across most benchmarks — and was 4× cheaper to serve. It showed that GPT-3-era models were heavily **undertrained**, following Kaplan et al.'s advice to favor parameters over data.
@@ -4695,7 +4714,7 @@ token h ─► router: softmax(W_g · h) ─► top-k experts (e.g., 2 of 8)
 ```
 
 **Key properties**
-- **Sparse activation:** each token uses only *k* experts, so compute per token ≈ that of a much smaller dense model, while total parameters (capacity/knowledge) are much larger.
+- **Sparse activation:** each token uses only $k$ experts, so compute per token ≈ that of a much smaller dense model, while total parameters (capacity/knowledge) are much larger.
 - In Transformers, MoE usually replaces the FFN in some or all layers; attention stays dense.
 - Examples: Switch Transformer (top-1), GShard, Mixtral 8×7B (top-2: ~47B total, ~13B active), DeepSeek-V3 (fine-grained + shared experts), and reportedly several frontier models.
 
@@ -4711,7 +4730,7 @@ token h ─► router: softmax(W_g · h) ─► top-k experts (e.g., 2 of 8)
 
 Because **compute scales with the parameters a token actually touches, not with the parameters that exist**.
 
-- In a dense Transformer, every token passes through every weight: FLOPs per token ≈ $2N$.
+- In a dense Transformer, every token passes through every weight: FLOPs per token $\approx 2N$.
 - In an MoE layer with $E$ experts and top-$k$ routing, each token passes through only $k$ experts. FFN FLOPs per token scale with $k$, not $E$. Total parameters grow roughly linearly with $E$, while active parameters stay about constant.
 
 **Example — Mixtral 8×7B:** ~47B total parameters, but with top-2 routing only ~13B are **active** per token, so inference compute is roughly that of a 13B dense model while capacity is much larger. DeepSeek-V3: 671B total, ~37B active.
@@ -4728,12 +4747,12 @@ Because **compute scales with the parameters a token actually touches, not with 
 
 ### 17.141 Explain expert routing and load balancing in MoE.
 
-**Routing:** a gating network computes scores for each token, $g = \text{softmax}(W_g h)$, and the token is sent to the **top-k** experts (k=1 in Switch, k=2 in Mixtral). The outputs are combined with the (renormalized) gate weights: $y = \sum_{i \in \text{topk}} g_i E_i(h)$. Variants: noisy top-k (adds noise for exploration), expert-choice routing (experts pick tokens, which balances by construction), and fine-grained plus **shared experts** (DeepSeek), where a few experts process every token.
+**Routing:** a gating network computes scores for each token, $g = \operatorname{softmax}(W_g h)$, and the token is sent to the **top-k** experts ($k=1$ in Switch, $k=2$ in Mixtral). The outputs are combined with the (renormalized) gate weights: $y = \sum_{i \in \text{topk}} g_i E_i(h)$. Variants: noisy top-k (adds noise for exploration), expert-choice routing (experts pick tokens, which balances by construction), and fine-grained plus **shared experts** (DeepSeek), where a few experts process every token.
 
 **Why load balancing is needed:** routers are self-reinforcing — popular experts get more gradient, get better and attract even more tokens. Results: **expert collapse** (a few experts do everything, others are wasted), GPU hotspots, and dropped tokens.
 
 **Balancing techniques**
-- **Auxiliary load-balancing loss** (Switch): $L_{aux} = \alpha \cdot E \sum_i f_i P_i$, where $f_i$ = fraction of tokens routed to expert *i* and $P_i$ = mean router probability for *i*; minimized when routing is uniform.
+- **Auxiliary load-balancing loss** (Switch): $L_{\text{aux}} = \alpha \cdot E \sum_i f_i P_i$, where $f_i$ = fraction of tokens routed to expert $i$ and $P_i$ = mean router probability for $i$; minimized when routing is uniform.
 - **Router z-loss:** penalizes large router logits for numerical stability.
 - **Capacity factor:** each expert accepts at most $C = \text{cf} \cdot \frac{\text{tokens}}{E}$ tokens per batch; overflow tokens are dropped (they pass through the residual) or rerouted. A higher factor drops fewer tokens but costs memory and padding.
 - **Auxiliary-loss-free balancing** (DeepSeek-V3): a per-expert bias added to routing scores is adjusted dynamically to even out load, avoiding interference from the extra loss.

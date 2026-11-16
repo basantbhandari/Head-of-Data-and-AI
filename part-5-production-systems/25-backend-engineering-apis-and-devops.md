@@ -493,7 +493,7 @@ Overall, I follow a cycle of **requirements → design → implementation → te
 | --- | --- |
 | Fixed window counter | Simple `INCR key:minute`; allows 2× bursts at window edges |
 | Sliding window log | Exact; stores every timestamp, so memory-heavy |
-| Sliding window counter | Weighted mix of current and previous window; good accuracy, O(1) memory |
+| Sliding window counter | Weighted mix of current and previous window; good accuracy, $O(1)$ memory |
 | **Token bucket** | Refill rate + burst capacity; the industry default (allows controlled bursts) |
 | Leaky bucket | Smooths output rate; good for shaping traffic to downstreams |
 

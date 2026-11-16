@@ -118,26 +118,28 @@ This chapter contains **73 questions**.
 
 - A **state** represents the current situation or snapshot of the environment at a particular time.
 - The agent uses the state to decide which action to take.
-- A state is commonly denoted by **`s`** and belongs to the **state space `S`**.
+- A state is commonly denoted by **$s$** and belongs to the **state space $S$**.
 
 ##### Action
 
 - An **action** is a decision or move that the agent can take in a given state.
 - The agent selects an action based on its current state and learned policy.
-- Actions belong to the **action space `A`**.
+- Actions belong to the **action space $A$**.
 
 ##### Reward
 
 - A **reward** is a scalar feedback signal the environment provides after an action.
 - It indicates how desirable or undesirable the action's outcome was.
-- The reward at time step `t` is commonly denoted by **`Rₜ`**.
+- The reward at time step $t$ is commonly denoted by **$R_t$**.
 - The agent's objective is to maximize the **cumulative reward** over time.
 
 The **return,** or cumulative discounted reward, is commonly defined as:
 
-$G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots$
+$$
+G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots
+$$
 
-where **`γ`** is the **discount factor**, with `0 ≤ γ < 1`which determines how much future rewards are valued relative to immediate rewards.
+where **$\gamma$** is the **discount factor**, with $0 \leq \gamma < 1$, which determines how much future rewards are valued relative to immediate rewards.
 
 ### 16.3 Can you explain the concept of the Markov Decision Process (MDP) in reinforcement learning?
 
@@ -147,20 +149,20 @@ The key idea is that the **current state contains all relevant information neede
 
 #### Components of an MDP
 
-1. **State Space (`S`)**
+1. **State Space ($S$)**
    - The set of all possible states of the environment.
    - A state represents the current situation of the agent.
    - It can be finite or infinite.
-2. **Action Space (`A`)**
+2. **Action Space ($A$)**
    - The set of all possible actions available to the agent.
    - The available actions may depend on the current state.
-3. **Transition Probability Function (`P`)**
-   - Defines the probability of moving from the current state `s` to the next state `s′` after taking action `a`.
+3. **Transition Probability Function ($P$)**
+   - Defines the probability of moving from the current state $s$ to the next state $s'$ after taking action $a$.
    - It is commonly written as:  $P(s' \mid s,a)$
-4. **Reward Function (`R`)**
+4. **Reward Function ($R$)**
    - Defines the immediate reward received after taking an action.
    - It can depend on the current state, action, and next state: $R(s,a,s')$
-5. **Discount Factor (`γ`)**
+5. **Discount Factor ($\gamma$)**
    - Determines how much future rewards are valued compared with immediate rewards.
    - Usually: $0 \leq \gamma < 1$
    - A value closer to `1` gives greater importance to future rewards.
@@ -170,10 +172,10 @@ The key idea is that the **current state contains all relevant information neede
 
 At each time step:
 
-1. The agent observes the current **state `sₜ`**.
-2. It selects an **action `aₜ`** according to its policy.
-3. The environment transitions to a new **state `sₜ₊₁`** according to `P`.
-4. The agent receives a **reward `Rₜ₊₁`**.
+1. The agent observes the current **state $s_t$**.
+2. It selects an **action $a_t$** according to its policy.
+3. The environment transitions to a new **state $s_{t+1}$** according to $P$.
+4. The agent receives a **reward $R_{t+1}$**.
 5. The process repeats.
 
 The transition probability is: $P(s_{t+1} \mid s_t,a_t)$
@@ -182,17 +184,21 @@ The reward can be represented as: $R(s_t,a_t,s_{t+1})$
 
 #### Decision Objective
 
-The goal of an RL agent in an MDP is to find a **policy `π`** that maximizes the expected cumulative discounted reward, called the **return**.
+The goal of an RL agent in an MDP is to find a **policy $\pi$** that maximizes the expected cumulative discounted reward, called the **return**.
 
 The return is:
 
-$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$
+$$
+G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
+$$
 
 #### Value Function Optimization
 
-The **optimal state-value function** represents the maximum expected return achievable from state `s`:
+The **optimal state-value function** represents the maximum expected return achievable from state $s$:
 
-$V^*(s)=\max_{\pi}\mathbb{E}_{\pi}\left[\sum_{t=0}^{\infty}\gamma^t R_{t+1}\mid S_0=s\right]$
+$$
+V^*(s) = \max_{\pi}\mathbb{E}_{\pi}\left[\sum_{t=0}^{\infty}\gamma^t R_{t+1} \mid S_0 = s\right]
+$$
 
 The corresponding **optimal policy** is the policy that achieves this maximum expected return.
 
@@ -213,48 +219,50 @@ The corresponding **optimal policy** is the policy that achieves this maximum ex
 
 A **policy** is the strategy used by an RL agent to decide **which action to take given the current state**.
 
-It is commonly denoted by **`π`** and defines the agent's behavior in the environment.
+It is commonly denoted by **$\pi$** and defines the agent's behavior in the environment.
 
 #### Role of a Policy
 
 - Maps the agent's **states to actions**.
 - Determines how the agent behaves and makes decisions.
 - Can be learned or optimized through interaction with the environment.
-- The objective is to find an **optimal policy `π*`** that maximizes the expected cumulative reward.
+- The objective is to find an **optimal policy $\pi^*$** that maximizes the expected cumulative reward.
 
 #### Types of Policies
 
 1. **Deterministic Policy**
    - Selects exactly one action for each state.
-   - Represented as: $\pi(s)=a$
+   - Represented as: $\pi(s) = a$
 2. **Stochastic Policy**
    - Assigns a probability to each possible action for a given state.
-   - Represented as: $\pi(a|s)=P(A_t=a|S_t=s)$
+   - Represented as: $\pi(a \mid s) = P(A_t = a \mid S_t = s)$
    - The agent samples an action according to this probability distribution.
 
 #### Example
 
-Suppose an agent is in state `s₁` and has three possible actions:
+Suppose an agent is in state $s_1$ and has three possible actions:
 
-- `a₁` = move left
-- `a₂` = move right
-- `a₃` = stay
+- $a_1$ = move left
+- $a_2$ = move right
+- $a_3$ = stay
 
 A deterministic policy might be:
 
-```txt
-π(s₁) = a₂
-```
+$$
+\pi(s_1) = a_2
+$$
 
 A stochastic policy might be:
 
-```txt
-π(a₁|s₁) = 0.2
-π(a₂|s₁) = 0.7
-π(a₃|s₁) = 0.1
-```
+$$
+\begin{aligned}
+\pi(a_1 \mid s_1) &= 0.2 \\
+\pi(a_2 \mid s_1) &= 0.7 \\
+\pi(a_3 \mid s_1) &= 0.1
+\end{aligned}
+$$
 
-The agent therefore has a **70% probability of choosing `a₂`**.
+The agent therefore has a **70% probability of choosing $a_2$**.
 
 #### Key Point
 
@@ -268,19 +276,24 @@ In the context of **Reinforcement Learning**, a **Value Function** serves as 
 
 #### **Components**
 
-1. **State Value Function** V(s): This function calculates the expected cumulative reward from being in a specific state s and following a given policy.
+1. **State Value Function** $V(s)$: This function calculates the expected cumulative reward from being in a specific state $s$ and following a given policy.
    Mathematically, this is defined as the expected reward from the current state:
 
-   $V^\pi(s)=\mathbb{E}\pi\left[R_t+\gamma R{t+1}+\gamma^2R_{t+2}+\cdots\mid S_t=s\right]$
-2. **Action Value Function** Q(s, a): This function expands on the state value function by factoring in the action chosen. It calculates the expected cumulative reward from being in state s, **taking action a** under a policy π.
+   $$
+   V^\pi(s) = \mathbb{E}_\pi\left[R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots \mid S_t = s\right]
+   $$
+
+2. **Action Value Function** $Q(s, a)$: This function expands on the state value function by factoring in the action chosen. It calculates the expected cumulative reward from being in state $s$, **taking action $a$** under a policy $\pi$.
    Mathematically, this is expressed as:
 
-   $Q^\pi(s,a)=\mathbb{E}\pi\left[R_t+\gamma R{t+1}+\gamma^2R_{t+2}+\cdots\mid S_t=s,A_t=a\right]$
+   $$
+   Q^\pi(s,a) = \mathbb{E}_\pi\left[R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots \mid S_t = s, A_t = a\right]
+   $$
 
 #### **Relationship with Policies**
 
-- **Policy Improvement**: Value functions guide policy updates by identifying actions or states that lead to better returns. For instance, in the context of a deterministic policy, if a state s1 has a higher V(s1) than another state s2, the agent should choose s1 when starting from a specific state.
-- **Policy Evaluation**: Value functions help to discern the effectiveness of a policy. By comparing the expected returns from different sets of actions within a state s, we can gauge their relative quality and, by extension, the policy's efficacy.
+- **Policy Improvement**: Value functions guide policy updates by identifying actions or states that lead to better returns. For instance, in the context of a deterministic policy, if a state $s_1$ has a higher $V(s_1)$ than another state $s_2$, the agent should choose $s_1$ when starting from a specific state.
+- **Policy Evaluation**: Value functions help to discern the effectiveness of a policy. By comparing the expected returns from different sets of actions within a state $s$, we can gauge their relative quality and, by extension, the policy's efficacy.
 - **Policy Iteration**: Through an iterative process of policy evaluation and improvement, value functions and policies converge to an optimal state, ensuring the agent takes the best possible actions in the environment.
 
 ### 16.6 Describe the difference between on-policy and off-policy learning.
@@ -297,7 +310,7 @@ In the context of **Reinforcement Learning**, a **Value Function** serves as 
 | **Experience Replay** | Less naturally suited | Well suited |
 | **Example** | **SARSA** | **Q-Learning** |
 | **Update Target** | Uses the action actually selected by the next policy step. | Uses the maximum estimated action value. |
-| **Update Equation** | `Q(S_t,A_t) ← Q(S_t,A_t) + α[R_{t+1} + γQ(S_{t+1},A_{t+1}) - Q(S_t,A_t)]` | `Q(S_t,A_t) ← Q(S_t,A_t) + α[R_{t+1} + γ max_a Q(S_{t+1},a) - Q(S_t,A_t)]` |
+| **Update Equation** | $Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[R_{t+1} + \gamma Q(S_{t+1},A_{t+1}) - Q(S_t,A_t)]$ | $Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[R_{t+1} + \gamma \max_a Q(S_{t+1},a) - Q(S_t,A_t)]$ |
 | **Main Idea** | **Learn from what you currently do.** | **Learn a policy different from the one generating the experience.** |
 
 ### 16.7 What is the exploration vs. exploitation trade-off in reinforcement learning?
@@ -317,7 +330,7 @@ In the context of **Reinforcement Learning**, a **Value Function** serves as 
 
 | Strategy | How it works |
 | --- | --- |
-| **Epsilon-Greedy** | Choose the best-known action with probability `1 − ε` and a random action with probability `ε`. |
+| **Epsilon-Greedy** | Choose the best-known action with probability $1 - \epsilon$ and a random action with probability $\epsilon$. |
 | **Thompson Sampling** | Maintains a probability distribution over action values and samples from it to select an action. |
 | **UCB (Upper Confidence Bound)** | Selects actions using both their estimated reward and uncertainty, encouraging exploration of uncertain actions. |
 
@@ -333,12 +346,14 @@ The agent continually adjusts the balance as it gains more information about the
 
 **Regret** measures how much reward the agent loses compared with an optimal policy.
 
-$Regret(T) = \mathbb{E}\left[\sum_{t=1}^{T}(r_t^{optimal} - r_t)\right]$
+$$
+\text{Regret}(T) = \mathbb{E}\left[\sum_{t=1}^{T}(r_t^{\text{optimal}} - r_t)\right]
+$$
 
 Where:
 
 - $T$ = total number of time steps
-- $r_t^{optimal}$ = reward that could be obtained by the optimal action at time $t$
+- $r_t^{\text{optimal}}$ = reward that could be obtained by the optimal action at time $t$
 - $r_t$ = reward actually obtained by the agent at time $t$
 
 **Lower regret → better balance between exploration and exploitation.**
@@ -362,7 +377,7 @@ epsilon = 0.1
 chosen_action = epsilon_greedy(action_values, epsilon)
 ```
 
-With `ε = 0.1`:
+With $\epsilon = 0.1$:
 
 - **10% probability:** explore by choosing a random action.
 - **90% probability:** exploit by choosing the action with the highest estimated value.
@@ -374,24 +389,30 @@ The **Bellman Equations** play a pivotal role in **Reinforcement Learning**, 
 #### **Key Concepts**
 
 - **Optimal Value Function**: Bellman Optimality Equation defines the optimal value function as the maximum expected return that can be achieved from any state-action pair, assuming the agent follows an optimal policy afterward.
-- **State-Value Function** V(s): This function estimates the expected return when starting from a particular state, considering the agent behaves according to a specific policy.
-- **Action-Value Function** Q(s,a): Denotes the expected return from taking action a in state s and thereafter behaving following a certain policy.
+- **State-Value Function** $V(s)$: This function estimates the expected return when starting from a particular state, considering the agent behaves according to a specific policy.
+- **Action-Value Function** $Q(s,a)$: Denotes the expected return from taking action $a$ in state $s$ and thereafter behaving following a certain policy.
 - **Bellman Expectation Equation**: Core to Policy Evaluation, this equation characterizes the relationship between the value of a state and the values of its neighboring states, taking into account the agents' policies.
-- **Bellman Expectation Equation** for Q: Links the value of Q(s,a) with the expected next state action value. It defines the expected value of a state-action pair in terms of the immediate reward and the value of the resulting next state.
+- **Bellman Expectation Equation** for $Q$: Links the value of $Q(s,a)$ with the expected next state action value. It defines the expected value of a state-action pair in terms of the immediate reward and the value of the resulting next state.
 
 #### **Formal Definitions**
 
 ##### **Bellman Expectation Equation**
 
-$V^\pi(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a) [r + \gamma V^\pi(s')]$
+$$
+V^\pi(s) = \sum_a \pi(a \mid s) \sum_{s',r} p(s',r \mid s,a) \left[r + \gamma V^\pi(s')\right]
+$$
 
 ##### **Bellman Expectation Equation for Q**
 
-$Q^\pi(s,a) = \sum_{s',r} p(s',r|s,a) [r + \gamma \sum_{a'} \pi(a'|s') Q^\pi(s',a')]$
+$$
+Q^\pi(s,a) = \sum_{s',r} p(s',r \mid s,a) \left[r + \gamma \sum_{a'} \pi(a' \mid s') Q^\pi(s',a')\right]
+$$
 
 ##### **Bellman Optimality Equation**
 
-$V^*(s) = \max_a \sum_{s',r} p(s',r|s,a) [r + \gamma V^*(s')]$
+$$
+V^*(s) = \max_a \sum_{s',r} p(s',r \mid s,a) \left[r + \gamma V^*(s')\right]
+$$
 
 #### **Code Example**
 
@@ -485,28 +506,32 @@ In **model-free** RL, the agent doesn't attempt to model the environment expli
    - Use an **exploration-exploitation strategy**, such as **ε-greedy**, to select an action.
    - Exploration tries new actions, while exploitation selects the action with the highest Q-value.
 3. **Take Action and Observe**
-   - Execute the selected action `aₜ`.
-   - Observe the resulting **reward** `rₜ₊₁` and the **next state** `sₜ₊₁`.
+   - Execute the selected action $a_t$.
+   - Observe the resulting **reward** $r_{t+1}$ and the **next state** $s_{t+1}$.
 4. **Update the Q-Value**
    **Q-learning update rule:**
 
-   $Q(s_t,a_t) \leftarrow (1-\alpha)Q(s_t,a_t) + \alpha \left[ r_{t+1} + \gamma\max_a Q(s_{t+1},a) \right]$
+   $$
+   Q(s_t,a_t) \leftarrow (1-\alpha)Q(s_t,a_t) + \alpha \left[ r_{t+1} + \gamma\max_a Q(s_{t+1},a) \right]
+   $$
 
    Or equivalently:
 
-   $Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \left[ r_{t+1} + \gamma\max_a Q(s_{t+1},a) - Q(s_t,a_t) \right]$
+   $$
+   Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \left[ r_{t+1} + \gamma\max_a Q(s_{t+1},a) - Q(s_t,a_t) \right]
+   $$
 
 #### Parameters
 
 | Symbol | Meaning |
 | --- | --- |
-| `α` | **Learning rate** — controls how strongly the new information updates the existing Q-value. |
-| `γ` | **Discount factor** — determines how much future rewards are valued relative to immediate rewards. |
-| `rₜ₊₁` | **Immediate reward** received after taking action `aₜ`. |
-| `sₜ` | Current state. |
-| `aₜ` | Action taken in the current state. |
-| `sₜ₊₁` | Next state after taking the action. |
-| `maxₐ Q(sₜ₊₁, a)` | Highest Q-value among all possible actions in the next state. |
+| $\alpha$ | **Learning rate** — controls how strongly the new information updates the existing Q-value. |
+| $\gamma$ | **Discount factor** — determines how much future rewards are valued relative to immediate rewards. |
+| $r_{t+1}$ | **Immediate reward** received after taking action $a_t$. |
+| $s_t$ | Current state. |
+| $a_t$ | Action taken in the current state. |
+| $s_{t+1}$ | Next state after taking the action. |
+| $\max_a Q(s_{t+1}, a)$ | Highest Q-value among all possible actions in the next state. |
 
 #### Why Is Q-Learning Off-Policy?
 
@@ -514,7 +539,9 @@ Q-learning is **off-policy** because it learns the value of the **optimal greedy
 
 For example, the agent may use **ε-greedy** to explore the environment, while the Q-value update always uses:
 
-$\max_a Q(s_{t+1},a)$
+$$
+\max_a Q(s_{t+1},a)
+$$
 
 This means the behavior policy and the target policy can be different.
 
@@ -524,8 +551,8 @@ Q-learning is **model-free**, meaning it does not require an explicit model of t
 
 It does **not** need to know:
 
-- **Transition probabilities:** `P(s' | s, a)`
-- **Reward function:** `R(s, a, s')`
+- **Transition probabilities:** $P(s' \mid s, a)$
+- **Reward function:** $R(s, a, s')$
 
 Instead, it learns directly from the agent's **experience**:
 
@@ -575,11 +602,15 @@ new_q = current_q + alpha * (target - current_q)
 
 corresponds directly to:
 
-$Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \left[ \text{Target} - Q(s_t,a_t) \right]$
+$$
+Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \left[ \text{Target} - Q(s_t,a_t) \right]
+$$
 
 where:
 
-$\text{Target} = r_{t+1} + \gamma\max_a Q(s_{t+1},a)$
+$$
+\text{Target} = r_{t+1} + \gamma\max_a Q(s_{t+1},a)
+$$
 
 #### Key Point
 
@@ -692,14 +723,16 @@ Let's go through the differences in characteristics, usage, strengths, and weakn
 
 Instead of storing Q-values in a Q-table, DQN uses a neural network to approximate the action-value function:
 
-$Q(s,a;\theta)$
+$$
+Q(s,a;\theta)
+$$
 
 where:
 
-- `s` = current state
-- `a` = action
-- `θ` = neural network parameters
-- `Q(s,a;θ)` = estimated expected return for taking action `a` in state `s`
+- $s$ = current state
+- $a$ = action
+- $\theta$ = neural network parameters
+- $Q(s,a;\theta)$ = estimated expected return for taking action $a$ in state $s$
 
 DQN introduced two key mechanisms that make neural-network-based Q-learning much more stable:
 
@@ -712,27 +745,35 @@ DQN introduced two key mechanisms that make neural-network-based Q-learning much
 
 Q-learning learns the optimal action-value function:
 
-$Q^*(s,a)$
+$$
+Q^*(s,a)
+$$
 
 The classical Q-learning update is:
 
-$Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma \max_{a'}Q(s',a') - Q(s,a)\right]$
+$$
+Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma \max_{a'}Q(s',a') - Q(s,a)\right]
+$$
 
 where:
 
-- `α` = learning rate
-- `γ` = discount factor
-- `r` = reward
-- `s'` = next state
-- `a'` = possible next action
+- $\alpha$ = learning rate
+- $\gamma$ = discount factor
+- $r$ = reward
+- $s'$ = next state
+- $a'$ = possible next action
 
 The term
 
-$r + \gamma \max_{a'}Q(s',a')$
+$$
+r + \gamma \max_{a'}Q(s',a')
+$$
 
 is the **TD target**, while
 
-$r + \gamma \max_{a'}Q(s',a') - Q(s,a)$
+$$
+r + \gamma \max_{a'}Q(s',a') - Q(s,a)
+$$
 
 is the **TD error**.
 
@@ -750,9 +791,11 @@ DQN solves this problem by using a neural network to approximate the Q-function.
 
 DQN replaces the Q-table with a neural network:
 
-$Q(s,a;\theta)$
+$$
+Q(s,a;\theta)
+$$
 
-The network receives a state `s` and produces Q-values for the available actions.
+The network receives a state $s$ and produces Q-values for the available actions.
 
 For example:
 
@@ -762,7 +805,9 @@ State → Neural Network → Q(a₁), Q(a₂), Q(a₃), ...
 
 The agent typically selects the action with the highest predicted Q-value:
 
-$a = \arg\max_a Q(s,a;\theta)$
+$$
+a = \arg\max_a Q(s,a;\theta)
+$$
 
 during exploitation.
 
@@ -774,28 +819,36 @@ DQN trains the Q-network by minimizing the squared **TD error**.
 
 The target is:
 
-$y = r + \gamma \max_{a'} Q(s',a';\theta^-)$
+$$
+y = r + \gamma \max_{a'} Q(s',a';\theta^-)
+$$
 
 for a non-terminal transition.
 
 The loss is:
 
-$L(\theta) = \mathbb{E} \left[ \left( r + \gamma \max_{a'}Q(s',a';\theta^-) - Q(s,a;\theta) \right)^2 \right]$
+$$
+L(\theta) = \mathbb{E} \left[ \left( r + \gamma \max_{a'}Q(s',a';\theta^-) - Q(s,a;\theta) \right)^2 \right]
+$$
 
 For terminal states, the target is usually:
 
-$y = r$
+$$
+y = r
+$$
 
 Therefore, the unified target can be written as:
 
-$y = r + \gamma(1-d)\max_{a'}Q(s',a';\theta^-)$
+$$
+y = r + \gamma(1-d)\max_{a'}Q(s',a';\theta^-)
+$$
 
-where `d = 1` if the transition is terminal and `d = 0` otherwise.
+where $d = 1$ if the transition is terminal and $d = 0$ otherwise.
 
 ###### Important
 
-- `θ` → parameters of the **online Q-network**
-- `θ⁻` → parameters of the **target network**
+- $\theta$ → parameters of the **online Q-network**
+- $\theta^-$ → parameters of the **target network**
 - The target network is treated as fixed while computing the target for a training update.
 
 ---
@@ -806,7 +859,9 @@ where `d = 1` if the transition is terminal and `d = 0` otherwise.
 
 The agent stores its experiences in a replay buffer:
 
-$(s_t,a_t,r_t,s_{t+1},d_t)$
+$$
+(s_t,a_t,r_t,s_{t+1},d_t)
+$$
 
 Instead of training only on the most recent transition, DQN randomly samples a mini-batch from this buffer.
 
@@ -840,12 +895,14 @@ DQN maintains two networks:
 
 | Network | Parameters | Purpose |
 | --- | --- | --- |
-| Online Q-network | `θ` | Learns and is updated frequently |
-| Target network | `θ⁻` | Provides more stable TD targets |
+| Online Q-network | $\theta$ | Learns and is updated frequently |
+| Target network | $\theta^-$ | Provides more stable TD targets |
 
 The target network is periodically updated:
 
-$\theta^- \leftarrow \theta$
+$$
+\theta^- \leftarrow \theta
+$$
 
 This prevents the target from changing too rapidly during training.
 
@@ -859,26 +916,34 @@ DQN commonly uses an **ε-greedy policy**.
 
 With probability:
 
-$1-\epsilon$
+$$
+1-\epsilon
+$$
 
 the agent chooses the action with the highest Q-value:
 
-$a = \arg\max_a Q(s,a;\theta)$
+$$
+a = \arg\max_a Q(s,a;\theta)
+$$
 
 With probability:
 
-$\epsilon$
+$$
+\epsilon
+$$
 
 the agent chooses a random action.
 
 | Condition | Action |
 | --- | --- |
-| Probability `1 − ε` | Exploit the best-known action |
-| Probability `ε` | Explore a random action |
+| Probability $1 - \epsilon$ | Exploit the best-known action |
+| Probability $\epsilon$ | Explore a random action |
 
-Typically, `ε` is gradually reduced during training:
+Typically, $\epsilon$ is gradually reduced during training:
 
-$\epsilon_{\text{high}} \rightarrow \epsilon_{\text{low}}$
+$$
+\epsilon_{\text{high}} \rightarrow \epsilon_{\text{low}}
+$$
 
 This allows more exploration early and more exploitation later.
 
@@ -888,29 +953,29 @@ This allows more exploration early and more exploitation later.
 
 ##### Initialization
 
-1. Initialize the online Q-network with parameters `θ`.
-2. Initialize the target network with parameters `θ⁻ = θ`.
-3. Initialize the replay buffer `D`.
-4. Set the exploration rate `ε`.
+1. Initialize the online Q-network with parameters $\theta$.
+2. Initialize the target network with parameters $\theta^- = \theta$.
+3. Initialize the replay buffer $D$.
+4. Set the exploration rate $\epsilon$.
 
 ##### Training Loop
 
 For each interaction with the environment:
 
-1. Observe the current state `s`.
+1. Observe the current state $s$.
 2. Select an action using the ε-greedy policy.
-3. Execute action `a`.
+3. Execute action $a$.
 4. Observe:
-   - reward `r`
-   - next state `s'`
-   - terminal flag `d`
+   - reward $r$
+   - next state $s'$
+   - terminal flag $d$
 5. Store the transition: $(s,a,r,s',d)$
-6. Randomly sample a mini-batch from the replay buffer `D`.
+6. Randomly sample a mini-batch from the replay buffer $D$.
 7. Compute the TD target: $y = r + \gamma(1-d) \max_{a'}Q(s',a';\theta^-)$
-8. Compute the loss: $L(\theta) = \frac{1}{B} \sum_{i=1}^{B} (y_i-Q(s_i,a_i;\theta))^2$
+8. Compute the loss: $L(\theta) = \frac{1}{B} \sum_{i=1}^{B} \left(y_i - Q(s_i,a_i;\theta)\right)^2$
 9. Update the online network using gradient descent.
 10. Periodically update the target network: $\theta^- \leftarrow \theta$
-11. Gradually decrease `ε`.
+11. Gradually decrease $\epsilon$.
 
 Repeat until the episode or training process terminates.
 
@@ -952,10 +1017,10 @@ Periodically Update Target Network
 
 Important DQN hyperparameters include:
 
-- Learning rate `α`
-- Discount factor `γ`
-- Initial `ε`
-- Minimum `ε`
+- Learning rate $\alpha$
+- Discount factor $\gamma$
+- Initial $\epsilon$
+- Minimum $\epsilon$
 - ε-decay rate
 - Replay buffer size
 - Mini-batch size
@@ -1022,7 +1087,9 @@ Several improvements address these issues, including:
 
 A transition is represented as:
 
-$(s_t,a_t,r_t,s_{t+1},d_t)$
+$$
+(s_t,a_t,r_t,s_{t+1},d_t)
+$$
 
 where:
 
@@ -1072,21 +1139,27 @@ in the replay buffer.
 
 ###### Step 3: Sample Mini-Batch
 
-Randomly sample `B` transitions:
+Randomly sample $B$ transitions:
 
-$\{(s_i,a_i,r_i,s'_i,d_i)\}_{i=1}^{B}$
+$$
+\{(s_i,a_i,r_i,s'_i,d_i)\}_{i=1}^{B}
+$$
 
 ###### Step 4: Calculate TD Targets
 
 For each transition:
 
-$y_i = r_i + \gamma(1-d_i) \max_{a'}Q(s'_i,a';\theta^-)$
+$$
+y_i = r_i + \gamma(1-d_i) \max_{a'}Q(s'_i,a';\theta^-)
+$$
 
 ###### Step 5: Update Q-Network
 
 Minimize:
 
-$L(\theta) = \frac{1}{B} \sum_{i=1}^{B} (y_i-Q(s_i,a_i;\theta))^2$
+$$
+L(\theta) = \frac{1}{B} \sum_{i=1}^{B} \left(y_i - Q(s_i,a_i;\theta)\right)^2
+$$
 
 ---
 
@@ -1135,12 +1208,12 @@ The sampled batch is then used to calculate TD targets and update the Q-network.
 
 | Component | Purpose |
 | --- | --- |
-| **Q-Network** | Approximates `Q(s,a)` |
+| **Q-Network** | Approximates $Q(s,a)$ |
 | **Experience Replay** | Reduces temporal correlation and reuses experiences |
 | **Target Network** | Stabilizes TD targets |
 | **ε-Greedy** | Balances exploration and exploitation |
 | **TD Loss** | Trains the Q-network |
-| **Discount Factor `γ`** | Controls the importance of future rewards |
+| **Discount Factor $\gamma$** | Controls the importance of future rewards |
 
 ###### One-line interview answer
 
@@ -1501,7 +1574,7 @@ Common ways to reduce variance include:
 
 - **Faster learning:** Updates multiple recent states instead of only the current state.
 - **Better credit assignment:** Helps identify which previous actions contributed to a reward.
-- **Bridges TD and Monte Carlo:** Forms the basis of methods such as **TD(λ)**.
+- **Bridges TD and Monte Carlo:** Forms the basis of methods such as **TD($\lambda$)**.
 - **Handles delayed rewards:** Useful when rewards occur several steps after the relevant action.
 
 **Key idea:**
@@ -1609,9 +1682,9 @@ print("Selected action:", action)
 
 #### How it works
 
-- With probability **ε** → **Explore** by choosing a random action.
-- With probability **1 − ε** → **Exploit** by choosing the action with the highest Q-value.
-- Typically, **ε is gradually decreased** during training so the agent explores more initially and exploits more later.
+- With probability **$\epsilon$** → **Explore** by choosing a random action.
+- With probability **$1 - \epsilon$** → **Exploit** by choosing the action with the highest Q-value.
+- Typically, **$\epsilon$ is gradually decreased** during training so the agent explores more initially and exploits more later.
 
 ### 16.35 Write a Python script to simulate a simple MDP using a transition matrix.
 
@@ -1857,11 +1930,11 @@ print(discounted_reward(rewards, gamma=0.9))
 
 The **discount factor (`gamma`)** reduces the contribution of future rewards.
 
-For example, with `gamma = 0.9`:
+For example, with $\gamma = 0.9$:
 
 - Immediate reward → full value
-- Next reward → multiplied by `0.9`
-- Following reward → multiplied by `0.9²`
+- Next reward → multiplied by $0.9$
+- Following reward → multiplied by $0.9^2$
 - And so on.
 
 ### 16.39 Develop a SARSA-learning-based agent in Python for the Taxi-v3 environment from OpenAI Gym.
@@ -2153,9 +2226,9 @@ for episode in range(1000):
 
 #### How it works
 
-- **Initial ε = 1.0:** Mostly explores.
-- **Decay:** ε gradually decreases after each episode.
-- **Minimum ε = 0.01:** Maintains a small amount of exploration.
+- **Initial $\epsilon = 1.0$:** Mostly explores.
+- **Decay:** $\epsilon$ gradually decreases after each episode.
+- **Minimum $\epsilon = 0.01$:** Maintains a small amount of exploration.
 - **Later training:** The agent increasingly **exploits** learned knowledge.
 
 **Key idea:**
@@ -3171,7 +3244,7 @@ An end-to-end commercial RL pipeline consists of **6 primary modules**:
 | --- | --- | --- |
 | **Learning from** | Labeled data | Interaction with an environment |
 | **Feedback** | Correct target/label | Reward or penalty |
-| **Goal** | Learn a mapping `X → Y` | Learn actions that maximize cumulative reward |
+| **Goal** | Learn a mapping $X \to Y$ | Learn actions that maximize cumulative reward |
 | **Training data** | Input-output pairs | States, actions, rewards, next states |
 | **Decision making** | Usually no sequential decision-making | Sequential decision-making |
 | **Learning signal** | Prediction error/loss | Reward signal |
@@ -3187,11 +3260,11 @@ A reinforcement learning (RL) environment should provide the components necessar
 
 | Component | Description |
 | --- | --- |
-| **State** `S` | Represents the current situation of the environment |
-| **Action** `A` | Set of actions the agent can take |
-| **Reward** `R` | Feedback received after taking an action |
+| **State** $S$ | Represents the current situation of the environment |
+| **Action** $A$ | Set of actions the agent can take |
+| **Reward** $R$ | Feedback received after taking an action |
 | **Transition** | Defines how the environment changes from one state to another |
-| **Policy** `π(a\|s)` | Strategy used by the agent to choose actions |
+| **Policy** $\pi(a \mid s)$ | Strategy used by the agent to choose actions |
 | **Initial State** | Defines where an episode starts |
 | **Terminal State** | Defines when an episode ends |
 | **Dynamics** | Rules governing state transitions and rewards |
@@ -3200,15 +3273,17 @@ A reinforcement learning (RL) environment should provide the components necessar
 
 Most RL environments are modeled as an **MDP**:
 
-`M = (S, A, P, R, γ)`
+$$
+M = (S, A, P, R, \gamma)
+$$
 
 where:
 
-- `S` = set of states
-- `A` = set of actions
-- `P(s'|s,a)` = transition probability
-- `R(s,a)` = reward function
-- `γ` = discount factor
+- $S$ = set of states
+- $A$ = set of actions
+- $P(s' \mid s,a)$ = transition probability
+- $R(s,a)$ = reward function
+- $\gamma$ = discount factor
 
 The environment essentially performs:
 
@@ -3218,7 +3293,7 @@ The environment essentially performs:
 
 - **State:** Robot's current position and surroundings
 - **Actions:** Move forward, backward, left, right
-- **Reward:** `+10` for reaching the target, `1` for each step
+- **Reward:** `+10` for reaching the target, `-1` for each step
 - **Transition:** Robot moves to a new position
 - **Terminal state:** Target reached or maximum steps exceeded
 

@@ -156,8 +156,8 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 - At each node, algorithm evaluates all possible splits across all features
 - Selects split that maximizes **information gain** (or minimizes impurity) between parent and child nodes
 - **Impurity measures**:
-  - **Gini Impurity**: Gini = 1 − Σ(pᵢ)² — lower is purer
-  - **Entropy**: −Σ pᵢ log₂(pᵢ), used with Information Gain = Entropy(parent) − weighted Entropy(children)
+  - **Gini Impurity**: $\text{Gini} = 1 - \sum_i p_i^2$ — lower is purer
+  - **Entropy**: $-\sum_i p_i \log_2(p_i)$, used with $\text{Information Gain} = \text{Entropy}(\text{parent}) - \text{weighted Entropy}(\text{children})$
   - **Variance Reduction**: used for regression trees
 - Process repeats recursively for each child node (greedy, top-down approach)
 
@@ -195,7 +195,7 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 
 - Averaging predictions from many decorrelated trees cancels out individual trees' errors/noise
 - Bootstrap sampling + feature randomness ensures trees are diverse (not identical)
-- Variance of average of N independent-ish estimators ≈ Variance(single tree) / N (reduced further since trees aren't fully independent, but still significant reduction)
+- Variance of average of $N$ independent-ish estimators $\approx \text{Variance}(\text{single tree}) / N$ (reduced further since trees aren't fully independent, but still significant reduction)
 - Bias stays roughly similar to individual trees, but variance drops sharply → better generalization
 
 ### 9.7 Explain Ensemble Methods. Why are they powerful?
@@ -317,17 +317,17 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 | --- | --- | --- |
 | Output | Continuous numeric value | Probability (0 to 1) → class label |
 | Use case | Regression problems | Classification problems |
-| Function | Linear: y = wx + b | Sigmoid applied to linear combo: 1/(1+e\^-(wx+b)) |
+| Function | Linear: $y = wx + b$ | Sigmoid applied to linear combo: $\frac{1}{1 + e^{-(wx + b)}}$ |
 | Loss function | MSE (Mean Squared Error) | Cross-Entropy / Log Loss |
-| Output range | −∞ to +∞ | 0 to 1 |
+| Output range | $-\infty$ to $+\infty$ | 0 to 1 |
 | Decision boundary | Not applicable | Linear boundary separating classes |
 
 ### 9.13 How does logistic regression work?
 
 - Classification algorithm that predicts probability of an input belonging to a class
-- Computes linear combination: z = w·x + b
-- Applies **sigmoid function** to squash output between 0 and 1: p = 1/(1+e\^-z)
-- Predicts class based on threshold (typically 0.5): p ≥ 0.5 → class 1, else class 0
+- Computes linear combination: $z = w \cdot x + b$
+- Applies **sigmoid function** to squash output between 0 and 1: $p = \frac{1}{1 + e^{-z}}$
+- Predicts class based on threshold (typically 0.5): $p \ge 0.5$ → class 1, else class 0
 - **Training**: minimizes **cross-entropy (log) loss** using gradient descent to find optimal weights
 - Decision boundary is linear (in feature space)
 - Extends to multi-class via **Softmax** (Softmax Regression / Multinomial Logistic Regression)
@@ -336,18 +336,18 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 
 **R-squared vs Adjusted R-squared**
 
-**R-squared (R²)**
+**R-squared ($R^2$)**
 
 - Measures the proportion of variance in the dependent variable explained by the model
-- Formula: R² = 1 − (SS\_residual / SS\_total)
+- Formula: $R^2 = 1 - \frac{SS_{\text{residual}}}{SS_{\text{total}}}$
 - Range: 0 to 1 (higher = better fit)
 - **Problem**: Always increases (or stays same) when adding more features, even irrelevant ones
 
 **Adjusted R-squared**
 
-- Modifies R² to penalize adding unnecessary/irrelevant features
-- Formula: Adj R² = 1 − \[(1−R²)(n−1) / (n−k−1)\]
-  - n = number of observations, k = number of predictors
+- Modifies $R^2$ to penalize adding unnecessary/irrelevant features
+- Formula: $\text{Adj } R^2 = 1 - \frac{(1 - R^2)(n - 1)}{n - k - 1}$
+  - $n$ = number of observations, $k$ = number of predictors
 - Increases only if new feature improves model more than expected by chance
 - Better for comparing models with different numbers of features
 
@@ -361,9 +361,9 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 
 - **Correlation matrix**: Check pairwise correlation coefficients between features (>0.7–0.8 suggests issue)
 - **VIF (Variance Inflation Factor)**:
-  - Formula: VIF = 1 / (1 − R²ᵢ), where R²ᵢ is from regressing feature i on all other features
+  - Formula: $\text{VIF}_i = \frac{1}{1 - R_i^2}$, where $R_i^2$ is from regressing feature $i$ on all other features
   - VIF > 5 or 10 → high multicollinearity
-- **Tolerance**: 1/VIF — low tolerance indicates multicollinearity
+- **Tolerance**: $1/\text{VIF}$ — low tolerance indicates multicollinearity
 - **Eigenvalues/Condition number**: Small eigenvalues of correlation matrix indicate multicollinearity; condition number > 30 is concerning
 - **Correlation heatmap**: Visual inspection via seaborn/matplotlib
 
@@ -460,7 +460,7 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 **Naive Bayes**
 
 - Probabilistic classifier based on Bayes' Theorem, assuming feature independence ("naive" assumption)
-- **Bayes' Theorem**: P(y\|X) = \[P(X\|y) × P(y)\] / P(X)
+- **Bayes' Theorem**: $P(y \mid X) = \frac{P(X \mid y) \cdot P(y)}{P(X)}$
 - Predicts class with highest posterior probability given features
 - **"Naive" assumption**: all features are conditionally independent given the class (rarely true in practice, but works well anyway)
 
@@ -548,7 +548,7 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 
 - Optimization algorithm that iteratively adjusts model parameters to minimize a loss function
 - Computes gradient (partial derivatives) of loss w.r.t. parameters, updates in opposite direction of gradient
-- Update rule: θ = θ − α∇J(θ), where α = learning rate
+- Update rule: $\theta = \theta - \alpha \nabla J(\theta)$, where $\alpha$ = learning rate
 
 **Variants**
 
@@ -578,8 +578,8 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 **ROC-AUC Curve**
 
 - **ROC (Receiver Operating Characteristic) curve**: plots True Positive Rate (Recall) vs False Positive Rate at various classification thresholds
-  - Recall (Sensitivity) , TPR = TP / (TP + FN)
-  - Specificity, FPR = FP / (FP + TN)
+  - Recall (Sensitivity), $\text{TPR} = \frac{\text{TP}}{\text{TP} + \text{FN}}$
+  - Specificity, $\text{FPR} = \frac{\text{FP}}{\text{FP} + \text{TN}}$
 - **AUC (Area Under Curve)**: single value summarizing overall model performance across all thresholds
   - Range: 0 to 1
   - AUC = 0.5 → random guessing (no better than chance)
@@ -636,7 +636,9 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 | **No Multicollinearity** | Independent variables should not be highly correlated with each other. |
 | **No Significant Outliers** | Extreme observations should not disproportionately influence the regression model. |
 
-Residual = Actual − Predicted
+$$
+\text{Residual} = \text{Actual} - \text{Predicted}
+$$
 
 ### 9.27 What is multicollinearity and how will you handle it in your regression model?
 
@@ -865,14 +867,16 @@ Naive Bayes assumes these features are **independent of each other** when determ
 
 Bayes’ theorem is:
 
-**P(C \| X) = \[P(X \| C) × P(C)\] / P(X)**
+$$
+P(C \mid X) = \frac{P(X \mid C) \cdot P(C)}{P(X)}
+$$
 
 Where:
 
-- **P(C \| X)** → Probability of class **C** given the features **X** (posterior probability)
-- **P(X \| C)** → Probability of observing features **X** given class **C** (likelihood)
-- **P(C)** → Probability of class **C** before seeing the features (prior probability)
-- **P(X)** → Probability of observing the features **X** (evidence)
+- $P(C \mid X)$ → Probability of class **C** given the features **X** (posterior probability)
+- $P(X \mid C)$ → Probability of observing features **X** given class **C** (likelihood)
+- $P(C)$ → Probability of class **C** before seeing the features (prior probability)
+- $P(X)$ → Probability of observing the features **X** (evidence)
 
 In **Naive Bayes**, the feature probability is further simplified by assuming that the features are **conditionally independent given the class**.
 
@@ -1113,9 +1117,9 @@ Suppose we want to find a mathematical expression that predicts house prices.
 
 GP might start with random expressions such as:
 
-- `x + 5`
-- `x × 2`
-- `(x + 3) × y`
+- $x + 5$
+- $x \times 2$
+- $(x + 3) \times y$
 
 It evaluates them and evolves better expressions over generations.
 
@@ -1239,7 +1243,9 @@ A single decision tree is preferable to a random forest when **interpretability,
 
 Because at its core it **is a regression model — a linear regression on the log-odds** — and only becomes a classifier when you put a threshold on its output.
 
-$\log\frac{p}{1-p} = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n \quad\Rightarrow\quad p = \sigma(\beta^T x) = \frac{1}{1+e^{-\beta^T x}}$
+$$
+\log\frac{p}{1-p} = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n \quad\Rightarrow\quad p = \sigma(\beta^T x) = \frac{1}{1+e^{-\beta^T x}}
+$$
 
 - It models a **continuous quantity**: the probability $p$ (equivalently, the log-odds, which ranges over all reals) as a linear function of the features.
 - It belongs to the family of **Generalized Linear Models (GLMs)**, alongside linear regression (identity link) and Poisson regression (log link); logistic regression uses the **logit link** with a Bernoulli outcome. Statisticians call all of these "regression".
@@ -1294,7 +1300,7 @@ Both are ensemble methods that combine many weak/base learners, but they attack 
 It is fast, but it can be short-sighted: a split that looks weak now may enable strong splits below it (the "horizon effect").
 
 **2. Post-pruning** — grow the full tree, then remove subtrees that don't help:
-- **Cost-complexity pruning (CART, weakest-link):** minimize $R_\alpha(T) = R(T) + \alpha |T|$, where $R(T)$ is the training error and $|T|$ the number of leaves. Increasing $\alpha$ gives a nested sequence of smaller trees. Pick $\alpha$ by cross-validation.
+- **Cost-complexity pruning (CART, weakest-link):** minimize $R_\alpha(T) = R(T) + \alpha \lvert T \rvert$, where $R(T)$ is the training error and $\lvert T \rvert$ the number of leaves. Increasing $\alpha$ gives a nested sequence of smaller trees. Pick $\alpha$ by cross-validation.
 - **Reduced-error pruning:** replace a subtree with a leaf if accuracy on a validation set doesn't drop.
 - **Pessimistic error pruning** (C4.5): uses a statistical upper bound on the error, so no validation set is needed.
 
@@ -1362,7 +1368,7 @@ X_k = KernelPCA(n_components=2, kernel="rbf", gamma=15).fit_transform(X)
 
 **Generally only approximately, and for some methods not at all.** Reducing dimensions throws information away, so an exact inverse is impossible unless the dropped components carried zero variance.
 
-- **PCA:** yes, approximately. $X_{rec} = Z W^T + \mu$, where $W$ holds the kept components. The **reconstruction error** equals the variance in the discarded components. Keeping 95% of the variance means losing about 5%. This is used for denoising and compression (`pca.inverse_transform`).
+- **PCA:** yes, approximately. $X_{\text{rec}} = Z W^T + \mu$, where $W$ holds the kept components. The **reconstruction error** equals the variance in the discarded components. Keeping 95% of the variance means losing about 5%. This is used for denoising and compression (`pca.inverse_transform`).
 - **Truncated SVD / NMF:** same idea, $X \approx U\Sigma V^T$ or $X \approx WH$.
 - **Autoencoders:** the decoder *is* the learned inverse, giving an approximate reconstruction.
 - **Kernel PCA:** no direct inverse, because the components live in an implicit feature space. You learn an approximate **pre-image** mapping (`fit_inverse_transform=True` in scikit-learn trains a regression back to input space).
@@ -1388,7 +1394,7 @@ The intercept $\beta_0$ is the predicted value when all features are 0. Without 
 - In logistic regression, the intercept captures the base-rate log-odds.
 
 **When you might drop it (rarely):**
-- Physics or domain knowledge guarantees $y = 0$ when $x = 0$ (e.g. distance = speed × time), and even then test it.
+- Physics or domain knowledge guarantees $y = 0$ when $x = 0$ (e.g. $\text{distance} = \text{speed} \times \text{time}$), and even then test it.
 - All features and the target are mean-centered: the intercept is then 0 anyway.
 - You include a full set of one-hot dummies (the intercept is then redundant).
 
@@ -1399,7 +1405,11 @@ Interpretation caveat: the intercept itself often has no practical meaning (age 
 There are two complementary explanations.
 
 **1. The "ridge" added to the matrix (the original, historical reason).** The OLS solution $\hat\beta = (X^TX)^{-1}X^Ty$ becomes unstable when features are collinear, because $X^TX$ is near-singular. Hoerl and Kennard (1970) proposed
-$$\hat\beta_{ridge} = (X^TX + \lambda I)^{-1}X^Ty$$
+
+$$
+\hat\beta_{\text{ridge}} = (X^TX + \lambda I)^{-1}X^Ty
+$$
+
 Adding $\lambda I$ puts a constant "ridge" along the diagonal of $X^TX$. This lifts every eigenvalue by $\lambda$, makes the matrix invertible and well-conditioned, and stabilizes the coefficients. The name also echoes Hoerl's earlier "ridge analysis" of response surfaces, where the path of optimal estimates traces a ridge.
 
 **2. The ridge in the likelihood surface.** With multicollinearity, the loss surface has a long flat valley or ridge: many coefficient combinations fit almost equally well, so the estimates have huge variance. The L2 penalty $\lambda\lVert\beta\rVert_2^2$ adds curvature, picks the smallest-norm solution along that ridge, and shrinks the coefficients.
@@ -1460,19 +1470,19 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 
 ### 9.71 Say you trained an SVM classifier with an RBF kernel. It seems to underfit the training set: should you increase or decrease γ (gamma)? What about C?
 
-**Increase γ and increase C.** Both reduce regularization and make the model more complex.
+**Increase $\gamma$ and increase $C$.** Both reduce regularization and make the model more complex.
 
-**γ (gamma)** in the RBF kernel $K(x,x') = \exp(-\gamma\lVert x - x'\rVert^2)$ controls how far a single training example's influence reaches.
-- **Small γ:** wide, smooth Gaussians, a nearly linear and very smooth boundary, which can underfit.
-- **Large γ:** narrow bells, so each point influences only its neighbourhood and the boundary becomes wiggly; too large overfits.
-- Underfitting → **increase γ**.
+**$\gamma$ (gamma)** in the RBF kernel $K(x,x') = \exp(-\gamma\lVert x - x'\rVert^2)$ controls how far a single training example's influence reaches.
+- **Small $\gamma$:** wide, smooth Gaussians, a nearly linear and very smooth boundary, which can underfit.
+- **Large $\gamma$:** narrow bells, so each point influences only its neighbourhood and the boundary becomes wiggly; too large overfits.
+- Underfitting → **increase $\gamma$**.
 
 **C** is the inverse regularization strength: the penalty for margin violations in the soft-margin objective $\frac{1}{2}\lVert w\rVert^2 + C\sum_i \xi_i$.
 - **Small C:** wide margin, tolerates misclassifications, strong regularization, can underfit.
 - **Large C:** penalizes errors heavily, narrower margin, fits the training data more closely.
 - Underfitting → **increase C**.
 
-**In practice:** tune them jointly on a log grid (e.g. $C \in \{0.1, 1, 10, 100\}$, $\gamma \in \{10^{-3}, \dots, 10\}$) with cross-validation, because they interact. Also make sure the features are **scaled**: unscaled features make γ meaningless and a common "underfit" cause. If the model still underfits after that, the features may lack signal.
+**In practice:** tune them jointly on a log grid (e.g. $C \in \{0.1, 1, 10, 100\}$, $\gamma \in \{10^{-3}, \dots, 10\}$) with cross-validation, because they interact. Also make sure the features are **scaled**: unscaled features make $\gamma$ meaningless and a common "underfit" cause. If the model still underfits after that, the features may lack signal.
 
 ```python
 from sklearn.model_selection import GridSearchCV
@@ -1607,7 +1617,7 @@ Group them by what they control:
 
 **Problem-specific**
 - `objective` (e.g. `binary:logistic`, `reg:squarederror`, `rank:ndcg`) and `eval_metric`.
-- `scale_pos_weight` for class imbalance (≈ negatives/positives).
+- `scale_pos_weight` for class imbalance ($\approx \text{negatives} / \text{positives}$).
 - `max_delta_step`: helps logistic regression with extreme imbalance.
 - `monotone_constraints`, `interaction_constraints` for domain knowledge or regulation.
 
@@ -1635,11 +1645,13 @@ Group them by what they control:
 
 An SVM's dual formulation and decision function only use **dot products** between data points:
 
-$f(x) = \text{sign}\left(\sum_i \alpha_i y_i \langle x_i, x\rangle + b\right)$
+$$
+f(x) = \operatorname{sign}\left(\sum_i \alpha_i y_i \langle x_i, x\rangle + b\right)
+$$
 
 If the data isn't linearly separable, we could map it to a higher-dimensional space $\phi(x)$ where it is, and then compute $\langle \phi(x_i), \phi(x)\rangle$. The **kernel trick** replaces that dot product with a kernel function $K(x_i, x) = \langle \phi(x_i), \phi(x)\rangle$ computed directly in the original space, so we **never construct $\phi(x)$ explicitly**.
 
-**Example:** for $x \in \mathbb{R}^2$, the polynomial kernel $K(x,z) = (x \cdot z)^2$ equals the dot product of the explicit features $(x_1^2, \sqrt2 x_1x_2, x_2^2)$. The RBF kernel $K(x,z)=\exp(-\gamma\lVert x-z\rVert^2)$ corresponds to an **infinite-dimensional** feature space, which would be impossible to compute explicitly.
+**Example:** for $x \in \mathbb{R}^2$, the polynomial kernel $K(x,z) = (x \cdot z)^2$ equals the dot product of the explicit features $(x_1^2, \sqrt{2}\, x_1 x_2, x_2^2)$. The RBF kernel $K(x,z)=\exp(-\gamma\lVert x-z\rVert^2)$ corresponds to an **infinite-dimensional** feature space, which would be impossible to compute explicitly.
 
 **Requirements:** $K$ must be a valid (positive semi-definite, Mercer) kernel.
 

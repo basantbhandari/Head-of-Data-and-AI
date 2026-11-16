@@ -134,7 +134,7 @@ This chapter contains **79 questions**.
 
 **How it works**
 
-1. Each neuron computes: z = w·x + b, then applies activation function f(z)
+1. Each neuron computes: $z = w \cdot x + b$, then applies activation function $f(z)$
 2. Output of one layer becomes input to next layer
 3. Process repeats until output layer produces final prediction
 4. **Training**: backpropagation + gradient descent to update weights, minimizing loss
@@ -158,7 +158,7 @@ This chapter contains **79 questions**.
 **Forward Propagation**
 
 - Process of passing input data through the network layer by layer to compute output/prediction
-- Each layer: z = w·x + b → activation f(z) → passed to next layer
+- Each layer: $z = w \cdot x + b$ → activation $f(z)$ → passed to next layer
 - Ends with output layer producing prediction
 - Loss function then compares prediction to actual value
 
@@ -166,7 +166,7 @@ This chapter contains **79 questions**.
 
 - Process of computing gradients of loss function w.r.t. each weight, by propagating error backward from output to input layer
 - Uses **chain rule** of calculus to compute how much each weight contributed to the error
-- Gradients then used to update weights via gradient descent: θ = θ − α∇J(θ)
+- Gradients then used to update weights via gradient descent: $\theta = \theta - \alpha \nabla J(\theta)$
 
 **Together**
 
@@ -233,9 +233,9 @@ This chapter contains **79 questions**.
 
 **Common activation functions**
 
-- **Sigmoid**: 1/(1+e⁻ˣ), output 0-1, used in binary classification output — suffers vanishing gradient
+- **Sigmoid**: $\frac{1}{1+e^{-x}}$, output 0-1, used in binary classification output — suffers vanishing gradient
 - **Tanh**: output -1 to 1, zero-centered, still has vanishing gradient issue
-- **ReLU**: max(0, x), most popular — fast, avoids vanishing gradient for positive values, but "dying ReLU" problem
+- **ReLU**: $\max(0, x)$, most popular — fast, avoids vanishing gradient for positive values, but "dying ReLU" problem
 - **Leaky ReLU**: allows small negative slope, fixes dying ReLU
 - **Softmax**: converts logits to probability distribution, used in multi-class output layer
 - **GELU/Swish**: smoother variants used in modern architectures (Transformers)
@@ -246,31 +246,31 @@ This chapter contains **79 questions**.
 
 **Sigmoid**
 
-- Formula: 1/(1+e⁻ˣ), output range: 0 to 1
+- Formula: $\frac{1}{1+e^{-x}}$, output range: 0 to 1
 - Pros: Smooth, good for binary classification output (probability)
 - Cons: Vanishing gradient (saturates at extremes), not zero-centered, computationally expensive (exp)
 
 **Tanh**
 
-- Formula: (eˣ−e⁻ˣ)/(eˣ+e⁻ˣ), output range: −1 to 1
+- Formula: $\frac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$, output range: −1 to 1
 - Pros: Zero-centered (better than sigmoid for hidden layers)
 - Cons: Still suffers vanishing gradient at extremes
 
 **ReLU (Rectified Linear Unit)**
 
-- Formula: max(0, x), output range: 0 to ∞
-- Pros: Computationally efficient, avoids vanishing gradient for x>0, sparse activation (efficiency)
+- Formula: $\max(0, x)$, output range: 0 to $\infty$
+- Pros: Computationally efficient, avoids vanishing gradient for $x > 0$, sparse activation (efficiency)
 - Cons: **Dying ReLU** problem — neurons stuck outputting 0 if input always negative (gradient = 0)
 
 **Leaky ReLU**
 
-- Formula: x if x>0, else αx (small α like 0.01)
+- Formula: $x$ if $x > 0$, else $\alpha x$ (small $\alpha$ like 0.01)
 - Pros: Fixes dying ReLU — allows small gradient for negative inputs
-- Cons: Results can be inconsistent; α is a hyperparameter to tune
+- Cons: Results can be inconsistent; $\alpha$ is a hyperparameter to tune
 
 **Softmax**
 
-- Formula: e\^zᵢ / Σe\^zⱼ, output: probability distribution summing to 1
+- Formula: $\frac{e^{z_i}}{\sum_j e^{z_j}}$, output: probability distribution summing to 1
 - Pros: Ideal for multi-class classification output layer, interpretable as probabilities
 - Cons: Sensitive to outliers/large logits (can saturate), not used in hidden layers
 
@@ -282,7 +282,7 @@ This chapter contains **79 questions**.
   - Sigmoid derivative max = 0.25; Tanh derivative max = 1, but still saturates
   - In deep networks, gradients multiply across layers (chain rule) → shrink exponentially toward zero
   - Early layers get near-zero updates → learn very slowly or stop learning
-- **Computationally expensive**: involve exponential calculations (e\^x), slower than ReLU's simple max(0,x)
+- **Computationally expensive**: involve exponential calculations ($e^x$), slower than ReLU's simple $\max(0, x)$
 - **Sigmoid not zero-centered**: outputs always positive (0 to 1) → gradients during backprop tend to all be same sign → inefficient zig-zag weight updates
 - **Tanh is zero-centered** (−1 to 1) — better than sigmoid, but still suffers vanishing gradient at saturation
 
@@ -302,7 +302,7 @@ This chapter contains **79 questions**.
 **Dropout**
 
 - Regularization technique that randomly deactivates (sets to zero) a fraction of neurons during each training iteration
-- Dropout rate (p) typically 0.2–0.5 — probability a neuron is dropped
+- Dropout rate ($p$) typically 0.2–0.5 — probability a neuron is dropped
 
 **Why effective**
 
@@ -313,7 +313,7 @@ This chapter contains **79 questions**.
 
 **Implementation notes**
 
-- Only applied during training; all neurons active during inference (weights scaled by (1−p) to compensate, or "inverted dropout" scales during training instead)
+- Only applied during training; all neurons active during inference (weights scaled by $(1-p)$ to compensate, or "inverted dropout" scales during training instead)
 - Typically applied to fully connected layers, less common in convolutional layers
 
 ### 13.11 What is the effect of dropout on training and inference speed?
@@ -343,17 +343,17 @@ This chapter contains **79 questions**.
 **L1/L2 Regularization in Neural Networks**
 
 - Technique to prevent overfitting by adding penalty term to loss function based on weight magnitudes
-- Total Loss = Original Loss + λ × Penalty
+- $\text{Total Loss} = \text{Original Loss} + \lambda \times \text{Penalty}$
 
 **L1 Regularization (Lasso)**
 
-- Penalty = λ Σ\|wᵢ\|
+- $\text{Penalty} = \lambda \sum_i \lvert w_i \rvert$
 - Drives some weights to exactly **zero** → sparse network (effectively removes some connections)
 - Acts like built-in feature/neuron selection
 
 **L2 Regularization (Ridge / Weight Decay)**
 
-- Penalty = λ Σwᵢ²
+- $\text{Penalty} = \lambda \sum_i w_i^2$
 - Shrinks weights toward zero but rarely exactly zero → smaller, more distributed weights
 - Most commonly used in neural networks (often called "weight decay")
 
@@ -362,15 +362,15 @@ This chapter contains **79 questions**.
 - Prevents weights from growing too large → reduces model complexity/capacity
 - Smaller weights → smoother decision boundaries → less overfitting, better generalization
 - L2 more common in deep learning (smoother optimization, doesn't zero out neurons abruptly)
-- λ (regularization strength) is a hyperparameter — too high causes underfitting, too low has little effect
+- $\lambda$ (regularization strength) is a hyperparameter — too high causes underfitting, too low has little effect
 
 ### 13.13 What is batch normalization, and why is it used?
 
 **Batch Normalization**
 
 - Technique that normalizes layer inputs (activations) within each mini-batch during training
-- Normalizes to mean=0, std=1, then applies learnable scale (γ) and shift (β) parameters
-- Formula: x̂ = (x − μ\_batch) / √(σ²\_batch + ε), then y = γx̂ + β
+- Normalizes to mean=0, std=1, then applies learnable scale ($\gamma$) and shift ($\beta$) parameters
+- Formula: $\hat{x} = \frac{x - \mu_{\text{batch}}}{\sqrt{\sigma^2_{\text{batch}} + \epsilon}}$, then $y = \gamma \hat{x} + \beta$
 
 **Why used**
 
@@ -391,13 +391,13 @@ This chapter contains **79 questions**.
 **Batch Normalization — Tunable Hyperparameters**
 
 - **Momentum**: controls how running mean/variance (used at inference) are updated via exponential moving average — typically 0.9–0.99
-- **Epsilon (ε)**: small constant added to variance for numerical stability (avoid division by zero) — typically 1e-5
-- **γ (scale) and β (shift)**: learnable parameters per feature, initialized (γ=1, β=0) but learned during training — not manually tuned but initialization can matter
+- **Epsilon ($\epsilon$)**: small constant added to variance for numerical stability (avoid division by zero) — typically 1e-5
+- **$\gamma$ (scale) and $\beta$ (shift)**: learnable parameters per feature, initialized ($\gamma = 1$, $\beta = 0$) but learned during training — not manually tuned but initialization can matter
 - **Batch size**: indirectly affects BN — larger batches give more stable/accurate batch statistics; very small batches make BN noisy/unreliable
 - **Placement**: before or after activation function (commonly before) — architectural choice affecting performance
 - **Axis/dimension** to normalize over: standard BN normalizes over batch dimension per channel/feature; choice matters for conv layers (per-channel) vs dense layers
 - **Whether to use running statistics or batch statistics at inference**: standard is running stats, but affects behavior with small/varying batch sizes
-- In practice, momentum and epsilon are the main hyperparameters tuned; γ/β are learned automatically
+- In practice, momentum and epsilon are the main hyperparameters tuned; $\gamma$/$\beta$ are learned automatically
 
 ### 13.15 What is parameter sharing in deep learning?
 
@@ -454,32 +454,32 @@ This chapter contains **79 questions**.
 
 **Generative Model**
 
-- Learns the joint probability distribution P(X, Y) — models how data is generated
+- Learns the joint probability distribution $P(X, Y)$ — models how data is generated
 - Can generate new samples resembling training data
 - Learns underlying distribution of each class
 - Examples: Naive Bayes, GANs, VAEs, Diffusion Models, GPT (language generation)
 
 **Discriminative Model**
 
-- Learns conditional probability P(Y\|X) — directly models decision boundary between classes
+- Learns conditional probability $P(Y \mid X)$ — directly models decision boundary between classes
 - Focuses on distinguishing between classes, not generating data
 - Examples: Logistic Regression, SVM, Random Forest, standard CNNs for classification
 
 | Aspect | Generative | Discriminative |
 | --- | --- | --- |
-| Models | P(X, Y) — joint distribution | P(Y\|X) — conditional distribution |
+| Models | $P(X, Y)$ — joint distribution | $P(Y \mid X)$ — conditional distribution |
 | Goal | Learn how data is generated | Learn decision boundary |
 | Can generate new data | Yes | No |
 | Typically | More flexible, can handle missing data | Better performance on classification tasks (with enough data) |
 | Examples | Naive Bayes, GANs, VAEs, GPT | Logistic Regression, SVM, standard classifiers |
 
-- Generative models can be used for classification too (via Bayes' rule: P(Y\|X) ∝ P(X\|Y)P(Y)) but typically less accurate than discriminative for pure classification when data is abundant
+- Generative models can be used for classification too (via Bayes' rule: $P(Y \mid X) \propto P(X \mid Y)\,P(Y)$) but typically less accurate than discriminative for pure classification when data is abundant
 
 ### 13.18 Can you explain how a generative model works?
 
 **How Generative Models Work**
 
-- Goal: learn the underlying probability distribution of training data P(X) (or joint P(X,Y)), then use it to generate new samples
+- Goal: learn the underlying probability distribution of training data $P(X)$ (or joint $P(X, Y)$), then use it to generate new samples
 
 **General approach**
 
@@ -509,7 +509,7 @@ This chapter contains **79 questions**.
 **Autoregressive models (GPT, PixelRNN)**
 
 - Generate output sequentially, one element at a time, conditioned on previous elements
-- P(x) = Π P(xᵢ \| x₁...xᵢ₋₁)
+- $P(x) = \prod_i P(x_i \mid x_1, \ldots, x_{i-1})$
 - All approaches aim to capture data distribution well enough to produce novel, realistic samples
 
 ### 13.19 Explain Encoder-Decoder Architecture.
@@ -603,10 +603,10 @@ This chapter contains **79 questions**.
 **Layers/Architecture**
 
 1. **Encoder**: series of layers that compress input into smaller latent representation (bottleneck)
-   - Input → hidden layers (decreasing size) → latent vector (z)
+   - Input → hidden layers (decreasing size) → latent vector ($z$)
 2. **Bottleneck/Latent space**: compressed, lower-dimensional representation of input — forces network to learn only most important features
 3. **Decoder**: series of layers that reconstruct original input from latent representation
-   - Latent vector (z) → hidden layers (increasing size) → output (reconstructed input)
+   - Latent vector ($z$) → hidden layers (increasing size) → output (reconstructed input)
 
 - Trained end-to-end using reconstruction loss (MSE for continuous data, cross-entropy for binary/categorical)
 
@@ -632,8 +632,8 @@ This chapter contains **79 questions**.
 **VAE**
 
 - Generative model that learns a **probabilistic** latent space instead of a fixed point
-- Encoder outputs **parameters of a distribution** (mean μ, variance σ²) for each input, not a single latent vector
-- Sample z from this distribution (using reparameterization trick), decoder reconstructs from sampled z
+- Encoder outputs **parameters of a distribution** (mean $\mu$, variance $\sigma^2$) for each input, not a single latent vector
+- Sample $z$ from this distribution (using reparameterization trick), decoder reconstructs from sampled $z$
 - **Loss function** = Reconstruction Loss + KL Divergence (regularizes latent space to follow standard normal distribution)
 
 **Traditional Autoencoder**
@@ -646,7 +646,7 @@ This chapter contains **79 questions**.
 
 | Aspect | Traditional Autoencoder | VAE |
 | --- | --- | --- |
-| Latent representation | Fixed point (deterministic) | Probability distribution (μ, σ) |
+| Latent representation | Fixed point (deterministic) | Probability distribution ($\mu$, $\sigma$) |
 | Latent space structure | No constraint, can have gaps | Continuous, smooth (regularized via KL divergence) |
 | Generative capability | Poor — latent space not smooth/continuous | Good — can sample new points, generate new realistic data |
 | Loss function | Reconstruction loss only | Reconstruction loss + KL divergence |
@@ -664,25 +664,25 @@ This chapter contains **79 questions**.
 
 **Mechanism**
 
-1. **Encoder outputs distribution parameters**, not a point: for each input x, encoder outputs mean μ(x) and variance σ²(x) — parameterizing a Gaussian distribution q(z\|x)
-2. **Reparameterization trick**: sample z = μ + σ⊙ε, where ε \~ N(0,1)
-   - Allows sampling while keeping the process differentiable (backprop-able) — direct sampling isn't differentiable; this trick separates randomness (ε) from learnable parameters (μ, σ)
-3. **KL Divergence regularization**: loss includes KL(q(z\|x) \|\| p(z)), where p(z) = standard normal N(0,1)
-   - Forces the learned distribution q(z\|x) for each input to stay close to a standard normal prior
-   - Penalizes latent distributions that drift too far from N(0,1) — prevents encoder from "cheating" by spreading points arbitrarily far apart
-4. **Total loss** = Reconstruction Loss + β·KL Divergence (β controls regularization strength — β-VAE)
+1. **Encoder outputs distribution parameters**, not a point: for each input $x$, encoder outputs mean $\mu(x)$ and variance $\sigma^2(x)$ — parameterizing a Gaussian distribution $q(z \mid x)$
+2. **Reparameterization trick**: sample $z = \mu + \sigma \odot \epsilon$, where $\epsilon \sim \mathcal{N}(0, 1)$
+   - Allows sampling while keeping the process differentiable (backprop-able) — direct sampling isn't differentiable; this trick separates randomness ($\epsilon$) from learnable parameters ($\mu$, $\sigma$)
+3. **KL Divergence regularization**: loss includes $\operatorname{KL}(q(z \mid x) \parallel p(z))$, where $p(z)$ = standard normal $\mathcal{N}(0, 1)$
+   - Forces the learned distribution $q(z \mid x)$ for each input to stay close to a standard normal prior
+   - Penalizes latent distributions that drift too far from $\mathcal{N}(0, 1)$ — prevents encoder from "cheating" by spreading points arbitrarily far apart
+4. **Total loss**: $\text{Reconstruction Loss} + \beta \cdot \text{KL Divergence}$ ($\beta$ controls regularization strength — $\beta$-VAE)
 
 **Why this is important**
 
 - **Continuity**: Forces nearby points in latent space to decode to similar outputs — no discontinuous "holes"
-- **Completeness**: Every point sampled from the prior N(0,1) should decode to a realistic output (since all data's distributions were pulled toward this same prior)
-- **Enables generation**: Because latent space is well-structured and covers a known distribution, you can sample random z \~ N(0,1) directly from the prior and decode it into a realistic new sample — impossible reliably with vanilla autoencoders
+- **Completeness**: Every point sampled from the prior $\mathcal{N}(0, 1)$ should decode to a realistic output (since all data's distributions were pulled toward this same prior)
+- **Enables generation**: Because latent space is well-structured and covers a known distribution, you can sample random $z \sim \mathcal{N}(0, 1)$ directly from the prior and decode it into a realistic new sample — impossible reliably with vanilla autoencoders
 - **Smooth interpolation**: moving between two points in latent space produces gradual, meaningful transitions in output (e.g., morphing between two generated faces)
 - **Prevents overfitting/memorization**: regularization stops the model from just memorizing exact latent points for each training example
 
 **Trade-off**
 
-- Too much KL weight (high β) → latent space very regularized but reconstruction quality drops (posterior collapse risk)
+- Too much KL weight (high $\beta$) → latent space very regularized but reconstruction quality drops (posterior collapse risk)
 - Too little KL weight → latent space less structured, generation quality suffers, behaves more like vanilla autoencoder
 
 ### 13.25 What is the architecture of a Generative Adversarial Network (GAN)?
@@ -693,27 +693,27 @@ This chapter contains **79 questions**.
 
 **Generator (G)**
 
-- Takes random noise vector z (from latent space, e.g., N(0,1)) as input
-- Generates fake data samples: G(z) → fake sample
+- Takes random noise vector $z$ (from latent space, e.g., $\mathcal{N}(0, 1)$) as input
+- Generates fake data samples: $G(z)$ → fake sample
 - Goal: produce samples realistic enough to fool the discriminator
 
 **Discriminator (D)**
 
 - Binary classifier — takes a sample (real or fake) as input
-- Outputs probability that input is real: D(x) → \[0,1\]
+- Outputs probability that input is real: $D(x) \in [0, 1]$
 - Goal: correctly distinguish real samples (from training data) vs fake samples (from generator)
 
 **Training process (adversarial)**
 
-1. Generator creates fake sample from noise: G(z)
-2. Discriminator evaluates both real sample (x) and fake sample (G(z))
+1. Generator creates fake sample from noise: $G(z)$
+2. Discriminator evaluates both real sample ($x$) and fake sample ($G(z)$)
 3. Discriminator updated to better classify real vs fake (maximize correct classification)
 4. Generator updated to better fool discriminator (maximize D's error on fake samples)
 5. Repeat — both networks improve together in a minimax game
 
 **Objective function**
 
-- min\_G max\_D \[E(log D(x)) + E(log(1−D(G(z))))\]
+- $\min_G \max_D \left[\mathbb{E}[\log D(x)] + \mathbb{E}[\log(1 - D(G(z)))]\right]$
 - Discriminator maximizes this; Generator minimizes it
 
 **Convergence**
@@ -731,7 +731,7 @@ This chapter contains **79 questions**.
 
 **Generator (G)**
 
-- Takes random noise (z) as input, transforms it into synthetic/fake data samples
+- Takes random noise ($z$) as input, transforms it into synthetic/fake data samples
 - Goal: learn to produce samples realistic enough to fool the discriminator
 - Improves over training by receiving feedback (gradients) based on how well it deceived the discriminator
 - Never sees real data directly — only learns indirectly through discriminator's feedback
@@ -803,8 +803,8 @@ This chapter contains **79 questions**.
   - Discriminator: PatchGAN — classifies local patches as real/fake instead of whole image (captures fine texture details)
 - **CycleGAN**:
   - For **unpaired** image translation (no matching input-output pairs needed, e.g., horses ↔ zebras, photo ↔ painting style)
-  - Uses **two generators** (G: A→B, F: B→A) and **two discriminators**
-  - **Cycle consistency loss**: F(G(A)) ≈ A — translating to the target domain and back should reconstruct the original image
+  - Uses **two generators** ($G: A \to B$, $F: B \to A$) and **two discriminators**
+  - **Cycle consistency loss**: $F(G(A)) \approx A$ — translating to the target domain and back should reconstruct the original image
   - Enables style transfer, domain adaptation without paired examples
 
 **Common use cases**
@@ -901,7 +901,7 @@ This chapter contains **79 questions**.
 
 **Output size formula**
 
-- Output size = ⌊(Input size − Filter size + 2×Padding) / Stride⌋ + 1
+- $\text{Output size} = \left\lfloor \frac{\text{Input size} - \text{Filter size} + 2 \times \text{Padding}}{\text{Stride}} \right\rfloor + 1$
 
 **Why stride matters**
 
@@ -936,7 +936,7 @@ This chapter contains **79 questions**.
 
 - **Valid padding (no padding)**:
   - No extra pixels added
-  - Output size shrinks: Output = Input − Filter + 1
+  - Output size shrinks: $\text{Output} = \text{Input} - \text{Filter} + 1$
   - Loses some border information
 - **Same padding**:
   - Adds enough zero-padding so output size equals input size (with stride=1)
@@ -944,7 +944,7 @@ This chapter contains **79 questions**.
 
 **Output size formula**
 
-- Output size = ⌊(Input size − Filter size + 2×Padding) / Stride⌋ + 1
+- $\text{Output size} = \left\lfloor \frac{\text{Input size} - \text{Filter size} + 2 \times \text{Padding}}{\text{Stride}} \right\rfloor + 1$
 
 **Benefits**
 
@@ -1005,7 +1005,7 @@ A typical CNN pipeline looks like:
 
 The convolutional layers act as feature extractors (edges, textures, shapes, object parts), while the fully connected layers act as the "reasoning" stage that combines those features into a decision.
 
-- **Flatten step:** the final feature map (e.g., 7×7×512) is flattened into a 1-D vector (25,088 values) so it can feed a dense layer. Each FC neuron computes `y = f(W·x + b)` and connects to *every* input value, so FC layers learn global combinations of features, unlike the local, weight-shared filters of conv layers.
+- **Flatten step:** the final feature map (e.g., 7×7×512) is flattened into a 1-D vector (25,088 values) so it can feed a dense layer. Each FC neuron computes $y = f(W \cdot x + b)$ and connects to *every* input value, so FC layers learn global combinations of features, unlike the local, weight-shared filters of conv layers.
 - **Typical head:** one or two hidden FC layers (often with ReLU + dropout), then an output FC layer sized to the number of classes, followed by softmax (multi-class) or sigmoid (binary/multi-label).
 - **Parameter cost:** FC layers usually hold most of a classic CNN's parameters. In VGG-16, the first FC layer alone (25,088 × 4,096 ≈ 103M weights) is most of the model's ~138M parameters, which makes these layers the main source of overfitting and memory use.
 - **Modern practice:** many architectures (ResNet, EfficientNet) swap the big flatten + FC stack for **Global Average Pooling** followed by a single FC layer. This cuts parameters sharply, reduces overfitting and lets the network accept variable input sizes.
@@ -1018,10 +1018,10 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 - An RNN is a class of neural networks designed specifically for processing **sequential data**, such as text, speech, time series, video frames, or any data where the order of elements carries meaning.
 - Unlike feedforward neural networks, which assume all inputs are independent of each other, RNNs introduce the concept of **memory** through a hidden state that is passed from one time step to the next.
 - **Core mechanism:**
-  - At each time step *t*, the RNN takes two inputs: the current input vector `x_t` and the previous hidden state `h_(t-1)`.
-  - It computes a new hidden state: `h_t = f(W_xh * x_t + W_hh * h_(t-1) + b_h)`, where `f` is typically a non-linear activation like tanh or ReLU.
-  - It can also produce an output at that step: `y_t = g(W_hy * h_t + b_y)`.
-  - Crucially, the **same weight matrices** (`W_xh`, `W_hh`, `W_hy`) are shared/reused across all time steps — this is called **parameter sharing** and is what allows RNNs to generalize across sequences of varying length.
+  - At each time step $t$, the RNN takes two inputs: the current input vector `x_t` and the previous hidden state `h_(t-1)`.
+  - It computes a new hidden state: $h_t = f(W_{xh} x_t + W_{hh} h_{t-1} + b_h)$, where $f$ is typically a non-linear activation like tanh or ReLU.
+  - It can also produce an output at that step: $y_t = g(W_{hy} h_t + b_y)$.
+  - Crucially, the **same weight matrices** ($W_{xh}$, $W_{hh}$, $W_{hy}$) are shared/reused across all time steps — this is called **parameter sharing** and is what allows RNNs to generalize across sequences of varying length.
 - **Unrolling:** Conceptually, an RNN can be "unrolled" through time into a chain of repeated units, one per time step, making it easier to visualize how information flows forward through the sequence and how gradients flow backward during training.
 - **Training:** RNNs are trained using **Backpropagation Through Time (BPTT)**, a variant of standard backpropagation where gradients are propagated backward across all time steps of the unrolled network.
 - **Key limitation — Vanishing/Exploding Gradient Problem:**
@@ -1095,20 +1095,20 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 ##### What is LSTM (Long Short-Term Memory)?
 
 - LSTM is a special type of RNN architecture designed to overcome the vanishing gradient problem and effectively learn **long-term dependencies** in sequential data.
-- It introduces a separate **cell state (`C_t`)** in addition to the hidden state (`h_t`). The cell state acts like a "conveyor belt" that carries information across time steps with only minor linear modifications, allowing information to flow largely unchanged unless explicitly modified.
+- It introduces a separate **cell state ($C_t$)** in addition to the hidden state ($h_t$). The cell state acts like a "conveyor belt" that carries information across time steps with only minor linear modifications, allowing information to flow largely unchanged unless explicitly modified.
 - LSTM controls the flow of information using **three gates**, each implemented as a sigmoid-activated layer that outputs values between 0 (block) and 1 (allow):
-  - **Forget Gate (`f_t`):** Decides what information to discard from the previous cell state.
-    - `f_t = σ(W_f · [h_(t-1), x_t] + b_f)`
-  - **Input Gate (`i_t`):** Decides what new information to add to the cell state.
-    - `i_t = σ(W_i · [h_(t-1), x_t] + b_i)`
-    - A candidate value `C̃_t = tanh(W_c · [h_(t-1), x_t] + b_c)` is also computed.
+  - **Forget Gate ($f_t$):** Decides what information to discard from the previous cell state.
+    - $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$
+  - **Input Gate ($i_t$):** Decides what new information to add to the cell state.
+    - $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$
+    - A candidate value $\tilde{C}_t = \tanh(W_c \cdot [h_{t-1}, x_t] + b_c)$ is also computed.
   - **Cell State Update:** Combines the forget and input gates to update the cell state.
-    - `C_t = f_t * C_(t-1) + i_t * C̃_t`
-  - **Output Gate (`o_t`):** Decides what part of the cell state to output as the hidden state.
-    - `o_t = σ(W_o · [h_(t-1), x_t] + b_o)`
-    - `h_t = o_t * tanh(C_t)`
+    - $C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t$
+  - **Output Gate ($o_t$):** Decides what part of the cell state to output as the hidden state.
+    - $o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o)$
+    - $h_t = o_t \odot \tanh(C_t)$
 - **How this solves long-term dependency issues:**
-  - The cell state update is **additive** (`f_t * C_(t-1) + i_t * C̃_t`) rather than purely multiplicative like in vanilla RNNs, which prevents gradients from vanishing exponentially over many time steps.
+  - The cell state update is **additive** ($f_t \odot C_{t-1} + i_t \odot \tilde{C}_t$) rather than purely multiplicative like in vanilla RNNs, which prevents gradients from vanishing exponentially over many time steps.
   - The forget gate allows the network to **selectively retain or discard** information, so relevant information from far back in the sequence can be preserved unchanged for long durations if needed.
   - Gradients can flow through the cell state pathway with minimal decay, since there's no repeated matrix multiplication with the same weight matrix at every step along that specific pathway — this is often called the **constant error carousel**.
 
@@ -1118,17 +1118,17 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 
 - GRU is a simplified variant of LSTM, introduced to achieve similar performance with **fewer parameters** and **less computational complexity** by combining the cell state and hidden state into a single hidden state.
 - GRU uses **two gates** instead of three:
-  - **Update Gate (`z_t`):** Controls how much of the past hidden state should be carried forward versus how much of the new candidate state should be used. It essentially combines the roles of LSTM's forget and input gates.
-    - `z_t = σ(W_z · [h_(t-1), x_t] + b_z)`
-  - **Reset Gate (`r_t`):** Controls how much of the past hidden state to forget when computing the new candidate state.
-    - `r_t = σ(W_r · [h_(t-1), x_t] + b_r)`
+  - **Update Gate ($z_t$):** Controls how much of the past hidden state should be carried forward versus how much of the new candidate state should be used. It essentially combines the roles of LSTM's forget and input gates.
+    - $z_t = \sigma(W_z \cdot [h_{t-1}, x_t] + b_z)$
+  - **Reset Gate ($r_t$):** Controls how much of the past hidden state to forget when computing the new candidate state.
+    - $r_t = \sigma(W_r \cdot [h_{t-1}, x_t] + b_r)$
   - **Candidate Hidden State:**
-    - `h̃_t = tanh(W_h · [r_t * h_(t-1), x_t] + b_h)`
+    - $\tilde{h}_t = \tanh(W_h \cdot [r_t \odot h_{t-1}, x_t] + b_h)$
   - **Final Hidden State Update:**
-    - `h_t = (1 - z_t) * h_(t-1) + z_t * h̃_t`
+    - $h_t = (1 - z_t) \odot h_{t-1} + z_t \odot \tilde{h}_t$
 - **How this solves long-term dependency issues:**
   - Similar to LSTM, the final hidden state update is a **linear interpolation** between the previous hidden state and the new candidate state, controlled by the update gate — this additive structure helps preserve gradients over long sequences.
-  - When `z_t` is close to 0, the hidden state from the past is carried forward almost unchanged, allowing information to persist over many time steps without significant decay.
+  - When $z_t$ is close to 0, the hidden state from the past is carried forward almost unchanged, allowing information to persist over many time steps without significant decay.
   - The reset gate allows the model to drop irrelevant past information when computing new candidates, giving it flexibility similar to LSTM's forget gate.
 
 ---
@@ -1149,44 +1149,44 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 
 ---
 
-##### 1. Forget Gate (`f_t`)
+##### 1. Forget Gate ($f_t$)
 
-- **Role:** Decides what information from the **previous cell state** (`C_(t-1)`) should be discarded or retained.
+- **Role:** Decides what information from the **previous cell state** ($C_{t-1}$) should be discarded or retained.
 - **Formula:**
-  - `f_t = σ(W_f · [h_(t-1), x_t] + b_f)`
+  - $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$
 - **How it works:**
-  - Takes the previous hidden state `h_(t-1)` and the current input `x_t`, concatenates them, and passes them through a sigmoid function.
+  - Takes the previous hidden state $h_{t-1}$ and the current input $x_t$, concatenates them, and passes them through a sigmoid function.
   - An output close to **0** means "completely forget this information."
   - An output close to **1** means "completely retain this information."
-  - This output is multiplied element-wise with the previous cell state `C_(t-1)`.
+  - This output is multiplied element-wise with the previous cell state $C_{t-1}$.
 - **Example use case:** In language modeling, when a new subject appears in a sentence, the forget gate may decide to discard the gender/number information of the old subject that's no longer relevant.
 
 ---
 
-##### 2. Input Gate (`i_t`)
+##### 2. Input Gate ($i_t$)
 
 - **Role:** Decides what **new information** from the current input should be added to the cell state.
 - **Formula:**
-  - `i_t = σ(W_i · [h_(t-1), x_t] + b_i)`
-  - Along with a candidate value: `C̃_t = tanh(W_c · [h_(t-1), x_t] + b_c)`
+  - $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$
+  - Along with a candidate value: $\tilde{C}_t = \tanh(W_c \cdot [h_{t-1}, x_t] + b_c)$
 - **How it works:**
-  - The sigmoid part (`i_t`) decides **which values** to update (how much of the new information matters).
-  - The tanh part (`C̃_t`) creates a vector of **new candidate values** that could be added to the cell state.
-  - These are combined (`i_t * C̃_t`) and added to the cell state during the cell state update step.
+  - The sigmoid part ($i_t$) decides **which values** to update (how much of the new information matters).
+  - The tanh part ($\tilde{C}_t$) creates a vector of **new candidate values** that could be added to the cell state.
+  - These are combined ($i_t \odot \tilde{C}_t$) and added to the cell state during the cell state update step.
 - **Example use case:** When a new subject is introduced in a sentence, the input gate adds this new subject's relevant information (e.g., gender, number) into the cell state.
 
 ---
 
-##### 3. Output Gate (`o_t`)
+##### 3. Output Gate ($o_t$)
 
 - **Role:** Decides what part of the **current cell state** should be exposed as the hidden state (output) at this time step.
 - **Formula:**
-  - `o_t = σ(W_o · [h_(t-1), x_t] + b_o)`
-  - `h_t = o_t * tanh(C_t)`
+  - $o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o)$
+  - $h_t = o_t \odot \tanh(C_t)$
 - **How it works:**
   - The sigmoid part decides which parts of the cell state are relevant to output right now.
-  - The cell state is passed through a `tanh` (to normalize values between -1 and 1), then multiplied by the output gate's decision.
-  - The result becomes the new hidden state `h_t`, which is used both as the output for this time step and passed to the next time step.
+  - The cell state is passed through a $\tanh$ (to normalize values between -1 and 1), then multiplied by the output gate's decision.
+  - The result becomes the new hidden state $h_t$, which is used both as the output for this time step and passed to the next time step.
 - **Example use case:** If the cell state contains information about a subject being singular or plural, the output gate might expose this information only when it's relevant to predicting the next word (e.g., a verb that needs to agree in number).
 
 ---
@@ -1195,9 +1195,9 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 
 | Gate | Formula | Purpose | Acts On |
 | --- | --- | --- | --- |
-| Forget Gate | `f_t = σ(W_f · [h_(t-1), x_t] + b_f)` | Decide what to discard from memory | Previous cell state `C_(t-1)` |
-| Input Gate | `i_t = σ(W_i · [h_(t-1), x_t] + b_i)` | Decide what new info to add to memory | Candidate values `C̃_t` |
-| Output Gate | `o_t = σ(W_o · [h_(t-1), x_t] + b_o)` | Decide what to output from memory | Current cell state `C_t` |
+| Forget Gate | $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$ | Decide what to discard from memory | Previous cell state $C_{t-1}$ |
+| Input Gate | $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$ | Decide what new info to add to memory | Candidate values $\tilde{C}_t$ |
+| Output Gate | $o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o)$ | Decide what to output from memory | Current cell state $C_t$ |
 
 - **Combined effect:** Together, these three gates give LSTM fine-grained control over what to remember, what to forget, and what to expose at each time step — this is precisely what allows it to maintain relevant information over long sequences while discarding irrelevant details, solving the long-term dependency problem faced by vanilla RNNs.
 
@@ -1254,7 +1254,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 - **Self-Attention Mechanism**
   - For each token in the sequence, self-attention computes a weighted representation by attending to **all other tokens** in the sequence, determining how relevant each other token is to the current one.
   - Computed using **Query (Q)**, **Key (K)**, and **Value (V)** vectors derived from the input embeddings:
-    - `Attention(Q, K, V) = softmax(QK^T / √d_k) * V`
+    - $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right) V$
   - This allows the model to directly capture dependencies between distant tokens without the information having to pass through many intermediate steps (unlike RNNs).
 - **Multi-Head Attention**
   - Instead of computing a single attention function, the model runs **multiple attention "heads"** in parallel, each learning to focus on different types of relationships (e.g., syntactic vs. semantic patterns).
@@ -1286,7 +1286,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
   - Transformers don't rely on a single compressed state — every token has direct access to every other token's representation through attention weights.
 - **Scalability**
   - RNNs become increasingly slow and harder to train as sequence length grows due to their sequential nature.
-  - Transformers scale better with sequence length (though attention has quadratic complexity in sequence length, `O(n²)`, which is its own limitation) and scale very well with more data and parameters (leading to large language models like GPT, BERT).
+  - Transformers scale better with sequence length (though attention has quadratic complexity in sequence length, $O(n^2)$, which is its own limitation) and scale very well with more data and parameters (leading to large language models like GPT, BERT).
 
 ---
 
@@ -1332,7 +1332,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 ### 13.42 What are diffusion models?
 
 - **Core idea:** Generative models that learn to create data (e.g., images) by reversing a gradual noising process.
-- **Forward process:** Data is progressively corrupted by adding small amounts of Gaussian noise over many steps (`T` steps), until it becomes pure random noise.
+- **Forward process:** Data is progressively corrupted by adding small amounts of Gaussian noise over many steps ($T$ steps), until it becomes pure random noise.
 - **Reverse process:** A neural network (typically a U-Net) is trained to predict and remove the noise added at each step, gradually reconstructing data from pure noise back to a realistic sample.
 - **Training objective:** The model learns to predict the noise component at each timestep (or equivalently the denoised sample), usually trained with a simple mean-squared-error loss between predicted and actual noise.
 - **Sampling/Generation:** Starting from pure random noise, the model iteratively applies the learned reverse process step-by-step to produce a final, coherent sample (image, audio, etc.).
@@ -1479,23 +1479,23 @@ Normalization refers to techniques that rescale or reshape data (or model activa
 
 Rescales values to a fixed range, usually \[0, 1\]:
 
-```txt
-x' = (x - min) / (max - min)
-```
+$$
+x' = \frac{x - \min(x)}{\max(x) - \min(x)}
+$$
 
 Sensitive to outliers since it depends on the extremes.
 
 **Other common techniques for input data**
 
-- **Standardization (Z-score):** `z = (x − μ) / σ`, which gives mean 0 and standard deviation 1. It is the default for linear models, SVMs, PCA and neural networks, and is less affected by outliers than Min-Max.
-- **Robust scaling:** `x' = (x − median) / IQR`, for data with heavy outliers.
+- **Standardization (Z-score):** $z = \frac{x - \mu}{\sigma}$, which gives mean 0 and standard deviation 1. It is the default for linear models, SVMs, PCA and neural networks, and is less affected by outliers than Min-Max.
+- **Robust scaling:** $x' = \frac{x - \text{median}}{\text{IQR}}$, for data with heavy outliers.
 - **Max-abs scaling:** divide by the maximum absolute value. It keeps sparsity, so it suits sparse matrices such as TF-IDF.
 - **Unit-vector (L2) normalization:** scale each *sample* (row) to unit length. It is common for text vectors and embeddings before cosine similarity.
 - **Log / power transforms (Box-Cox, Yeo-Johnson):** reshape skewed distributions; often combined with one of the scalers above.
 
 **Normalization of activations inside neural networks**
 
-- **Batch Normalization:** normalizes each feature over the mini-batch, then applies a learnable scale and shift (γ, β). It uses running statistics at inference and is the standard choice in CNNs.
+- **Batch Normalization:** normalizes each feature over the mini-batch, then applies a learnable scale and shift ($\gamma$, $\beta$). It uses running statistics at inference and is the standard choice in CNNs.
 - **Layer Normalization:** normalizes over the features of each individual sample, so it does not depend on batch size. It is standard in Transformers and RNNs; RMSNorm is a cheaper variant used in many LLMs.
 - **Group / Instance Normalization:** normalize over groups of channels, or per channel per sample. They are used when batches are small (detection, segmentation) or for style transfer.
 
@@ -1509,7 +1509,7 @@ Both are **feature scaling techniques** used to put numerical features on compar
 | --- | --- | --- |
 | **Definition** | Scales values to a fixed range | Rescales values based on mean and standard deviation |
 | **Common range** | 0 to 1 | No fixed range |
-| **Formula** | x' = (x − x\_min) / (x\_max − x\_min) | z = (x − μ) / σ |
+| **Formula** | $x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}$ | $z = \frac{x - \mu}{\sigma}$ |
 | **Mean** | Not necessarily 0 | 0 |
 | **Standard deviation** | Not necessarily 1 | 1 |
 | **Uses** | Minimum and maximum | Mean and standard deviation |
@@ -1610,7 +1610,7 @@ Usually because they are being used for **different problem formulations**, or b
 
 **2. They optimize different things.**
 
-- `categorical_crossentropy` + **softmax**: one label per sample; classes compete, probabilities sum to 1. Loss $= -\sum_k y_k \log p_k$.
+- `categorical_crossentropy` + **softmax**: one label per sample; classes compete, probabilities sum to 1. $\text{Loss} = -\sum_k y_k \log p_k$.
 - `binary_crossentropy` + **sigmoid**: each output is an independent yes/no problem (multi-label). Loss sums $K$ separate Bernoulli losses, also penalizing the probability mass on negative classes.
 
 Using the wrong pairing gives different gradients and a different optimum, so training dynamics and final performance differ.
@@ -1670,7 +1670,7 @@ All three are **energy-based** neural networks from the 1980s with symmetric wei
 
 **Hopfield network**
 
-- A fully connected, recurrent network of binary (±1) units with symmetric weights and no self-connections.
+- A fully connected, recurrent network of binary ($\pm 1$) units with symmetric weights and no self-connections.
 - Energy: $E = -\tfrac12 \sum_{i,j} w_{ij} s_i s_j - \sum_i b_i s_i$. Updates are **deterministic** and always lower the energy, so the network settles into a local minimum.
 - Weights are set by a Hebbian rule ($w_{ij} \propto \sum_\mu \xi_i^\mu \xi_j^\mu$), so the stored patterns become attractors. Use: **associative / content-addressable memory**. Give it a noisy or partial pattern and it recalls the closest stored one.
 - Limits: classical capacity is about $0.14N$ patterns, and it suffers from spurious attractors. *Modern Hopfield networks* have exponential capacity, and their update rule is mathematically equivalent to Transformer attention.
@@ -1727,7 +1727,7 @@ These are two ways a system can "remember" information.
 
 - **BatchNorm** normalizes each feature across the *batch* (and spatial dims). In NLP, sequences have variable length and padding, so batch statistics get mixed with padding and are noisy. Statistics also depend on batch composition and size, which hurts at small per-device batches and with gradient accumulation.
 - At **inference**, BN relies on running averages from training. With autoregressive decoding (one token at a time, batch size 1, changing distributions) those statistics mismatch badly.
-- **LayerNorm** normalizes across the *feature dimension of each token independently*: $\text{LN}(x) = \gamma \frac{x-\mu}{\sigma} + \beta$, with $\mu, \sigma$ computed over the hidden size. That makes it batch-size independent, identical at train and test time, and naturally handles variable lengths. Many modern LLMs use **RMSNorm**, which drops mean-centering and is cheaper with similar quality (LLaMA, Mistral).
+- **LayerNorm** normalizes across the *feature dimension of each token independently*: $\operatorname{LN}(x) = \gamma \frac{x-\mu}{\sigma} + \beta$, with $\mu, \sigma$ computed over the hidden size. That makes it batch-size independent, identical at train and test time, and naturally handles variable lengths. Many modern LLMs use **RMSNorm**, which drops mean-centering and is cheaper with similar quality (LLaMA, Mistral).
 
 **Post-LN vs Pre-LN**
 
@@ -1791,15 +1791,23 @@ The core idea is simply the **chain rule of calculus**.
 
 Suppose a simple network is:
 
-$x \rightarrow z \rightarrow \hat{y} \rightarrow L$
+$$
+x \rightarrow z \rightarrow \hat{y} \rightarrow L
+$$
 
 For one neuron:
 
-$z = wx+b$
+$$
+z = wx+b
+$$
 
-$\hat{y}=f(z)$
+$$
+\hat{y}=f(z)
+$$
 
-$L=L(\hat{y},y)$
+$$
+L=L(\hat{y},y)
+$$
 
 The forward pass calculates the prediction and then the loss.
 
@@ -1809,7 +1817,9 @@ The forward pass calculates the prediction and then the loss.
 
 To update $w$, gradient descent needs:
 
-$\frac{\partial L}{\partial w}$
+$$
+\frac{\partial L}{\partial w}
+$$
 
 This answers:
 
@@ -1819,7 +1829,9 @@ But $w$ doesn't directly produce the loss. It affects $z$, which affects $\hat y
 
 So we use the chain rule:
 
-$\boxed{ \frac{\partial L}{\partial w} = \frac{\partial L}{\partial \hat y} \frac{\partial \hat y}{\partial z} \frac{\partial z}{\partial w} }$
+$$
+\boxed{ \frac{\partial L}{\partial w} = \frac{\partial L}{\partial \hat y} \frac{\partial \hat y}{\partial z} \frac{\partial z}{\partial w} }
+$$
 
 This is the essence of backpropagation.
 
@@ -1829,37 +1841,55 @@ This is the essence of backpropagation.
 
 Consider:
 
-$z=wx+b$
+$$
+z=wx+b
+$$
 
-$\hat y=z$
+$$
+\hat y=z
+$$
 
 and squared-error loss:
 
-$L=\frac{1}{2}(\hat y-y)^2$
+$$
+L=\frac{1}{2}(\hat y-y)^2
+$$
 
 We calculate derivatives backward.
 
 First:
 
-$\frac{\partial L}{\partial \hat y}=\hat y-y$
+$$
+\frac{\partial L}{\partial \hat y}=\hat y-y
+$$
 
 Then:
 
-$\frac{\partial \hat y}{\partial z}=1$
+$$
+\frac{\partial \hat y}{\partial z}=1
+$$
 
 And:
 
-$\frac{\partial z}{\partial w}=x$
+$$
+\frac{\partial z}{\partial w}=x
+$$
 
 Therefore:
 
-$\frac{\partial L}{\partial w} $ = $(\hat y-y)(1)(x)$
+$$
+\frac{\partial L}{\partial w} = (\hat y-y)(1)(x)
+$$
 
-$\boxed{ \frac{\partial L}{\partial w}=(\hat y-y)x }$
+$$
+\boxed{ \frac{\partial L}{\partial w}=(\hat y-y)x }
+$$
 
 Similarly:
 
-$\boxed{ \frac{\partial L}{\partial b}=\hat y-y }$
+$$
+\boxed{ \frac{\partial L}{\partial b}=\hat y-y }
+$$
 
 ---
 
@@ -1867,11 +1897,15 @@ $\boxed{ \frac{\partial L}{\partial b}=\hat y-y }$
 
 Once backpropagation gives us the gradients:
 
-$w \leftarrow w-\eta\frac{\partial L}{\partial w}$
+$$
+w \leftarrow w-\eta\frac{\partial L}{\partial w}
+$$
 
-$b \leftarrow b-\eta\frac{\partial L}{\partial b}$
+$$
+b \leftarrow b-\eta\frac{\partial L}{\partial b}
+$$
 
-where η\\eta is the learning rate.
+where $\eta$ is the learning rate.
 
 ---
 
@@ -1879,23 +1913,33 @@ where η\\eta is the learning rate.
 
 The network computes values **forward**:
 
-$x \rightarrow z_1 \rightarrow z_2 \rightarrow \hat y \rightarrow L$
+$$
+x \rightarrow z_1 \rightarrow z_2 \rightarrow \hat y \rightarrow L
+$$
 
 But gradients are computed **backward**:
 
-$L \rightarrow \hat y \rightarrow z_2 \rightarrow z_1 \rightarrow w$
+$$
+L \rightarrow \hat y \rightarrow z_2 \rightarrow z_1 \rightarrow w
+$$
 
 Each layer receives a gradient from the layer after it and uses the chain rule to calculate its own gradient.
 
 For a layer:
 
-$z = Wx+b$
+$$
+z = Wx+b
+$$
 
-$a=f(z)$
+$$
+a=f(z)
+$$
 
 the backward pass essentially determines:
 
-$\frac{\partial L}{\partial W}, \quad \frac{\partial L}{\partial b}, \quad \frac{\partial L}{\partial x}$
+$$
+\frac{\partial L}{\partial W}, \quad \frac{\partial L}{\partial b}, \quad \frac{\partial L}{\partial x}
+$$
 
 The last one is important because it allows the gradient to continue propagating toward earlier layers.
 
@@ -1905,7 +1949,9 @@ The last one is important because it allows the gradient to continue propagating
 
 Think of the network as a sequence of functions:
 
-$L=f_3(f_2(f_1(x)))$
+$$
+L=f_3(f_2(f_1(x)))
+$$
 
 Backpropagation asks:
 
@@ -1913,7 +1959,9 @@ Backpropagation asks:
 
 The chain rule decomposes this sensitivity:
 
-$\frac{dL}{dx} $ = $\frac{dL}{df_2} \frac{df_2}{df_1} \frac{df_1}{dx}$
+$$
+\frac{dL}{dx} = \frac{dL}{df_2} \frac{df_2}{df_1} \frac{df_1}{dx}
+$$
 
 So **backpropagation is essentially repeated application of the chain rule, performed efficiently from the output layer back toward the input.**
 
@@ -1925,19 +1973,29 @@ Neural networks need **nonlinear activation functions** because without them, st
 
 Suppose:
 
-$h = W_1x+b_1$
+$$
+h = W_1x+b_1
+$$
 
-$y = W_2h+b_2$
+$$
+y = W_2h+b_2
+$$
 
-Substitute hh:
+Substitute $h$:
 
-$y=W_2(W_1x+b_1)+b_2$
+$$
+y=W_2(W_1x+b_1)+b_2
+$$
 
-$y=(W_2W_1)x+(W_2b_1+b_2)$
+$$
+y=(W_2W_1)x+(W_2b_1+b_2)
+$$
 
 This is still just:
 
-$y=Wx+b$
+$$
+y=Wx+b
+$$
 
 So even with 100 layers, a network containing only linear operations can be mathematically reduced to **one linear layer**.
 
@@ -1945,9 +2003,13 @@ So even with 100 layers, a network containing only linear operations can be math
 
 Add an activation such as ReLU:
 
-$h=\text{ReLU}(W_1x+b_1)$
+$$
+h=\operatorname{ReLU}(W_1x+b_1)
+$$
 
-$y=W_2h+b_2$
+$$
+y=W_2h+b_2
+$$
 
 Now the network can represent **nonlinear functions and complex decision boundaries**.
 
@@ -1965,23 +2027,33 @@ Think of each layer as transforming the data.
 
 **Linear only:**
 
-$x \rightarrow \text{line} \rightarrow \text{line} \rightarrow \text{line}$
+$$
+x \rightarrow \text{line} \rightarrow \text{line} \rightarrow \text{line}
+$$
 
 Still fundamentally a linear mapping.
 
 **With nonlinearities:**
 
-$x \rightarrow \text{transform} \rightarrow \text{bend} \rightarrow \text{transform} \rightarrow \text{bend}$
+$$
+x \rightarrow \text{transform} \rightarrow \text{bend} \rightarrow \text{transform} \rightarrow \text{bend}
+$$
 
 The network can progressively build complex functions.
 
 #### Common nonlinear activations
 
-$\text{ReLU}(x)=\max(0,x)$
+$$
+\operatorname{ReLU}(x)=\max(0,x)
+$$
 
-$\text{sigmoid}(x)=\frac{1}{1+e^{-x}}$
+$$
+\operatorname{sigmoid}(x)=\frac{1}{1+e^{-x}}
+$$
 
-$\text{tanh}(x)$
+$$
+\tanh(x)
+$$
 
 Modern deep networks commonly use **ReLU and its variants** such as GELU, SiLU, and Leaky ReLU.
 
@@ -1992,7 +2064,7 @@ Modern deep networks commonly use **ReLU and its variants** such as GELU, SiLU, 
 | Activation | Formula | Output Range | Main Advantage | Main Limitation | Common Use |
 | --- | --- | --- | --- | --- | --- |
 | **ReLU** | $f(x)=\max(0,x)$ | $[0,\infty)$ | Simple and fast | **Dying ReLU** for negative inputs | CNNs, MLPs |
-| **Leaky ReLU** | $f(x)=\max(\alpha x,x)$ | $(-\infty,\infty)$ | Keeps a small gradient for x\<0x\<0 | Requires choosing α\\alpha | CNNs, MLPs |
+| **Leaky ReLU** | $f(x)=\max(\alpha x,x)$ | $(-\infty,\infty)$ | Keeps a small gradient for $x<0$ | Requires choosing $\alpha$ | CNNs, MLPs |
 | **GELU** | $f(x)=x\Phi(x)$ | $(-\infty,\infty)$ | Smooth, probabilistic gating | More computationally expensive than ReLU | **Transformers, BERT** |
 | **SiLU / Swish** | $f(x)=x\sigma(x)$ | $(-\infty,\infty)$ | Smooth and non-monotonic | More expensive than ReLU | **Modern deep learning, LLMs** |
 | **Sigmoid** | $f(x)=\frac{1}{1+e^{-x}}$ | $(0,1)$ | Interpretable as probability | Vanishing gradients when saturated | Binary classification output |
@@ -2004,13 +2076,12 @@ Modern deep networks commonly use **ReLU and its variants** such as GELU, SiLU, 
 - Negative values → 0.
 - Positive values → unchanged.
 - Very cheap computationally.
-- Can cause **dying neurons** because the gradient is 0 for .
-  $x<0$
+- Can cause **dying neurons** because the gradient is 0 for $x<0$.
 
 **2. Leaky ReLU**
 
 - Similar to ReLU, but allows a small negative output.
-- Usually  $\alpha$ is small, such as $0.01$.
+- Usually $\alpha$ is small, such as $0.01$.
 - Reduces the dying-ReLU problem.
 
 **3. GELU**
@@ -2049,22 +2120,28 @@ Modern deep networks commonly use **ReLU and its variants** such as GELU, SiLU, 
 
 The sigmoid function is:
 
-$\sigma(x)=\frac{1}{1+e^{-x}}$
+$$
+\sigma(x)=\frac{1}{1+e^{-x}}
+$$
 
 Its derivative is:
 
-$\sigma'(x)=\sigma(x)(1-\sigma(x))$
+$$
+\sigma'(x)=\sigma(x)(1-\sigma(x))
+$$
 
 The **maximum derivative is only $0.25$**, occurring at $x=0$.
 
 For very large positive or negative values, sigmoid **saturates**:
 
-- $x \gg 0$ → $\sigma(x)\approx1$ →$\sigma'(x)\approx0$
-- $x \ll 0 $→ $\sigma(x)\approx0$ →$\sigma'(x)\approx0$
+- $x \gg 0 \rightarrow \sigma(x)\approx 1 \rightarrow \sigma'(x)\approx 0$
+- $x \ll 0 \rightarrow \sigma(x)\approx 0 \rightarrow \sigma'(x)\approx 0$
 
 During backpropagation, gradients are multiplied through many layers:
 
-$\frac{\partial L}{\partial x} $ = $\frac{\partial L}{\partial y} \prod_i \frac{\partial y_i}{\partial x_i}$
+$$
+\frac{\partial L}{\partial x} = \frac{\partial L}{\partial y} \prod_i \frac{\partial y_i}{\partial x_i}
+$$
 
 Since sigmoid derivatives are often **much smaller than 1**, repeatedly multiplying them can make the gradient become extremely small.
 
@@ -2072,7 +2149,9 @@ Since sigmoid derivatives are often **much smaller than 1**, repeatedly multiply
 
 If each layer contributes a gradient of $0.1$:
 
-$0.1^{10}=10^{-10}$
+$$
+0.1^{10}=10^{-10}
+$$
 
 So early layers receive almost no gradient and learn very slowly.
 
@@ -2097,15 +2176,21 @@ For each feature:
 
 Compute the mean and variance across the mini-batch:
 
-\[$\mu_B=\frac{1}{m}\sum_{i=1}^{m}x_i$\]
+$$
+\mu_B=\frac{1}{m}\sum_{i=1}^{m}x_i
+$$
 
-\[$\sigma_B^2=\frac{1}{m}\sum_{i=1}^{m}(x_i-\mu_B)^2$\]
+$$
+\sigma_B^2=\frac{1}{m}\sum_{i=1}^{m}(x_i-\mu_B)^2
+$$
 
 **2. Normalize**
 
 Standardize the activation:
 
-\[$\hat{x}_i$ = $\frac{x_i-\mu_B}{\sqrt{\sigma_B^2+\epsilon}}$\]
+$$
+\hat{x}_i = \frac{x_i-\mu_B}{\sqrt{\sigma_B^2+\epsilon}}
+$$
 
 This gives the activation approximately **zero mean and unit variance** within the batch.
 
@@ -2113,15 +2198,17 @@ This gives the activation approximately **zero mean and unit variance** within t
 
 BatchNorm then applies learnable parameters:
 
-\[$y_i=\gamma\hat{x}_i+\beta$\]
+$$
+y_i=\gamma\hat{x}_i+\beta
+$$
 
 where:
 
-- $(\gamma) $→ learnable **scale**
-- $(\beta)$ → learnable **shift**
-- $(\epsilon)$ → small constant for numerical stability
+- $\gamma$ → learnable **scale**
+- $\beta$ → learnable **shift**
+- $\epsilon$ → small constant for numerical stability
 
-The learnable $(\gamma)$ and $(\beta)$ allow the network to choose an appropriate distribution rather than being forced to use exactly zero mean and unit variance.
+The learnable $\gamma$ and $\beta$ allow the network to choose an appropriate distribution rather than being forced to use exactly zero mean and unit variance.
 
 ---
 
@@ -2193,11 +2280,15 @@ All four normalization methods help control the scale of neural-network activati
 
 For each feature/channel, BatchNorm computes statistics across the **mini-batch**:
 
-$\hat{x}= \frac{x-\mu_B} {\sqrt{\sigma_B^2+\epsilon}}$
+$$
+\hat{x}= \frac{x-\mu_B} {\sqrt{\sigma_B^2+\epsilon}}
+$$
 
 Then:
 
-$y=\gamma\hat{x}+\beta$
+$$
+y=\gamma\hat{x}+\beta
+$$
 
 **Key point:** BatchNorm depends on batch statistics.
 
@@ -2211,11 +2302,17 @@ $y=\gamma\hat{x}+\beta$
 
 LayerNorm normalizes the features **within each individual sample**.
 
-$\mu=\frac{1}{d}\sum_{i=1}^{d}x_i$
+$$
+\mu=\frac{1}{d}\sum_{i=1}^{d}x_i
+$$
 
-$\sigma^2=\frac{1}{d}\sum_{i=1}^{d}(x_i-\mu)^2$
+$$
+\sigma^2=\frac{1}{d}\sum_{i=1}^{d}(x_i-\mu)^2
+$$
 
-$\operatorname{LayerNorm}(x)$ = $\gamma \frac{x-\mu} {\sqrt{\sigma^2+\epsilon}} +\beta$
+$$
+\operatorname{LayerNorm}(x) = \gamma \frac{x-\mu} {\sqrt{\sigma^2+\epsilon}} +\beta
+$$
 
 **Key point:** It does **not depend on other samples in the batch**.
 
@@ -2231,7 +2328,9 @@ For example, with 32 channels, you might divide them into 8 groups of 4 channels
 
 Conceptually:
 
-$\text{Channels} \rightarrow \text{Groups} \rightarrow \text{Normalize each group}$
+$$
+\text{Channels} \rightarrow \text{Groups} \rightarrow \text{Normalize each group}
+$$
 
 **Key point:** It provides a middle ground between BatchNorm and LayerNorm.
 
@@ -2247,15 +2346,21 @@ RMSNorm simplifies LayerNorm by removing the **mean-centering** step.
 
 Instead of calculating:
 
-$\frac{x-\mu}{\sqrt{\sigma^2+\epsilon}}$
+$$
+\frac{x-\mu}{\sqrt{\sigma^2+\epsilon}}
+$$
 
 RMSNorm uses the root mean square:
 
-$\operatorname{RMS}(x) $ = $\sqrt{ \frac{1}{d}\sum_{i=1}^{d}x_i^2+\epsilon }$
+$$
+\operatorname{RMS}(x) = \sqrt{ \frac{1}{d}\sum_{i=1}^{d}x_i^2+\epsilon }
+$$
 
 Then:
 
-$\operatorname{RMSNorm}(x) $ = $\gamma \frac{x} {\operatorname{RMS}(x)}$
+$$
+\operatorname{RMSNorm}(x) = \gamma \frac{x} {\operatorname{RMS}(x)}
+$$
 
 So RMSNorm **rescales** the activations but does not subtract their mean.
 
@@ -2297,8 +2402,7 @@ So RMSNorm **rescales** the activations but does not subtract their mean.
    - LayerNorm uses the same normalization principle during both training and inference.
 5. **Works well with Transformer representations**
    - A token is represented as a vector of hidden features: $x \in \mathbb{R}^{d_{\text{model}}}$
-
-- LayerNorm normalizes those $d_{\text{model}}$ features for each token independently.
+   - LayerNorm normalizes those $d_{\text{model}}$ features for each token independently.
 
 #### BatchNorm vs LayerNorm
 
@@ -2320,15 +2424,21 @@ So RMSNorm **rescales** the activations but does not subtract their mean.
 
 Instead of learning:
 
-$H(x)$
+$$
+H(x)
+$$
 
 a residual block learns:
 
-$F(x)=H(x)-x$
+$$
+F(x)=H(x)-x
+$$
 
 and produces:
 
-$y=F(x)+x$
+$$
+y=F(x)+x
+$$
 
 This is the core idea behind **ResNet**.
 
@@ -2336,7 +2446,9 @@ This is the core idea behind **ResNet**.
 
 A **skip connection** provides a shortcut that carries the input directly to a later layer:
 
- $y=x+F(x)$
+$$
+y=x+F(x)
+$$
 
 The input $x$ effectively **skips** one or more transformations and is added to their output.
 
@@ -2346,7 +2458,9 @@ The input $x$ effectively **skips** one or more transformations and is added to 
 
 During backpropagation:
 
-$\frac{\partial y}{\partial x} $ = $ 1+\frac{\partial F(x)}{\partial x}$
+$$
+\frac{\partial y}{\partial x} = 1+\frac{\partial F(x)}{\partial x}
+$$
 
 The **$1$** provides a direct gradient path, helping gradients propagate through very deep networks.
 
@@ -2358,17 +2472,23 @@ Without a shortcut, gradients must pass through many transformations. With a res
 
 Learning:
 
-$H(x)=x+F(x)$
+$$
+H(x)=x+F(x)
+$$
 
 can be easier than learning $H(x)$ directly, especially when the desired transformation is close to the identity.
 
 If the optimal transformation is approximately:
 
-$H(x)\approx x$
+$$
+H(x)\approx x
+$$
 
 the network only needs to learn:
 
-$F(x)\approx0$
+$$
+F(x)\approx0
+$$
 
 rather than reconstructing the identity transformation from scratch.
 
@@ -2384,7 +2504,9 @@ Skip connections are a fundamental component of architectures such as **ResNet**
 
 A simplified Transformer sublayer looks like:
 
-$x' = x + F(x)$
+$$
+x' = x + F(x)
+$$
 
 where $F(x)$ could be:
 
@@ -2393,7 +2515,9 @@ where $F(x)$ could be:
 
 Modern Transformers commonly combine residual connections with normalization, for example:
 
-$x′=x+Attention(LayerNorm(x))$
+$$
+x' = x + \operatorname{Attention}(\operatorname{LayerNorm}(x))
+$$
 
 ### 13.72 Why do deeper networks sometimes perform worse even when optimization should theoretically be easier?
 
@@ -2409,7 +2533,9 @@ Adding layers introduces more parameters and nonlinear transformations. Even if 
 
 For example, suppose the added layers should simply perform an identity mapping:
 
-$H(x)=x$
+$$
+H(x)=x
+$$
 
 A plain deep network may struggle to learn this identity transformation.
 
@@ -2417,7 +2543,9 @@ A plain deep network may struggle to learn this identity transformation.
 
 During backpropagation, gradients are repeatedly multiplied through layers:
 
-$\frac{\partial L}{\partial x} $ = $\prod_i \frac{\partial h_i}{\partial h_{i-1}} \frac{\partial L}{\partial h_n}$
+$$
+\frac{\partial L}{\partial x} = \prod_i \frac{\partial h_i}{\partial h_{i-1}} \frac{\partial L}{\partial h_n}
+$$
 
 If these derivatives are consistently smaller than 1, gradients can **vanish**.
 
@@ -2441,21 +2569,29 @@ The degradation problem can occur when the **training error itself becomes worse
 
 A residual block learns:
 
-$y=x+F(x)$
+$$
+y=x+F(x)
+$$
 
 If additional layers are not useful, they can learn:
 
-$F(x)\approx0$
+$$
+F(x)\approx0
+$$
 
 so that:
 
-$y\approx x$
+$$
+y\approx x
+$$
 
 This makes it much easier for a deeper network to preserve the behavior of a shallower network.
 
 The gradient also gets a direct path:
 
-$\frac{\partial y}{\partial x} $ = $1+\frac{\partial F(x)}{\partial x}$
+$$
+\frac{\partial y}{\partial x} = 1+\frac{\partial F(x)}{\partial x}
+$$
 
 The identity term provides a strong route for gradient propagation.
 
@@ -2467,16 +2603,20 @@ The identity term provides a strong route for gradient propagation.
 
 Suppose a layer produces:
 
-$h = f(Wx+b)$
+$$
+h = f(Wx+b)
+$$
 
 During training, we generate a random **Bernoulli mask**:
 
-$m_i \sim \text{Bernoulli}(1-p)$
+$$
+m_i \sim \text{Bernoulli}(1-p)
+$$
 
 where:
 
 - $p$ = dropout probability
-- $1-p $ = probability that a neuron is kept
+- $1-p$ = probability that a neuron is kept
 - $m_i \in \{0,1\}$
 
 The mask is applied to the activations.
@@ -2485,47 +2625,67 @@ The mask is applied to the activations.
 
 Modern implementations typically use **inverted dropout**:
 
-$\tilde{h}_i $ = $\frac{m_i}{1-p}h_i$
+$$
+\tilde{h}_i = \frac{m_i}{1-p}h_i
+$$
 
 or in vector form:
 
-$\boxed{ \tilde{h} = \frac{m\odot h}{1-p} }$
+$$
+\boxed{ \tilde{h} = \frac{m\odot h}{1-p} }
+$$
 
 where $\odot$ represents element-wise multiplication.
 
 The scaling factor $\frac{1}{1-p}$ keeps the **expected activation approximately unchanged**:
 
-$[\tilde{h}_i] $ = $E\left[\frac{m_i h_i}{1-p}\right]$
+$$
+\mathbb{E}[\tilde{h}_i] = \mathbb{E}\left[\frac{m_i h_i}{1-p}\right]
+$$
 
 Since:
 
-$E[m_i]=1-p$
+$$
+\mathbb{E}[m_i]=1-p
+$$
 
 we get:
 
-$E[\tilde{h}_i] $ = $\frac{(1-p)h_i}{1-p}$ = $h_i$
+$$
+\mathbb{E}[\tilde{h}_i] = \frac{(1-p)h_i}{1-p} = h_i
+$$
 
 #### Example
 
 If:
 
-$p=0.5$
+$$
+p=0.5
+$$
 
 then each neuron has a 50% probability of being dropped.
 
 Suppose:
 
-$h=[2,4,6,8]$
+$$
+h=[2,4,6,8]
+$$
 
 and the sampled mask is:
 
-$m=[1,0,1,0]$
+$$
+m=[1,0,1,0]
+$$
 
 Then:
 
-$\tilde{h} $ = $\frac{[1,0,1,0]\odot[2,4,6,8]}{0.5}$
+$$
+\tilde{h} = \frac{[1,0,1,0]\odot[2,4,6,8]}{0.5}
+$$
 
-$\tilde{h}=[4,0,12,0]$
+$$
+\tilde{h}=[4,0,12,0]
+$$
 
 So some neurons are temporarily deactivated while the remaining activations are scaled up.
 
@@ -2533,13 +2693,17 @@ So some neurons are temporarily deactivated while the remaining activations are 
 
 **During training:**
 
-$\tilde{h}=\frac{m\odot h}{1-p}$
+$$
+\tilde{h}=\frac{m\odot h}{1-p}
+$$
 
 A new random mask is typically sampled for each training pass.
 
 **During inference:**
 
-$\tilde{h}=h$
+$$
+\tilde{h}=h
+$$
 
 No neurons are randomly dropped because the scaling was already handled during training.
 
@@ -2578,7 +2742,9 @@ Large language models are trained on enormous datasets. The diversity of trainin
 
 Dropout randomly removes activations:
 
-h\~=m⊙h1−p\\tilde\{h\}=\\frac\{m\\odot h\}\{1-p\}
+$$
+\tilde{h}=\frac{m\odot h}{1-p}
+$$
 
 For very large models, this additional noise can sometimes make optimization less efficient.
 
@@ -2616,17 +2782,23 @@ Instead of learning only from the hard labels, the student learns from the teach
 
 #### Basic idea
 
-$\text{Teacher model} \rightarrow \text{Soft targets} \rightarrow \text{Student model}$
+$$
+\text{Teacher model} \rightarrow \text{Soft targets} \rightarrow \text{Student model}
+$$
 
 For example, suppose the correct class is **cat**.
 
 A hard label might be:
 
-$[0,1,0]$
+$$
+[0,1,0]
+$$
 
 The teacher might produce:
 
-$[0.05,0.90,0.05]$
+$$
+[0.05,0.90,0.05]
+$$
 
 The student learns from this richer probability distribution.
 
@@ -2634,7 +2806,9 @@ The student learns from this richer probability distribution.
 
 Knowledge distillation commonly uses a **temperature $T$** to soften the probability distribution:
 
-$p_i^{(T)} $ = $\frac{\exp(z_i/T)} {\sum_j\exp(z_j/T)}$
+$$
+p_i^{(T)} = \frac{\exp(z_i/T)} {\sum_j\exp(z_j/T)}
+$$
 
 where:
 
@@ -2648,11 +2822,15 @@ At $T=1$, this is the normal softmax.
 
 A common objective combines the normal supervised loss with the teacher's soft predictions:
 
-$\mathcal{L} $ = $\alpha\mathcal{L}_{CE} + (1-\alpha)\mathcal{L}_{KD}$
+$$
+\mathcal{L} = \alpha\mathcal{L}_{\text{CE}} + (1-\alpha)\mathcal{L}_{\text{KD}}
+$$
 
 where:
 
-$\mathcal{L}_{KD} $ = $T^2 D_{KL} \left( p_{\text{teacher}}^{(T)} \parallel p_{\text{student}}^{(T)} \right)$
+$$
+\mathcal{L}_{\text{KD}} = T^2 D_{\text{KL}} \left( p_{\text{teacher}}^{(T)} \parallel p_{\text{student}}^{(T)} \right)
+$$
 
 So the student learns from both:
 
@@ -2679,7 +2857,9 @@ For language models, distillation can involve more than simply matching class pr
 
 For example:
 
-$\text{Large LLM} \rightarrow \text{generated training data} \rightarrow \text{smaller LLM}$
+$$
+\text{Large LLM} \rightarrow \text{generated training data} \rightarrow \text{smaller LLM}
+$$
 
 This is one approach used to transfer capabilities from a larger model to a smaller one.
 
@@ -2691,7 +2871,9 @@ This is one approach used to transfer capabilities from a larger model to a smal
 
 The teacher is usually larger, more accurate, or already trained, while the student is smaller or designed to be more efficient.
 
-$\text{Teacher} \rightarrow \text{Knowledge/Targets} \rightarrow \text{Student}$
+$$
+\text{Teacher} \rightarrow \text{Knowledge/Targets} \rightarrow \text{Student}
+$$
 
 #### How it works
 
@@ -2699,7 +2881,9 @@ $\text{Teacher} \rightarrow \text{Knowledge/Targets} \rightarrow \text{Student}$
 
 The teacher is first trained or selected as a strong model.
 
-$f_T(x)\rightarrow z_T$
+$$
+f_T(x)\rightarrow z_T
+$$
 
 where $z_T$ represents the teacher's output.
 
@@ -2707,7 +2891,9 @@ where $z_T$ represents the teacher's output.
 
 The teacher processes training examples and produces predictions:
 
-$p_T=\operatorname{softmax}\left(\frac{z_T}{T}\right)$
+$$
+p_T=\operatorname{softmax}\left(\frac{z_T}{T}\right)
+$$
 
 The temperature $T$ can soften the distribution and expose more information about the teacher's relative preferences.
 
@@ -2715,15 +2901,21 @@ The temperature $T$ can soften the distribution and expose more information abou
 
 The student produces:
 
-$p_S=\operatorname{softmax}\left(\frac{z_S}{T}\right)$
+$$
+p_S=\operatorname{softmax}\left(\frac{z_S}{T}\right)
+$$
 
 The student is trained to match the teacher:
 
-$\mathcal{L}_{KD} $ = $T^2 D_{KL}(p_T\parallel p_S)$
+$$
+\mathcal{L}_{\text{KD}} = T^2 D_{\text{KL}}(p_T\parallel p_S)
+$$
 
 Often, ground-truth labels are also included:
 
-$\mathcal{L} $ = $\alpha\mathcal{L}_{CE} + (1-\alpha)\mathcal{L}_{KD}$
+$$
+\mathcal{L} = \alpha\mathcal{L}_{\text{CE}} + (1-\alpha)\mathcal{L}_{\text{KD}}
+$$
 
 #### Why does this work?
 
@@ -2731,11 +2923,15 @@ The teacher provides **soft information** that ordinary labels don't contain.
 
 For example, instead of only:
 
-$\text{label}=\text{cat}$
+$$
+\text{label}=\text{cat}
+$$
 
 the teacher might indicate:
 
-$P(\text{cat})=0.90,\quad P(\text{dog})=0.08,\quad P(\text{car})=0.02$
+$$
+P(\text{cat})=0.90,\quad P(\text{dog})=0.08,\quad P(\text{car})=0.02
+$$
 
 The student learns not only the correct answer but also the teacher's **similarity structure and decision behavior**.
 
@@ -2753,7 +2949,9 @@ For LLMs, teacher–student training can work at several levels:
 
 A common LLM workflow is:
 
-$\text{Large Teacher LLM} \rightarrow \text{Generate high-quality examples} \rightarrow \text{Train Student LLM}$
+$$
+\text{Large Teacher LLM} \rightarrow \text{Generate high-quality examples} \rightarrow \text{Train Student LLM}
+$$
 
 #### Teacher–Student vs Knowledge Distillation
 
@@ -2771,15 +2969,21 @@ From an optimization perspective, it acts as a form of **implicit regularization
 
 Suppose we optimize:
 
-$\theta_{t+1}$ = $\theta_t-\eta\nabla_\theta L_{\text{train}}(\theta_t)$
+$$
+\theta_{t+1} = \theta_t-\eta\nabla_\theta L_{\text{train}}(\theta_t)
+$$
 
 As training continues:
 
-$Ltrain↓L_{\text{train}}\downarrow$
+$$
+L_{\text{train}}\downarrow
+$$
 
 But after some point, validation performance may stop improving:
 
-$Lval↑L_{\text{val}}\uparrow$
+$$
+L_{\text{val}}\uparrow
+$$
 
 The model starts fitting increasingly specific patterns in the training data.
 
@@ -2787,9 +2991,11 @@ The model starts fitting increasingly specific patterns in the training data.
 
 We monitor validation performance and stop when it no longer improves:
 
-$t^*$ = $\arg\min_t L_{\text{val}}(\theta_t)$
+$$
+t^{\ast} = \arg\min_t L_{\text{val}}(\theta_t)
+$$
 
-Then we use: $\theta_{t^*}$
+Then we use: $\theta_{t^{\ast}}$
 
 instead of the parameters obtained after fully optimizing the training loss.
 
@@ -2801,7 +3007,7 @@ Early stopping effectively **restricts the set of parameter values the optimizer
 
 So instead of: $\theta_0 \rightarrow \theta_1 \rightarrow \theta_2 \rightarrow \cdots \rightarrow \theta_{\text{train optimum}}$
 
-we select an earlier point: $\theta_0 \rightarrow \cdots \rightarrow \boxed{\theta_{t^*}}$
+we select an earlier point: $\theta_0 \rightarrow \cdots \rightarrow \boxed{\theta_{t^{\ast}}}$
 
 This can prevent the model from fitting increasingly complex or noisy patterns.
 
@@ -2809,11 +3015,13 @@ This can prevent the model from fitting increasingly complex or noisy patterns.
 
 For some simple models, the connection can be made mathematically explicit.
 
-Consider least-squares regression: $L(\theta)$=$\frac{1}{2}\|X\theta-y\|^2$
+Consider least-squares regression: $L(\theta) = \frac{1}{2}\lVert X\theta-y\rVert^2$
 
 Gradient descent gives:
 
-$\theta_{t+1} $ = $ \theta_t-\eta X^T(X\theta_t-y)$
+$$
+\theta_{t+1} = \theta_t-\eta X^T(X\theta_t-y)
+$$
 
 Starting from $\theta_0=0$, the solution after a finite number of iterations is biased toward certain lower-complexity solutions.
 
@@ -2832,7 +3040,9 @@ This is sometimes called **implicit regularization** or **iterative regularizati
 
 Early stopping does **not** explicitly add a term such as:
 
-$L_{\text{total}} $ = $L_{\text{train}} + \lambda\|\theta\|^2$
+$$
+L_{\text{total}} = L_{\text{train}} + \lambda\lVert\theta\rVert^2
+$$
 
 Instead, the **optimization trajectory and stopping time** provide the regularizing effect.
 
@@ -2904,7 +3114,9 @@ Updated node embedding
 
 A simplified formulation is:
 
-$h_v^{(l+1)} $ = $\text{UPDATE} \left( h_v^{(l)}, \text{AGGREGATE}\left(\{h_u^{(l)}:u\in N(v)\}\right) \right)$
+$$
+h_v^{(l+1)} = \operatorname{UPDATE} \left( h_v^{(l)}, \operatorname{AGGREGATE}\left(\{h_u^{(l)}:u\in \mathcal{N}(v)\}\right) \right)
+$$
 
 #### Common GNN architectures
 

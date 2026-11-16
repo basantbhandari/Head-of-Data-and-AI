@@ -100,12 +100,12 @@ A **probability distribution** describes how likely different values or outcomes
   - Discrete distribution that models the number of **successes in a fixed number of independent trials**.
   - Each trial has two possible outcomes: success or failure.
   - Example: Number of heads obtained in 10 coin flips.
-  - Parameters: number of trials `n` and probability of success `p`.
+  - Parameters: number of trials $n$ and probability of success $p$.
 - **Poisson Distribution**
   - Discrete distribution that models the number of times an **event occurs within a fixed interval** of time or space.
   - Useful when events occur independently at a roughly constant average rate.
   - Example: Number of customer arrivals at a store per hour.
-  - Parameter: average event rate `λ`.
+  - Parameter: average event rate $\lambda$.
 - **Uniform Distribution**
   - Distribution where all outcomes within a specified range are **equally likely**.
   - Can be discrete or continuous.
@@ -130,8 +130,8 @@ A **normal distribution** is a continuous probability distribution with a **symm
 - It is **symmetric around the mean**.
 - **Mean = Median = Mode**.
 - It is determined by:
-  - **Mean (μ):** controls the center.
-  - **Standard deviation (σ):** controls the spread.
+  - **Mean ($\mu$):** controls the center.
+  - **Standard deviation ($\sigma$):** controls the spread.
 - Most observations are close to the mean, while extreme values are less likely.
 
 ##### Important Functions
@@ -164,8 +164,8 @@ The **exponential distribution** is a continuous probability distribution used t
 
 - It is commonly used for **waiting-time problems**.
 - Example: Time until the next customer arrives at a store.
-- It is controlled by a **rate parameter (λ)**.
-- A larger λ means events happen more frequently, so the expected waiting time is shorter.
+- It is controlled by a **rate parameter ($\lambda$)**.
+- A larger $\lambda$ means events happen more frequently, so the expected waiting time is shorter.
 - It is **right-skewed**: many observations are small, with fewer very large values.
 - It has the **memoryless property**, meaning the probability of waiting an additional amount of time does not depend on how long you have already waited.
 
@@ -182,9 +182,9 @@ The **exponential distribution** is a continuous probability distribution used t
 
 The **binomial distribution** is a discrete probability distribution that models the **number of successes in a fixed number of independent trials**, where each trial has only two possible outcomes: **success or failure**.
 
-- **Fixed number of trials:** `n`
+- **Fixed number of trials:** $n$
 - **Two possible outcomes:** success or failure
-- **Constant probability of success:** `p`
+- **Constant probability of success:** $p$
 - **Trials are independent** of each other.
 - The random variable represents the **number of successes**.
 
@@ -207,8 +207,8 @@ The **Bernoulli distribution** is a discrete probability distribution that model
 
 - **Success:** represented by `1`
 - **Failure:** represented by `0`
-- The probability of success is **p**.
-- The probability of failure is **1 − p**.
+- The probability of success is **$p$**.
+- The probability of failure is **$1 - p$**.
 
 **Example:**
 
@@ -249,10 +249,10 @@ If a six-sided die is rolled 20 times, the multinomial distribution can model ho
 
 The **lognormal distribution** is a continuous probability distribution for a positive-valued variable whose **natural logarithm follows a normal distribution**.
 
-- The variable can only take **positive values** (`X > 0`).
+- The variable can only take **positive values** ($X > 0$).
 - It is typically **right-skewed**, with a long tail toward larger values.
 - It is useful when values grow through **multiplicative effects** rather than additive effects.
-- If `X` is lognormally distributed, then `ln(X)` follows a normal distribution.
+- If $X$ is lognormally distributed, then $\ln(X)$ follows a normal distribution.
 
 ##### Examples
 
@@ -298,11 +298,11 @@ The **logistic distribution** is a continuous probability distribution that is *
 
 The **gamma distribution** is a continuous probability distribution used to model **positive-valued quantities**, especially **waiting time until multiple events occur**.
 
-- It only takes **positive values** (`X > 0`).
+- It only takes **positive values** ($X > 0$).
 - It is generally **right-skewed**, although its shape can vary.
 - It is defined by two parameters:
-  - **Shape (α):** controls the shape of the distribution.
-  - **Rate (β):** controls the rate at which events occur.
+  - **Shape ($\alpha$):** controls the shape of the distribution.
+  - **Rate ($\beta$):** controls the rate at which events occur.
 - It generalizes the **exponential distribution**. The exponential distribution models the waiting time for one event, while the gamma distribution can model the waiting time for multiple events.
 
 ##### Common Functions
@@ -332,9 +332,9 @@ The **gamma distribution** is a continuous probability distribution used to mode
 The **Poisson distribution** is a discrete probability distribution used to model the **number of times an event occurs within a fixed interval of time, space, or area**, when events occur independently at a constant average rate.
 
 - It is a **discrete distribution**.
-- The random variable represents the **number of events**: `0, 1, 2, ...`
-- It has one parameter, **λ (lambda)**, which represents the average number of events in the interval.
-- The mean and variance are both **λ**.
+- The random variable represents the **number of events**: $0, 1, 2, \ldots$
+- It has one parameter, **$\lambda$ (lambda)**, which represents the average number of events in the interval.
+- The mean and variance are both **$\lambda$**.
 - Examples:
   - Number of customers arriving at a store per hour.
   - Number of calls received by a call center per minute.
@@ -346,20 +346,22 @@ The **Poisson distribution** is a discrete probability distribution used to mode
 
 The PMF gives the probability of observing exactly **k events** in the interval.
 
-**P(X = k) = (e⁻λ λᵏ) / k!**
+$$
+P(X = k) = \frac{e^{-\lambda} \lambda^k}{k!}
+$$
 
 where:
 
-- `λ` = average event rate
-- `k` = number of events
-- `e` = Euler's number
+- $\lambda$ = average event rate
+- $k$ = number of events
+- $e$ = Euler's number
 
 ##### Other Functions
 
 - **CDF:** Gives the probability of observing **k or fewer events**.
-- **Mean:** `λ`
-- **Variance:** `λ`
-- **Standard deviation:** `√λ`
+- **Mean:** $\lambda$
+- **Variance:** $\lambda$
+- **Standard deviation:** $\sqrt{\lambda}$
 
 ### 1.12 When would you use a Poisson distribution over a Binomial distribution?
 
@@ -368,14 +370,14 @@ where:
 Use a **Poisson distribution** when you want to model the **number of events occurring within a fixed interval**, while a **Binomial distribution** is used when you have a **fixed number of trials** with two possible outcomes.
 
 - **Use Binomial when:**
-  - The number of trials is fixed (`n`).
+  - The number of trials is fixed ($n$).
   - Each trial has two outcomes: success/failure.
-  - The probability of success (`p`) is known or estimated.
+  - The probability of success ($p$) is known or estimated.
   - Example: Number of defective products among **100 inspected products**.
 - **Use Poisson when:**
   - You are counting events within a fixed **time, space, area, or volume**.
   - There is no fixed number of trials.
-  - Events occur independently at a roughly constant average rate (`λ`).
+  - Events occur independently at a roughly constant average rate ($\lambda$).
   - Example: Number of customers arriving at a store **per hour**.
 
 ##### Simple Rule
@@ -524,13 +526,13 @@ Suppose data shows that **ice cream sales increase when the number of sunburn ca
   - Example: A medical test says a person has cancer although that person is normal.
   - Rejecting the null hypothesis when it is actually true.
   - You conclude there is an effect when there is actually no effect.
-  - Probability of Type I error = **α (significance level)**.
+  - Probability of Type I error = **$\alpha$ (significance level)**.
 - **Type II Error (False Negative):**
   - It predicts negative when the actual is positive
   - Example: A medical test says a person is normal although that person has cancer.
   - Failing to reject the null hypothesis when it is actually false.
   - You conclude there is no effect when there actually is one.
-  - Probability of Type II error = **β**.
+  - Probability of Type II error = **$\beta$**.
 
 | Actual / Predicted | Positive | Negative |
 | --- | --- | --- |
@@ -542,37 +544,37 @@ Suppose data shows that **ice cream sales increase when the number of sunburn ca
 ##### P-value
 
 - It is the probability of obtaining a result at least as extreme as the observed result, assuming the null hypothesis is true.
-- Null hypothesis, **H₀** ⇒ no effect, no difference, or no relationship
-- Alternative hypothesis, **H1** ⇒ there is an effect, there is a difference, or there is a relationship
-- A **small p-value** means the observed result would be unlikely if H₀ were true.
-- A **large p-value** means there is not enough evidence to reject H₀.
-- Common significance level: **α = 0.05**.
+- Null hypothesis, **$H_0$** ⇒ no effect, no difference, or no relationship
+- Alternative hypothesis, **$H_1$** ⇒ there is an effect, there is a difference, or there is a relationship
+- A **small p-value** means the observed result would be unlikely if $H_0$ were true.
+- A **large p-value** means there is not enough evidence to reject $H_0$.
+- Common significance level: **$\alpha = 0.05$**.
 
 ##### Statistical Significance
 
-A result is **statistically significant** when the p-value is smaller than the chosen significance level α.
+A result is **statistically significant** when the p-value is smaller than the chosen significance level $\alpha$.
 
-- **p-value \< 0.05 → Statistically significant → Reject H₀, Accept H1**
-- **p-value ≥ 0.05 → Not statistically significant → Fail to reject H₀, Reject H1**
+- **p-value $< 0.05$ → Statistically significant → Reject $H_0$, Accept $H_1$**
+- **p-value $\geq 0.05$ → Not statistically significant → Fail to reject $H_0$, Reject $H_1$**
 
-**p-value \< α → evidence against H₀ → statistically significant.**
+**p-value $< \alpha$ → evidence against $H_0$ → statistically significant.**
 
 ### 1.21 Explain p-values and their limitations.
 
 ##### P-value
 
-- A **p-value** measures how unusual the observed data would be **assuming the null hypothesis (H₀) is true**.
-- **Small p-value:** Data provides stronger evidence against H₀.
-- **Large p-value:** Data does not provide sufficient evidence to reject H₀.
-- Common significance level: **α = 0.05**.
-  - **p \< 0.05 → statistically significant**
-  - **p ≥ 0.05 → not statistically significant**
+- A **p-value** measures how unusual the observed data would be **assuming the null hypothesis ($H_0$) is true**.
+- **Small p-value:** Data provides stronger evidence against $H_0$.
+- **Large p-value:** Data does not provide sufficient evidence to reject $H_0$.
+- Common significance level: **$\alpha = 0.05$**.
+  - **$p < 0.05$ → statistically significant**
+  - **$p \geq 0.05$ → not statistically significant**
 
 ##### Limitations of P-values
 
 - **Does not measure the size of an effect:** A tiny effect can have a very small p-value with a large sample.
 - **Does not measure practical importance:** Statistical significance does not necessarily mean the result is useful or meaningful in practice.
-- **Does not give the probability that H₀ is true:** A p-value is not `P(H₀ is true)`.
+- **Does not give the probability that $H_0$ is true:** A p-value is not $P(H_0 \text{ is true})$.
 - **Depends on sample size:** Larger samples can produce very small p-values even for weak effects.
 - **Sensitive to study design and assumptions:** Violating statistical assumptions can make p-values misleading.
 - **Multiple testing problem:** Testing many hypotheses increases the chance of obtaining a significant result by chance.
@@ -580,7 +582,7 @@ A result is **statistically significant** when the p-value is smaller than the c
 
 **Short:**
 
-**P-value tells how compatible the data is with H₀, but it does not tell you whether an effect is large, important, or certainly true.**
+**P-value tells how compatible the data is with $H_0$, but it does not tell you whether an effect is large, important, or certainly true.**
 
 ### 1.22 What is hypothesis testing, and when is it used in ML?
 
@@ -588,11 +590,11 @@ A result is **statistically significant** when the p-value is smaller than the c
 
 - **Hypothesis testing** is a statistical method used to determine whether there is enough evidence in sample data to support a claim about a population.
 - It starts with two hypotheses:
-  - **Null hypothesis (H₀):** No significant effect or difference exists.
-  - **Alternative hypothesis (H₁):** A significant effect or difference exists.
-- A statistical test produces a **p-value**, which is compared with a significance level such as **α = 0.05**.
-- If **p \< α**, reject H₀.
-- If **p ≥ α**, fail to reject H₀.
+  - **Null hypothesis ($H_0$):** No significant effect or difference exists.
+  - **Alternative hypothesis ($H_1$):** A significant effect or difference exists.
+- A statistical test produces a **p-value**, which is compared with a significance level such as **$\alpha = 0.05$**.
+- If **$p < \alpha$**, reject $H_0$.
+- If **$p \geq \alpha$**, fail to reject $H_0$.
 
 ##### When is it used in ML?
 
@@ -632,8 +634,8 @@ It depends on **what you are comparing** and the type of predictions.
 
 - **Fit a statistical model**, such as linear or logistic regression, including the feature.
 - Examine the feature's **coefficient** and its **p-value**.
-- **p-value \< α** (commonly 0.05) → feature is statistically significant.
-- **p-value ≥ α** → insufficient evidence that the feature has a statistically significant effect, given the model and assumptions.
+- **p-value $< \alpha$** (commonly 0.05) → feature is statistically significant.
+- **p-value $\geq \alpha$** → insufficient evidence that the feature has a statistically significant effect, given the model and assumptions.
 - Use a **confidence interval** for the coefficient:
   - If the interval **does not include 0**, the coefficient is statistically significant at the corresponding confidence level.
   - If it includes 0, it is not.
@@ -683,7 +685,7 @@ Suppose a model's estimated accuracy improvement is **5%**, with a **95% CI of \
 ##### Z-score
 
 - Measures how many **standard deviations** a value is from the population mean.
-- Used when the **population standard deviation (σ) is known** or when working with a standardized population.
+- Used when the **population standard deviation ($\sigma$) is known** or when working with a standardized population.
 - Follows the **standard normal distribution**.
 
 ##### T-score
@@ -697,14 +699,14 @@ Suppose a model's estimated accuracy improvement is **5%**, with a **95% CI of \
 
 |  | Z-score | T-score |
 | --- | --- | --- |
-| Standard deviation | Population σ known | Population σ unknown |
+| Standard deviation | Population $\sigma$ known | Population $\sigma$ unknown |
 | Distribution | Normal | t-distribution |
 | Small samples | Less appropriate | Appropriate |
 | Large samples | Common | Also approaches normal |
 
 **Short:**
 
-**Use Z when σ is known; use T when σ is unknown and estimated from the sample.**
+**Use Z when $\sigma$ is known; use T when $\sigma$ is unknown and estimated from the sample.**
 
 ### 1.27 Explain Bayes' Theorem. How is it relevant to Naive Bayes or Bayesian methods?
 
@@ -712,10 +714,10 @@ Suppose a model's estimated accuracy improvement is **5%**, with a **95% CI of \
 
 Bayes' Theorem describes how to **update the probability of a hypothesis when new evidence is observed**.
 
-- **Prior probability:** `P(A)` — probability of the hypothesis before seeing new evidence.
-- **Likelihood:** `P(B|A)` — probability of observing the evidence if the hypothesis is true.
-- **Posterior probability:** `P(A|B)` — updated probability of the hypothesis after seeing the evidence.
-- **Evidence:** `P(B)` — overall probability of observing the evidence.
+- **Prior probability:** $P(A)$ — probability of the hypothesis before seeing new evidence.
+- **Likelihood:** $P(B \mid A)$ — probability of observing the evidence if the hypothesis is true.
+- **Posterior probability:** $P(A \mid B)$ — updated probability of the hypothesis after seeing the evidence.
+- **Evidence:** $P(B)$ — overall probability of observing the evidence.
 
 ##### Relevance to Naive Bayes
 
@@ -746,11 +748,11 @@ They are used for parameter estimation, prediction, uncertainty quantification, 
   - Finds the parameter values that make the observed data **most likely**.
   - Uses only the observed data.
   - Does not include prior beliefs about the parameters.
-  - Objective: maximize `P(Data | Parameters)`.
+  - Objective: maximize $P(\text{Data} \mid \text{Parameters})$.
 - **MAP (Maximum A Posteriori) Estimation**
   - Finds the parameter values that are **most probable after considering both data and prior beliefs**.
   - Combines likelihood with a prior distribution.
-  - Objective: maximize `P(Parameters | Data)`.
+  - Objective: maximize $P(\text{Parameters} \mid \text{Data})$.
 
 ##### Key Difference
 
@@ -779,17 +781,21 @@ If the prior is **uniform**, MAP and MLE give the same estimate.
 - It chooses the parameter values that make the **observed data most likely**.
 - It maximizes the **likelihood function**:
 
-  `L(θ) = P(Data | θ)`
+  $$
+  L(\theta) = P(\text{Data} \mid \theta)
+  $$
 
 - The parameter estimate is:
 
-  `θ̂ = argmaxθ L(θ)`
+  $$
+  \hat{\theta} = \arg\max_{\theta} L(\theta)
+  $$
 
 ##### Example
 
 Suppose you toss a coin 10 times and get **7 heads**.
 
-- MLE estimates the probability of heads as **p = 0.7**.
+- MLE estimates the probability of heads as **$p = 0.7$**.
 - This value makes the observed result of 7 heads out of 10 most likely.
 
 ##### In ML
@@ -886,7 +892,7 @@ Even if individual customer purchase amounts are highly skewed, the **average pu
 Every member has a known chance of being selected.
 
 - **Simple Random Sampling:** Every member has an equal chance of selection.
-- **Systematic Sampling:** Select every `k`th member after a random starting point.
+- **Systematic Sampling:** Select every $k$th member after a random starting point.
 - **Stratified Sampling:** Divide the population into groups (strata) and randomly sample from each group.
 - **Cluster Sampling:** Divide the population into clusters and randomly select entire clusters.
 - **Multistage Sampling:** Sampling is performed in multiple stages, often combining different techniques.
@@ -946,12 +952,12 @@ Bootstrap can be used to:
 
 - **Eigenvector:** A non-zero vector whose direction does not change when a matrix transformation is applied to it. Only its magnitude may change.
 - **Eigenvalue:** The scalar that tells how much the corresponding eigenvector is stretched or compressed by the transformation.
-- They are defined by: **A v = λ v**
-  - `A` = square matrix
-  - `v` = eigenvector
-  - `λ` = eigenvalue
-- **Eigenvalues** are found by solving the characteristic equation:**det(A − λI) = 0**
-- **Eigenvectors** are then found by solving:**(A − λI)v = 0**
+- They are defined by: $Av = \lambda v$
+  - $A$ = square matrix
+  - $v$ = eigenvector
+  - $\lambda$ = eigenvalue
+- **Eigenvalues** are found by solving the characteristic equation: $\det(A - \lambda I) = 0$
+- **Eigenvectors** are then found by solving: $(A - \lambda I)v = 0$
 - **In ML**, eigenvalues and eigenvectors are important in:
   - PCA and dimensionality reduction
   - Covariance matrix analysis
@@ -987,8 +993,8 @@ If you survey customer satisfaction only among customers who voluntarily respond
 | --- | --- | --- | --- |
 | **Meaning** | Measures whether two variables move together | Measures the **strength and direction** of a linear relationship | Means a change in one variable **causes** a change in another |
 | **Direction** | Positive / Negative | Positive / Negative | Cause → Effect |
-| **Strength** | Difficult to interpret because scale-dependent | Easy to interpret, from `-1` to `+1` | Not represented by a simple fixed range |
-| **Range** | `(-∞, +∞)` | `[-1, +1]` | No fixed range |
+| **Strength** | Difficult to interpret because scale-dependent | Easy to interpret, from $-1$ to $+1$ | Not represented by a simple fixed range |
+| **Range** | $(-\infty, +\infty)$ | $[-1, +1]$ | No fixed range |
 | **Units** | Depends on units of X and Y | Unitless | Depends on the causal effect being measured |
 | **Standardized?** | No | Yes | Not simply a statistical standardization |
 | **Does it prove cause-effect?** | No | **No** | **Yes**, when supported by valid causal evidence |
@@ -1018,13 +1024,13 @@ But:
 
 #### Type I Error vs Type II Error
 
-| Aspect | **Type I Error (α)** | **Type II Error (β)** |
+| Aspect | **Type I Error ($\alpha$)** | **Type II Error ($\beta$)** |
 | --- | --- | --- |
 | **Meaning** | Rejecting a **true null hypothesis** | Failing to reject a **false null hypothesis** |
 | **Also called** | **False Positive** | **False Negative** |
 | **Occurs when** | We conclude there is an effect when there isn't one | We conclude there is no sufficient evidence of an effect when one actually exists |
-| **Probability** | α (significance level) | β |
-| **Related concept** | Significance level | Statistical power = 1−β1-\\beta |
+| **Probability** | $\alpha$ (significance level) | $\beta$ |
+| **Related concept** | Significance level | Statistical power $= 1 - \beta$ |
 
 #### Simple example
 
@@ -1043,14 +1049,14 @@ Suppose we test whether a new medicine works:
 
 ### 1.38 What is P-value?
 
-- **P-value** is the probability of obtaining a result **at least as extreme as the observed result**, assuming the **null hypothesis (H₀) is true**.
+- **P-value** is the probability of obtaining a result **at least as extreme as the observed result**, assuming the **null hypothesis ($H_0$) is true**.
 - In simple term: **How surprising is my result if the null hypothesis is actually true?**
 - It helps determine whether the observed result provides enough evidence to **reject the null hypothesis**.
-- A **small p-value** indicates stronger evidence against H₀.
-- Common significance level: **α = 0.05**
+- A **small p-value** indicates stronger evidence against $H_0$.
+- Common significance level: **$\alpha = 0.05$**
 
-  - **p-value \< 0.05:** Reject H₀
-  - **p-value ≥ 0.05:** Fail to reject H₀
+  - **p-value $< 0.05$:** Reject $H_0$
+  - **p-value $\geq 0.05$:** Fail to reject $H_0$
 - A p-value **does not** represent the probability that the null hypothesis is true.
 - It is **not** the probability that your test result is a random fluke.
 
@@ -1111,7 +1117,7 @@ Suppose we test whether a new medicine works:
 - There are **36 possible outcomes** when rolling two dice.
 - A sum of **7** can occur in **6 ways**:
   - (1,6), (2,5), (3,4), (4,3), (5,2), (6,1)
-- Therefore, the probability of winning on one roll is **6/36 = 1/6**.
+- Therefore, the probability of winning on one roll is **$\frac{6}{36} = \frac{1}{6}$**.
 - You win **\$50** and pay **\$4** per game.
 
 For **6 games**:
@@ -1124,8 +1130,8 @@ For **6 games**:
 
 Probability of making money:
 
-- Probability of no wins in 6 rolls = **(5/6)⁶ ≈ 0.335**
-- Probability of at least one win = **1 − (5/6)⁶ ≈ 0.665**
+- Probability of no wins in 6 rolls = **$(5/6)^6 \approx 0.335$**
+- Probability of at least one win = **$1 - (5/6)^6 \approx 0.665$**
 
 #### Final Answer
 
@@ -1145,7 +1151,7 @@ The **median is better when the distribution is skewed or has outliers**, becaus
 - **Imputing missing values** in a skewed feature: median imputation is more robust than mean imputation.
 - **Data with recording errors** (e.g., an age of 999).
 
-**When the mean is still preferred:** roughly symmetric data without outliers; when you need totals (total revenue = mean × count); or when extremes genuinely matter (expected cost in insurance).
+**When the mean is still preferred:** roughly symmetric data without outliers; when you need totals ($\text{total revenue} = \text{mean} \times \text{count}$); or when extremes genuinely matter (expected cost in insurance).
 
 **Practice:** look at the histogram or box plot, report both mean and median when they differ, and consider a log transform for heavily skewed features.
 
@@ -1169,7 +1175,7 @@ It depends on whether the categorical variable is binary, nominal or ordinal:
 - **Binary categorical (2 levels):** use the **point-biserial correlation**, which is Pearson correlation with the category coded 0/1. Ranges from -1 to 1.
 - **Nominal with k levels:** use the **correlation ratio $\eta$ (eta)**, derived from ANOVA: the share of variance in the continuous variable explained by group membership.
 
-  $\eta^2 = \frac{SS_{between}}{SS_{total}}$, ranging 0–1. Test significance with a one-way **ANOVA F-test** (or **Kruskal-Wallis** if the data is non-normal).
+  $\eta^2 = \frac{SS_{\text{between}}}{SS_{\text{total}}}$, ranging 0–1. Test significance with a one-way **ANOVA F-test** (or **Kruskal-Wallis** if the data is non-normal).
 - **Ordinal categorical:** use **Spearman's rank correlation** or **Kendall's tau**, which respect order without assuming equal spacing.
 - **Model-based alternatives:** mutual information (captures nonlinear dependence), or the AUC of predicting the binary category from the continuous variable.
 
@@ -1209,7 +1215,7 @@ The two schools differ in **what probability means**.
 - **Frequentist pros:** simpler, scalable, objective procedures, well-established tests.
 - **Frequentist cons:** confidence intervals and p-values are easy to misinterpret; no direct probability statements about parameters.
 
-**Production example:** Bayesian A/B testing gives "P(variant B is better) = 94%", which is often easier for stakeholders than a p-value.
+**Production example:** Bayesian A/B testing gives "$P(\text{variant B is better}) = 94\%$", which is often easier for stakeholders than a p-value.
 
 ### 1.48 Describe the differences between and use cases for box plots and histograms
 
@@ -1224,7 +1230,7 @@ Both show the distribution of a numeric variable, at different levels of detail.
 
 **Box plot**
 
-- Five-number summary: median, Q1, Q3 (the box = IQR), whiskers (typically to 1.5×IQR) and individual **outliers** beyond them.
+- Five-number summary: median, Q1, Q3 (the box = IQR), whiskers (typically to $1.5 \times \text{IQR}$) and individual **outliers** beyond them.
 - Compact and robust; makes **comparing many groups side by side** easy.
 - Hides shape: a bimodal and a unimodal distribution can produce identical boxes.
 - **Use when:** comparing a metric across categories (latency per region, salary per department), quickly flagging outliers, dashboards with limited space.
@@ -1235,19 +1241,21 @@ Both show the distribution of a numeric variable, at different levels of detail.
 
 **KL divergence** measures how much one probability distribution $P$ differs from a reference distribution $Q$:
 
-$D_{KL}(P \Vert Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}$
+$$
+D_{\text{KL}}(P \parallel Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}
+$$
 
 Interpretation: the expected extra bits (nats) needed to encode samples from $P$ using a code optimized for $Q$.
 
-**Properties:** always $\ge 0$, zero only if $P = Q$; **not symmetric** ($D_{KL}(P\Vert Q) \ne D_{KL}(Q\Vert P)$), so it's not a true distance; infinite if $Q(x) = 0$ where $P(x) > 0$. Forward KL is "mean-seeking" (covers all modes); reverse KL is "mode-seeking".
+**Properties:** always $\ge 0$, zero only if $P = Q$; **not symmetric** ($D_{\text{KL}}(P \parallel Q) \neq D_{\text{KL}}(Q \parallel P)$), so it's not a true distance; infinite if $Q(x) = 0$ where $P(x) > 0$. Forward KL is "mean-seeking" (covers all modes); reverse KL is "mode-seeking".
 
 **Use cases in ML:**
 
-- **Cross-entropy loss:** $H(P,Q) = H(P) + D_{KL}(P\Vert Q)$, so minimizing cross-entropy against fixed labels minimizes KL.
+- **Cross-entropy loss:** $H(P, Q) = H(P) + D_{\text{KL}}(P \parallel Q)$, so minimizing cross-entropy against fixed labels minimizes KL.
 - **VAEs:** the KL term pushes the encoder's latent distribution toward the prior $\mathcal{N}(0, I)$.
 - **Knowledge distillation:** KL between teacher and student softened output distributions.
 - **RLHF / PPO / DPO:** a KL penalty keeps the fine-tuned LLM close to the reference model, preventing reward hacking and drift.
-- **Variational inference:** minimize $D_{KL}(q \Vert p)$ to approximate posteriors.
+- **Variational inference:** minimize $D_{\text{KL}}(q \parallel p)$ to approximate posteriors.
 - **Drift monitoring:** compare feature or prediction distributions between training and production (often with the symmetric, bounded Jensen-Shannon divergence or PSI instead).
 - **t-SNE:** minimizes KL between high- and low-dimensional neighbour distributions.
 
@@ -1269,7 +1277,7 @@ def kl(p, q, eps=1e-12):
 | **Poisson** | Discrete | Count of events per interval | Modeling calls/orders per hour, Poisson regression, demand forecasting |
 | **Exponential** | Continuous | Time between Poisson events | Survival/time-to-event, queueing and latency modeling |
 | **Uniform** | Both | Equal likelihood | Random initialization, random search for hyperparameters, simulation |
-| **Beta** | Continuous on [0,1] | Distribution of a probability | Bayesian A/B testing, Thompson sampling for bandits |
+| **Beta** | Continuous on $[0, 1]$ | Distribution of a probability | Bayesian A/B testing, Thompson sampling for bandits |
 | **Dirichlet** | Multivariate on simplex | Distribution over probability vectors | Topic models (LDA), Bayesian priors for categorical data |
 | **Gamma** | Continuous, positive | Waiting times, positive skewed values | Insurance claim sizes, Bayesian priors for precision |
 | **Student's t** | Continuous, heavy tails | Small-sample means | t-tests, t-SNE's low-dimensional similarities, robust regression |
@@ -1282,8 +1290,12 @@ def kl(p, q, eps=1e-12):
 **Categorical vs. categorical (nominal):**
 
 - **Chi-square test of independence:** tests whether an association exists (gives a p-value, not strength).
-- **Cramér's V:** effect size from chi-square, range 0–1, works for any table size:
-  $V = \sqrt{\frac{\chi^2/n}{\min(r-1, c-1)}}$ (use the bias-corrected version for small samples).
+- **Cramér's V:** effect size from chi-square, range 0–1, works for any table size (use the bias-corrected version for small samples):
+
+  $$
+  V = \sqrt{\frac{\chi^2/n}{\min(r-1, c-1)}}
+  $$
+
 - **Phi coefficient ($\phi$):** for 2×2 tables; equals Pearson on two binary variables.
 - **Contingency coefficient** and **Tschuprow's T:** older alternatives to Cramér's V.
 - **Theil's U (uncertainty coefficient):** asymmetric, based on entropy: how much knowing X reduces uncertainty about Y. Useful because association can be directional.
@@ -1316,7 +1328,9 @@ Linear algebra: embeddings are vectors, similarity search relies on dot product/
 
 **Singular Value Decomposition (SVD)** is a matrix factorization technique that decomposes a matrix into three matrices:
 
-$A = U\Sigma V^T$
+$$
+A = U\Sigma V^T
+$$
 
 Where:
 
@@ -1332,7 +1346,7 @@ Where:
    - Reduces high-dimensional data while preserving important information.
    - Used in PCA and latent semantic analysis.
 2. **Data Compression**
-   - Approximates a large matrix using only its top  singular values: $A \approx U_k\Sigma_kV_k^T$
+   - Approximates a large matrix using only its top $k$ singular values: $A \approx U_k \Sigma_k V_k^T$
 3. **Recommendation Systems**
    - Factorizes user-item matrices to discover latent user preferences and item characteristics.
 4. **NLP**
@@ -1354,25 +1368,39 @@ We want: $\boxed{A=U\Sigma V^T}$
 
 ##### 1. Calculate $A^T$
 
-$A^T= \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix}$
+$$
+A^T= \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix}
+$$
 
 ##### 2. Calculate $AA^T$
 
-$AA^T= \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix} = \begin{bmatrix} 13&11\\ 11&17 \end{bmatrix}$
+$$
+AA^T= \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix} = \begin{bmatrix} 13&11\\ 11&17 \end{bmatrix}
+$$
 
 Find its eigenvalues:
 
-$\det \begin{bmatrix} 13-\lambda&11\\ 11&17-\lambda \end{bmatrix}=0$
+$$
+\det \begin{bmatrix} 13-\lambda&11\\ 11&17-\lambda \end{bmatrix}=0
+$$
 
-$(13-\lambda)(17-\lambda)-121=0$
+$$
+(13-\lambda)(17-\lambda)-121=0
+$$
 
-$\lambda^2-30\lambda+100=0$
+$$
+\lambda^2-30\lambda+100=0
+$$
 
 Therefore:
 
-$\lambda_1=15+5\sqrt5\approx26.180$
+$$
+\lambda_1=15+5\sqrt5\approx26.180
+$$
 
-$\lambda_2=15-5\sqrt5\approx3.820$
+$$
+\lambda_2=15-5\sqrt5\approx3.820
+$$
 
 ---
 
@@ -1382,15 +1410,19 @@ Singular values are: $\sigma_i=\sqrt{\lambda_i}$
 
 Therefore:
 
-$\sigma_1=\sqrt{26.180}\approx5.117$
+$$
+\sigma_1=\sqrt{26.180}\approx5.117
+$$
 
-$\sigma_2=\sqrt{3.820}\approx1.955$
+$$
+\sigma_2=\sqrt{3.820}\approx1.955
+$$
 
 So: $\boxed{ \Sigma= \begin{bmatrix} 5.117&0\\ 0&1.955 \end{bmatrix}}$
 
 ---
 
-##### 4. Find UU
+##### 4. Find $U$
 
 The columns of $U$ are the **normalized eigenvectors of $AA^T$**.
 
@@ -1406,17 +1438,21 @@ Therefore: $\boxed{ U= \begin{bmatrix} 0.641&0.768\\ 0.768&-0.641 \end{bmatrix}}
 
 ---
 
-##### 5. Find VV
+##### 5. Find $V$
 
-Now calculate: $A^TA= \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix} \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix}$= $\begin{bmatrix} 10&10\\ 10&20 \end{bmatrix}$
+Now calculate: $A^TA= \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix} \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} = \begin{bmatrix} 10&10\\ 10&20 \end{bmatrix}$
 
 The eigenvalues are the same: $26.180,\quad3.820$
 
 For $\lambda_1=26.180$:
 
-$(10-26.180)x+10y=0$
+$$
+(10-26.180)x+10y=0
+$$
 
-$y=1.618x$
+$$
+y=1.618x
+$$
 
 After normalization: $v_1= \begin{bmatrix} 0.526\\ 0.851 \end{bmatrix}$
 
@@ -1432,21 +1468,29 @@ Therefore: $\boxed{ V^T= \begin{bmatrix} 0.526&0.851\\ 0.851&-0.526 \end{bmatrix
 
 Putting everything together: $\boxed{ A=U\Sigma V^T }$
 
-$\boxed{ \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} \approx \begin{bmatrix} 0.641&0.768\\ 0.768&-0.641 \end{bmatrix} \begin{bmatrix} 5.117&0\\ 0&1.955 \end{bmatrix} \begin{bmatrix} 0.526&0.851\\ 0.851&-0.526 \end{bmatrix} }$
+$$
+\boxed{ \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} \approx \begin{bmatrix} 0.641&0.768\\ 0.768&-0.641 \end{bmatrix} \begin{bmatrix} 5.117&0\\ 0&1.955 \end{bmatrix} \begin{bmatrix} 0.526&0.851\\ 0.851&-0.526 \end{bmatrix} }
+$$
 
 If you multiply these three matrices, you recover approximately: $\begin{bmatrix} 3&2\\ 1&4 \end{bmatrix}$
 
 ##### The whole process to memorize
 
-$\boxed{A\rightarrow AA^T\rightarrow \text{eigenvectors}\rightarrow U}$
+$$
+\boxed{A\rightarrow AA^T\rightarrow \text{eigenvectors}\rightarrow U}
+$$
 
-$\boxed{A\rightarrow A^TA\rightarrow \text{eigenvectors}\rightarrow V}$
+$$
+\boxed{A\rightarrow A^TA\rightarrow \text{eigenvectors}\rightarrow V}
+$$
 
-$\boxed{\text{eigenvalues}\rightarrow\sqrt{\text{eigenvalues}}\rightarrow\Sigma}$
+$$
+\boxed{\text{eigenvalues}\rightarrow\sqrt{\text{eigenvalues}}\rightarrow\Sigma}
+$$
 
 So the key relationship is: $\boxed{A=U\Sigma V^T}$
 
-**AI connection:** Once you have, $U,\Sigma,V^T$ you can keep only the largest kk singular values to create a low-rank approximation: $A\approx U_k\Sigma_kV_k^T$
+**AI connection:** Once you have $U, \Sigma, V^T$, you can keep only the largest $k$ singular values to create a low-rank approximation: $A\approx U_k\Sigma_kV_k^T$
 
 This is the core idea behind **SVD-based dimensionality reduction, compression, LSA, recommendation systems, and low-rank neural-network compression**.
 

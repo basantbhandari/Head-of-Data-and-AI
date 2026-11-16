@@ -60,7 +60,7 @@ This chapter contains **30 questions**.
 
 | Limitation | Explanation | Solutions |
 | --- | --- | --- |
-| **Quadratic complexity with sequence length** | Self-attention computes pairwise interactions between all tokens, resulting in **O(n²)** time and memory complexity. This becomes expensive for long sequences. | Sparse attention, linear attention, FlashAttention, hierarchical/chunked processing |
+| **Quadratic complexity with sequence length** | Self-attention computes pairwise interactions between all tokens, resulting in **$O(n^2)$** time and memory complexity. This becomes expensive for long sequences. | Sparse attention, linear attention, FlashAttention, hierarchical/chunked processing |
 | **High memory and compute requirements** | Large Transformer models require significant GPU/TPU resources for training and inference, making them expensive at scale. | Quantization, pruning, knowledge distillation, smaller models, Mixture-of-Experts |
 | **Lack of inherent positional awareness** | Self-attention does not inherently understand token order, so positional information must be added. | RoPE, ALiBi, and improved positional encoding techniques |
 | **Data hunger** | Transformers have relatively weak inductive biases and often require large datasets when trained from scratch. | Large-scale pretraining, transfer learning, fine-tuning, data augmentation, hybrid architectures |
@@ -276,7 +276,7 @@ The model can then predict the next token and continue until the generation stop
 | **Aspect** | **N-gram Models** | **Deep Learning Models** |
 | --- | --- | --- |
 | **Basic idea** | Predicts text using a fixed number of previous words | Uses neural networks to learn complex language patterns |
-| **Context** | **Short context** — limited to N words | Can capture **longer context**, especially Transformers |
+| **Context** | **Short context** — limited to $N$ words | Can capture **longer context**, especially Transformers |
 | **Representation** | Word sequences/counts and probabilities | Learned numerical representations (embeddings) |
 | **Learning method** | Statistical frequency/probability | Neural network training on large datasets |
 | **Semantic understanding** | Very limited | Much better at capturing meaning and relationships |
@@ -295,22 +295,22 @@ The model can then predict the next token and continue until the generation stop
 
 #### N-gram Model
 
-An **n-gram model** is an NLP language model that predicts the **next word/token based on the previous N−1 words**.
+An **n-gram model** is an NLP language model that predicts the **next word/token based on the previous $N-1$ words**.
 
 | **Aspect** | **Explanation** |
 | --- | --- |
 | **Definition** | A model that uses sequences of **N words/tokens** to predict or analyze text |
 | **N** | Number of words/tokens in the sequence |
-| **Unigram (N=1)** | Considers one word at a time |
-| **Bigram (N=2)** | Considers two consecutive words |
-| **Trigram (N=3)** | Considers three consecutive words |
+| **Unigram ($N=1$)** | Considers one word at a time |
+| **Bigram ($N=2$)** | Considers two consecutive words |
+| **Trigram ($N=3$)** | Considers three consecutive words |
 | **Example sentence** | `"I love machine learning"` |
 | **Bigrams** | `"I love"`, `"love machine"`, `"machine learning"` |
 | **Trigrams** | `"I love machine"`, `"love machine learning"` |
 | **Main purpose** | Predict the next word based on previous words |
 | **Example** | `"I want to"` → predicts `"learn"` |
 | **Advantages** | Simple, fast, easy to implement |
-| **Limitations** | Struggles with long-range context and requires large amounts of data for larger N |
+| **Limitations** | Struggles with long-range context and requires large amounts of data for larger $N$ |
 | **Applications** | Text prediction, speech recognition, spelling correction, autocomplete, language modeling |
 
 ### 14.11 What is TF-IDF, and how does it differ from word embeddings?
@@ -319,10 +319,18 @@ An **n-gram model** is an NLP language model that predicts the **next word/token
 
 - **Core idea:** A statistical measure used to evaluate how important a word is to a document within a collection (corpus), balancing how often a word appears in a document against how common it is across all documents.
 - **Term Frequency (TF):** Measures how frequently a word appears in a document.
-  - `TF(t, d) = (Number of times term t appears in document d) / (Total terms in d)`
+
+  $$
+  \text{TF}(t, d) = \frac{\text{Number of times term } t \text{ appears in document } d}{\text{Total terms in } d}
+  $$
+
 - **Inverse Document Frequency (IDF):** Measures how rare/common a word is across the entire corpus — words appearing in many documents get a lower score (less informative).
-  - `IDF(t) = log(Total number of documents / Number of documents containing term t)`
-- **TF-IDF score:** `TF-IDF(t, d) = TF(t, d) * IDF(t)`
+
+  $$
+  \text{IDF}(t) = \log \frac{\text{Total number of documents}}{\text{Number of documents containing term } t}
+  $$
+
+- **TF-IDF score:** $\text{TF-IDF}(t, d) = \text{TF}(t, d) \cdot \text{IDF}(t)$
   - High score → word is frequent in this document but rare across the corpus (likely important/distinctive).
   - Low score → word is either rare in the document or very common across all documents (e.g., "the," "is" — stopwords naturally get low scores).
 - **Output:** Produces a sparse vector representation of a document, where each dimension corresponds to a word in the vocabulary, and the value is its TF-IDF score.
@@ -472,16 +480,16 @@ It uses linguistic knowledge to identify the correct **lemma** (base dictionary 
 
 **Documents → Term-Document Matrix → TF-IDF → SVD → Reduced Latent-Semantic Representation**
 
-For a term-document matrix A, SVD decomposes it as:
+For a term-document matrix $A$, SVD decomposes it as:
 
 $$
-A = U\Sigma V^T
+A = U \Sigma V^T
 $$
 
-LSI keeps only the most important kk dimensions:
+LSI keeps only the most important $k$ dimensions:
 
 $$
-A \approx U_k\Sigma_k V_k^T
+A \approx U_k \Sigma_k V_k^T
 $$
 
 This creates a lower-dimensional **latent semantic space**.
@@ -592,7 +600,9 @@ Words such as **"king"** and **"queen"** will generally have similar vectors, wh
 
 Some embeddings can even capture relationships through vector arithmetic:
 
-`king − man + woman ≈ queen`
+$$
+\text{king} - \text{man} + \text{woman} \approx \text{queen}
+$$
 
 #### Static vs Contextual Embeddings
 
@@ -628,7 +638,7 @@ Word2Vec has two main architectures:
 - Produces **dense, low-dimensional vectors**.
 - Learns semantic and syntactic relationships from large text corpora.
 - Similar words tend to have similar vectors.
-- Can capture relationships through vector arithmetic, such as:`king − man + woman ≈ queen`
+- Can capture relationships through vector arithmetic, such as: $\text{king} - \text{man} + \text{woman} \approx \text{queen}$
 - Word2Vec embeddings are **static**, meaning each word normally has one vector regardless of its context.
 
 #### Limitation
@@ -882,10 +892,10 @@ A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(
    - Rules or **probabilistic Fellegi-Sunter** models (Splink: unsupervised EM, explainable match weights), or
    - Supervised models (GBDT, or fine-tuned transformers such as Ditto on serialized record pairs), or
    - LLMs to adjudicate hard pairs (expensive, so use them for the uncertain band only).
-4. **Clustering:** turn pairwise matches into entities via connected components, or correlation clustering or thresholded graph clustering to avoid "chain" errors (A≈B, B≈C, but A≠C).
+4. **Clustering:** turn pairwise matches into entities via connected components, or correlation clustering or thresholded graph clustering to avoid "chain" errors ($A \approx B$, $B \approx C$, but $A \neq C$).
 5. **Canonicalization / golden record:** survivorship rules decide which value wins (most recent, most trusted source), and lineage is kept back to the source records.
 
-**Evaluation:** pairwise precision and recall, cluster metrics (B³, pairwise F1) on a labeled sample. Active learning to label the most informative uncertain pairs. **Clerical review** queue for mid-confidence matches.
+**Evaluation:** pairwise precision and recall, cluster metrics ($B^3$, pairwise F1) on a labeled sample. Active learning to label the most informative uncertain pairs. **Clerical review** queue for mid-confidence matches.
 
 **Production concerns:** incremental or streaming ER for new records (match against the existing index rather than re-running everything), stable entity IDs over time, scalability (Spark/Splink, Zingg), PII and privacy (hashing, access controls), and explainability for regulated uses (KYC/AML).
 

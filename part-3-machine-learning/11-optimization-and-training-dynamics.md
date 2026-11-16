@@ -60,9 +60,14 @@ This chapter contains **38 questions**.
 
 1. Initialize parameters (weights) randomly
 2. Compute gradient (partial derivative) of loss function w.r.t. each parameter
-3. Update parameters: θ = θ − α∇J(θ)
-   - α = learning rate (step size)
-   - ∇J(θ) = gradient of cost function
+3. Update parameters:
+
+   $$
+   \theta = \theta - \alpha \nabla J(\theta)
+   $$
+
+   - $\alpha$ = learning rate (step size)
+   - $\nabla J(\theta)$ = gradient of cost function
 4. Repeat until convergence (loss stops decreasing significantly or max iterations reached)
 
 **Key considerations**
@@ -86,7 +91,7 @@ This chapter contains **38 questions**.
 **Causes**
 
 - Deep networks (many layers)
-- Saturating activation functions (sigmoid, tanh) where gradient ≈ 0 at extremes
+- Saturating activation functions (sigmoid, tanh) where gradient $\approx 0$ at extremes
 - Poor weight initialization
 
 **Solutions**
@@ -103,7 +108,7 @@ This chapter contains **38 questions**.
 **Learning Rate**
 
 - Hyperparameter controlling step size of parameter updates during gradient descent
-- Update rule: θ = θ − α∇J(θ), where α = learning rate
+- Update rule: $\theta = \theta - \alpha \nabla J(\theta)$, where $\alpha$ = learning rate
 
 **Effects**
 
@@ -255,11 +260,11 @@ This chapter contains **38 questions**.
 **How it works**
 
 1. Evaluate a few random hyperparameter configurations initially, record results (loss values)
-2. Split observed trials into two groups based on a performance threshold (quantile γ, e.g., top 15%):
-   - **l(x)**: density of hyperparameters that gave **good** results
-   - **g(x)**: density of hyperparameters that gave **poor** results
-3. Model l(x) and g(x) separately (instead of one joint model like Gaussian Process)
-4. Select next hyperparameters that **maximize l(x)/g(x)** ratio (Expected Improvement proxy) — favors regions likely to yield good results and unlikely to yield bad ones
+2. Split observed trials into two groups based on a performance threshold (quantile $\gamma$, e.g., top 15%):
+   - $l(x)$: density of hyperparameters that gave **good** results
+   - $g(x)$: density of hyperparameters that gave **poor** results
+3. Model $l(x)$ and $g(x)$ separately (instead of one joint model like Gaussian Process)
+4. Select next hyperparameters that **maximize the ratio $l(x)/g(x)$** (Expected Improvement proxy) — favors regions likely to yield good results and unlikely to yield bad ones
 5. Evaluate new point, add to observations, repeat
 
 **Why it's used**
@@ -270,7 +275,7 @@ This chapter contains **38 questions**.
 
 **vs Gaussian Process-based BO**
 
-- GP models p(y\|x) directly; TPE models p(x\|y) via l(x) and g(x) — makes TPE better suited for tree-structured/conditional search spaces
+- GP models $p(y \mid x)$ directly; TPE models $p(x \mid y)$ via $l(x)$ and $g(x)$ — makes TPE better suited for tree-structured/conditional search spaces
 
 ### 11.10 Explain Bayesian Optimization.
 
@@ -314,18 +319,22 @@ This chapter contains **38 questions**.
 **How it works**
 
 - Maintains two moving averages per parameter:
-  - **First moment (m)**: exponential moving average of gradients (like Momentum) → mₜ = β₁mₜ₋₁ + (1−β₁)gₜ
-  - **Second moment (v)**: exponential moving average of squared gradients (like RMSProp) → vₜ = β₂vₜ₋₁ + (1−β₂)gₜ²
-- **Bias correction** (since m, v initialized at 0, biased toward 0 early on):
-  - m̂ₜ = mₜ / (1−β₁ᵗ), v̂ₜ = vₜ / (1−β₂ᵗ)
-- **Update rule**: θ = θ − α · m̂ₜ / (√v̂ₜ + ε)
+  - **First moment ($m$)**: exponential moving average of gradients (like Momentum) → $m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$
+  - **Second moment ($v$)**: exponential moving average of squared gradients (like RMSProp) → $v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$
+- **Bias correction** (since $m$, $v$ initialized at 0, biased toward 0 early on):
+  - $\hat{m}_t = \frac{m_t}{1-\beta_1^t}$, $\hat{v}_t = \frac{v_t}{1-\beta_2^t}$
+- **Update rule**:
+
+  $$
+  \theta_{t+1} = \theta_t - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+  $$
 
 **Hyperparameters**
 
-- α (learning rate) — typically 0.001
-- β₁ — decay rate for first moment, typically 0.9
-- β₂ — decay rate for second moment, typically 0.999
-- ε — small constant to prevent division by zero (e.g., 1e-8)
+- $\alpha$ (learning rate) — typically 0.001
+- $\beta_1$ — decay rate for first moment, typically 0.9
+- $\beta_2$ — decay rate for second moment, typically 0.999
+- $\epsilon$ — small constant to prevent division by zero (e.g., 1e-8)
 
 **Advantages**
 
@@ -336,7 +345,7 @@ This chapter contains **38 questions**.
 **Limitations**
 
 - Can generalize worse than SGD with momentum in some cases (sharper minima)
-- Extra memory overhead (stores m and v per parameter)
+- Extra memory overhead (stores $m$ and $v$ per parameter)
 
 ### 11.12 Explain the RMSprop Optimizer.
 
@@ -348,9 +357,14 @@ This chapter contains **38 questions**.
 **How it works**
 
 - Maintains exponential moving average of **squared gradients**:
-  - vₜ = β·vₜ₋₁ + (1−β)·gₜ²
-- **Update rule**: θ = θ − α · gₜ / (√vₜ + ε)
-  - α = learning rate, β = decay rate (typically 0.9), ε = small constant (avoid division by zero)
+  - $v_t = \beta v_{t-1} + (1-\beta) g_t^2$
+- **Update rule**:
+
+  $$
+  \theta_{t+1} = \theta_t - \alpha \frac{g_t}{\sqrt{v_t} + \epsilon}
+  $$
+
+  - $\alpha$ = learning rate, $\beta$ = decay rate (typically 0.9), $\epsilon$ = small constant (avoid division by zero)
 
 **Key idea**
 
@@ -377,9 +391,14 @@ This chapter contains **38 questions**.
 
 **How it works**
 
-- Accumulates squared gradients: Gₜ = Gₜ₋₁ + gₜ²
-- **Update rule**: θ = θ − α · gₜ / (√Gₜ + ε)
-  - α = initial learning rate, ε = small constant (to avoid division by zero)
+- Accumulates squared gradients: $G_t = G_{t-1} + g_t^2$
+- **Update rule**:
+
+  $$
+  \theta_{t+1} = \theta_t - \alpha \frac{g_t}{\sqrt{G_t} + \epsilon}
+  $$
+
+  - $\alpha$ = initial learning rate, $\epsilon$ = small constant (to avoid division by zero)
 
 **Key idea**
 
@@ -394,7 +413,7 @@ This chapter contains **38 questions**.
 
 **Limitations**
 
-- **Learning rate shrinks monotonically** — since Gₜ only grows, learning rate can become too small, causing training to stall prematurely
+- **Learning rate shrinks monotonically** — since $G_t$ only grows, learning rate can become too small, causing training to stall prematurely
 - This limitation led to the development of **RMSprop** and **Adam**, which use moving averages instead of cumulative sums
 
 ### 11.14 What strategies would you use to optimize the training time for a deep learning model?
@@ -565,22 +584,22 @@ Imagine the loss function as a **hill/valley**. We want to move downhill until w
 
 #### How it works
 
-1. **Initialize parameters**
-   ```txt
-   w = random values
-   ```
+1. **Initialize parameters**: $w = \text{random values}$
 2. **Calculate the loss**<br>Measure how wrong the model's predictions are.
 3. **Calculate the gradient**
    The gradient tells us **which direction increases the loss most quickly**.
 4. **Move in the opposite direction**
-   $w := w - \eta \frac{\partial L}{\partial w}$
+
+   $$
+   w := w - \eta \frac{\partial L}{\partial w}
+   $$
 
    where:
 
    - $w$ = model parameter
    - $L$ = loss
    - $\eta$ = learning rate
-   - $\frac{\partial L}{\partial w} $= gradient
+   - $\frac{\partial L}{\partial w}$ = gradient
 5. **Repeat**
    Continue updating the parameters until the loss stops improving.
 
@@ -664,7 +683,9 @@ SGD **does not always generalize better**. Its advantage depends on the architec
 
 #### 1. SGD
 
-$\theta_{t+1}=\theta_t-\eta g_t$
+$$
+\theta_{t+1} = \theta_t - \eta g_t
+$$
 
 Uses only the current gradient.
 
@@ -676,9 +697,13 @@ Uses only the current gradient.
 
 Keeps a moving average of previous gradients:
 
-$v_t=\beta v_{t-1}+g_t$
+$$
+v_t = \beta v_{t-1} + g_t
+$$
 
-$\theta_{t+1}=\theta_t-\eta v_t$
+$$
+\theta_{t+1} = \theta_t - \eta v_t
+$$
 
 **Intuition:** Like a ball gaining velocity while moving downhill.
 
@@ -690,7 +715,9 @@ It reduces oscillations and can accelerate movement in consistent directions.
 
 Adjusts the learning rate separately for each parameter based on accumulated squared gradients:
 
-$\theta_{t+1} $ = $\theta_t- \frac{\eta}{\sqrt{G_t+\epsilon}}g_t$
+$$
+\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{G_t + \epsilon}} g_t
+$$
 
 Frequently updated parameters get smaller learning rates.
 
@@ -706,9 +733,13 @@ Combines **Momentum + adaptive learning rates**.
 
 It maintains:
 
-$m_t=\beta_1m_{t-1}+(1-\beta_1)g_t$
+$$
+m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t
+$$
 
-$v_t=\beta_2v_{t-1}+(1-\beta_2)g_t^2$
+$$
+v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2
+$$
 
 Then updates using both estimates.
 
@@ -724,7 +755,9 @@ AdamW is essentially **Adam with decoupled weight decay**.
 
 Instead of mixing L2 regularization directly into Adam's gradient, weight decay is applied separately:
 
-$\theta \leftarrow \theta-\eta(\text{Adam update})-\eta\lambda\theta$
+$$
+\theta \leftarrow \theta - \eta \cdot \text{AdamUpdate} - \eta \lambda \theta
+$$
 
 This makes weight decay behave more predictably and is widely used for modern deep-learning models.
 
@@ -748,19 +781,23 @@ The key difference is **how weight decay is applied**.
 
 With **Adam + L2**, the regularization term is added to the gradient:
 
-$g_t' = g_t + \lambda\theta_t$
+$$
+g_t' = g_t + \lambda\theta_t
+$$
 
 Adam then **rescales this combined gradient** using its adaptive moments.
 
 With **AdamW**, weight decay is applied **separately**:
 
-$\theta_{t+1} $ = $\theta_t-\eta\cdot AdamUpdate-\eta\lambda\theta_t$
+$$
+\theta_{t+1} = \theta_t - \eta \cdot \text{AdamUpdate} - \eta \lambda \theta_t
+$$
 
 #### Why is this better?
 
 Because in Adam, the adaptive scaling means the effective strength of L2 regularization can vary across parameters.
 
-AdamW **decouples weight decay from the adaptive gradient update**, making λ\\lambda behave more directly as a weight-decay hyperparameter.
+AdamW **decouples weight decay from the adaptive gradient update**, making $\lambda$ behave more directly as a weight-decay hyperparameter.
 
 ### 11.24 What causes vanishing and exploding gradients?
 
@@ -770,13 +807,17 @@ They happen mainly because gradients are **multiplied repeatedly through many la
 
 For a deep network:
 
-$\frac{\partial L}{\partial W_1} = \frac{\partial L}{\partial W_n} \prod_{i=2}^{n} \frac{\partial h_i}{\partial h_{i-1}}$
+$$
+\frac{\partial L}{\partial W_1} = \frac{\partial L}{\partial W_n} \prod_{i=2}^{n} \frac{\partial h_i}{\partial h_{i-1}}
+$$
 
 #### 1. Vanishing gradients
 
 If the derivatives are mostly **less than 1**:
 
-$0.5^{20} \approx 9.5\times10^{-7}$
+$$
+0.5^{20} \approx 9.5 \times 10^{-7}
+$$
 
 The gradient becomes extremely small.
 
@@ -793,7 +834,9 @@ The gradient becomes extremely small.
 
 If the derivatives are mostly **greater than 1**:
 
-$2^{20} = 1,048,576$
+$$
+2^{20} = 1{,}048{,}576
+$$
 
 The gradient becomes extremely large.
 
@@ -829,15 +872,21 @@ The gradient becomes extremely large.
 
 Suppose the gradient becomes huge:
 
-$\|g\| = 1000$
+$$
+\lVert g \rVert = 1000
+$$
 
 Instead of applying the full gradient, we set a maximum norm, say $5$:
 
-$g_{\text{clipped}} $ = $g\cdot\frac{5}{\|g\|}$
+$$
+g_{\text{clipped}} = g \cdot \frac{5}{\lVert g \rVert}
+$$
 
 So:
 
-$\|g_{\text{clipped}}\|=5$
+$$
+\lVert g_{\text{clipped}} \rVert = 5
+$$
 
 #### Intuition
 
@@ -865,13 +914,17 @@ The **direction is preserved**, but the magnitude is limited.
 
 Without clipping:
 
-$\theta_{t+1}=\theta_t-\eta g$
+$$
+\theta_{t+1} = \theta_t - \eta g
+$$
 
-A huge gg causes a huge parameter update.
+A huge $g$ causes a huge parameter update.
 
 With clipping:
 
-$\theta_{t+1}=\theta_t-\eta g_{\text{clipped}}$
+$$
+\theta_{t+1} = \theta_t - \eta g_{\text{clipped}}
+$$
 
 the update remains bounded.
 
@@ -879,7 +932,9 @@ the update remains bounded.
 
 A **learning-rate scheduler** automatically changes the learning rate during training instead of keeping it fixed.
 
-$\theta_{t+1}=\theta_t-\eta_t\nabla L(\theta_t)$
+$$
+\theta_{t+1} = \theta_t - \eta_t \nabla L(\theta_t)
+$$
 
 where $\eta_t$ changes over time.
 
@@ -920,7 +975,9 @@ Later training:   LR = 0.0001 → make fine adjustments
 
 LR decreases smoothly:
 
-$\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max}-\eta_{\min}) \left(1+\cos\frac{\pi t}{T}\right)$
+$$
+\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max}-\eta_{\min}) \left(1+\cos\frac{\pi t}{T}\right)
+$$
 
 **Shape:** `High → smooth decrease → very low`
 
@@ -932,7 +989,9 @@ Good because there are no abrupt LR changes.
 
 Keep LR constant, then suddenly reduce it:
 
-$\eta_t = \eta_0 \gamma^k$
+$$
+\eta_t = \eta_0 \gamma^k
+$$
 
 where $k$ increases at predefined epochs.
 
@@ -987,7 +1046,9 @@ LR
 
 Usually:
 
-$\text{Low LR} \rightarrow \text{High LR} \rightarrow \text{Very Low LR}$
+$$
+\text{Low LR} \rightarrow \text{High LR} \rightarrow \text{Very Low LR}
+$$
 
 The increasing phase helps exploration, while the decreasing phase helps convergence.
 
@@ -1004,9 +1065,11 @@ A **very high learning rate** can prevent convergence because each parameter upd
 
 Gradient descent:
 
-$\theta_{t+1} = \theta_t - \eta \nabla L(\theta_t)$
+$$
+\theta_{t+1} = \theta_t - \eta \nabla L(\theta_t)
+$$
 
-where η\\eta is the learning rate.
+where $\eta$ is the learning rate.
 
 #### What happens with a high LR?
 
@@ -1039,7 +1102,9 @@ Instead of moving toward the minimum, the optimizer can **overshoot it repeatedl
 
 When the **learning rate is extremely small**, parameter updates become tiny:
 
-$\theta_{t+1} = \theta_t - \eta \nabla L(\theta_t)$
+$$
+\theta_{t+1} = \theta_t - \eta \nabla L(\theta_t)
+$$
 
 #### What happens?
 
@@ -1068,7 +1133,9 @@ Too large:  ←────→────←────→  unstable
 
 #### 1. Global Minimum
 
-$L(\theta^*) \leq L(\theta), \quad \forall \theta$
+$$
+L(\theta^*) \leq L(\theta), \quad \forall \theta
+$$
 
 It has the **lowest possible loss across the entire parameter space**.
 
@@ -1100,12 +1167,14 @@ A point that behaves like a minimum in one direction and a maximum in another.
 
 For example:
 
-$f(x,y)=x^2-y^2$
+$$
+f(x, y) = x^2 - y^2
+$$
 
-At (0,0):
+At $(0, 0)$:
 
-- Along x: f increases → looks like a minimum
-- Along y: f decreases → looks like a maximum
+- Along $x$: $f$ increases → looks like a minimum
+- Along $y$: $f$ decreases → looks like a maximum
 
 So it is a **saddle point**.
 
@@ -1125,15 +1194,21 @@ Saddle points are important in neural networks because the parameter space has *
 
 At a saddle point:
 
-$\nabla L(\theta) \approx 0$
+$$
+\nabla L(\theta) \approx 0
+$$
 
 so gradient-based optimizers can make very small updates.
 
 But unlike a local minimum, the curvature differs across directions:
 
-$\lambda_i > 0 \quad \text{in some directions}$
+$$
+\lambda_i > 0 \quad \text{in some directions}
+$$
 
-$\lambda_j < 0 \quad \text{in other directions}$
+$$
+\lambda_j < 0 \quad \text{in other directions}
+$$
 
 where $\lambda$ are eigenvalues of the Hessian.
 
@@ -1188,11 +1263,15 @@ Loss                      Loss
 
 Mathematically, sharpness is related to the **curvature** of the loss, often measured using the Hessian:
 
-$H = \nabla^2 L(\theta)$
+$$
+H = \nabla^2 L(\theta)
+$$
 
 A large maximum eigenvalue:
 
-$\lambda_{\max}(H)$
+$$
+\lambda_{\max}(H)
+$$
 
 generally indicates **sharper curvature**.
 
@@ -1250,13 +1329,17 @@ The statement **"flatter = better generalization" is not universally true**. Sha
 
 #### Why?
 
-For batch size B, the gradient is approximately:
+For batch size $B$, the gradient is approximately:
 
-$g_B = \frac{1}{B}\sum_{i=1}^{B}\nabla L_i$
+$$
+g_B = \frac{1}{B}\sum_{i=1}^{B}\nabla L_i
+$$
 
-As B increases, the variance of the gradient estimate generally decreases:
+As $B$ increases, the variance of the gradient estimate generally decreases:
 
-$\mathrm{Var}(g_B) \propto \frac{1}{B}$
+$$
+\mathrm{Var}(g_B) \propto \frac{1}{B}
+$$
 
 So:
 
@@ -1277,7 +1360,7 @@ Classical theory (VC dimension, bias-variance) says more parameters than data po
 
 - **Implicit regularization:** among the infinitely many solutions that fit the training data, gradient descent tends to find "simple" ones (low norm, low complexity, flat minima).
 - **Interpolation can be benign:** in high dimensions, a model can fit noisy labels with tiny, spread-out components that barely affect predictions on new inputs ("benign overfitting").
-- **Double descent:** test error rises near the interpolation threshold (#params ≈ #samples) and then *falls again* as the model grows, because larger models can pick smoother interpolating solutions.
+- **Double descent:** test error rises near the interpolation threshold ($\#\text{params} \approx \#\text{samples}$) and then *falls again* as the model grows, because larger models can pick smoother interpolating solutions.
 - **Architectural inductive biases:** convolutions, attention, weight sharing and normalization constrain the hypothesis space to functions that suit the data.
 - **Explicit regularization and training tricks:** weight decay, data augmentation, dropout, early stopping.
 - **Optimization benefits:** overparameterized loss landscapes have more connected, flatter minima, which makes good solutions easier to reach.
@@ -1289,7 +1372,7 @@ Classical theory (VC dimension, bias-variance) says more parameters than data po
 **Double descent** is the observation that test error does not follow the classic U-curve as model capacity grows:
 
 1. **Classical regime:** as capacity grows, test error first falls and then rises (the usual bias-variance U).
-2. **Interpolation threshold:** around the point where the model can just barely fit the training set exactly (#params ≈ #samples), test error **peaks** — the model is forced into a single, highly contorted solution that fits the noise.
+2. **Interpolation threshold:** around the point where the model can just barely fit the training set exactly ($\#\text{params} \approx \#\text{samples}$), test error **peaks** — the model is forced into a single, highly contorted solution that fits the noise.
 3. **Modern (overparameterized) regime:** past the threshold, test error **decreases again**, often below the classical optimum, because many interpolating solutions exist and the optimizer picks a smooth, low-norm one.
 
 ```txt

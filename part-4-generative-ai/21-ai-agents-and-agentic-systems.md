@@ -1751,7 +1751,7 @@ Guardrails: max-turn/max-tool-call limits, timeout budgets, and explicit "stop c
 
 ### 21.62 What problem does MCP (Model Context Protocol) solve, and how does it differ from a custom tool integration?
 
-Before MCP, every agent framework needed bespoke, one-off integration code for every tool/data source it connected to — an N×M problem (N agent frameworks × M tools). MCP standardizes this via a client-server protocol: an MCP **server** exposes tools, resources, and prompts in a uniform schema; any MCP-compatible **client** (agent) can discover and call them without custom glue code. It's essentially "USB-C for AI tools" — write the integration once, and any compliant agent can use it. This matters for maintainability at scale, especially in a consulting context where you're plugging agents into many different client systems.
+Before MCP, every agent framework needed bespoke, one-off integration code for every tool/data source it connected to — an $N \times M$ problem ($N$ agent frameworks × $M$ tools). MCP standardizes this via a client-server protocol: an MCP **server** exposes tools, resources, and prompts in a uniform schema; any MCP-compatible **client** (agent) can discover and call them without custom glue code. It's essentially "USB-C for AI tools" — write the integration once, and any compliant agent can use it. This matters for maintainability at scale, especially in a consulting context where you're plugging agents into many different client systems.
 
 ### 21.63 What is A2A (Agent-to-Agent) protocol, and how is it different from MCP?
 
