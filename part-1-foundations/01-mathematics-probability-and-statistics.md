@@ -1004,7 +1004,7 @@ Suppose we observe:
 
 - **Covariance:** Positive → both tend to increase together.
 - **Correlation:** Positive → there is a positive linear association.
-- **Causality:** ❌ Ice cream sales do not cause drowning. A **confounding variable**, such as hot weather, can increase both.
+- **Causality:** No. Ice cream sales do not cause drowning. A **confounding variable**, such as hot weather, can increase both.
 
 #### Key Relationship
 
@@ -1035,9 +1035,9 @@ Suppose we test whether a new medicine works:
 
 #### Easy way to remember
 
-> **Type I = False Alarm** 🚨
+> **Type I = False Alarm**
 >
-> **Type II = Missed Detection** 🎯
+> **Type II = Missed Detection**
 
 **In short:** Type I error means **detecting something that isn't there**, while Type II error means **missing something that is there**.
 

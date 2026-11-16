@@ -1422,9 +1422,9 @@ User request
     ↓
 Agent
     ↓
-Correct tool?       ✓
-Correct parameters? ✓
-Tool succeeded?     ✓
+Correct tool?       Yes
+Correct parameters? Yes
+Tool succeeded?     Yes
     ↓
 Final answer
 ```

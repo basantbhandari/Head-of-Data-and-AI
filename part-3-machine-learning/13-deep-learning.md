@@ -2182,8 +2182,8 @@ All four normalization methods help control the scale of neural-network activati
 | Depends on batch size | **Yes** | No | No | No |
 | Uses mean? | Yes | Yes | Yes | **No** |
 | Uses variance? | Yes | Yes | Yes | RMS only |
-| Learnable scale | ✓ | ✓ | ✓ | ✓ |
-| Learnable shift | ✓ | ✓ | ✓ | Usually **No** |
+| Learnable scale | Yes | Yes | Yes | Yes |
+| Learnable shift | Yes | Yes | Yes | Usually **No** |
 | Common use | CNNs | Transformers | CNNs / vision | Modern LLMs |
 | Main advantage | Efficient training | Batch-independent | Good for small batches | Simpler/faster than LayerNorm |
 

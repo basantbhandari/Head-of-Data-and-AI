@@ -756,9 +756,9 @@ The model learns from the labeled examples and uses the structure of the unlabel
 
 | Learning Type | Labeled Data | Unlabeled Data |
 | --- | --- | --- |
-| **Supervised** | ✅ Large amount | ❌ Usually not required |
-| **Unsupervised** | ❌ None | ✅ Large amount |
-| **Semi-supervised** | ✅ Small amount | ✅ Large amount |
+| **Supervised** | Large amount | Usually not required |
+| **Unsupervised** | None | Large amount |
+| **Semi-supervised** | Small amount | Large amount |
 
 #### Common techniques
 

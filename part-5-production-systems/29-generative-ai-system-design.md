@@ -439,7 +439,7 @@ Output: patch + test results → PR with description → human review
 ```text
 PR webhook → diff + related files + repo conventions → static analyzers (lint, SAST)
 → LLM reviewer (per-file + cross-file pass) → dedupe/rank comments by confidence
-→ post inline comments; developers 👍/👎 → feedback dataset
+→ post inline comments; developers thumbs-up/thumbs-down → feedback dataset
 ```
 - **Precision over recall:** noisy reviewers get ignored. Filter low-confidence or style nits and combine LLM output with deterministic tools.
 - **Repo rules:** a CLAUDE.md, CODEOWNERS or style guide feeds the prompt.

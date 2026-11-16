@@ -678,10 +678,10 @@ Attention(Q, K, V) = softmax(QK^T / √d_k) V
 ```txt
 Tokens:    I   love   AI   models
 
-I          ✓    ✗     ✗     ✗
-love       ✓    ✓     ✗     ✗
-AI         ✓    ✓     ✓     ✗
-models     ✓    ✓     ✓     ✓
+I          1    0     0     0
+love       1    1     0     0
+AI         1    1     1     0
+models     1    1     1     1
 ```
 
 ##### Formula
@@ -3303,7 +3303,7 @@ Despite the critique, autoregressive training is what has powered essentially th
 - **Sales and marketing automation:** Drafting personalized outreach emails, lead qualification, CRM data enrichment.
 - **Legal/compliance:** Contract review, clause extraction, compliance checking against regulations/playbooks.
 - **Healthcare:** Clinical note summarization, medical literature review assistance, patient communication drafting (with human oversight).
-- **Education:** Personalized tutoring, automated grading/feedback, content generation for курс materials.
+- **Education:** Personalized tutoring, automated grading/feedback, content generation for course materials.
 - **HR/recruiting:** Resume screening, interview question generation, job description drafting.
 - **Financial services:** Report generation, earnings call summarization, risk analysis assistance, fraud pattern detection support.
 - **Virtual agents/copilots:** Embedded AI assistants within productivity tools (e.g., Microsoft Copilot, Notion AI) to draft, edit, and analyze content directly in workflows.
