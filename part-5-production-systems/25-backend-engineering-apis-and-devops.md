@@ -485,8 +485,6 @@ Overall, I follow a cycle of **requirements → design → implementation → te
 
 ### 25.20 Design a distributed rate limiter.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements:** limit requests per key (user, API key, IP, tenant) across many stateless API servers, e.g. 100 req/min. Low added latency (< a few ms), high availability, roughly accurate globally, and support for different limits per tier.
 
 **Algorithms**

@@ -1054,8 +1054,6 @@ Further training a pre-trained model on a smaller, task-specific dataset to spec
 
 ### 22.28 What is the difference between SFT and RL-based tuning (RLHF/DPO)?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **SFT (Supervised Fine-Tuning):** train on curated (prompt, ideal response) pairs with standard next-token cross-entropy on the response tokens. It is **imitation learning**: "write like this demonstration."
 
 - Pros: simple, stable, cheap, and good for teaching format, style, domain and instruction-following.
@@ -1100,8 +1098,6 @@ RLHF is useful when the desired behavior is difficult to specify with a determin
 
 ### 22.32 What is catastrophic forgetting during fine-tuning?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Catastrophic forgetting** is when fine-tuning a pretrained model on a new task overwrites the weights that encoded earlier knowledge, so performance on the original capabilities (general reasoning, other languages, safety behaviour, instruction following) drops sharply.
 
 **Why it happens:** gradient descent only optimises the loss in front of it. With a narrow fine-tuning dataset, a high learning rate or many epochs, parameters drift far from the pretrained solution in directions the new loss doesn't penalise but old tasks depended on. Full fine-tuning of all weights makes this worse than parameter-efficient methods.
@@ -1120,8 +1116,6 @@ RLHF is useful when the desired behavior is difficult to specify with a determin
 **Tradeoff:** stronger protection against forgetting usually means less specialisation; tune the mix ratio and LoRA rank against both evals.
 
 ### 22.33 How would you fine-tune an LLM while preserving its general capabilities?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 The goal is task gains without regressing general skills, so I treat it as a two-sided optimisation with evaluation on both sides.
 
@@ -1160,8 +1154,6 @@ Suppose you're building a **company support chatbot**:
 - **Prompting:** "Answer professionally and cite the relevant policy."
 - **RAG:** Retrieve the company's latest HR policies and provide them to the LLM.
 - **Fine-tuning:** Train the model to consistently classify tickets into `HR`, `IT`, `Finance`, etc.
-
-> ✍️ _Drafted addition._
 
 **Train from scratch (pretraining your own model)** is the fourth option, and rarely the right one:
 - **Choose it only when:** you have a genuinely different modality or language/tokenization that existing models handle badly (e.g., genomics, proprietary time-series, a low-resource script); you have **massive in-domain data** (hundreds of billions of tokens or more); strict sovereignty, licensing or IP rules forbid using third-party weights; or a tiny, highly specialized model must run on the edge.

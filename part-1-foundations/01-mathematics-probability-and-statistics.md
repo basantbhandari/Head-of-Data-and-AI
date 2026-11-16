@@ -1135,8 +1135,6 @@ So, based purely on the probability of making money in 6 plays, **yes, I would p
 
 ### 1.44 Give an example where the median is a better measure than the mean
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 The **median is better when the distribution is skewed or has outliers**, because the mean is pulled toward extreme values while the median depends only on the middle observation.
 
 **Classic example — income:** salaries in a team of ten are 40k–60k, plus a CEO at 5M. The mean is ~550k, which describes nobody; the median (~50k) represents a "typical" employee. That is why governments report **median household income** and **median house prices**.
@@ -1153,8 +1151,6 @@ The **median is better when the distribution is skewed or has outliers**, becaus
 
 ### 1.45 What’s the difference between probability and likelihood?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 They use the same function $p(x \mid \theta)$, read in two different directions.
 
 - **Probability:** fix the parameters $\theta$ and ask how likely different *data* outcomes are. "Given a fair coin ($p = 0.5$), what is the chance of 7 heads in 10 flips?" Probabilities over outcomes sum or integrate to 1.
@@ -1167,8 +1163,6 @@ They use the same function $p(x \mid \theta)$, read in two different directions.
 **Example:** 7 heads in 10 flips gives $L(0.7) = \binom{10}{7}0.7^7 0.3^3 \approx 0.267$ and $L(0.5) \approx 0.117$, so $p = 0.7$ is more likely given the data. The MLE is $\hat p = 0.7$.
 
 ### 1.46 How will you find the correlation between a categorical variable and a continuous variable?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 It depends on whether the categorical variable is binary, nominal or ordinal:
 
@@ -1192,8 +1186,6 @@ def correlation_ratio(cat, num):
 **Interview caveats:** don't just label-encode a nominal variable and compute Pearson, since the result depends on the arbitrary codes. Association isn't causation, and with large samples tiny effects become statistically significant, so report the effect size ($\eta$), not just the p-value.
 
 ### 1.47 What are the differences between “Bayesian” and “Frequentist” approaches for Machine Learning?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 The two schools differ in **what probability means**.
 
@@ -1221,8 +1213,6 @@ The two schools differ in **what probability means**.
 
 ### 1.48 Describe the differences between and use cases for box plots and histograms
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Both show the distribution of a numeric variable, at different levels of detail.
 
 **Histogram**
@@ -1242,8 +1232,6 @@ Both show the distribution of a numeric variable, at different levels of detail.
 **Practical tip:** violin plots or box plots overlaid with strip/jitter points combine both views. In EDA I'd use histograms per feature to understand shape and box plots of the feature by target class to see which features separate classes.
 
 ### 1.49 What is KL divergence, and how would you define its use case in ML?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **KL divergence** measures how much one probability distribution $P$ differs from a reference distribution $Q$:
 
@@ -1272,8 +1260,6 @@ def kl(p, q, eps=1e-12):
 
 ### 1.50 List the most popular distribution curves along with scenarios where you will use them in an algorithm.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 | Distribution | Type | Describes | Where it shows up in ML |
 | --- | --- | --- | --- |
 | **Normal (Gaussian)** | Continuous | Sums of many small effects (CLT) | Linear regression residuals, weight initialization, GMMs, Gaussian Naive Bayes, Gaussian processes, VAE latent prior, anomaly detection via z-scores |
@@ -1292,8 +1278,6 @@ def kl(p, q, eps=1e-12):
 **Why it matters:** the assumed distribution determines the right loss (MSE ↔ Gaussian, cross-entropy ↔ Bernoulli/categorical, Poisson deviance ↔ counts), the right transformation (log for log-normal data) and the right statistical test.
 
 ### 1.51 Which metrics can be used to measure correlation of categorical data?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Categorical vs. categorical (nominal):**
 

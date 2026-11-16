@@ -1199,8 +1199,6 @@ Both are **ensemble learning methods based on decision trees**, but they work di
 
 ### 9.56 What is an OOB error, and how is it useful?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **OOB (out-of-bag) error** is a built-in validation estimate for bagging ensembles such as **Random Forests**.
 
 **How it works**
@@ -1224,8 +1222,6 @@ print(rf.oob_score_)   # accuracy on out-of-bag samples
 
 ### 9.57 In what scenario should a decision tree be preferred over random forest?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 A single decision tree is preferable to a random forest when **interpretability, simplicity or speed** matter more than the last few points of accuracy:
 
 - **Explainability and auditability:** a shallow tree can be printed as if-then rules and shown to regulators, doctors or business users (credit decisions, clinical triage, policy rules). A forest of 500 trees is a black box without SHAP-style tools.
@@ -1241,8 +1237,6 @@ A single decision tree is preferable to a random forest when **interpretability,
 
 ### 9.58 Why is Logistic Regression called regression?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Because at its core it **is a regression model — a linear regression on the log-odds** — and only becomes a classifier when you put a threshold on its output.
 
 $\log\frac{p}{1-p} = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n \quad\Rightarrow\quad p = \sigma(\beta^T x) = \frac{1}{1+e^{-\beta^T x}}$
@@ -1255,8 +1249,6 @@ $\log\frac{p}{1-p} = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n \quad\Rightarro
 **Why this matters in practice:** because it outputs (reasonably calibrated) probabilities, logistic regression is used for risk scoring, ranking and expected-value decisions — not just hard labels. It is trained with maximum likelihood (log loss), not least squares.
 
 ### 9.59 What are the main points of difference between Bagging and Boosting?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Both are ensemble methods that combine many weak/base learners, but they attack different errors.
 
@@ -1280,8 +1272,6 @@ Both are ensemble methods that combine many weak/base learners, but they attack 
 
 ### 9.60 What is Matrix Factorization, and where is it used in Machine Learning?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Matrix factorization** decomposes a matrix $R$ ($m \times n$) into a product of lower-rank matrices, typically $R \approx U V^T$ with $U \in \mathbb{R}^{m\times k}$, $V \in \mathbb{R}^{n\times k}$ and $k \ll m,n$. Each row of $U$ and $V$ is a latent vector, and their dot product reconstructs an entry.
 
 **Where it is used:**
@@ -1294,8 +1284,6 @@ Both are ensemble methods that combine many weak/base learners, but they attack 
 **Tradeoffs:** it is fast, scalable and gives reusable embeddings, but has a **cold-start problem** (new users/items have no vector), is linear (dot-product interactions only), and implicit feedback (clicks) needs weighted variants (e.g. implicit ALS). In production, hybrid models (factorization machines, two-tower networks) add side features to solve cold start.
 
 ### 9.61 Explain Pruning in Decision Trees and how it is done
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Pruning** reduces the size of a decision tree to stop it from memorizing noise. Fully grown trees have low bias and very high variance.
 
@@ -1321,8 +1309,6 @@ clf = DecisionTreeClassifier(ccp_alpha=best_alpha).fit(X_tr, y_tr)
 
 ### 9.62 What are kernels in SVM? Can you list some popular SVM kernels?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 A **kernel** is a function $K(x, x') = \langle \phi(x), \phi(x') \rangle$ that computes an inner product in a (possibly infinite-dimensional) feature space without computing $\phi$ explicitly. Because the SVM dual depends on the data only through dot products, swapping in a kernel lets a linear max-margin classifier learn **non-linear decision boundaries**. This is the kernel trick. A valid kernel must be positive semi-definite (Mercer's condition).
 
 **Popular kernels:**
@@ -1339,8 +1325,6 @@ A **kernel** is a function $K(x, x') = \langle \phi(x), \phi(x') \rangle$ that c
 - Tune $C$ and $\gamma$ jointly with grid search on a log scale, and **scale the features** first.
 
 ### 9.63 What is the difference between Gini Impurity and Entropy? Which one is better and why?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Both measure node impurity for choosing splits in decision trees.
 
@@ -1360,8 +1344,6 @@ DecisionTreeClassifier(criterion="gini")      # or "entropy" / "log_loss"
 
 ### 9.64 Can PCA be used to reduce the dimensionality of a highly nonlinear dataset?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Standard PCA will usually do poorly** on a highly non-linear dataset. PCA finds orthogonal *linear* directions of maximum variance. If the data lies on a curved manifold (a Swiss roll, concentric circles), the important structure isn't aligned with any linear subspace. PCA will either need many components or squash distinct regions on top of each other.
 
 That said, PCA can still be useful as a **first step**: to remove noise and redundant dimensions (e.g. 10,000 → 50) before a non-linear method, or simply because a "non-linear" dataset sometimes still has most of its variance in a few linear directions. Check the explained-variance curve and the downstream metric rather than assuming.
@@ -1377,8 +1359,6 @@ X_k = KernelPCA(n_components=2, kernel="rbf", gamma=15).fit_transform(X)
 ```
 
 ### 9.65 Once a dataset’s dimensionality has been reduced, is it possible to reverse the operation? If so, how? If not, why?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Generally only approximately, and for some methods not at all.** Reducing dimensions throws information away, so an exact inverse is impossible unless the dropped components carried zero variance.
 
@@ -1398,8 +1378,6 @@ err = ((X - X_rec) ** 2).mean(axis=1)
 
 ### 9.66 Why do we always need the intercept term in a regression model?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 The intercept $\beta_0$ is the predicted value when all features are 0. Without it, the regression line or hyperplane is **forced through the origin**, which is almost never justified.
 
 **Why we keep it:**
@@ -1418,8 +1396,6 @@ Interpretation caveat: the intercept itself often has no practical meaning (age 
 
 ### 9.67 Why is Ridge Regression called Ridge?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 There are two complementary explanations.
 
 **1. The "ridge" added to the matrix (the original, historical reason).** The OLS solution $\hat\beta = (X^TX)^{-1}X^Ty$ becomes unstable when features are collinear, because $X^TX$ is near-singular. Hoerl and Kennard (1970) proposed
@@ -1431,8 +1407,6 @@ Adding $\lambda I$ puts a constant "ridge" along the diagonal of $X^TX$. This li
 **Why it matters:** ridge trades a little bias for a large reduction in variance, keeps all features (no sparsity, unlike Lasso), and is the go-to when predictors are highly correlated. Equivalent views: L2 regularization, a Gaussian prior on the weights (MAP), and weight decay in neural networks.
 
 ### 9.68 Does it make any sense to chain two different dimensionality reduction algorithms?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Yes, and it is common practice.** The typical pattern is a **cheap linear method first, then an expensive non-linear one**:
 
@@ -1457,8 +1431,6 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 
 ### 9.69 Is it possible to speed up training of a bagging ensemble by distributing it across multiple servers?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Yes. Bagging is embarrassingly parallel.** Each base model is trained independently on its own bootstrap sample, so there are no dependencies between estimators during training.
 
 **How:**
@@ -1476,8 +1448,6 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 
 ### 9.70 If a Decision Tree is underfitting the training set, is it a good idea to try scaling the input features?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **No.** Decision trees are **invariant to monotonic feature scaling**. A split asks "is $x_j \le t$?", and scaling $x_j$ (standardization, min-max, even a log transform) just moves the threshold $t$. The ordering of samples, and therefore the partitions and impurity reductions, stays exactly the same. Scaling won't change the tree at all, apart from floating-point ties.
 
 **What actually fixes an underfitting tree** (high bias):
@@ -1489,8 +1459,6 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 **When scaling does matter:** distance- or gradient-based models such as KNN, SVM, linear and logistic regression with regularization, neural networks, PCA and k-means. In a mixed pipeline (e.g. trees stacked with logistic regression) you scale for the other models, not for the tree.
 
 ### 9.71 Say you trained an SVM classifier with an RBF kernel. It seems to underfit the training set: should you increase or decrease γ (gamma)? What about C?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Increase γ and increase C.** Both reduce regularization and make the model more complex.
 
@@ -1515,8 +1483,6 @@ grid = GridSearchCV(make_pipeline(StandardScaler(), SVC(kernel="rbf")),
 
 ### 9.72 How do we interpret weights in linear models?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 In a linear model $\hat y = \beta_0 + \sum_j \beta_j x_j$, the weight $\beta_j$ is **the expected change in the prediction for a one-unit increase in $x_j$, holding all other features constant**.
 
 **Variants:**
@@ -1536,8 +1502,6 @@ In a linear model $\hat y = \beta_0 + \sum_j \beta_j x_j$, the weight $\beta_j$ 
 For complex models, SHAP or partial dependence give comparable per-feature effect interpretations.
 
 ### 9.73 Why is it important to scale the inputs when using SVMs?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 SVMs maximize the **geometric margin**, which is measured with Euclidean distances in feature space. If one feature ranges from 0 to 100,000 (income) and another from 0 to 1 (a ratio), the large-scale feature dominates the distances and the margin. The SVM effectively ignores the small-scale features and finds a poor boundary.
 
@@ -1562,8 +1526,6 @@ clf = make_pipeline(StandardScaler(), SVC(kernel="rbf", C=1, gamma="scale"))
 Tree-based models, by contrast, don't need scaling.
 
 ### 9.74 What is OvR and OvO for multiclass classification, and which machine learning algorithm supports this
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 These are two strategies for turning **binary classifiers into multiclass classifiers**.
 
@@ -1590,8 +1552,6 @@ OneVsOneClassifier(SVC()).fit(X, y)
 ```
 
 ### 9.75 What are some advantages and Disadvantages of regression models and tree-based models?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Regression (linear/logistic) models**
 
@@ -1627,8 +1587,6 @@ OneVsOneClassifier(SVC()).fit(X, y)
 
 ### 9.76 What are some important hyperparameters for XGBOOST
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Group them by what they control:
 
 **Boosting process**
@@ -1660,8 +1618,6 @@ Group them by what they control:
 
 ### 9.77 List some of the drawbacks of a Linear model
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Drawbacks of linear models (linear/logistic regression):**
 
 - **Assumes a linear relationship** between features and target (or log-odds). Real relationships are often nonlinear, causing underfitting (high bias) unless you hand-engineer polynomial terms, splines or interactions.
@@ -1676,8 +1632,6 @@ Group them by what they control:
 **Why they're still used:** fast, cheap, highly interpretable, robust with little data, easy to regularize (Ridge/Lasso) and to deploy. In production they're often a strong baseline, a calibrated scoring layer, or the model of choice in regulated domains (credit scoring) where explainability outweighs a few points of accuracy.
 
 ### 9.78 Explain the kernel trick in SVM
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 An SVM's dual formulation and decision function only use **dot products** between data points:
 
@@ -1696,8 +1650,6 @@ If the data isn't linearly separable, we could map it to a higher-dimensional sp
 - Kernel choice and hyperparameters ($\gamma$, $C$) need tuning.
 
 ### 9.79 What is the difference between a Gaussian Mixture Model and the K-Means Algorithm?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Both cluster data into $k$ groups, but GMM is a probabilistic generalization of k-means.
 
@@ -1726,8 +1678,6 @@ probs = gmm.predict_proba(X)
 
 ### 9.80 How to select K for K-means?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 $k$ is a hyperparameter, so you combine quantitative criteria with domain sense:
 
 - **Elbow method:** plot within-cluster sum of squares (inertia) vs. $k$ and pick the point where adding clusters stops giving big drops. Easy, but the elbow is often ambiguous.
@@ -1749,8 +1699,6 @@ best_k = max(scores, key=scores.get)
 **Caveats:** scale features first; k-means assumes roughly spherical clusters, so if no $k$ looks good, the issue may be the algorithm (try DBSCAN/HDBSCAN or GMM) rather than $k$.
 
 ### 9.81 List all types of popular recommendation systems?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Main families of recommendation systems:**
 

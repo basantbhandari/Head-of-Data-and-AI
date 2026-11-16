@@ -1062,8 +1062,6 @@ This builds out the full reporting chain, level by level.
 
 **Normalization reduces redundancy. 1NF ensures atomic values. 2NF removes partial dependencies (non-key columns must depend on the whole key). 3NF removes transitive dependencies (non-key columns must not depend on other non-key columns).**
 
-#### Additional notes
-
 #### 1 NF
 
 Every column/attribute need to have single value.
@@ -1095,8 +1093,6 @@ Avoid transitive dependency
 Transitive dependency: let's you have table T that has 3 columns A, B, C. If column A is functionally dependent on column B and column B is functionally depended on column C. Then we can say That column A is functionally depended on column C.
 
 ---
-
-> ✍️ _Drafted addition._
 
 The notes above define each normal form but have no worked examples and stop at 3NF. The rest of this answer fills those gaps: one running example taken from unnormalized data to 3NF, then BCNF, and a short note on when to denormalize.
 

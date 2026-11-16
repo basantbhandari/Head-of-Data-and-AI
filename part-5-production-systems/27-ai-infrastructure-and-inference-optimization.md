@@ -1243,8 +1243,6 @@ Reducing the numerical precision of a model's weights (e.g., from 32-bit to 8-bi
 
 ### 27.27 What are the main model compression techniques?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Compression shrinks models to cut **latency, memory, cost and energy**, which matters for edge deployment and for cheap large-scale serving.
 
 1. **Quantisation:** lower the numeric precision of weights and activations (FP32 → FP16/BF16 → INT8 → INT4/FP8).
@@ -1290,8 +1288,6 @@ There is processor and there is memory. The amount of time it take to move a flo
 
 ### 27.30 What is the difference between static and continuous batching in LLMs?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Batching groups requests so the GPU processes them together, which raises throughput because LLM decoding is memory-bandwidth-bound (weights are loaded once per step for the whole batch).
 
 **Static batching**
@@ -1312,8 +1308,6 @@ Batching groups requests so the GPU processes them together, which raises throug
 
 ### 27.31 Why is AI infrastructure moving towards Rust?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Python remains the *interface* for AI, but more of the *infrastructure underneath* is being written in Rust:
 
 - **Performance without a GC:** C/C++-level speed and predictable latency (no garbage-collection pauses), which matters for tokenizers, data loaders, inference servers and vector databases.
@@ -1327,8 +1321,6 @@ Python remains the *interface* for AI, but more of the *infrastructure underneat
 **Trade-offs:** a steeper learning curve, slower development than Python, a smaller ML ecosystem, and CUDA kernels are still mostly C++/CUDA (or Triton). So the realistic pattern is **Python for research and orchestration, Rust for performance-critical, safety-critical plumbing**, rather than a full rewrite.
 
 ### 27.32 How does prompt caching work, and when does it help?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **What it is:** during prefill an LLM computes **KV-cache tensors** for every prompt token. Prompt caching stores the KV cache for a prompt **prefix**, so a later request with the *exact same prefix* skips recomputing it and only processes the new suffix.
 
@@ -1353,8 +1345,6 @@ Python remains the *interface* for AI, but more of the *infrastructure underneat
 
 ### 27.33 What does TensorRT (TensorRT-LLM) do?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **TensorRT** is NVIDIA's SDK for **optimizing and running trained neural networks for inference on NVIDIA GPUs**. It takes a model (typically via ONNX or framework integrations such as Torch-TensorRT) and compiles it into an optimized **engine** for a specific GPU:
 
 - **Graph optimizations:** layer and kernel **fusion** (e.g., conv + bias + ReLU in one kernel), constant folding, removing no-op layers.
@@ -1378,8 +1368,6 @@ Python remains the *interface* for AI, but more of the *infrastructure underneat
 **When to use it:** high-volume, latency-sensitive production on fixed NVIDIA hardware where the extra engineering effort pays off in GPU cost.
 
 ### 27.34 What are the main techniques for optimizing LLM inference overall (latency, throughput, cost)?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 First identify what you are optimizing: **latency** (TTFT, inter-token latency), **throughput** (tokens/s per GPU), or **cost** ($ per 1M tokens). Prefill is compute-bound; decode is **memory-bandwidth-bound** (reading weights and the KV cache for every token).
 
@@ -1433,8 +1421,6 @@ Factors: data sensitivity/compliance requirements (some clients require data to 
 
 ### 27.41 What is KV caching during inference?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 In autoregressive decoding, each new token must attend to all previous tokens. A **KV cache** stores the **Key and Value tensors** of every previous token, for every layer and head, so they are computed once and reused instead of reprocessing the whole prefix at each step.
 
 **How it works:**
@@ -1483,8 +1469,6 @@ and computes K/V only for **AI**.
 
 ### 27.43 What is Grouped Query Attention (GQA)?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Grouped Query Attention (GQA)** is a middle ground between multi-head (MHA) and multi-query attention (MQA). Query heads are split into $G$ groups, and **each group shares one Key/Value head**.
 
 - MHA: $h$ query heads, $h$ KV heads.
@@ -1502,8 +1486,6 @@ and computes K/V only for **AI**.
 **Tradeoff:** fewer KV heads reduce representational capacity slightly. GQA recovers most of the quality lost by MQA, which is why it is the default in LLaMA-2/3, Mistral, Qwen and Gemma.
 
 ### 27.44 Compare MHA, MQA, and GQA.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | | **MHA** (multi-head) | **GQA** (grouped-query) | **MQA** (multi-query) |
 | --- | --- | --- | --- |
@@ -1527,8 +1509,6 @@ A further step is **MLA (Multi-head Latent Attention, DeepSeek-V2/V3)**, which c
 
 ### 27.45 What is FlashAttention?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **FlashAttention** (Dao et al., 2022) is an **exact**, IO-aware GPU kernel for attention. It computes the same output as standard attention but much faster and with far less memory.
 
 **Problem with standard attention:** it materialises the $n \times n$ score and probability matrices in GPU **HBM** (slow, large memory). It writes and reads them several times (matmul → mask → softmax → dropout → matmul), so it is **memory-bandwidth-bound** and uses $O(n^2)$ memory.
@@ -1547,8 +1527,6 @@ A further step is **MLA (Multi-head Latent Attention, DeepSeek-V2/V3)**, which c
 **In practice:** use it via `torch.nn.functional.scaled_dot_product_attention`, `flash-attn`, or inference engines (vLLM, TensorRT-LLM). It is now the default in essentially every serious LLM stack.
 
 ### 27.46 Why is FlashAttention faster without changing the attention result mathematically?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Because it changes **how data moves**, not **what is computed**. Attention on modern GPUs is limited by **memory bandwidth**, not arithmetic.
 
@@ -1570,8 +1548,6 @@ The output is exact up to floating-point rounding: results are not bit-identical
 
 ### 27.47 What is PagedAttention?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **PagedAttention** (Kwon et al., 2023, the core of **vLLM**) manages the KV cache like an operating system manages **virtual memory pages**.
 
 **Problem:** naïve servers pre-allocate one **contiguous** KV buffer per request sized for the maximum length (e.g. 2k–32k tokens). Because output length is unknown:
@@ -1592,8 +1568,6 @@ The output is exact up to floating-point rounding: results are not bit-identical
 
 ### 27.48 How does PagedAttention improve LLM serving?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 LLM decoding is memory-bound, so **throughput scales with how many sequences you can batch at once**, and batch size is limited by KV-cache memory. PagedAttention frees that memory.
 
 **How it improves serving:**
@@ -1608,8 +1582,6 @@ LLM decoding is memory-bound, so **throughput scales with how many sequences you
 **Tradeoff:** the indirection adds some kernel overhead (gathering non-contiguous blocks), which is small compared with the batching gains. vLLM, TensorRT-LLM, TGI and SGLang all use paged KV caches today.
 
 ### 27.49 Compare INT8, INT4, FP16, BF16, and FP8.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | Format | Bits | Layout | Range / precision | Typical use |
 | --- | --- | --- | --- | --- |
@@ -1628,8 +1600,6 @@ LLM decoding is memory-bound, so **throughput scales with how many sequences you
 **Rule of thumb:** train in BF16 (or FP8 at frontier scale), serve in FP8 or INT8 when quality matters and hardware supports it, and use INT4 weight-only to fit large models on limited GPUs, always validating on task evals.
 
 ### 27.50 What is quantization-aware training vs post-training quantization?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | | **Post-training quantization (PTQ)** | **Quantization-aware training (QAT)** |
 | --- | --- | --- |
@@ -1652,8 +1622,6 @@ Always compare against the FP16 baseline on the task's own evaluation, not just 
 
 ### 27.51 How would you reduce inference latency without significantly reducing accuracy?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 I start by **profiling** where time goes (preprocessing, network, feature fetch, model compute, postprocessing), then apply the cheapest fix with the least accuracy loss.
 
 **Model-level:**
@@ -1675,8 +1643,6 @@ I start by **profiling** where time goes (preprocessing, network, feature fetch,
 
 ### 27.52 What is speculative decoding?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Speculative decoding** speeds up autoregressive generation without changing the output distribution. A small, fast **draft model** proposes several tokens ahead; the large **target model** checks them all in **one forward pass** and accepts the longest correct prefix.
 
 **Algorithm (per step)**
@@ -1696,8 +1662,6 @@ This rejection-sampling scheme guarantees the output is **distributed exactly as
 
 ### 27.53 How can speculative decoding reduce LLM inference latency?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Decoding in a large LLM is **memory-bandwidth bound**: each new token requires streaming all the weights (and the KV cache) from HBM to compute just one token, so the GPU's arithmetic units sit mostly idle. Speculative decoding converts that idle compute into extra tokens.
 
 **Why it's faster**
@@ -1714,8 +1678,6 @@ Decoding in a large LLM is **memory-bandwidth bound**: each new token requires s
 **Production tuning:** choose a draft model ~10–50× smaller from the same family; tune *k* (3–8); monitor acceptance rate per workload; use n-gram/prompt-lookup drafting for input-grounded tasks (RAG, code editing), where acceptance is very high.
 
 ### 27.54 What is continuous batching?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Continuous (in-flight / iteration-level) batching** schedules LLM requests **per decoding step** instead of per batch.
 
@@ -1735,8 +1697,6 @@ Decoding in a large LLM is **memory-bandwidth bound**: each new token requires s
 **Trade-offs:** larger batches raise throughput but also per-token latency (TPOT); tune max batch size and max batched tokens against your SLOs (p95 TTFT, tokens/sec). Implemented in vLLM, TGI, TensorRT-LLM and SGLang.
 
 ### 27.55 Why is GPU memory often the bottleneck in LLM inference?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Two things must live in GPU memory (HBM) during inference, and both are large:
 
@@ -1758,8 +1718,6 @@ $\text{KV bytes} = 2 \times n_{layers} \times n_{kv\_heads} \times d_{head} \tim
 - Tensor/pipeline parallelism across GPUs; KV offloading for long contexts.
 
 ### 27.56 Compare compute-bound vs memory-bandwidth-bound workloads.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 The **roofline model** classifies a workload by its **arithmetic intensity** = FLOPs performed per byte moved from memory.
 
@@ -1783,8 +1741,6 @@ The **roofline model** classifies a workload by its **arithmetic intensity** = F
 
 ### 27.57 What is the difference between training FLOPs and inference FLOPs?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 For a dense Transformer with $N$ parameters:
 
 **Training FLOPs ≈ $6ND$** (D = training tokens)
@@ -1805,8 +1761,6 @@ For a dense Transformer with $N$ parameters:
 **Use in practice:** estimate training cost = FLOPs ÷ (GPUs × peak FLOPS × MFU); estimate inference cost from tokens/day × 2N, then sanity-check against bandwidth limits.
 
 ### 27.58 How would you estimate the GPU requirements for serving an LLM?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Work through **memory first, then throughput**, then validate with a benchmark.
 
@@ -1832,8 +1786,6 @@ Llama-3-70B (80 layers, 8 KV heads, d=128, FP16) ≈ 320 KB per token.
 **Levers:** quantization, GQA models, prefix caching, speculative decoding, smaller distilled models, routing easy traffic to cheaper models.
 
 ### 27.59 What happens to model quality when you aggressively quantize a model?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Quality degrades **gracefully down to ~8 bits, noticeably at 4 bits, and sharply below that** — but how much depends on the method, the model size and the task.
 

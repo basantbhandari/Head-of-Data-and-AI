@@ -364,8 +364,6 @@ This chapter contains **36 questions**.
 
 ### 10.13 How do you deal with noisy data in machine learning models?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Separate **feature noise** (measurement errors, outliers, missing values) from **label noise** (wrong annotations). Label noise is usually more damaging.
 
 **Diagnose first:**
@@ -545,8 +543,6 @@ df.replace(-999, None)   # Replace corrupted value
 
 ### 10.23 Imagine you are working with a laptop with 2 GB RAM; how would you process a dataset of 10GB?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Don't load it all at once — **stream, reduce, or push the compute elsewhere**.
 
 **1. Read less**
@@ -579,8 +575,6 @@ for chunk in pd.read_csv("big.csv", usecols=["user", "amount"], chunksize=500_00
 
 ### 10.24 What are some ways to make your model more robust to outliers?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **First decide whether the outliers are errors or real signal.** Fix or drop data-entry errors. Keep genuine extremes (fraud, large orders) and make the model handle them.
 
 **Data-level:**
@@ -607,8 +601,6 @@ model = HuberRegressor(epsilon=1.35).fit(X, y)
 
 ### 10.25 How do you approach a categorical feature with high cardinality?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 High-cardinality categoricals (zip codes, user IDs, product SKUs) make one-hot encoding explode in dimension and sparsity, and the rare levels overfit.
 
 **Options, roughly in order of preference:**
@@ -631,8 +623,6 @@ X_enc = TargetEncoder(smooth="auto").fit_transform(X[["zip"]], y)
 ```
 
 ### 10.26 How will you do feature selection using Lasso Regression?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Lasso adds an L1 penalty, $\min_\beta \frac{1}{2n}\lVert y - X\beta\rVert^2 + \alpha\lVert\beta\rVert_1$. The L1 term drives the coefficients of uninformative features **exactly to zero**, so the features with non-zero coefficients are the selected set.
 
@@ -660,8 +650,6 @@ selected = X.columns[pipe[1].get_support()]
 - When $p > n$, Lasso selects at most $n$ features.
 
 ### 10.27 What is the difference between standard scaler and minmax scaler? What will you do if there is a categorical variable?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **StandardScaler** (z-score): $x' = (x - \mu)/\sigma$, giving zero mean and unit variance with an unbounded range.
 **MinMaxScaler**: $x' = (x - x_{min})/(x_{max} - x_{min})$, mapping to a fixed range, usually $[0,1]$.
@@ -693,8 +681,6 @@ Tree-based models need neither scaling nor one-hot encoding in many implementati
 
 ### 10.28 Why is it sometimes needed to scale or normalise features?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Feature scaling puts features on comparable ranges. It's needed when an algorithm is sensitive to the **magnitude** of features:
 
 - **Distance-based models** (k-NN, k-means, SVM with RBF kernel): a feature measured in thousands (income) would dominate one measured in units (age), regardless of importance.
@@ -717,8 +703,6 @@ model = make_pipeline(StandardScaler(), SVC(kernel="rbf")).fit(X_train, y_train)
 
 ### 10.29 Why does one-hot encoding improve machine learning performance?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 One-hot encoding turns a categorical feature with $k$ values into $k$ binary columns. It helps because:
 
 - **Removes a fake ordering.** Label encoding (red=0, green=1, blue=2) tells a linear model or a distance-based model that blue is "twice" green and that green lies between red and blue. One-hot treats categories as unordered and equidistant.
@@ -733,8 +717,6 @@ One-hot encoding turns a categorical feature with $k$ values into $k$ binary col
 - In production, handle unseen categories (`handle_unknown='ignore'`).
 
 ### 10.30 Differentiate between wide and tall data formats?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Wide and tall (long) are two layouts of the same data.
 
@@ -769,8 +751,6 @@ In feature engineering pipelines you often store data tall (events) and pivot to
 
 ### 10.31 How can you determine which features are the most important in your model?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Several methods, each with caveats:
 
 **Model-specific**
@@ -797,8 +777,6 @@ r = permutation_importance(model, X_val, y_val, n_repeats=10, scoring="roc_auc")
 **Pitfalls to mention:** importance is not causality; correlated features split or hide importance; a suspiciously dominant feature often signals **data leakage** (e.g. a field populated after the outcome). Validate on held-out data and check stability across CV folds.
 
 ### 10.32 Can you define the concept of Undersampling and Oversampling?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Both are **resampling** techniques for imbalanced classification that change the class distribution of the **training** data.
 
@@ -827,8 +805,6 @@ pipe = Pipeline([("smote", SMOTE()), ("clf", model)])  # resampling happens per 
 ```
 
 ### 10.33 Which type of sampling is better for a classification model, and why?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 There's no single best sampling method; it depends on the goal. For **building train/validation/test splits** for classification, **stratified sampling** is usually the better default.
 

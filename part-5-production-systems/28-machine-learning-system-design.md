@@ -40,8 +40,6 @@ This chapter contains **27 questions**.
 
 ### 28.1 Design a Machine Learning System for YouTube Video Recommendation.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Clarify:** home-feed recommendations for about 2B users and 1B+ videos. Latency under 200 ms. The goal is long-term satisfaction, not just clicks.
 
 **Framing:** a multi-stage retrieval-and-ranking problem. Optimise *expected watch time × satisfaction*. Labels come from implicit feedback: a click, watch fraction, likes and shares, and negatives such as "not interested", skips and dislikes. Raw CTR rewards clickbait, so use a multi-task objective.
@@ -69,8 +67,6 @@ The final score is a weighted combination of the task heads. The weights are tun
 
 ### 28.2 Design a Machine Learning System for YouTube Video Search.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Clarify:** text queries over 1B+ videos, multilingual, p99 latency under 300 ms. Results should be relevant first, then personalised.
 
 **Framing:** retrieve, then rank. Relevance labels come from human raters (graded 0–4) plus implicit signals such as clicks and long watches. Click-through on search is position-biased, so debias it with inverse propensity weighting or click models.
@@ -93,8 +89,6 @@ Video embeddings are built offline when a video is uploaded (the text encoder us
 **Pitfalls:** tail queries have little click data, so rely on semantic retrieval. Freshness matters for news and trending queries, so add a freshness feature and a separate index for recent uploads. Spam titles and keyword stuffing call for quality and authority signals. Language mismatch can be handled with a multilingual encoder.
 
 ### 28.3 Design a Machine Learning System for Personalized Content Feed.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** a social feed (posts from friends, pages and groups, plus unconnected recommended content). Hundreds of millions of DAU. The feed refreshes on every app open.
 
@@ -119,8 +113,6 @@ Inventory (friends' posts + recommended pool via two-tower retrieval)
 
 ### 28.4 Design a Machine Learning System for Harmful Content Detection.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Clarify:** posts with text, images and video. Harm classes include violence, hate, nudity, self-harm, spam and misinformation. Some classes need proactive detection before anyone sees the post. Billions of posts a day. Actions are remove, demote, or send to human review.
 
 **Framing:** multi-label classification, with a calibrated probability per harm class. Policies set the thresholds: high precision for automatic removal, and a lower threshold to route posts to human review. Labels come from human moderators, user reports (noisy) and appeals outcomes.
@@ -142,8 +134,6 @@ Reviewer decisions flow back as training labels (active learning).
 
 ### 28.5 Design a Machine Learning System for Similar Listings on Airbnb.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Clarify:** a "similar listings" carousel on a listing page. The goal is to raise bookings. Millions of listings, and the results must respect the viewer's dates and destination.
 
 **Framing:** item-to-item retrieval and ranking. The core idea (from Airbnb's KDD 2018 paper) is to learn **listing embeddings** from user click sessions, treating each session as a "sentence" of listing IDs and training skip-gram (word2vec) on them. Listings clicked in the same session end up close together. The booked listing is added as a *global context* to every session that ended in a booking, which pushes embeddings toward conversion. Negatives are sampled from the same market, so the model learns within-market distinctions rather than only geography.
@@ -164,8 +154,6 @@ online:  anchor listing ─► ANN top-k (same market, available for dates) ─�
 
 ### 28.6 Design a Machine Learning System for Replacement Product Recommendation.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Clarify:** when an item is out of stock (e-commerce or grocery substitution), suggest a *substitute* that the customer will accept. Substitutes are not the same as complements: a different-brand milk is a substitute, cereal is a complement.
 
 **Framing:** learn a substitutability score `s(original, candidate, user)`. Labels: accepted versus rejected substitutions (from grocery pickers or the customer approval flow), "viewed A then bought B instead" sessions (a substitute signal), and "bought together" pairs, which act as negatives for substitution because they are complements.
@@ -184,8 +172,6 @@ hard constraints: dietary/allergen rules, size bounds, price ceiling
 **Pitfalls:** violating hard constraints such as allergens or halal (always use rules, never rely only on the model). Price jumps upset customers. Sparse labels for long-tail items (back off to category-level models). Store-level inventory must be checked in real time.
 
 ### 28.7 Design a Machine Learning System for Event Recommendation.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** an Eventbrite-like platform that recommends upcoming events. Events are short-lived (no long engagement history), location-bound and time-bound. The goal is ticket registrations.
 
@@ -207,8 +193,6 @@ hard constraints: dietary/allergen rules, size bounds, price ceiling
 **Pitfalls:** cold start for new users (location plus popular events, onboarding interests). Class imbalance. Features such as "friends registered" change quickly, so the online and offline features need point-in-time correctness to avoid leakage.
 
 ### 28.8 Design a Machine Learning System for Ad Click Prediction.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** predict pCTR for ads shown in feed or search. Billions of impressions a day, latency under 10 ms per batch of candidates. pCTR feeds the auction (`bid × pCTR × quality`), so **calibration matters as much as ranking**.
 
@@ -233,8 +217,6 @@ Logistic regression + hashed crosses (baseline, very fast)
 **Pitfalls:** delayed feedback and label leakage, position bias (use a position feature or a separate position model), cold-start ads (content features and an exploration budget), privacy constraints (fewer cross-site signals, aggregated APIs).
 
 ### 28.9 Design a Machine Learning System to Estimate Delivery Time.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** food-delivery ETA shown before ordering and updated during delivery. The business cost is asymmetric: late is worse than early. Strict latency limits.
 
@@ -261,8 +243,6 @@ stream events (prep ready, GPS) ─► re-estimate ─► push update to app
 
 ### 28.10 Design a Machine Learning System for Image Search.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Clarify:** query by image (visual search, as in Pinterest Lens) and/or by text. Billions of images, results within 200 ms.
 
 **Framing:** representation learning plus nearest-neighbour retrieval. Train an embedding model so that similar images, and matching text-image pairs, are close together. Labels: user engagement pairs (query image → clicked or saved image), plus self-supervised augmentation pairs.
@@ -281,8 +261,6 @@ Product quantisation compresses embeddings: 512-dimensional float32 is 2 KB, and
 **Pitfalls:** near-duplicates crowd the results (dedupe with perceptual hashing). Unsafe content (safety classifiers). Re-embedding billions of images after a model update (versioned indexes, backfill jobs, dual-serving during migration). Background clutter (crop detected objects first).
 
 ### 28.11 Design a Machine Learning System for Friends Recommendation.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** "People You May Know" on a social network with about 1B users. The goal is accepted connections that lead to engagement, not just sent requests.
 
@@ -305,8 +283,6 @@ online: fetch precomputed candidates ─► refresh real-time features ─► ra
 
 ### 28.12 Design a Machine Learning Product Recommendation System for an e-commerce platform.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Clarify:** surfaces are the homepage, product page ("similar"/"bought together") and cart. Catalogue of 10M+ SKUs, 100M users. The goals are GMV and conversion, with guardrails on returns.
 
 **Framing:** retrieval plus ranking. Labels: purchase (strong), add-to-cart, click and view, weighted by value. Multi-task heads for P(click), P(add to cart) and P(purchase), because purchases are sparse.
@@ -328,8 +304,6 @@ online: fetch precomputed candidates ─► refresh real-time features ─► ra
 **Pitfalls:** popularity bias and long-tail coverage, cold-start items and users, seasonality, and the feedback loop with promotions.
 
 ### 28.13 How would you build a system to detect fraudulent transactions?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** card or payment transactions scored in real time (under 50 ms) before authorisation. Decisions: approve, decline, or step-up (3DS/OTP). Fraud base rate is about 0.1%. The costs are asymmetric: fraud loss versus declining a good customer.
 
@@ -356,8 +330,6 @@ txn ─► feature service (real-time aggregates) ─► rules engine + ML score
 
 ### 28.14 How would you approach a time series forecasting problem?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 1. **Clarify the decision:** the forecast horizon (next hour or next quarter), granularity, number of series (1 or 100k SKUs), whether a point forecast or prediction intervals are needed, and the cost of over- versus under-forecasting.
 2. **EDA:** trend, seasonality (daily, weekly, yearly), holidays and events, structural breaks such as COVID, missing data, outliers, and stationarity (ADF test). Decompose with STL.
 3. **Baselines first:** naive (last value), seasonal naive, and moving average. Many fancy models fail to beat seasonal naive.
@@ -378,8 +350,6 @@ cv = sf.cross_validation(df=df, h=14, n_windows=4)   # rolling-origin backtest
 
 ### 28.15 Describe how you would implement an image classification system.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 1. **Define the problem:** the classes, single- or multi-label, accuracy versus latency targets, deployment target (cloud GPU or mobile), and data volume.
 2. **Data:** collect and label (labelling vendors, active learning to prioritise uncertain samples), write clear labelling guidelines, audit inter-annotator agreement, and split by source or time to avoid leakage (near-duplicates across splits inflate metrics).
 3. **Model: use transfer learning.** Start from a pretrained backbone (ResNet-50, EfficientNet, ConvNeXt, ViT). With little data, freeze the backbone and train the head, then unfreeze and fine-tune with a lower learning rate. With very little data, use zero-shot CLIP or a linear probe on CLIP embeddings.
@@ -395,8 +365,6 @@ opt = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.05)
 ```
 
 ### 28.16 What approach would you take for a sentiment analysis task?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** the granularity (document, sentence or **aspect-based**, e.g. "battery great, screen bad"), the labels (positive/negative/neutral or 1–5 stars), domain (tweets, reviews, support tickets), languages, volume and latency, and whether explainability is needed.
 
@@ -420,8 +388,6 @@ clf(["Delivery was late but support fixed it fast"])
 
 ### 28.17 How would you design a customer churn prediction model?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 1. **Define churn precisely:** contractual (cancelled subscription) or non-contractual (no purchase in 60 days). Fix a **prediction window** ("will churn in the next 30 days") and an **observation window** for features. Be clear about the action: a retention offer or a CSM call, which sets the precision and recall needs.
 2. **Labels and leakage:** build snapshots. For each customer at date T, features use only data before T, and the label looks at T to T+30. Exclude signals that only appear after a churn decision, such as a "cancellation page visited" feature captured after the decision.
 3. **Features:** tenure, plan and price, usage trends (week-over-week decline is very predictive), engagement recency/frequency/monetary value, support tickets and sentiment, payment failures, feature adoption, NPS, and contract renewal date.
@@ -431,8 +397,6 @@ clf(["Delivery was late but support fixed it fast"])
 7. **Production:** a daily or weekly batch score pushed to the CRM, with SHAP reason codes ("usage down 40%, 2 failed payments") so account teams know what to do. Monitor drift and measure retention lift against a holdout.
 
 ### 28.18 What would be your approach to ranking search results?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Multi-stage pipeline:**
 ```text
@@ -454,8 +418,6 @@ query understanding (spell, synonyms, intent, entities)
 **Pitfalls:** feedback loops (the model only learns from what it showed, so add exploration). Training/serving skew in features. Over-personalisation. Latency budgets limit the cross-encoder to the top-N.
 
 ### 28.19 How would you build a system to detect anomalies in network traffic?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** the goal (intrusion/DDoS detection, data exfiltration, misconfigurations), the data (NetFlow/IPFIX, packet headers, firewall and DNS logs), the volume (millions of flows a second), and response time (seconds for DDoS). Labels are scarce, so this is **mostly unsupervised or semi-supervised**.
 
@@ -479,8 +441,6 @@ raw data ─► data lake for forensics + offline training
 **Pitfalls:** concept drift (new services, traffic growth), seasonality causing false alarms, encrypted traffic limiting content features, adversaries mimicking normal traffic, and the need for explainable alerts ("host X contacted 500 new IPs on port 445").
 
 ### 28.20 How do you build a spam detection system?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Problem framing:** binary (or multi-class: spam, phishing, promo, ham) classification on messages or emails. **Precision matters most**: putting a legitimate email in spam is very costly. So pick an operating point such as precision ≥ 99% and maximize recall. Latency target is under about 50 ms per message at high volume. The setting is **adversarial**: spammers adapt.
 
@@ -506,8 +466,6 @@ raw data ─► data lake for forensics + offline training
 
 ### 28.21 How do you build a harmful-content detection system?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **1. Scope and policy first:** define the taxonomy (hate, harassment, violence, self-harm, sexual content, CSAM, extremism, spam, misinformation) with written policy guidelines and severity levels. The policy drives labeling, thresholds and actions. Cover multiple modalities (text, image, video, audio) and languages.
 
 **2. Data and labeling:** expert annotators with clear guidelines, inter-annotator agreement tracking, annotator wellbeing safeguards, active learning to pick borderline examples, adversarial and red-team data, and rare-class oversampling. Severe classes are extremely imbalanced.
@@ -528,8 +486,6 @@ raw data ─► data lake for forensics + offline training
 **7. Adversarial robustness and operations:** obfuscation (misspellings, emoji, text in images, so add OCR), evolving slang, coordinated attacks. Mitigate with frequent retraining, rapid rule updates, drift monitoring, and transparency reports.
 
 ### 28.22 Design a real-time fraud detection system.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements:** score card/payment transactions in < 100 ms p99 at thousands of TPS; high recall on fraud with tolerable false-positive rate; explainability and audit for regulators; adapt to evolving fraud patterns.
 
@@ -557,8 +513,6 @@ Payment API → Kafka → Feature service (online store: Redis/Feast)
 
 ### 28.23 Design a recommendation system for millions of users.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal:** personalised top-N items for millions of users and items at low latency (~100 ms), optimising engagement while respecting business rules (diversity, freshness, inventory).
 
 **Multi-stage funnel:**
@@ -582,8 +536,6 @@ Millions of items → Candidate generation (~1,000) → Ranking (~100) → Re-ra
 **Evaluation:** offline recall@k, NDCG, AUC; but decisions come from **online A/B tests** on business metrics (CTR, conversion, retention). Watch for feedback loops and popularity bias — keep some exploration traffic.
 
 ### 28.24 Design a large-scale document classification system.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Scenario:** classify millions of documents (emails, contracts, tickets, invoices) into tens to hundreds of classes, possibly multi-label, with high throughput and auditability.
 
@@ -609,8 +561,6 @@ Ingest (S3/queue) → Parse/OCR → Clean + language detect → Feature/embeddin
 
 ### 28.25 Design a real-time anomaly detection pipeline.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Use case:** detect anomalies in metrics, logs, transactions or IoT sensor streams within seconds, with low false-alert rates.
 
 **Architecture:**
@@ -633,8 +583,6 @@ Sources → Kafka/Kinesis → Stream processor (Flink/Spark Streaming)
 **Challenges:** few labels (mostly unsupervised; evaluate on injected anomalies and historical incidents with precision/recall and detection delay), concept drift (seasonality changes, new normal → periodic retraining or adaptive baselines), late/out-of-order events (watermarks), and scale (partition by entity key).
 
 ### 28.26 Design a personalized search engine.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal:** return results ranked by relevance to the query **and** the individual user's preferences, within ~100–200 ms.
 
@@ -659,8 +607,6 @@ Query → Query understanding → Retrieval (lexical + semantic) → Personalise
 **Concerns:** cold-start users (fall back to non-personalised ranking), privacy and consent for using history, filter bubbles (keep some exploration), latency budget (precompute user embeddings, cache popular queries).
 
 ### 28.27 Design a model serving infrastructure supporting 10,000 requests/second.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Targets:** 10k RPS, e.g. p99 < 100 ms, 99.9%+ availability, cost-efficient.
 

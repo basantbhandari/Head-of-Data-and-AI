@@ -1169,8 +1169,6 @@ My goal would be to resolve the disagreement professionally, maintain a positive
 
 ### 31.42 How did you make the agentic RAG system reliable, trustworthy, explainable, responsible, and aligned?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 This is behavioural, so answer in **STAR** form with concrete numbers. Template to adapt:
 
 **Situation / Task:** "We built an agentic RAG assistant that answered [domain, e.g., policy/compliance] questions for [N users], using tools such as search, a SQL lookup, and ticket creation. Early pilots showed about [X]% unsupported answers and occasional wrong tool actions, which was unacceptable in a regulated setting."

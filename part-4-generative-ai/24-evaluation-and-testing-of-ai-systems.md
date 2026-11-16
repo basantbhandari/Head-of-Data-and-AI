@@ -2240,8 +2240,6 @@ and summarizes the image rather than following that instruction.
 
 ### 24.32 How do you detect hallucinations?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Detect hallucinations at several layers. No single method is enough.
 
 **1. Groundedness against sources (RAG and summarization)**
@@ -2269,8 +2267,6 @@ Detect hallucinations at several layers. No single method is enough.
 **Trade-off:** judge-based checks add latency and cost, so run lightweight checks inline and heavier ones asynchronously.
 
 ### 24.33 How do you evaluate LLM outputs (metrics, LLM-as-judge, human eval)?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Combine three layers: **automatic metrics**, **LLM-as-judge**, and **human evaluation**, run both offline and online.
 
@@ -2319,8 +2315,6 @@ Deciding whether to proceed automatically or flag an output for review, based on
 
 ### 24.39 How would you evaluate an LLM beyond accuracy?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Accuracy alone misses most of what makes an LLM useful and safe. I evaluate across:
 
 - **Correctness/factuality:** exact match/F1 where there's one answer; rubric grading otherwise.
@@ -2337,8 +2331,6 @@ Accuracy alone misses most of what makes an LLM useful and safe. I evaluate acro
 **How:** golden datasets per capability built from real queries and edge cases; automated metrics where possible; **LLM-as-judge** with explicit rubrics, calibrated against human labels; pairwise human evaluation for subjective quality; online A/B tests and monitoring. Track everything per model/prompt version so regressions show up before release.
 
 ### 24.40 What is LLM-as-a-judge, and what are its limitations?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **LLM-as-a-judge** uses a (usually strong) LLM to grade another model's output — pointwise against a rubric ("score faithfulness to the context 1–5") or pairwise ("which answer is better, A or B?"). It scales evaluation of open-ended outputs far cheaper and faster than human raters and correlates reasonably with humans when designed well.
 
@@ -2359,8 +2351,6 @@ Accuracy alone misses most of what makes an LLM useful and safe. I evaluate acro
 - Use deterministic checks (unit tests, schema validation, exact match) wherever possible; keep judges for the rest.
 
 ### 24.41 How would you build an evaluation framework for an enterprise LLM application?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 I build it as a layered, versioned system that runs offline (pre-release) and online (production).
 

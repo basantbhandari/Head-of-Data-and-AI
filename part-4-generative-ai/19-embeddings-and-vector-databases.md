@@ -1046,8 +1046,6 @@ If the new model produces a different representation, maintain a separate index 
 
 ### 19.24 What is InfoNCE loss, and where is it used?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **InfoNCE** (from Contrastive Predictive Coding, van den Oord et al., 2018) is the standard **contrastive loss**. Given an anchor $q$, one positive $k^+$ and $N-1$ negatives, it is a softmax cross-entropy that asks the model to pick out the positive:
 
 $$\mathcal{L} = -\log \frac{\exp(\text{sim}(q, k^+)/\tau)}{\sum_{j=1}^{N} \exp(\text{sim}(q, k_j)/\tau)}$$

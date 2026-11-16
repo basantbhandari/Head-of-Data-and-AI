@@ -181,7 +181,7 @@ User → Application → External content
 - Monitor and log suspicious instruction patterns.
 - Add successful attacks to the regression test suite.
 
-> Merged duplicate: _How do you implement input and output guardrails for AI systems?_ — the answer from these notes is kept with [Question 26.9](26-mlops-and-llmops.md#269-what-are-guardrails-for-llms-and-how-do-you-implement-them) under "Additional notes".
+> Merged duplicate: _How do you implement input and output guardrails for AI systems?_ — the answer from these notes is kept with [Question 26.9](26-mlops-and-llmops.md#269-what-are-guardrails-for-llms-and-how-do-you-implement-them).
 
 ### 30.3 What is AI alignment, and why is it important?
 
@@ -309,7 +309,7 @@ Important considerations include:
 - **Deletion:** Ensure deletion workflows cover databases, vector stores, caches, logs, backups, and derived datasets where required.
 - **Auditability:** Maintain records showing who accessed data and how it was processed.
 
-> Merged duplicate: _How do you handle PII in LLM inputs and outputs?_ — the answer from these notes is kept with [Question 26.21](26-mlops-and-llmops.md#2621-how-do-you-handle-pii-and-sensitive-data-in-llm-inputs-and-outputs) under "Additional notes".
+> Merged duplicate: _How do you handle PII in LLM inputs and outputs?_ — the answer from these notes is kept with [Question 26.21](26-mlops-and-llmops.md#2621-how-do-you-handle-pii-and-sensitive-data-in-llm-inputs-and-outputs).
 
 ### 30.6 What is explainability in AI, and why does it matter?
 
@@ -510,7 +510,7 @@ Monitoring + Audit
 - Red-team the training and retrieval pipelines.
 - Add known poisoning scenarios to regression tests.
 
-> Merged duplicate: _How do you implement content safety filters for AI-generated content?_ — the answer from these notes is kept with [Question 26.10](26-mlops-and-llmops.md#2610-how-do-you-implement-content-filtering-for-ai-outputs) under "Additional notes".
+> Merged duplicate: _How do you implement content safety filters for AI-generated content?_ — the answer from these notes is kept with [Question 26.10](26-mlops-and-llmops.md#2610-how-do-you-implement-content-filtering-for-ai-outputs).
 
 ### 30.11 What is responsible AI, and what frameworks exist for implementing it?
 
@@ -1903,8 +1903,6 @@ I would reduce the environmental impact across the **entire AI lifecycle**, from
 
 ### 30.43 What is model explainability? Why is it important?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Explainability** is the ability to understand *why* a model made a prediction (local explanation) and *how* it behaves overall (global explanation): which features drive it, in which direction, and with what interactions.
 
 - **Interpretable by design:** linear and logistic regression, small decision trees, scorecards, GAMs/EBMs. The model *is* the explanation.
@@ -1921,8 +1919,6 @@ I would reduce the environmental impact across the **entire AI lifecycle**, from
 **Trade-off:** more interpretable models can lose some accuracy. On tabular data, GBDT with SHAP or EBMs often closes the gap. Post-hoc explanations are approximations and can be unstable or misleading, so validate them and don't over-trust them.
 
 ### 30.44 What techniques would you use to make a model more interpretable?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Choose interpretable models when stakes are high:**
 - Logistic regression with well-engineered features, scorecards (binned WoE features).
@@ -1991,8 +1987,6 @@ Federated learning is a way to train a machine learning model across many device
 
 **Popular tools:** TensorFlow Federated, Flower, PySyft, FedML, NVIDIA FLARE.
 
-#### Additional notes
-
 #### Federated Learning Model
 
 **Federated Learning (FL)** is a machine learning approach where multiple devices or organizations **train a shared model collaboratively without sending their raw data to a central server**.
@@ -2032,8 +2026,6 @@ Federated learning is a way to train a machine learning model across many device
 The study of vulnerabilities in artificial intelligence and machine learning models
 
 ### 30.47 What are reliability (trusting model output) and controllability (steering the model)?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Two complementary properties for deploying LLMs/agents safely:
 

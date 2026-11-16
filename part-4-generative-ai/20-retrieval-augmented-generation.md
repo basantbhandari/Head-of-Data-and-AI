@@ -2662,8 +2662,6 @@ Was the correct document retrieved?
 
 ### 20.52 Why can naive vector search produce poor results?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Naive vector search = embed the query, take top-k by cosine similarity, stuff into the prompt. It often underperforms because:
 
 - **Similarity ≠ relevance:** "how to cancel a subscription" and "how to start a subscription" embed close together but answer different questions.
@@ -2712,8 +2710,6 @@ User Query ─────┤                   ├─→ Fusion/Reranking → L
 **Hybrid = robust retrieval using both**
 
 ### 20.54 What is reranking, and why does it improve RAG?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Reranking** is a second-stage scoring step: a cheap first-stage retriever (BM25, dense or hybrid) fetches a broad candidate set (e.g. top 50–200), then a more accurate, more expensive model re-scores each (query, passage) pair and only the top-N go to the LLM.
 
@@ -2778,8 +2774,6 @@ LLM
 
 ### 20.56 What is contextual compression?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Contextual compression** shrinks retrieved documents to only what is relevant to the current query before they reach the LLM.
 
 **Techniques:**
@@ -2825,8 +2819,6 @@ For large documents or long conversations:
 
 ### 20.58 How would you select an optimal chunk size?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 There's no universal best size; chunk size is a hyperparameter tuned against retrieval and answer quality.
 
 **Start from data and queries:**
@@ -2850,8 +2842,6 @@ Re-tune when the corpus, embedding model or query mix changes.
 
 ### 20.59 What happens if chunks are too small?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Chunks that are too small** (a sentence or < ~100 tokens):
 
 - **Lost context:** "It must be renewed every 12 months" no longer says what "it" is, so both the embedding and the LLM lack meaning.
@@ -2865,8 +2855,6 @@ Re-tune when the corpus, embedding model or query mix changes.
 **Mitigations:** overlap, prepend document/section titles, parent-document (small-to-big) retrieval that sends the surrounding section, or larger top-k plus reranking.
 
 ### 20.60 What happens if chunks are too large?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Chunks that are too large** (whole pages or thousands of tokens):
 
@@ -2882,8 +2870,6 @@ Re-tune when the corpus, embedding model or query mix changes.
 **Mitigations:** structure-aware splitting, hierarchical retrieval (retrieve section, then sub-chunk), reranking and contextual compression, and tuning size on an eval set.
 
 ### 20.61 Explain retrieval precision, retrieval recall, faithfulness, and answer relevance.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 These four metrics separate RAG quality into **retrieval** and **generation**:
 
@@ -2927,8 +2913,6 @@ Question: *“How did Company A's acquisition of Company B affect its relationsh
 
 ### 20.63 How would you handle tables, PDFs, images, and scanned documents in RAG?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Enterprise corpora are messy, so I build a **document-type-aware ingestion pipeline**, not "extract text and chunk".
 
 **Digital PDFs:** layout-aware parsers (Docling, Unstructured, PyMuPDF, pdfplumber, Azure Document Intelligence, AWS Textract) to preserve reading order, headings and lists and strip headers/footers. Chunk by section; keep page numbers for citations.
@@ -2950,8 +2934,6 @@ Enterprise corpora are messy, so I build a **document-type-aware ingestion pipel
 
 ### 20.64 How would you prevent an LLM from answering using its pretrained knowledge instead of retrieved documents?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 You can't fully stop a model from using its priors, but you can constrain it strongly and detect violations.
 
 - **Prompting:** "Answer only from the context below. If it isn't there, say you don't have enough information." Delimit context clearly, require **citations** (chunk IDs) for each claim, and include few-shot examples of abstaining.
@@ -2964,8 +2946,6 @@ You can't fully stop a model from using its priors, but you can constrain it str
 **Tradeoff:** stricter grounding raises refusal rates. Tune per use case (strict for legal/finance, looser for general assistants) and route abstentions to search results or a human.
 
 ### 20.65 Your embeddings retrieve semantically similar but factually incorrect documents. How do you improve retrieval?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 This is the gap between **semantic similarity** and **factual relevance**: embeddings place "Q3 revenue rose 5%" near "Q3 revenue fell 5%", and an old policy near the current one. Fixes, roughly in order of payoff:
 
@@ -2980,8 +2960,6 @@ This is the gap between **semantic similarity** and **factual relevance**: embed
 **Measure it:** build a labeled set with gold passages and track recall@k and precision@k (or nDCG) separately from answer quality, including adversarial "near miss" queries. Downstream, ask the generator to cite passages and verify that claims are supported.
 
 ### 20.66 Your RAG system retrieves the correct document but the LLM gives the wrong answer. Where is the problem?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 If retrieval is correct, the failure is in **context construction or generation**. Debug in that order:
 
@@ -3006,8 +2984,6 @@ If retrieval is correct, the failure is in **context construction or generation*
 **How to tell:** measure **faithfulness/groundedness** (is the answer supported by the given context?) separately from **context recall**. High context recall plus low faithfulness pins the problem on generation. Use traces (Langfuse/LangSmith) to inspect failing cases and add them to a regression set.
 
 ### 20.67 The LLM answers correctly with 5 retrieved documents but incorrectly with 20. Why?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 More context is not free. Likely reasons:
 

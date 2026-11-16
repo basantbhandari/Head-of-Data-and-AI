@@ -1005,8 +1005,6 @@ A typical CNN pipeline looks like:
 
 The convolutional layers act as feature extractors (edges, textures, shapes, object parts), while the fully connected layers act as the "reasoning" stage that combines those features into a decision.
 
-> ✍️ _Drafted addition._
-
 - **Flatten step:** the final feature map (e.g., 7×7×512) is flattened into a 1-D vector (25,088 values) so it can feed a dense layer. Each FC neuron computes `y = f(W·x + b)` and connects to *every* input value, so FC layers learn global combinations of features, unlike the local, weight-shared filters of conv layers.
 - **Typical head:** one or two hidden FC layers (often with ReLU + dropout), then an output FC layer sized to the number of classes, followed by softmax (multi-class) or sigmoid (binary/multi-label).
 - **Parameter cost:** FC layers usually hold most of a classic CNN's parameters. In VGG-16, the first FC layer alone (25,088 × 4,096 ≈ 103M weights) is most of the model's ~138M parameters, which makes these layers the main source of overfitting and memory use.
@@ -1487,8 +1485,6 @@ x' = (x - min) / (max - min)
 
 Sensitive to outliers since it depends on the extremes.
 
-> ✍️ _Drafted addition._
-
 **Other common techniques for input data**
 
 - **Standardization (Z-score):** `z = (x − μ) / σ`, which gives mean 0 and standard deviation 1. It is the default for linear models, SVMs, PCA and neural networks, and is less affected by outliers than Min-Max.
@@ -1584,8 +1580,6 @@ Both are **feature scaling techniques** used to put numerical features on compar
 
 ### 13.54 How do you decide when to go for deep learning for a project?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Deep learning is worth it when the **problem, data and constraints** line up; otherwise gradient-boosted trees or linear models usually win on cost and maintainability.
 
 **Go for deep learning when**
@@ -1609,8 +1603,6 @@ Deep learning is worth it when the **problem, data and constraints** line up; ot
 **Example:** churn prediction on CRM tables → GBM. Defect detection on factory images → fine-tune a pretrained CNN/ViT or YOLO.
 
 ### 13.55 Why do binary\_crossentropy and categorical\_crossentropy give different performances for the same problem?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Usually because they are being used for **different problem formulations**, or because of how Keras computes accuracy.
 
@@ -1645,8 +1637,6 @@ Transformer: Drops recurrence entirely. Self-attention lets every token look at 
 
 ### 13.57 Compare world models and JEPA.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **World model:** an internal model that predicts how an environment evolves, $p(s_{t+1} \mid s_t, a_t)$, so an agent can *imagine* outcomes and plan before acting. Examples include Ha & Schmidhuber's World Models, Dreamer (RL in a learned latent space), MuZero (planning with a learned dynamics model), and video-generation "world simulators" such as Genie and Sora-style models. Many of these are **generative**: they reconstruct or predict pixels or observations.
 
 **JEPA (Joint-Embedding Predictive Architecture, Yann LeCun):** a self-supervised architecture that predicts the **representation** of a missing or future part of the input from the representation of the visible part, *in embedding space*, never in pixel space. Implementations include I-JEPA (images) and V-JEPA / V-JEPA 2 (video, used for robot planning).
@@ -1675,8 +1665,6 @@ backpropagation solves a computational circuit by reversing the flow of data to 
 Neural networks
 
 ### 13.60 Compare Hopfield networks and Boltzmann machines.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 All three are **energy-based** neural networks from the 1980s with symmetric weights. They differ in whether they are deterministic or stochastic, and in what they are used for.
 
@@ -1710,8 +1698,6 @@ All three are **energy-based** neural networks from the 1980s with symmetric wei
 
 ### 13.61 Compare content-addressable memory and parametric memory.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 These are two ways a system can "remember" information.
 
 **Content-addressable memory (CAM)**: you retrieve an item by its *content*, not by an address. A partial or noisy cue returns the best-matching stored item.
@@ -1737,8 +1723,6 @@ These are two ways a system can "remember" information.
 
 ### 13.62 Why do Transformers use layer normalization instead of batch normalization, and what is Pre-LN vs Post-LN?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Why LayerNorm instead of BatchNorm**
 
 - **BatchNorm** normalizes each feature across the *batch* (and spatial dims). In NLP, sequences have variable length and padding, so batch statistics get mixed with padding and are noisy. Statistics also depend on batch composition and size, which hurts at small per-device batches and with gradient accumulation.
@@ -1758,8 +1742,6 @@ Pre-LN  (GPT-2 onwards):         x = x + Sublayer(LN(x))
 **One-liner:** LN because NLP batches are variable and inference is per-token; Pre-LN because stability at depth matters more than the small quality edge of Post-LN.
 
 ### 13.63 How would you implement a regex matcher supporting `.` and `*`, and how do you debug a PyTorch training loss that is NaN or not decreasing?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 This title merges two separate questions, so both are answered: (a) a regex matcher supporting `.` and `*`, and (b) debugging a PyTorch loss that is NaN or not decreasing.
 
@@ -2866,8 +2848,6 @@ Usually:
 - Training stops → parameters from the best validation point are retained
 
 ### 13.78 How would you debug a neural network whose loss suddenly becomes NaN?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Treat it as a bisection problem: find the **first step** and the **first tensor** that goes non-finite.
 

@@ -587,8 +587,6 @@ A production system should not rely only on the system prompt:
 
 **Input validation → Retrieval controls → Prompt constraints → Tool authorization → Output validation → Monitoring → Human escalation**
 
-#### Additional notes (merged from "AI Safety, Ethics, and Responsible AI": How do you implement input and output guardrails for AI systems?)
-
 ###### Input and Output Guardrails
 
 Guardrails are **controls around an AI system that detect, block, or modify unsafe, invalid, or unauthorized inputs and outputs**.
@@ -686,8 +684,6 @@ Return or Block / Regenerate
 ##### Production pipeline
 
 **LLM → Output Validation → Moderation/Classification → PII/Security Checks → Policy Decision → Response**
-
-#### Additional notes (merged from "AI Safety, Ethics, and Responsible AI": How do you implement content safety filters for AI-generated content?)
 
 ###### Implementing Content Safety Filters
 
@@ -1101,8 +1097,6 @@ The key difference is that **traditional CI/CD asks, “Does the new code work?�
 - **Secure RAG:** Enforce document-level authorization before retrieving content so users cannot retrieve documents they are not permitted to access.
 - **Retention controls:** Define how long prompts, outputs, traces, and user data are retained and delete them when no longer required.
 - **Audit and monitor:** Track access and detect unusual patterns or potential data leakage.
-
-#### Additional notes (merged from "AI Safety, Ethics, and Responsible AI": How do you handle PII in LLM inputs and outputs?)
 
 ###### Handling PII in LLM Inputs and Outputs
 
@@ -1950,8 +1944,6 @@ User Request
 
 ### 26.45 How do you choose the right machine learning algorithm?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Start from the problem and constraints, not the algorithm.
 
 1. **Problem type:** classification, regression, ranking, clustering, forecasting, generation. Is ML needed at all, or will a rule or heuristic do?
@@ -1967,8 +1959,6 @@ Start from the problem and constraints, not the algorithm.
 **Rule of thumb:** "No free lunch". Pick 2–3 candidates suited to the data type, benchmark them fairly, and prefer the simplest model within noise of the best. For a Head of Data and AI, the deciding factor is often maintainability and time-to-value, not +0.5% AUC.
 
 ### 26.46 What is model drift, and how do you handle it?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Model drift** means a model's performance degrades in production because the world has moved away from its training data.
 
@@ -2003,8 +1993,6 @@ def psi(expected, actual, bins=10):
 
 ### 26.47 How would you handle large-scale data for training?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **First ask whether all of it is needed.** Learning curves often flatten. Smart sampling (stratified, hard-example mining, negative downsampling with reweighting) can cut cost 10× with no loss.
 
 **Storage and formats:** columnar formats (Parquet) on object storage with a table format (Delta/Iceberg) for versioning and time travel. Partition by date. For deep learning, stream sharded files (WebDataset, TFRecord, MosaicML StreamingDataset) instead of millions of small files.
@@ -2023,8 +2011,6 @@ def psi(expected, actual, bins=10):
 **Operational concerns:** checkpoint often (spot instances), keep runs reproducible (data versioning, seeds), track experiments (MLflow/W&B), and control cost (spot or preemptible compute, autoscaling clusters).
 
 ### 26.48 How do you deploy an ML model in production?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Choose the serving pattern from the requirements:**
 - *Batch scoring* (nightly Spark or Airflow job writing predictions to a table): churn scores, recommendations. Cheapest and simplest.
@@ -2048,8 +2034,6 @@ train ─► evaluate ─► registry (staging) ─► CI tests ─► shadow �
 
 ### 26.49 How do you monitor a model's performance in production?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Monitor in layers, from cheapest and fastest to most meaningful:
 
 1. **Service health:** latency (p50/p95/p99), throughput, error rate, timeouts, CPU/GPU/memory. Standard SRE dashboards (Prometheus/Grafana) and alerts.
@@ -2067,8 +2051,6 @@ Monitor in layers, from cheapest and fastest to most meaningful:
 - Connect monitoring to action: runbooks, automatic rollback, and retraining triggers.
 
 ### 26.50 How would you deploy a model with low-latency requirements?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Set the budget first (for example p99 under 20 ms end to end) and break it down: network, feature fetch, inference and post-processing. Then attack each part.
 
@@ -2093,8 +2075,6 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 
 ### 26.51 What are the common challenges when deploying ML models?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 - **Training/serving skew:** features computed differently offline (Spark SQL) and online (Java service), or preprocessing that doesn't match. *Fix:* shared feature definitions or a feature store, logging served features for training, and parity tests.
 - **Data leakage discovered late:** a great offline AUC collapses online because a feature isn't available at prediction time. *Fix:* point-in-time-correct joins and time-based validation.
 - **Data quality and pipeline fragility:** upstream schema changes, nulls, late data. *Fix:* data contracts, validation (Great Expectations), and alerting.
@@ -2109,8 +2089,6 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 - **Organisational:** unclear ownership between data science and engineering, no on-call for models. *Fix:* MLOps platform and clear SLAs. This one is often the biggest blocker.
 
 ### 26.52 Discuss scalability and latency requirements for ML systems.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Define the requirements up front:** peak QPS (not the average), p95/p99 latency SLOs, availability (99.9%?), data volume growth, freshness (how stale may features or models be), and cost per prediction. These choose the architecture.
 
@@ -2138,8 +2116,6 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 
 ### 26.53 How do you ensure your model is scalable and performs well with large datasets?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Training on large data:**
 - Choose algorithms that scale: mini-batch SGD-trained models, GBDT with histogram binning (LightGBM), distributed implementations (XGBoost on Spark/Dask, PyTorch DDP/FSDP). Avoid O(n²) methods (kernel SVMs, exact kNN) at scale. Use approximate versions (ANN, random features).
 - Efficient data handling: columnar formats, partitioning, streaming data loaders, out-of-core and incremental learning (`partial_fit`), sampling where learning curves show diminishing returns.
@@ -2165,8 +2141,6 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 
 ### 26.54 Explain MLOps and its key components.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **MLOps** applies DevOps and data-engineering practice to machine learning, so that models are built, deployed, monitored and improved **reliably, reproducibly and quickly**. The difference from DevOps is that an ML system depends on *code + data + model*, and all three change.
 
 **Key components:**
@@ -2187,8 +2161,6 @@ Set the budget first (for example p99 under 20 ms end to end) and break it down:
 **Head-of perspective:** MLOps is a platform and team investment. Standardise paved roads (templates, a shared feature store and registry) so data scientists ship in days, not months. Measure time-to-production, the number of models in production, and incident rates.
 
 ### 26.55 What is a feature store, and why is it important?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 A **feature store** is a central system for defining, computing, storing and serving ML features consistently for **training (offline)** and **inference (online)**.
 
@@ -2216,8 +2188,6 @@ online = store.get_online_features(features=["user_stats:spend_30d"], entity_row
 ```
 
 ### 26.56 Cloud vs. on-device model deployment: what are the trade-offs?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | Aspect | Cloud deployment | On-device (edge) deployment |
 | --- | --- | --- |
@@ -2304,8 +2274,6 @@ $Concept drift: P(Y∣X) changes$
 
 ### 26.66 How would you handle training-serving skew?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Training-serving skew** is any difference between how data/features look at training time and at inference time, causing a model that looked good offline to underperform in production.
 
 **Common causes:**
@@ -2326,8 +2294,6 @@ $Concept drift: P(Y∣X) changes$
 
 ### 26.67 How would you version models and datasets?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Goal: any prediction must be **reproducible and traceable** to the exact code, data, config and model that produced it.
 
 **Datasets:**
@@ -2347,8 +2313,6 @@ Goal: any prediction must be **reproducible and traceable** to the exact code, d
 **Practices:** promotion via CI/CD with automated evaluation gates, approvals for regulated domains, retention policies for old versions, and model cards documenting intended use and limitations.
 
 ### 26.68 How would you perform online vs offline inference?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Offline (batch) inference:** predictions computed on a schedule for many records at once and stored for later lookup.
 - Examples: nightly churn scores, weekly demand forecasts, precomputed recommendations.
@@ -2371,8 +2335,6 @@ Goal: any prediction must be **reproducible and traceable** to the exact code, d
 
 ### 26.69 How would you deploy a model using blue-green or canary deployment?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Blue-green deployment:** run two identical environments. **Blue** serves production with model v1; deploy model v2 to **green**, run smoke tests and validation against it, then switch the router/load balancer to send 100% of traffic to green. Blue remains on standby for instant rollback.
 - **Pros:** simple, near-zero downtime, instant rollback.
 - **Cons:** double infrastructure during the switch; all users exposed to v2 at once, so issues only visible under real traffic hit everyone.
@@ -2388,8 +2350,6 @@ Goal: any prediction must be **reproducible and traceable** to the exact code, d
 - Version model + preprocessing + features together; ensure the feature pipeline is compatible with both versions during the rollout; keep v1 warm until v2 is proven.
 
 ### 26.70 How would you monitor model performance after deployment?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Monitoring has to cover the **system**, the **data** and the **model's quality**, because models fail silently.
 
@@ -2413,8 +2373,6 @@ Monitoring has to cover the **system**, the **data** and the **model's quality**
 - Triggers for retraining or rollback; champion/challenger comparisons.
 
 ### 26.71 What metrics would you monitor for an ML service?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 I group them into four layers:
 
@@ -2443,8 +2401,6 @@ Alert on SLO breaches and significant drift; review business metrics alongside m
 
 ### 26.72 How would you detect data drift automatically?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Approach:** compare the distribution of recent production data against a reference (training data or a stable recent window) on a schedule or streaming, and alert when the difference is significant and meaningful.
 
 **Statistical tests / distances per feature:**
@@ -2467,8 +2423,6 @@ Tools: Evidently, WhyLabs, NannyML (estimates performance without labels), Arize
 - Alert → investigate (pipeline bug vs real-world change) → retrain or fix. Many "drift" alerts are actually upstream data bugs.
 
 ### 26.73 How would you roll back a model that performs badly in production?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Preparation (before anything goes wrong):**
 - Every model version is immutable in a **model registry**, together with its preprocessing, feature definitions and container image.

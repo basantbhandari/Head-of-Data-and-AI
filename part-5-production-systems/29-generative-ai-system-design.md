@@ -62,8 +62,6 @@ This chapter contains **49 questions**.
 
 ### 29.1 Design ChatGPT: Training to Serving (End to End)
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements and scale.** A general chat assistant with roughly 100M DAU, streaming responses (time to first token under 1s), multi-turn context, safety, and many model sizes.
 
 ```text
@@ -94,8 +92,6 @@ Client → API gateway (auth, rate limit) → Orchestrator (context, tools, safe
 
 ### 29.2 Design a RAG System (Chat with Your Documents)
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** Users upload PDFs, docs and wikis (from thousands up to millions of documents) and ask questions. Answers must be grounded, cite their sources, and respect per-user permissions.
 
 ```text
@@ -125,8 +121,6 @@ Query:  question → rewrite → hybrid retrieve (dense + BM25) → ACL filter �
 
 ### 29.3 Design Memory for a Personal AI Assistant
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** The assistant remembers user preferences, facts, and past tasks across sessions without bloating context or storing things it shouldn't.
 
 #### Memory tiers
@@ -154,8 +148,6 @@ Next turn → memory retriever (profile + top-k episodic) → inject into prompt
 **Risks:** wrong memories compounding, privacy leaks across users (keep a strict user_id partition), and prompt injection that writes false memories.
 
 ### 29.4 Design a Deep Research Agent
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal.** Given a question, the agent autonomously searches the web and internal sources for minutes, reads dozens of sources, and writes a cited report.
 
@@ -187,8 +179,6 @@ Planner (decompose into sub-questions) → parallel Researcher agents
 
 ### 29.5 Design a Multi-Agent Customer Support System
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** Handle chat and email tickets for millions of customers, resolve 50–70% automatically, escalate cleanly to humans, and take actions such as refunds and order lookups safely.
 
 ```text
@@ -214,8 +204,6 @@ Supervisor enforces policy, budgets, and final response QA
 **Production concerns:** latency (stream responses, run tool calls in parallel), multilingual support, rollout by intent category, and A/B tests against human baselines.
 
 ### 29.6 Design an On-Device AI Assistant
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** The assistant runs on a phone or laptop with private, offline-capable, low-latency features: summarise notifications, rewrite text, answer questions over personal data, and control apps.
 
@@ -246,8 +234,6 @@ Cloud (optional): larger model via private compute for hard queries, with user c
 
 ### 29.7 Design a Multimodal Search System (Text, Image, Video)
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** Search a catalogue of billions of images and videos with text, image or video queries in under 200 ms at p95.
 
 ```text
@@ -270,8 +256,6 @@ Query:  text/image → shared embedding space → ANN top-K → hybrid merge wit
 **Ops:** batch GPU embedding pipelines with backfill when the encoder version changes (dual-index during migration). Monitor embedding drift and keep a cache for popular queries.
 
 ### 29.8 Design an LLM Inference Platform (vLLM-as-a-Service)
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** An internal platform serving many open models (7B–70B+, LoRA fine-tunes) to many teams through an OpenAI-compatible API, with SLOs on TTFT and throughput, multi-tenancy, and cost efficiency.
 
@@ -304,8 +288,6 @@ Control plane: model registry, deployment (K8s + GPU operator), autoscaler, metr
 
 ### 29.9 Design an LLM Evaluation Platform
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** Teams can evaluate prompts, models, RAG pipelines and agents offline and online, gate releases, and catch regressions.
 
 #### Components
@@ -336,8 +318,6 @@ Online: tracing (OpenTelemetry), sampling of prod traffic, user feedback, A/B te
 
 ### 29.10 Design a Text-to-Image Generation Service (Midjourney-like)
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** Millions of generations per day, about 10 s per job, variations and upscales, a community gallery, and safety.
 
 ```text
@@ -361,8 +341,6 @@ Client → API (auth, credits) → Prompt safety filter → Job queue (priority 
 **Cost:** GPU-seconds per image dominate, so step reduction, batching and right-sized resolutions are the main levers. Credits enforce per-user budgets.
 
 ### 29.11 Design a Music Generation Service (Suno-like)
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Text prompt plus optional lyrics in, 2–4 minute song with vocals out, in about 30–60 s. Users can extend, remix and create stems.
 
@@ -394,8 +372,6 @@ Prompt → LLM: lyrics generation/structuring (verse/chorus tags) + style tags
 
 ### 29.12 Design a Video Generation Service (Sora-like)
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** Text or image prompt in, 5–20 s video at 720p–1080p out. It is very compute heavy (minutes of GPU time per clip), so the system is async with queues and credits.
 
 ```text
@@ -425,8 +401,6 @@ Prompt → safety + prompt rewrite (LLM expands to detailed caption)
 
 ### 29.13 Design an AI Coding Agent.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** Given an issue or task, the agent reads a repo, plans, edits code, runs tests, and opens a PR (Claude Code / Devin / SWE-agent style).
 
 ```text
@@ -453,8 +427,6 @@ Output: patch + test results → PR with description → human review
 
 ### 29.14 Design a code generation and review system.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Scope.** IDE code completion plus automated PR review across a large engineering organisation.
 
 #### Code generation (completion and chat)
@@ -479,8 +451,6 @@ PR webhook → diff + related files + repo conventions → static analyzers (lin
 
 ### 29.15 Design a content moderation system using AI.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** A social platform with millions of text, image and video posts per day. Policies cover hate, harassment, CSAM, spam, self-harm and more. Decisions must be fast (pre-publish for high-risk content), accurate, appealable and auditable.
 
 ```text
@@ -504,8 +474,6 @@ Appeals → human review → labels → retraining
 **Concerns:** bias across dialects and languages, transparency (notices), and regulatory reporting (DSA).
 
 ### 29.16 Design a real-time AI recommendation system.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Feed or product recommendations for 100M users, about 100 ms end to end, reacting to in-session behaviour within seconds.
 
@@ -532,8 +500,6 @@ Request → Candidate generation (two-tower ANN, item-to-item, trending, followe
 
 ### 29.17 Design an AI-powered email assistant.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Features.** Triage and prioritise, summarise threads, draft replies in the user's tone, extract action items and meetings, and search the inbox with natural language.
 
 ```text
@@ -559,8 +525,6 @@ User action (summarize/draft) → context builder (thread + relevant past emails
 - **Quality:** triage precision.
 
 ### 29.18 Design a medical diagnosis assistant using AI.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Framing.** This is clinical decision *support* for clinicians, not autonomous diagnosis. It is regulated (possibly FDA SaMD or EU MDR), safety-critical, and handles PHI (HIPAA/GDPR).
 
@@ -589,8 +553,6 @@ EHR (FHIR API): history, labs, meds, notes, imaging → de-identification where 
 
 ### 29.19 Design a fraud detection system powered by LLMs.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Key point.** LLMs should not replace low-latency tabular fraud models (GBDTs on transaction features are better and run in under 50 ms). LLMs add value around them.
 
 ```text
@@ -618,8 +580,6 @@ Unstructured signals → LLM extraction: chat/email scams, merchant descriptions
 
 ### 29.20 Design an AI-powered data extraction pipeline from unstructured documents.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** Extract structured fields (invoices, contracts, forms) from PDFs, scans and emails at scale into a typed schema with high accuracy.
 
 ```text
@@ -646,8 +606,6 @@ Sources (email, S3, upload) → queue → classify doc type → parse
 
 ### 29.21 Design a personalized learning assistant.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** An AI tutor that adapts to each learner's level, explains concepts, generates practice, and tracks mastery.
 
 ```text
@@ -673,8 +631,6 @@ Session: Tutor LLM (Socratic prompting, grounded in curriculum) ↔ learner
 
 ### 29.22 Design an AI system for automated code migration.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Examples.** Python 2→3, Java 8→17, framework upgrades (AngularJS→React), or moving a monolith's SQL dialect from Oracle to Postgres, across thousands of repos or millions of lines.
 
 ```text
@@ -698,8 +654,6 @@ Inventory & analysis (dependency graph, AST, call graph) → plan: order by depe
 
 ### 29.23 Design an AI-powered legal document review system.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Use cases.** Contract review (clause extraction, deviation from playbook, risk flags), due diligence over thousands of documents, and e-discovery relevance and privilege review.
 
 ```text
@@ -719,8 +673,6 @@ Ingest (DMS, data rooms) → OCR/layout → clause segmentation → clause class
 **Risks:** hallucinated legal reasoning, jurisdictional nuance and liability, mitigated by keeping lawyers as the decision makers and positioning the tool as triage and acceleration.
 
 ### 29.24 Design a conversational AI system with memory across sessions.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 See also Q3.
 
@@ -748,8 +700,6 @@ Async: session-end job → summarize session, extract durable facts → memory s
 
 ### 29.25 How do you design for latency vs quality trade-offs in AI systems?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Start from the product SLO. Inline autocomplete needs under 300 ms, chat needs a TTFT under 1 s, and batch analysis can take minutes. Then pick levers per stage.
 
 - **Model routing/cascades:** a small fast model handles most requests. Escalate to a larger model on low confidence, complexity classification or user request. This often gives 80% of the quality at 20% of the latency and cost.
@@ -763,8 +713,6 @@ Start from the product SLO. Inline autocomplete needs under 300 ms, chat needs a
 Measure the Pareto frontier: plot quality (eval score) against p95 latency and cost for each configuration, and choose by segment (paid vs free, interactive vs batch). Always A/B test, because users often prefer fast and good enough over slow and perfect.
 
 ### 29.26 How do you implement caching strategies for LLM applications?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 There are several layers, from cheapest to most complex.
 
@@ -781,8 +729,6 @@ There are several layers, from cheapest to most complex.
 
 ### 29.27 How do you design rate limiting and cost management for AI APIs?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 #### Rate limiting
 - **Units:** limit on tokens, not just requests. Use RPM *and* TPM (input + output tokens), since one request can cost 100x another.
 - **Algorithm:** token bucket (allows bursts) or sliding window, enforced at the gateway with distributed counters (Redis with Lua or atomic increments). Estimate output tokens up front (using max_tokens) and reconcile after completion.
@@ -797,8 +743,6 @@ There are several layers, from cheapest to most complex.
 - **Unit economics:** track cost per resolved ticket or per active user, not just total spend.
 
 ### 29.28 How do you handle failover and fallback strategies for AI systems?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 #### Failure types
 Provider outages, 429 rate limits, timeouts and slow tails, model errors or invalid output, and quality failures such as hallucination or refusal.
@@ -819,8 +763,6 @@ Provider outages, 429 rate limits, timeouts and slow tails, model errors or inva
 
 ### 29.29 How do you design an AI system for high availability and fault tolerance?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Targets.** For example 99.9% to 99.95% availability, with an RTO and RPO defined per component.
 
 #### Principles
@@ -838,8 +780,6 @@ Provider outages, 429 rate limits, timeouts and slow tails, model errors or inva
 - **Tracing and drills:** distributed tracing across retrieval, LLM and tools, plus regular game days.
 
 ### 29.30 How do you design an AI system that gracefully degrades when the model is unavailable?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Define degradation tiers ahead of time, from full to minimal functionality, and switch automatically using health signals and circuit breakers.
 
@@ -859,8 +799,6 @@ Define degradation tiers ahead of time, from full to minimal functionality, and 
 
 ### 29.31 What are the key considerations for multi-region deployment of AI systems?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 - **Data residency and compliance:** GDPR and sector rules may require EU data, including prompts, logs, embeddings and vector indexes, to stay in-region. Route by user or tenant home region and check the provider's regional endpoints and data-processing terms.
 - **GPU capacity:** H100s and similar are unevenly available across regions. Plan reservations per region and accept that some regions may serve smaller models or fall back to others (if residency allows).
 - **Latency:** GeoDNS or anycast routes to the nearest healthy region. TTFT includes network RTT, so streaming helps.
@@ -871,8 +809,6 @@ Define degradation tiers ahead of time, from full to minimal functionality, and 
 - **Observability:** per-region SLOs, a global view, and per-region quotas with upstream providers.
 
 ### 29.32 Design an AI-powered search engine for an e-commerce platform.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** 10M+ SKUs, natural-language queries ("waterproof hiking boots under $150 for wide feet"), latency under 200 ms, and the goal of maximising conversion.
 
@@ -899,8 +835,6 @@ Query → query understanding (spell-correct, NER: brand/size/price, category cl
 
 ### 29.33 Design an AI gateway/proxy for managing LLM access across an organization.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** A single control point for every team's LLM usage: one API, many providers and models, with governance, cost control and observability.
 
 ```text
@@ -924,8 +858,6 @@ Apps/SDKs → AI Gateway (OpenAI-compatible API)
 **Risks:** single point of failure (deploy it highly available, multi-AZ), and lowest-common-denominator APIs hiding provider-specific features (allow passthrough).
 
 ### 29.34 How do you design a RAG system that handles conflicting information across sources?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Conflicts come from stale versions, different scopes (regional policies), different authorities, or genuine disagreement.
 
@@ -951,8 +883,6 @@ Conflicts come from stale versions, different scopes (regional policies), differ
 
 ### 29.35 How do you approach capacity planning for an AI system?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 #### 1. Model the demand
 - **Usage profile:** DAU × requests per user × peak factor (peak-to-average is often 2–4x). Measure input and output tokens per request, which are the real units.
 - **Example:** 1M DAU × 10 req = 10M req/day. Average is about 116 req/s and peak about 400 req/s. At 1,500 input and 300 output tokens, peak is about 600K input tokens/s and 120K output tokens/s.
@@ -972,8 +902,6 @@ Conflicts come from stale versions, different scopes (regional policies), differ
 - **Forecasting:** tie it to product roadmap and growth. Monitor utilisation, queue depth and SLO burn, and re-plan quarterly given GPU lead times.
 
 ### 29.36 Design a multi-tenant AI chatbot platform where each business gets a custom chatbot.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Thousands of businesses each upload their knowledge (docs, website, FAQs), configure persona and tools, and embed the bot on their site or WhatsApp. Tenant isolation is critical.
 
@@ -997,8 +925,6 @@ Analytics: per-tenant conversations, deflection, unanswered questions → conten
 - **Per-tenant auto-generated test sets:** questions from their docs, re-run on model or prompt changes. Platform-wide regression gates.
 
 ### 29.37 Design an AI meeting summarizer system for thousands of meetings daily.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Thousands of meetings per day (30–60 min each) from Zoom, Meet and Teams. Deliver a summary, decisions, action items with owners, and searchable transcripts within minutes of the meeting ending.
 
@@ -1027,8 +953,6 @@ Meeting bot / platform API → audio stream → object storage
 
 ### 29.38 Design an AI notification system that prioritizes instead of broadcasting.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** Decide *whether*, *when*, *how* and *which* notifications to send each user, maximising long-term value (engagement, retention) while minimising fatigue and opt-outs.
 
 ```text
@@ -1052,8 +976,6 @@ Event producers → candidate notifications (Kafka)
 - **Monitoring:** delivery latency for urgent items.
 
 ### 29.39 Design an AI-powered anomaly detection system for cloud infrastructure.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Millions of time series (CPU, latency, error rates, costs), logs and traces across thousands of services. Detect incidents early, reduce alert noise, and help with root cause.
 
@@ -1079,8 +1001,6 @@ Telemetry (Prometheus/OTel, logs, traces, cost data) → stream (Kafka) → feat
 
 ### 29.40 Design an AI-powered document processing pipeline for financial institutions.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Documents.** Loan applications, KYC IDs, bank statements, tax forms, trade confirmations. Regulated (SOX, GDPR, model risk management under SR 11-7), auditable, with high accuracy requirements.
 
 ```text
@@ -1104,8 +1024,6 @@ Secure intake (portal, email, SFTP) → malware scan → classification
 - **Bias:** checks where outputs feed credit decisions (fair lending).
 
 ### 29.41 Design an AI dynamic pricing engine.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Use case.** E-commerce, ride-hailing or travel. Set prices per product, segment and time to maximise revenue or margin subject to business constraints.
 
@@ -1131,8 +1049,6 @@ Data: sales history, inventory, competitor prices (scraped), demand signals (tra
 
 ### 29.42 Design an AI resume screening system that handles 100K applications per week.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** About 100K resumes per week (about 15K/day, bursty) across many job postings. Rank and shortlist candidates for recruiters, fairly, explainably and legally. This is a high-risk use case under the EU AI Act and NYC Local Law 144.
 
 ```text
@@ -1156,8 +1072,6 @@ ATS → resume intake → parse (PDF/DOCX → text; LLM extraction to schema: sk
 **Risks:** adversarial resumes (hidden text with prompt injection), so sanitise and detect invisible text.
 
 ### 29.43 Design an AI voice assistant architecture.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** Natural spoken conversation (support line or Alexa-like). Under 800 ms voice-to-voice latency, barge-in (interruptions), and tool use.
 
@@ -1185,8 +1099,6 @@ VAD and endpointing take about 200 ms, ASR finalisation about 100 ms, LLM TTFT a
 
 ### 29.44 Design a multi-agent workflow system where agents collaborate on complex tasks.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal.** A platform where specialised agents (researcher, analyst, coder, reviewer) collaborate on long, complex tasks such as producing a market analysis or implementing a feature.
 
 ```text
@@ -1212,8 +1124,6 @@ User task → Orchestrator/Planner → task graph (DAG) with dependencies
 - **Ablations:** single-agent vs multi-agent ablations, because multi-agent isn't automatically better.
 
 ### 29.45 Design a real-time AI transcription system for concurrent audio streams.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Requirements.** 10K+ concurrent live streams (calls, meetings, broadcasts). Partial transcripts within about 300–500 ms, final segments within about 1–2 s, plus diarization, punctuation and multiple languages.
 
@@ -1241,8 +1151,6 @@ Clients (WebSocket/gRPC/WebRTC) → edge ingest (regional) → session router (s
 
 ### 29.46 Design an AI-powered live streaming content moderation system.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Requirements.** 100K+ concurrent live streams plus live chat. Detect violations (nudity, violence, self-harm, hate, dangerous acts) within seconds, because damage happens live.
 
 ```text
@@ -1266,8 +1174,6 @@ Stream ingest → sampler: keyframes every 1–2s (adaptive: more for high-risk/
 **Tradeoffs:** false positives (ending a legitimate stream hurts creators) vs false negatives (harm and regulatory risk). Use graduated actions (warning → blur → end) and severity-specific thresholds.
 
 ### 29.47 Design a conversational assistant (memory, context management, safety, latency).
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Clarify:** domain (customer support vs. general chat), scale (QPS, users), latency SLO (e.g., first token < 1s), modalities, compliance (PII, regulated data).
 
@@ -1300,8 +1206,6 @@ Client ⇄ (WebSocket/SSE streaming) ⇄ API Gateway (auth, rate limit)
 
 ### 29.48 Design a coding agent.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Goal:** an agent that takes a task ("fix this failing test", "add an endpoint") and produces a verified code change in a real repository.
 
 **Core loop (ReAct-style):** plan → act with tools → observe the results → repeat until tests pass or budget is exhausted → present a diff or PR.
@@ -1324,8 +1228,6 @@ Client ⇄ (WebSocket/SSE streaming) ⇄ API Gateway (auth, rate limit)
 **Evaluation:** SWE-bench-style task suites (resolved rate), internal golden tasks, metrics for test pass rate, diff size, number of iterations, cost per task, human acceptance rate of PRs, and regressions caught in CI. Trace every step to debug failure modes such as wrong file edited, test hallucination, or loops.
 
 ### 29.49 Design an enterprise RAG platform.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Goal:** a shared platform letting many teams build grounded Q&A/assistants over internal content (Confluence, SharePoint, Drive, tickets, databases) with security, quality and cost control.
 

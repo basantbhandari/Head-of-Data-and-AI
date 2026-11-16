@@ -139,8 +139,6 @@ It only works if there is actually something to learn — i.e., if the data cont
 
 Overfitting happens when a model is too complex and fits the training data extremely well — including its noise — rather than the true underlying pattern. It has low training (approximation) error but high test (estimation) error, because it fails to generalize to unseen data.
 
-#### Additional notes
-
 - **Overfitting** occurs when a machine learning model learns the **training data too closely**, including its noise and random patterns, instead of learning general patterns.
 - As a result:
   - **Training performance** → Very high
@@ -162,8 +160,6 @@ Overfitting happens when a model is too complex and fits the training data extre
 ### 8.8 What is Underfitting?
 
 Underfitting happens when a model is too simplistic to capture the underlying pattern. It tends to be stable with respect to noise, so the training error is high, but paradoxically the "estimation gap" (variance) can be low — the model consistently fails, both on training and test data.
-
-#### Additional notes
 
 - **Underfitting** occurs when a machine learning model is **too simple to learn the important patterns** in the training data.
 - It is associated with **high bias and low variance**.
@@ -212,8 +208,6 @@ By choosing model complexity that minimizes total error — balancing bias (unde
 | Logistic regression | Decision trees (can grow unbounded) |
 | Naive Bayes (with assumed distribution) | Kernel density estimation |
 | Neural nets with fixed architecture\* | k-means (arguably semi-parametric — see below) |
-
-> ✍️ _Drafted addition._
 
 **About the two footnoted rows in the table:**
 
@@ -337,8 +331,6 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 | Feedback | Direct error signal (label vs prediction) | No explicit feedback |
 | Use cases | Spam detection, price prediction | Customer segmentation, anomaly detection |
 
-#### Additional notes
-
 #### Supervised vs. Unsupervised Learning
 
 | **Aspect** | **Supervised Learning** | **Unsupervised Learning** |
@@ -379,8 +371,6 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 | Algorithms | Logistic Regression, SVM, Decision Trees | Linear Regression, Ridge, Lasso |
 | Evaluation | Accuracy, Precision, Recall, F1 | MSE, RMSE, MAE, R² |
 | Output type | Class labels/probabilities | Real numbers |
-
-#### Additional notes
 
 #### Regression vs Classification
 
@@ -1056,8 +1046,6 @@ To handle it:
 
 ### 8.71 What do you mean by the unreasonable effectiveness of data?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 "**The Unreasonable Effectiveness of Data**" is a 2009 paper by Halevy, Norvig and Pereira (Google), echoing Wigner's "unreasonable effectiveness of mathematics". The thesis: for many real-world problems, **simple models trained on very large datasets outperform sophisticated models trained on less data**.
 
 **Key ideas**
@@ -1072,8 +1060,6 @@ To handle it:
 **Practical takeaway:** before spending weeks tuning a model, ask whether acquiring, labeling or cleaning more representative data would yield a bigger gain — it often does. Learning curves tell you which regime you are in.
 
 ### 8.72 What is Online Machine Learning? How is it different from Offline machine learning? List some of its applications
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Online learning** updates the model **incrementally as each new example (or mini-batch) arrives**, typically discarding the data after the update. **Offline (batch) learning** trains on a fixed, complete dataset at once and is retrained periodically from scratch.
 
@@ -1097,8 +1083,6 @@ To handle it:
 
 ### 8.73 What is the No Free Lunch Theorem?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 The **No Free Lunch (NFL) theorem** (Wolpert & Macready, 1997, for optimization; Wolpert, 1996, for supervised learning) states that **averaged over all possible problems (all possible data-generating functions), every learning algorithm has the same expected performance**. No algorithm is universally best: any gain on one class of problems is paid for by losses on another.
 
 **What it means in practice**
@@ -1111,8 +1095,6 @@ The **No Free Lunch (NFL) theorem** (Wolpert & Macready, 1997, for optimization;
 **Common misreading:** NFL does *not* say all algorithms are equally good on *your* problem — only when averaged over all conceivable problems.
 
 ### 8.74 What are the main differences between Structured and Unstructured Data?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | | Structured data | Unstructured data |
 | --- | --- | --- |
@@ -1132,8 +1114,6 @@ The **No Free Lunch (NFL) theorem** (Wolpert & Macready, 1997, for optimization;
 - Governance differs: PII is easy to locate in columns but hidden inside free text and scans, so unstructured data needs detection and redaction pipelines.
 
 ### 8.75 What is Data Leakage? List some ways by which you can overcome this problem.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Data leakage** happens when information that would not be available at prediction time gets into training. The result is optimistic offline metrics that collapse in production.
 
@@ -1161,8 +1141,6 @@ cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
 
 ### 8.76 What are the different types of bias in Machine Learning?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 "Bias" means two different things in ML. Separate them in an interview.
 
 **1. Statistical bias (bias–variance):** systematic error from overly simple assumptions, which leads to underfitting. Also the bias/intercept term in models.
@@ -1184,8 +1162,6 @@ cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
 
 ### 8.77 Why does L2 regularization give sparse coefficients?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **The premise is wrong: L2 (Ridge) regularization does *not* give sparse coefficients. L1 (Lasso) does.**
 
 **Why L2 isn't sparse:** the penalty $\lambda \sum w_j^2$ has gradient $2\lambda w_j$, which shrinks toward zero in proportion to the weight. As $w_j$ gets small the push gets small too, so weights become tiny but almost never exactly zero. Ridge shrinks all coefficients smoothly and spreads weight across correlated features.
@@ -1198,8 +1174,6 @@ cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
 **Practical use:** use L1 for feature selection or interpretability, L2 for stability with multicollinearity, and **Elastic Net** for both (sparse, but it handles groups of correlated features better than Lasso, which picks one arbitrarily).
 
 ### 8.78 List some ways using which you can improve a model’s performance.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Work systematically: diagnose first, then pick the lever.
 
@@ -1228,8 +1202,6 @@ Work systematically: diagnose first, then pick the lever.
 
 ### 8.79 What is active learning, and where is it useful?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Active learning** is a semi-supervised loop in which the model **chooses which unlabelled examples a human should label next**, so you reach a target accuracy with far fewer labels.
 
 **Loop:**
@@ -1249,8 +1221,6 @@ Work systematically: diagnose first, then pick the lever.
 **Pitfalls:** the selected samples are biased (not i.i.d.), so keep a **random, separately labelled test set**. Cold start needs a reasonable seed. Pure uncertainty sampling can chase label noise and outliers. Factor annotator latency into the batch size.
 
 ### 8.80 What types of models tend to overfit?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Models with **high capacity and few built-in constraints** relative to the amount of data overfit most easily.
 
@@ -1272,8 +1242,6 @@ Models with **high capacity and few built-in constraints** relative to the amoun
 
 ### 8.81 Can you tell the complete life cycle of a data science project?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 A typical end-to-end lifecycle (CRISP-DM extended with MLOps):
 
 1. **Problem framing:** understand the business objective, define success metrics (business KPI and ML metric), constraints (latency, cost, interpretability, regulation), and whether ML is even needed. Agree on a baseline (e.g. the current rule-based system).
@@ -1291,8 +1259,6 @@ The process is **iterative, not linear**. Most time goes into the data steps, an
 
 ### 8.82 What are the properties of a good ML model?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 A good ML model is judged by more than its validation score:
 
 - **Generalizes:** performs well on unseen data from the production distribution, not only on the test split (low variance, low enough bias).
@@ -1308,8 +1274,6 @@ A good ML model is judged by more than its validation score:
 **Interview angle:** the "best" model is often not the most accurate one. A gradient-boosted model 0.5% worse in AUC but 10x cheaper, explainable and easy to retrain usually wins in production. Frame the answer as a tradeoff between accuracy, cost, risk and maintainability.
 
 ### 8.83 What do you mean by the curse of Dimensionality?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 The **curse of dimensionality** is the set of problems that appear as the number of features grows:
 
@@ -1329,8 +1293,6 @@ The **curse of dimensionality** is the set of problems that appear as the number
 **Nuance:** real data usually lies near a low-dimensional manifold, which is why deep nets work on million-pixel images. The curse bites hardest for methods that rely on raw Euclidean distance over many uninformative features.
 
 ### 8.84 Considering the long list of machine learning algorithms, given a data set, how do you decide which one to use?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 There's no universally best algorithm (No Free Lunch), so the choice is driven by the problem, the data and the constraints, then confirmed empirically.
 
@@ -1355,8 +1317,6 @@ There's no universally best algorithm (No Free Lunch), so the choice is driven b
 
 ### 8.85 How will you know which machine learning algorithm to choose for your classification problem?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Choosing a classifier is a mix of constraints and experiments:
 
 **Questions to ask first**
@@ -1380,8 +1340,6 @@ Choosing a classifier is a mix of constraints and experiments:
 
 ### 8.86 Is more data always better?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **No.** More data usually helps, but not always, and not for free.
 
 **When more data helps:**
@@ -1401,8 +1359,6 @@ Choosing a classifier is a mix of constraints and experiments:
 **How to decide in practice:** plot a **learning curve** (validation score vs. training-set size). If it's still rising, collecting data is worthwhile; if it has flattened, invest in features, model changes or label quality instead. Targeted collection via active learning or error analysis usually beats collecting more of the same.
 
 ### 8.87 How would you differentiate between multi-label and multi-class classification?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Multi-class:** each sample belongs to **exactly one** of $K > 2$ mutually exclusive classes.
 Example: classifying a digit as 0–9, or a ticket as Billing / Technical / Sales.
@@ -1425,8 +1381,6 @@ Example: tagging a movie as Action + Comedy, or an image containing both a dog a
 **Production gotchas:** multi-label often has strong label imbalance (rare tags), so threshold tuning per label and label co-occurrence analysis matter. Using softmax for a multi-label problem silently forces labels to compete and caps recall.
 
 ### 8.88 What is an AI ontology?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 In AI, an **ontology** is a formal, explicit model of a domain: the **concepts** (classes), their **properties**, the **relationships** between them, and **rules/constraints**, expressed in a machine-readable way so software can reason over it.
 
@@ -1451,8 +1405,6 @@ In AI, an **ontology** is a formal, explicit model of a domain: the **concepts**
 
 ### 8.89 Can AI systems be conscious?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 In an AI interview this usually means: **can AI systems be conscious, and how should engineers think about the claim?**
 
 **What the term means:** consciousness is subjective experience, "what it is like" to be something (phenomenal consciousness), as distinct from intelligence or behaviour. Chalmers' "hard problem" is explaining why physical processing produces experience at all. Related but different: **self-awareness**, **sentience** (capacity to feel), and **access consciousness** (information available for reasoning and report).
@@ -1475,8 +1427,6 @@ In an AI interview this usually means: **can AI systems be conscious, and how sh
 A good interview answer is calibrated: explain the distinctions, note the uncertainty, and tie it back to practical concerns like trust, safety and honest UX.
 
 ### 8.90 What is unsupervised learning through compression?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 The idea: **learning = compression**. A model that can compress data well must have captured its underlying structure, so you can learn useful representations without labels by training a model to compress (or predict) the data.
 

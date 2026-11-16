@@ -399,8 +399,6 @@ This chapter contains **38 questions**.
 
 ### 11.14 What strategies would you use to optimize the training time for a deep learning model?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Profile before optimising** (PyTorch Profiler, `nvidia-smi`, GPU utilisation). Find out whether the job is input-bound, compute-bound or communication-bound.
 
 **Input pipeline:** more DataLoader workers, `pin_memory`, prefetching, preprocessed and cached datasets, GPU-side augmentation (DALI), and sharded streaming formats.
@@ -496,8 +494,6 @@ scaler.scale(loss).backward(); scaler.step(opt); scaler.update()
 
 ### 11.17 Difference between convex and non-convex cost functions; what does it mean when a cost function is non-convex?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Convex cost function:** any line segment between two points on its graph lies on or above the graph — formally $f(\lambda a + (1-\lambda) b) \le \lambda f(a) + (1-\lambda) f(b)$. It has a single basin, so **every local minimum is the global minimum** and gradient descent with a suitable learning rate converges to it. Examples: MSE for linear regression, log loss for logistic regression, the hinge loss for linear SVMs (the regularized versions too).
 
 **Non-convex cost function:** the surface has multiple valleys, plateaus and **saddle points**. Implications:
@@ -512,8 +508,6 @@ scaler.scale(loss).backward(); scaler.step(opt); scaler.update()
 **Interview takeaway:** convex = optimization is "solved" and reproducible; non-convex = optimization becomes part of the modeling problem, so you report variance across seeds and tune the optimizer.
 
 ### 11.18 Which Gradient Descent algorithm (among those we discussed) will reach the vicinity of the optimal solution the fastest? Which will actually converge?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 (This refers to the classic comparison of **Batch GD, Stochastic GD and Mini-batch GD**, as in *Hands-On ML*.)
 
@@ -534,8 +528,6 @@ scaler.scale(loss).backward(); scaler.step(opt); scaler.update()
 In deep learning, mini-batch with a schedule (warmup plus cosine decay) and an optimizer such as Adam or AdamW is the standard.
 
 ### 11.19 Which hyperparameter tuning strategies (in general) do you know?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Main strategies:**
 
@@ -1281,8 +1273,6 @@ However, **batch size does not universally determine generalization**. Learning 
 
 ### 11.35 Why does overparameterization not necessarily cause worse generalization?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Classical theory (VC dimension, bias-variance) says more parameters than data points should overfit. Modern deep nets with far more parameters than examples still generalize well, because **parameter count is a poor measure of effective capacity**:
 
 - **Implicit regularization:** among the infinitely many solutions that fit the training data, gradient descent tends to find "simple" ones (low norm, low complexity, flat minima).
@@ -1295,8 +1285,6 @@ Classical theory (VC dimension, bias-variance) says more parameters than data po
 **Caveat:** overparameterization does not *guarantee* generalization — with little data, label noise and no regularization, big models still overfit. Practically: scale model and data together, keep validation monitoring, and rely on weight decay and augmentation.
 
 ### 11.36 Explain the double-descent phenomenon.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Double descent** is the observation that test error does not follow the classic U-curve as model capacity grows:
 
@@ -1323,8 +1311,6 @@ test error
 
 ### 11.37 What is the implicit bias of gradient descent?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 When many parameter settings achieve zero (or equal) training loss, **gradient descent does not pick one at random** — its dynamics favor particular solutions. That preference, which comes without any explicit regularizer, is its *implicit bias*.
 
 **Known results**
@@ -1342,8 +1328,6 @@ When many parameter settings achieve zero (or equal) training loss, **gradient d
 **Why it matters:** it is a key explanation for why overparameterized networks generalize — the training algorithm itself acts as a regularizer. Practically, hyperparameters like LR, batch size, warmup and init are not just speed knobs; they change *which* solution you end up with.
 
 ### 11.38 Why can SGD find solutions that generalize despite having enormous parameter counts?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Huge networks can memorize random labels (Zhang et al., 2017), yet on real data SGD finds solutions that generalize. The main explanations:
 

@@ -483,8 +483,6 @@ Want me to go into how V-JEPA 2 specifically performs on physical reasoning benc
 
 ### 15.14 Compare SAM and YOLO.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 They solve different problems and are often combined rather than competing.
 
 | | **YOLO** (You Only Look Once) | **SAM** (Segment Anything Model, Meta) |
@@ -514,8 +512,6 @@ Classification assigns a single label to the whole image (e.g., "this image cont
 
 ### 15.17 Why do CNNs work well for images?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 CNNs encode **priors that match the structure of natural images**:
 
 - **Locality** — a pixel is most related to its neighbours, so small kernels (3×3) look at local patches first.
@@ -528,8 +524,6 @@ CNNs encode **priors that match the structure of natural images**:
 **Production angle:** CNNs are still the default for edge and real-time vision (YOLO, MobileNet, EfficientNet) because convolution is extremely well optimised on GPUs, NPUs and mobile accelerators.
 
 ### 15.18 Explain convolution, stride, padding, dilation, and receptive field.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 - **Convolution** — slide a learned kernel (e.g. 3×3×C_in) over the input and take a dot product at each position, producing one output channel per kernel. It detects the same local pattern everywhere.
 - **Stride** — how far the kernel moves each step. Stride 2 halves the spatial resolution (cheap downsampling).
@@ -549,8 +543,6 @@ $$O = \left\lfloor \frac{I + 2P - D(K-1) - 1}{S} \right\rfloor + 1$$
 
 ### 15.19 What is the difference between same and valid convolution?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 - **Valid convolution** — no padding. The kernel only sits where it fully fits, so the output shrinks: $O = I - K + 1$ (stride 1). A 32×32 input with a 3×3 kernel gives 30×30.
 - **Same convolution** — pad so the output has the **same spatial size** as the input (stride 1). For odd kernel $K$, pad $P = (K-1)/2$ on each side (3×3 → pad 1).
 
@@ -569,8 +561,6 @@ Note that with stride > 1, "same" in TensorFlow means $O = \lceil I/S \rceil$, a
 
 ### 15.20 How does pooling provide translation invariance?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Strictly, pooling gives only **local, approximate** translation invariance.
 
 - Convolution is **equivariant**: shift the input and the feature map shifts by the same amount.
@@ -584,8 +574,6 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 - Most modern robustness to translation actually comes from **data augmentation** (random crops and shifts) and global pooling, not from the pooling layers themselves.
 
 ### 15.21 Why did ResNet outperform many earlier CNN architectures?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Problem:** before ResNet, making plain networks deeper (beyond ~20 layers) made **training** error worse. This is the *degradation problem*: an optimisation difficulty, not overfitting.
 
@@ -602,8 +590,6 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 **Legacy:** skip connections are now everywhere: Transformers (residual stream), U-Net, DenseNet and diffusion models. ResNet-50 remains a standard production and benchmark backbone because it is simple and well supported by hardware.
 
 ### 15.22 Compare ResNet, EfficientNet, Vision Transformer, and ConvNeXt.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | Model | Core idea | Strengths | Weaknesses |
 | --- | --- | --- | --- |
@@ -622,8 +608,6 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 
 ### 15.23 Explain IoU, precision, recall, and mAP for object detection.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 - **IoU (Intersection over Union)** — overlap between a predicted box and a ground-truth box: $\text{IoU} = \frac{|A \cap B|}{|A \cup B|}$. A prediction counts as a **true positive** if IoU ≥ a threshold (e.g. 0.5) and the class matches. Each ground truth can be matched only once.
 - **Precision** — $TP / (TP + FP)$: of the boxes predicted, how many are correct. Duplicates and wrong boxes are FPs.
 - **Recall** — $TP / (TP + FN)$: of the real objects, how many were found.
@@ -635,8 +619,6 @@ Strictly, pooling gives only **local, approximate** translation invariance.
 **Production angle:** mAP is a ranking metric that summarises all thresholds. In deployment you pick **one** confidence threshold, so also report precision and recall at the operating point, per-class performance (rare classes hide inside the mean) and latency. Business cost often depends on FP vs FN asymmetry, for example missed defects vs false alarms.
 
 ### 15.24 How does NMS work?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Non-Maximum Suppression** removes duplicate detections of the same object.
 
@@ -671,8 +653,6 @@ def nms(boxes, scores, iou_thr=0.5):
 
 ### 15.25 What is data augmentation, and why does it improve generalization?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Data augmentation** creates label-preserving variants of training examples so the model sees more of the input distribution.
 
 - **Vision:** random crop/resize, flips, rotation, colour jitter, blur, Cutout, **Mixup/CutMix**, RandAugment.
@@ -691,8 +671,6 @@ def nms(boxes, scores, iou_thr=0.5):
 
 ### 15.26 When can augmentation actually hurt model performance?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Augmentation hurts when it **breaks the label, breaks the distribution, or adds noise the model cannot use**.
 
 - **Label-changing transforms** — horizontal flip on text or digits ("b" vs "d"), rotating a 6 into a 9, flipping left/right in medical images where laterality matters, or vertical flips for street scenes.
@@ -707,8 +685,6 @@ Augmentation hurts when it **breaks the label, breaks the distribution, or adds 
 **Mitigation:** treat augmentation as a hyperparameter, run ablations, check per-class metrics, and visually inspect augmented batches before training.
 
 ### 15.27 Explain the architecture of CLIP.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **CLIP (Contrastive Language-Image Pretraining, OpenAI 2021)** is a **dual-encoder** model trained on ~400M image-text pairs from the web.
 
@@ -732,8 +708,6 @@ loss = (F.cross_entropy(logits, labels) + F.cross_entropy(logits.T, labels)) / 2
 
 ### 15.28 Why does CLIP use contrastive learning?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Because the supervision is noisy, open-ended web captions, and contrastive learning turns them into an efficient, scalable training signal.**
 
 - **Predicting exact captions is too hard.** The OpenAI authors first tried generating captions; it learned about 3× slower for zero-shot accuracy. The model wastes capacity on wording, not on meaning.
@@ -745,8 +719,6 @@ loss = (F.cross_entropy(logits, labels) + F.cross_entropy(logits.T, labels)) / 2
 **Tradeoffs:** quality depends on large batches (expensive multi-GPU all-gather), false negatives in the batch (two near-identical captions), and the temperature setting. Follow-ups address this: **SigLIP** uses a pairwise sigmoid loss that works with smaller batches; **ALIGN** scales to noisier data; and **BLIP/CoCa** add captioning losses back for generative ability.
 
 ### 15.29 How would you use CLIP for zero-shot image classification?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Turn class names into text prompts, embed everything, and pick the nearest text.**
 

@@ -272,8 +272,6 @@ This chapter contains **142 questions**.
 
 > **A Transformer is a neural network architecture based on self-attention. It converts tokens into embeddings, adds positional information, processes them through multiple layers of self-attention and feed-forward networks, and ultimately predicts the next token in an LLM.**
 
-#### Additional notes
-
 #### Transformer Architecture
 
 - **Core idea:** A neural network architecture that processes entire sequences in parallel using **self-attention**, instead of sequentially like RNNs — enabling faster training and better long-range dependency modeling.
@@ -318,8 +316,6 @@ This chapter contains **142 questions**.
 **Transformer Block:**
 
 **Embedding → Position → Self-Attention → FFN → Residual + Norm → Repeat → Output**
-
-#### Additional notes
 
 #### Key Components of the Transformer Architecture
 
@@ -512,8 +508,6 @@ The query for **"it"** can assign higher attention to the key corresponding to *
 
 > **Q determines what a token is looking for, K determines how relevant each token is to that query, and V contains the information that gets aggregated. Attention computes Q-K similarity, converts it into weights using softmax, and uses those weights to combine the V vectors.**
 
-#### Additional notes
-
 #### Query, Key, Value in Attention
 
 - **Analogy:** Think of it like a search/retrieval system — **Query** is what you're looking for, **Key** is like a label/index for each piece of information, **Value** is the actual content retrieved.
@@ -556,8 +550,6 @@ Attention(Q, K, V) = softmax(QK^T / √d_k) V
 **Interview:**
 
 > **Self-attention allows each token to dynamically attend to other tokens in the same sequence. It computes Q-K similarity to obtain attention weights and uses those weights to combine the Value vectors, producing context-aware representations.**
-
-#### Additional notes
 
 #### Self-Attention in Transformers
 
@@ -606,8 +598,6 @@ CrossAttention(Q, K, V) = softmax(QK^T / √d_k) V
 The key idea is:
 
 > **Queries come from one sequence, while Keys and Values come from another sequence.**
-
-#### Additional notes
 
 #### Cross-Attention in Transformers
 
@@ -663,8 +653,6 @@ Attention(Q, K, V) = softmax(QK^T / √d_k) V
 
 > **We divide the attention scores by √dₖ to prevent their magnitude from growing with the dimensionality of the key vectors, which keeps softmax well-behaved and improves training stability.**
 
-#### Additional notes
-
 #### Why Scale Dot-Product Attention by √dₖ
 
 - **The problem without scaling:** In dot-product attention, the score between a query `Q` and key `K` is computed as `Q · K^T`. As the dimensionality `d_k` of these vectors grows, the **variance of the dot product grows proportionally with `d_k`** (assuming components of Q and K are independent random variables with mean 0 and variance 1, the dot product's variance scales as `d_k`).
@@ -713,8 +701,6 @@ M[i,j] = −∞    if j > i
 **Interview:**
 
 > **Causal masking prevents each token from attending to future tokens, preserving the autoregressive property required for next-token prediction.**
-
-#### Additional notes
 
 ##### Causal Masking
 
@@ -793,8 +779,6 @@ The key idea is:
 
 > **Each attention head has its own Query, Key, and Value projections.**
 
-#### Additional notes
-
 ##### Multi-Head Attention
 
 Multi-head attention is the mechanism at the core of the Transformer architecture. Instead of computing a single attention function over the queries, keys, and values, it runs several attention computations ("heads") in parallel, each with its own learned projections, then combines the results.
@@ -839,8 +823,6 @@ In practice, multi-head attention tends to produce more stable and higher-qualit
 **Interview answer:**
 
 > “FFN is the non-linear component of a Transformer. Attention mixes information across tokens, while the FFN independently transforms each token representation to learn richer features.”
-
-#### Additional notes
 
 ##### Feed-Forward Networks (FFNs) in LLMs
 
@@ -909,8 +891,6 @@ Projecting up to a wider hidden dimension gives the network more room to represe
 
 > “The context window is the maximum number of tokens an LLM can process as context in a single request. It determines how much information the model can consider at once, making it important for long conversations, RAG, and document analysis. However, larger context can increase cost and latency, and the model may not use all information equally well.”
 
-> ✍️ _Drafted addition._
-
 The answer above is the same as Q23 (what the context window is and why it matters). It does not explain why the window is limited. The main reasons are:
 
 - **Attention cost grows quadratically.** Standard self-attention scores every token against every other token, so compute and attention memory scale as O(n²) with sequence length. Doubling the context roughly quadruples attention work during prefill.
@@ -920,8 +900,6 @@ The answer above is the same as Q23 (what the context window is and why it matte
 - **Effective vs. nominal context.** Even within the limit, quality degrades for information buried in the middle ("lost in the middle"), so providers cap the window where quality, latency and cost stay acceptable.
 
 **Production angle:** model-level mitigations include FlashAttention, GQA/MQA, KV-cache quantization and paging, and sliding-window attention. System-level approaches (RAG, chunking, summarization/compaction) are usually cheaper than relying on an ever-larger raw window.
-
-#### Additional notes
 
 ##### Why the Context Window Is Limited
 
@@ -1191,8 +1169,6 @@ Combine outputs
 
 > “Mixture of Experts is an architecture where a model contains multiple expert networks, and a router dynamically selects a small subset of experts for each token. This allows the model to have a large number of total parameters while activating only a fraction for each token, improving model capacity without proportionally increasing computation.”
 
-#### Additional notes
-
 ##### Mixture of Experts (MoE)
 
 - An architecture where a single dense Feed-Forward Network (FFN) is replaced with multiple parallel FFNs ("experts"), and a lightweight router network decides which experts process each token
@@ -1286,8 +1262,6 @@ Combine outputs
 
 > “In a dense model, all relevant model parameters are activated for every input token. In a sparse model, only a subset of parameters is activated, typically through mechanisms like Mixture of Experts. Sparse models can therefore provide higher total model capacity without proportionally increasing computation per token.”
 
-#### Additional notes
-
 ##### Dense vs. Sparse Models
 
 ##### Core Definition
@@ -1363,8 +1337,6 @@ Combine outputs
 **Interview answer:**
 
 > “FlashAttention is an IO-aware, memory-efficient algorithm for computing attention. Instead of materializing the full attention matrix in GPU high-bandwidth memory, it uses tiling and efficient memory access to reduce GPU memory traffic. This makes attention significantly faster and more memory efficient without changing the mathematical result of attention.”
-
-#### Additional notes
 
 #### FlashAttention
 
@@ -1478,8 +1450,6 @@ The key idea is:
 
 > **Multiple query heads share the same Key and Value heads.**
 
-#### Additional notes
-
 ##### Grouped-Query Attention (GQA)
 
 GQA is a variant of attention designed to reduce the memory and speed costs of inference (specifically the key-value cache) while trying to preserve most of the quality of standard multi-head attention.
@@ -1542,8 +1512,6 @@ Position-dependent rotation
 **Interview answer:**
 
 > **“RoPE encodes positional information by applying position-dependent rotations to the Query and Key vectors. Unlike learned positional embeddings, which add a learned vector to each token based on its absolute position, RoPE naturally captures relative position through the attention interaction between Q and K. It is efficient and works particularly well for modern long-context LLMs.”**
-
-#### Additional notes
 
 ##### Rotary Position Embedding (RoPE)
 
@@ -1657,8 +1625,6 @@ output = γ · x / RMS(x)
 **Interview answer:**
 
 > **“RMSNorm is a simplified normalization technique that normalizes activations using their root mean square without subtracting the mean. It is computationally cheaper than LayerNorm while providing similar training stability, which is why it is widely used in modern LLMs such as LLaMA.”**
-
-#### Additional notes
 
 ##### RMSNorm (Root Mean Square Layer Normalization)
 
@@ -1956,8 +1922,6 @@ For modern multimodal LLMs, the architecture is usually more sophisticated:
 
 The vision encoder converts the image into representations that the language model can use alongside text.
 
-#### Additional notes
-
 ##### Can Transformers Understand Images?
 
 Yes — Transformers were originally designed for text, but the core architecture (attention over a sequence of tokens) turns out to generalize well beyond text, as long as the input can be converted into a sequence of vectors.
@@ -2010,8 +1974,6 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 - **Trade-off:** They generally have less broad knowledge and reasoning capability than larger models.
 
 **Examples:** Phi, Gemma, Qwen, and Llama models have smaller variants suitable for SLM-style deployments.
-
-#### Additional notes
 
 ##### Small Language Models (SLMs)
 
@@ -2098,8 +2060,6 @@ For models like GPT-4V, Claude, or Gemini that understand both text and images i
 | Inference cost | Lower | Higher |
 | Best for | Chat, summarization, extraction | Math, coding, planning, complex reasoning |
 | Compute usage | Relatively fixed | Can allocate more computation to difficult problems |
-
-#### Additional notes
 
 ##### Large Reasoning Models (LRMs)
 
@@ -2243,8 +2203,6 @@ For example:
 
 PPO also commonly uses a **KL penalty** to prevent the RL-trained model from drifting too far from the reference model.
 
-#### Additional notes
-
 ##### Proximal Policy Optimization (PPO)
 
 - **PPO** is a **policy-gradient reinforcement learning algorithm** used to optimize an agent’s policy while preventing excessively large policy updates.
@@ -2306,8 +2264,6 @@ It also compares the model against a **reference model** to prevent the policy f
 - Generally easier to implement and stabilize
 - Works directly with preference pairs
 - Often more computationally efficient than PPO-based RLHF
-
-#### Additional notes
 
 ##### Direct Preference Optimization (DPO)
 
@@ -2385,8 +2341,6 @@ Similarly for coding:
 
 This is powerful because you don't necessarily need a human preference model to determine which solution is correct.
 
-#### Additional notes
-
 ##### Group Relative Policy Optimization (GRPO)
 
 - **GRPO** is a **policy optimization algorithm** designed to improve LLM reasoning using **relative rewards** among multiple responses generated for the same prompt.
@@ -2448,8 +2402,6 @@ They solve different problems:
 - **RLM:** Recursively process/decompose a large or complex input.
 - **Hybrid:** Use RAG to retrieve relevant sections and RLM-style decomposition to analyze them hierarchically.
 
-#### Additional notes
-
 ##### Recursive Language Models (RLMs)
 
 - **RLMs** are language-model systems that handle **very large or complex inputs by recursively decomposing and processing them** rather than requiring the entire input to fit directly into one model context.
@@ -2509,8 +2461,6 @@ LLMs may need to adapt to:
 > New information → training → update model parameters
 
 For frequently changing information, **RAG is often safer and cheaper** because you don't need to modify the model every time the knowledge changes.
-
-#### Additional notes
 
 ##### Continual Learning in LLMs
 
@@ -4206,8 +4156,6 @@ The window continuously moves through the sequence, allowing the model to proces
 
 ### 17.115 What is next-concept modeling (NCM), and how does it differ from an LLM?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **LLM (next-token modeling):** a Transformer trained to predict the next *token* (a subword). Reasoning, planning and abstraction emerge implicitly from that objective, and generation happens one token at a time.
 
 **Next-concept modeling (NCM):** the idea of predicting the next *concept*, meaning a higher-level semantic unit such as a sentence or an idea embedding, instead of the next token. The best-known example is Meta's **Large Concept Model (LCM, 2024)**. It encodes each sentence into a language- and modality-agnostic embedding space (SONAR), trains a model (MSE-regression or diffusion-based) to predict the *next sentence embedding*, then decodes that embedding back to text in any supported language.
@@ -4225,8 +4173,6 @@ The window continuously moves through the sequence, allowing the model to proces
 **Caveats:** embedding-space prediction is lossy (fine detail such as numbers or exact wording can drift), the field has few tools and benchmarks yet, and in production today it is a research direction, not a replacement for LLMs.
 
 ### 17.116 How does BPE tokenization work?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Byte-Pair Encoding** builds a subword vocabulary by repeatedly merging the most frequent adjacent symbol pair.
 
@@ -4253,8 +4199,6 @@ merge 1: (e,s) → es     merge 2: (es,t) → est    merge 3: (l,o) → lo ...
 - Related schemes: **WordPiece** (BERT; merges by likelihood gain), **Unigram LM** (SentencePiece; prunes a large vocabulary probabilistically). Libraries: `tiktoken`, Hugging Face `tokenizers` (Rust), SentencePiece.
 
 ### 17.117 How do you implement a tokenizer (training, encoding, decoding, special tokens)?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 A tokenizer has four parts: a **normalizer**, a **pre-tokenizer**, a **model** (BPE/Unigram/WordPiece) and a **post-processor** for special tokens. A minimal byte-level BPE:
 
@@ -4318,8 +4262,6 @@ class BPETokenizer:
 - **Versioning:** the tokenizer is part of the model contract. Changing it means retraining the embeddings.
 
 ### 17.118 What does the LM head do, and what is weight tying?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **LM head:** the final layer of a language model. It maps each position's final hidden state $h \in \mathbb{R}^{d}$ to **logits over the vocabulary**:
 
@@ -4415,8 +4357,6 @@ Different heads can learn different relationships, such as syntax, semantic rela
 
 ### 17.120 Why divide by $\sqrt{d_k}$?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Scaled dot-product attention is $\text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$. The $\sqrt{d_k}$ is there to keep the **variance of the logits** around 1.
 
 **Derivation:** if the components of $q$ and $k$ are independent with mean 0 and variance 1, then
@@ -4432,8 +4372,6 @@ Dividing by $\sqrt{d_k}$ restores unit variance, so the softmax temperature does
 **Related practice:** some models instead apply **QK-LayerNorm** or learn the temperature for extra stability at large scale. In mixed precision, the scaling also helps avoid FP16 overflow in the logits, which is why FlashAttention applies the scale inside the fused kernel.
 
 ### 17.121 What is the difference between self-attention and cross-attention?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Both use the same operation, $\text{softmax}(QK^\top/\sqrt{d_k})V$. The difference is **where Q, K and V come from**.
 
@@ -4453,8 +4391,6 @@ Both use the same operation, $\text{softmax}(QK^\top/\sqrt{d_k})V$. The differen
 
 ### 17.122 Why do Transformers need positional information?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Self-attention is **permutation-equivariant**: it computes weighted sums over a *set* of tokens. If you shuffle the input tokens, the outputs shuffle in the same way, and nothing in $\text{softmax}(QK^\top)V$ depends on order. Without extra information, "dog bites man" and "man bites dog" look identical.
 
 RNNs get order from sequential processing and CNNs from local kernels. Transformers process all tokens in parallel, so order must be **injected explicitly**.
@@ -4470,8 +4406,6 @@ RNNs get order from sequential processing and CNNs from local kernels. Transform
 
 ### 17.123 Compare absolute positional embeddings, RoPE, ALiBi, and relative positional encoding.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 | Method | How it works | Pros | Cons | Used in |
 | --- | --- | --- | --- | --- |
 | **Absolute (sinusoidal / learned)** | Add a position vector $p_i$ to token embedding $x_i$ at the input | Simple, cheap | Learned: cannot go beyond max trained length. Both extrapolate poorly; position is mixed with content | Original Transformer, BERT, GPT-2 |
@@ -4482,8 +4416,6 @@ RNNs get order from sequential processing and CNNs from local kernels. Transform
 **Interview summary:** absolute encodings say *where* a token is; relative, RoPE and ALiBi say *how far apart* two tokens are, which generalises better. RoPE is the current default because it is parameter-free, efficient and has well-understood context-extension methods.
 
 ### 17.124 Why does self-attention have $O(n^2)$ complexity?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 For a sequence of $n$ tokens with head dimension $d$:
 
@@ -4502,8 +4434,6 @@ So **time is $O(n^2 d)$** and naïvely **memory is $O(n^2)$** to store the atten
 - **At inference with a KV cache**, each new token costs $O(n)$, but over the full generation it is still quadratic in total.
 
 ### 17.125 What techniques reduce Transformer attention complexity?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Exact but more efficient (same result):**
 
@@ -4532,8 +4462,6 @@ So **time is $O(n^2 d)$** and naïvely **memory is $O(n^2)$** to store the atten
 
 ### 17.126 Explain Multi-Head Attention.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Instead of one attention over the full model width $d_{model}$, run $h$ attentions in parallel, each in a lower-dimensional subspace $d_k = d_{model}/h$.
 
 $$\text{head}_i = \text{softmax}\left(\frac{(XW_i^Q)(XW_i^K)^\top}{\sqrt{d_k}}\right)XW_i^V$$
@@ -4559,8 +4487,6 @@ y = proj(out)
 
 ### 17.127 Why are multiple attention heads useful?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 A single head produces **one** softmax distribution per token, so it must average all the relationships it cares about into one weighted sum. Multiple heads let the model attend to **different things at the same time**.
 
 - **Different relation types in parallel** — research has found heads specialised in previous-token, syntactic dependency (subject–verb), coreference, positional and **induction heads** (copying patterns, key for in-context learning).
@@ -4572,8 +4498,6 @@ A single head produces **one** softmax distribution per token, so it must averag
 **Nuance:** many heads are redundant. Michel et al. (2019) pruned a large fraction of heads with little loss, and too many tiny heads ($d_k$ too small) hurts quality. That redundancy motivates **MQA/GQA** (share K/V across heads) and **head pruning** for cheaper inference.
 
 ### 17.128 What is the difference between encoder-only, decoder-only, and encoder-decoder Transformers?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | | **Encoder-only** | **Decoder-only** | **Encoder-decoder** |
 | --- | --- | --- | --- |
@@ -4591,8 +4515,6 @@ A single head produces **one** softmax distribution per token, so it must averag
 
 ### 17.129 Why are decoder-only architectures dominant for modern LLMs?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 1. **Simplest objective that scales.** Next-token prediction on raw text needs no labels, uses every token as a training signal (unlike MLM, which trains on ~15%), and its loss follows smooth scaling laws.
 2. **Generation is native.** Training (predict the next token) and inference (generate the next token) are the same task, so there is no train/inference gap.
 3. **One model, every task.** Any task can be phrased as "text in, text out" via prompting. That enables **in-context learning** and instruction-following without task-specific heads, which emerged strongly in GPT-3.
@@ -4603,8 +4525,6 @@ A single head produces **one** softmax distribution per token, so it must averag
 **Caveats:** causal attention is less efficient for pure understanding tasks. Encoders still win for embeddings and classification per dollar, and encoder-decoder models remain strong for translation and ASR (Whisper). Decoder-only dominance is partly a scaling and ecosystem effect, not proof that it is strictly better.
 
 ### 17.130 What is the difference between pretraining, instruction tuning, and alignment?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 | Stage | Data | Objective | What it gives you |
 | --- | --- | --- | --- |
@@ -4623,8 +4543,6 @@ A single head produces **one** softmax distribution per token, so it must averag
 
 ### 17.131 Explain supervised fine-tuning (SFT).
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Supervised fine-tuning (SFT)** continues training a pretrained model on **labeled input→output examples** with the standard next-token cross-entropy loss, usually computing the loss **only on the response tokens** (prompt tokens are masked).
 
 $$\mathcal{L} = -\sum_{t \in \text{response}} \log p_\theta(y_t \mid x, y_{<t})$$
@@ -4641,8 +4559,6 @@ $$\mathcal{L} = -\sum_{t \in \text{response}} \log p_\theta(y_t \mid x, y_{<t})$
 **Limitations:** SFT only imitates the demonstrations. It can increase hallucination when it teaches facts the model does not know, and it can cause **catastrophic forgetting** of general skills. Mix in general data and evaluate on general benchmarks as well as the target task. Use preference tuning (DPO/RLHF) afterwards for quality beyond imitation.
 
 ### 17.132 What is model collapse?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Model collapse** is the degradation that happens when generative models are **trained recursively on data generated by earlier models** instead of real human data (Shumailov et al., *Nature* 2024).
 
@@ -4665,8 +4581,6 @@ Do not confuse it with **mode collapse** in GANs, which is a single training run
 
 ### 17.133 What causes LLM hallucinations?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 An LLM is trained to produce **plausible next tokens**, not true statements, so hallucination is a natural failure mode. Main causes:
 
 - **Training objective:** next-token likelihood rewards fluent continuations; nothing forces "I don't know", and RLHF can reward confident, helpful-sounding answers.
@@ -4682,8 +4596,6 @@ An LLM is trained to produce **plausible next tokens**, not true statements, so 
 **Production takeaway:** treat hallucination as a systems problem — grounding with citations, abstention instructions, low temperature for factual tasks, verification steps and continuous groundedness evaluation.
 
 ### 17.134 Can hallucinations be completely eliminated?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **No, not completely** — they can be reduced and contained, not eliminated.
 
@@ -4705,8 +4617,6 @@ An LLM is trained to produce **plausible next tokens**, not true statements, so 
 
 ### 17.135 What is the relationship between model scaling and emergent capabilities?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Emergent capabilities** are abilities that appear to be absent in smaller models and show up abruptly once models pass a certain scale (parameters, data, compute) — for example multi-step arithmetic, chain-of-thought reasoning, or in-context learning of new tasks (Wei et al., 2022).
 
 **Relationship to scaling**
@@ -4721,8 +4631,6 @@ An LLM is trained to produce **plausible next tokens**, not true statements, so 
 - For safety: unpredictable capability jumps are why labs run dangerous-capability evals at each scale-up.
 
 ### 17.136 Explain the scaling laws for LLMs.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Scaling laws** are empirical power-law relationships between a language model's pretraining loss and the resources used to train it.
 
@@ -4746,8 +4654,6 @@ $L(N, D) = E + \frac{A}{N^{\alpha}} + \frac{B}{D^{\beta}}$ with $E$ the irreduci
 
 ### 17.137 What is the Chinchilla scaling principle?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 The **Chinchilla principle** (Hoffmann et al., 2022, *Training Compute-Optimal Large Language Models*): for a fixed training compute budget, **model size and number of training tokens should be scaled in equal proportion**.
 
 - Training compute ≈ $C \approx 6 N D$ (N = parameters, D = tokens).
@@ -4765,8 +4671,6 @@ The **Chinchilla principle** (Hoffmann et al., 2022, *Training Compute-Optimal L
 
 ### 17.138 Why can a smaller model outperform a larger model?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Parameter count is only one driver of quality. A smaller model can win because of:
 
 - **Training data and tokens:** a smaller model trained on far more (or better) tokens beats an undertrained large one — Chinchilla 70B beat Gopher 280B; LLaMA-13B beat GPT-3 175B on many benchmarks.
@@ -4781,8 +4685,6 @@ Parameter count is only one driver of quality. A smaller model can win because o
 **Production angle:** smaller models bring lower latency and cost, on-prem deployment, and easier fine-tuning. A standard pattern is a **router**: a small specialized model for the bulk of traffic, escalating hard cases to a large model.
 
 ### 17.139 What is mixture-of-experts (MoE)?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 A **Mixture-of-Experts (MoE)** layer replaces a single dense feed-forward block with **many parallel "expert" FFNs plus a learned router (gating network)** that sends each token to only a few experts.
 
@@ -4807,8 +4709,6 @@ token h ─► router: softmax(W_g · h) ─► top-k experts (e.g., 2 of 8)
 
 ### 17.140 Why does MoE allow larger parameter counts without proportionally increasing compute?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Because **compute scales with the parameters a token actually touches, not with the parameters that exist**.
 
 - In a dense Transformer, every token passes through every weight: FLOPs per token ≈ $2N$.
@@ -4827,8 +4727,6 @@ Because **compute scales with the parameters a token actually touches, not with 
 **Summary:** MoE decouples **capacity** (total params) from **cost per token** (active params); the price is memory footprint and systems complexity.
 
 ### 17.141 Explain expert routing and load balancing in MoE.
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Routing:** a gating network computes scores for each token, $g = \text{softmax}(W_g h)$, and the token is sent to the **top-k** experts (k=1 in Switch, k=2 in Mixtral). The outputs are combined with the (renormalized) gate weights: $y = \sum_{i \in \text{topk}} g_i E_i(h)$. Variants: noisy top-k (adds noise for exploration), expert-choice routing (experts pick tokens, which balances by construction), and fine-grained plus **shared experts** (DeepSeek), where a few experts process every token.
 

@@ -425,8 +425,6 @@ If it assigns similar probabilities to many unrelated words, it has high uncerta
 | **Best suited for** | Large-scale processing where speed is important | Tasks where linguistic accuracy and meaning matter |
 | **Typical use cases** | Search engines, information retrieval, text indexing | Sentiment analysis, chatbots, NLP classification |
 
-#### Additional notes
-
 #### Stemming vs Lemmatization
 
 Both **stemming** and **lemmatization** are NLP techniques used to reduce words to their **base or root form**, but they work differently.
@@ -747,8 +745,6 @@ A Transformer can then convert these token representations into **embeddings** a
 
 ### 14.24 Explain the BERT architecture.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **BERT** (Bidirectional Encoder Representations from Transformers, Google 2018) is an **encoder-only Transformer** pre-trained to produce deep bidirectional contextual embeddings.
 
 **Architecture**
@@ -768,8 +764,6 @@ A Transformer can then convert these token representations into **embeddings** a
 **Strengths and limits:** excellent for understanding tasks (classification, NER, retrieval, reranking as a cross-encoder); bidirectionality makes it unsuited to text generation; 512-token limit; quadratic attention. Successors: RoBERTa, ALBERT, DistilBERT, DeBERTa, ModernBERT. In production, BERT-family models remain the workhorses for embeddings, classifiers and rerankers because they're cheap compared with LLMs.
 
 ### 14.25 What is next-sentence prediction in BERT?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Next-Sentence Prediction (NSP)** is BERT's second pre-training task (alongside masked language modeling). Its goal was to teach the model relationships **between** sentences, useful for tasks like question answering and natural language inference.
 
@@ -795,8 +789,6 @@ A Transformer can then convert these token representations into **embeddings** a
 
 ### 14.26 How does BERT work, and what are its pre-training objectives (MLM, NSP)?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Architecture:** BERT (Devlin et al., 2018) is a **Transformer encoder-only** stack: 12 layers, hidden size 768, 12 heads, about 110M parameters for Base; 24 layers, 1024, 16 heads, about 340M for Large. It uses full **bidirectional self-attention**, so every token sees left *and* right context.
 
 **Input representation:** WordPiece tokens (about a 30k vocabulary), plus segment embeddings (sentence A/B), plus learned position embeddings (max 512). Special tokens: `[CLS]` at the start (its final vector is used for classification) and `[SEP]` between and after sentences.
@@ -818,8 +810,6 @@ Training data was BooksCorpus plus English Wikipedia (about 3.3B words).
 
 ### 14.27 How does RoBERTa differ from BERT?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **RoBERTa** ("Robustly optimized BERT approach", Facebook AI, 2019) keeps BERT's **architecture unchanged** and shows BERT was significantly *undertrained*. The gains come purely from the training recipe:
 
 - **Removed NSP:** trains with MLM only, on full contiguous sentences packed up to 512 tokens (FULL-SENTENCES). Dropping NSP matched or improved downstream performance.
@@ -833,8 +823,6 @@ Training data was BooksCorpus plus English Wikipedia (about 3.3B words).
 **Interview takeaway:** data scale, training duration and objective choices can matter as much as architecture, and ablations should be done carefully (the NSP finding). In practice RoBERTa, and DeBERTa after it, became the default encoder backbones for classification, NER and cross-encoder rerankers.
 
 ### 14.28 How do you approach text summarization?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **1. Clarify requirements:** extractive or abstractive? Single or multiple documents? Length and format (bullets, TL;DR, structured fields)? Domain (legal, medical, meetings)? Faithfulness requirements (regulated domains allow zero hallucination)? Volume, latency, cost?
 
@@ -862,8 +850,6 @@ Training data was BooksCorpus plus English Wikipedia (about 3.3B words).
 
 ### 14.29 How are knowledge graphs used with NLP?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(Marie Curie, wonPrize, Nobel Prize in Physics)`. NLP and KGs help each other in both directions.
 
 **NLP → building KGs**
@@ -885,8 +871,6 @@ A **knowledge graph (KG)** stores facts as entities and typed relations, e.g. `(
 **Production pattern:** combine them. Run LLM-based extraction with human validation for critical relations, store the result in a graph DB (Neo4j, Neptune), and use hybrid retrieval (vector + graph traversal) at query time.
 
 ### 14.30 How would you solve entity resolution?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Entity resolution (ER)** identifies records that refer to the same real-world entity across or within datasets (customers, companies, products) despite typos, abbreviations, missing fields and format differences.
 

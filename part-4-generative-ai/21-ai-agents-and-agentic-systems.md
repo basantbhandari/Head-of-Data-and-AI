@@ -1660,8 +1660,6 @@ Your application code catches that, calls the real weather API, gets back `"22°
 
 ### 21.47 What are hooks, coroutines, plugins, rules and skills in agent tooling?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 These are building blocks for **extending and controlling AI agents / coding assistants** (Claude Code, Cursor, agent frameworks), plus coroutines as the async primitive under them.
 
 - **Hooks:** user-defined code that the agent **harness** runs automatically at lifecycle events, e.g. `PreToolUse` (before a tool call), `PostToolUse`, session start, on stop. Because they're executed deterministically by the harness, not by the model, they enforce policy reliably: block `rm -rf`, run a formatter/linter after every edit, require tests before finishing, log tool calls for audit. Think git hooks or web middleware.

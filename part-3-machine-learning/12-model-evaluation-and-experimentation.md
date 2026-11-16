@@ -479,8 +479,6 @@ These are standard metrics for evaluating classification models, built from four
 
 **Rule of thumb:** start from what a wrong prediction _costs_ in the real-world use case, then pick the metric that best reflects minimizing
 
-> ✍️ _Drafted addition._
-
 …that cost. The note above ends mid-sentence. The intended closing point: **the offline metric should be a proxy for the business cost of errors.** In practice:
 
 - **Separate the optimization metric from the reporting metric.** Train on a differentiable loss (log loss, MSE), select models on the metric that reflects the cost (PR-AUC, recall@precision≥X, cost-weighted error), and report a business KPI (fraud $ caught, tickets deflected).
@@ -770,8 +768,6 @@ Harder than supervised evaluation since there are no ground-truth labels to comp
 
 ### 12.22 Describe your approach to debugging an underperforming ML model.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Work systematically, from the cheapest and most likely causes to the most expensive.
 
 1. **Check the problem definition and metric.** Is the metric aligned with the business goal? Is the baseline sensible? Is the target right?
@@ -1052,8 +1048,6 @@ The better one depends on which mistake is less costly.
 
 ### 12.36 How do you measure the accuracy of a Clustering Algorithm?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Clustering has no single "accuracy" because there is usually no ground truth. Use two families of metrics:
 
 **Internal metrics (no labels)** — judge compactness and separation:
@@ -1077,8 +1071,6 @@ adjusted_rand_score(y_true, labels)  # external
 ```
 
 ### 12.37 How do you measure the accuracy of a recommendation engine?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Evaluate a recommender at three levels: offline, online and business.
 
@@ -1109,8 +1101,6 @@ def ndcg_at_k(rels, k):
 
 ### 12.38 How can you measure the performance of a dimensionality reduction algorithm on your dataset?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 It depends on *why* you are reducing dimensions:
 
 **1. Downstream task performance (most important in practice).** Train the same model on the reduced and original features and compare the validation metric, training and inference time, and memory. If accuracy holds while latency drops, the reduction worked. Put the reducer inside the CV pipeline to avoid leakage.
@@ -1135,8 +1125,6 @@ trustworthiness(X, X_emb, n_neighbors=10)
 
 ### 12.39 What is the ROC-AUC curve? List some of its benefits.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 The **ROC curve** plots the **True Positive Rate** (recall) against the **False Positive Rate** ($FP/(FP+TN)$) as the classification threshold sweeps from 1 to 0. **AUC** is the area under it: the probability that the model ranks a random positive above a random negative. 0.5 is random and 1.0 is perfect.
 
 **Benefits:**
@@ -1158,8 +1146,6 @@ fpr, tpr, thr = roc_curve(y_true, y_score)
 ```
 
 ### 12.40 What cross-validation technique would you use on a time series data set?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Standard k-fold shuffles the rows, so the model trains on the future and tests on the past (leakage), and autocorrelation inflates the scores. Use **order-preserving** schemes:
 
@@ -1183,8 +1169,6 @@ for tr, te in tscv.split(X):
 
 ### 12.41 Which among these is more important: model accuracy or model performance?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 It depends on how you define the terms, and that is the point of the question.
 
 - **Model accuracy** is one specific metric: the fraction of correct predictions.
@@ -1199,8 +1183,6 @@ It depends on how you define the terms, and that is the point of the question.
 **How I'd frame it in practice:** agree on the success metric with stakeholders up front (e.g. "recall ≥ 90% at ≤ 5% FPR, p95 latency < 100 ms"), select models on that, and validate with an A/B test on the business KPI.
 
 ### 12.42 What is cross-validation and its types?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Cross-validation** estimates how well a model generalizes by repeatedly splitting the data into training and validation parts, training on one and evaluating on the other, then averaging. It gives a lower-variance estimate than a single holdout split and is used for model selection and hyperparameter tuning.
 
@@ -1225,8 +1207,6 @@ cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),
 
 ### 12.43 What are the different evaluation metrics for a regression model?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **Common regression metrics:**
 
 | Metric | Formula (idea) | Notes |
@@ -1244,8 +1224,6 @@ cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),
 **How to choose:** pick the metric that matches the cost of errors. If being off by 10 units costs the same whatever the size, use MAE. If big misses are disproportionately bad (inventory stock-outs), use RMSE. If relative error matters (demand across products of very different volume), use WAPE or RMSLE. Always report a baseline (predict the mean or last value) alongside the metric so the number has context.
 
 ### 12.44 What are the different evaluation metrics for a classification model?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 **Threshold-based (from the confusion matrix):**
 
@@ -1273,8 +1251,6 @@ cross_val_score(pipe, X, y, cv=StratifiedKFold(5, shuffle=True, random_state=0),
 
 ### 12.45 Difference between R2 and adjusted R2? Why do you prefer adjusted R2?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **$R^2$** measures the fraction of the target's variance explained by the model:
 
 $R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$
@@ -1296,8 +1272,6 @@ It only increases if a new feature improves the fit more than would be expected 
 
 ### 12.46 What is ROC-AUC, and what are its limitations?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 **ROC curve:** plots **TPR (recall)** against **FPR** = FP/(FP+TN) as the classification threshold sweeps from 1 to 0. **AUC** is the area under it. It equals the probability that a randomly chosen positive is scored higher than a randomly chosen negative (equivalent to the Mann-Whitney U statistic). 0.5 is random and 1.0 is perfect.
 
 **Why it's popular:** threshold-independent, scale-invariant (only ranking matters), and insensitive to class prior, so it is comparable across datasets with different base rates.
@@ -1314,8 +1288,6 @@ It only increases if a new feature improves the fit more than would be expected 
 **Production angle:** report ROC-AUC for model comparison, but choose the threshold and monitor with business-aligned metrics (precision/recall at the operating point, cost per decision), plus calibration plots.
 
 ### 12.47 When should you use PR-AUC over ROC-AUC?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Use **PR-AUC (average precision)** when the **positive class is rare** and you care mainly about how well the model finds positives, not about the negatives.
 
@@ -1339,8 +1311,6 @@ Use **PR-AUC (average precision)** when the **positive class is rare** and you c
 - Finally, choose an operating threshold by business constraint, e.g. "maximize recall subject to precision ≥ 80%", and monitor precision and recall at that point in production.
 
 ### 12.48 How do you run a good ablation study?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 An **ablation study** removes or changes one component at a time to measure its causal contribution to the result.
 
@@ -1478,8 +1448,6 @@ Use **GroupKFold** or **StratifiedGroupKFold** when both grouping and class bala
 
 ### 12.52 Training accuracy is 99%, validation accuracy is 60%. How do you debug it?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 A 99% vs 60% gap is classic **overfitting**, but I first rule out data problems before adding regularisation.
 
 **1. Check the data split:**
@@ -1508,8 +1476,6 @@ Fix one thing at a time and track experiments so the cause is clear.
 
 ### 12.53 Training and validation accuracy are both 50%. What could be wrong?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Both at 50% (for a binary balanced task) means the model is performing at **chance** — it's learning nothing. Underfitting is possible, but this usually signals a bug.
 
 **Data/label problems:**
@@ -1535,8 +1501,6 @@ Both at 50% (for a binary balanced task) means the model is performing at **chan
 
 ### 12.54 Your model performs well offline but poorly in production. Why?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Good offline, bad in production almost always means **the production data or setup differs from the offline evaluation**.
 
 **Common causes:**
@@ -1558,8 +1522,6 @@ Good offline, bad in production almost always means **the production data or set
 
 ### 12.55 Your model's accuracy decreases after adding more training data. Explain possible reasons.
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 Normally more data helps, so a drop is a signal to inspect the new data and the evaluation:
 
 - **Lower-quality or noisy labels** in the new data (different labelling team, weak/automatic labels).
@@ -1574,8 +1536,6 @@ Normally more data helps, so a drop is a signal to inspect the new data and the 
 **How to diagnose:** evaluate on a fixed, unchanged test set; train on old vs new data separately and compare; check label agreement on a sample of new data; compare distributions; check learning curves. Then clean or reweight the new data, or train with domain indicators.
 
 ### 12.56 A feature has extremely high importance. How do you determine whether it is legitimate or leakage?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 An extremely important feature is either a genuine strong signal or — very often — **target leakage**. I check:
 
@@ -1597,8 +1557,6 @@ If legitimate, keep it but monitor it closely and consider robustness (the model
 
 ### 12.57 Your validation score varies significantly between folds. What does that indicate?
 
-> ✍️ _Drafted answer (not from the original notes)._
-
 High variance across folds means your performance estimate is **unstable** — the score depends heavily on *which* rows land in validation. Typical causes:
 
 - **Small dataset / small folds:** each fold has too few examples (or too few positives) for a stable metric.
@@ -1618,8 +1576,6 @@ High variance across folds means your performance estimate is **unstable** — t
 **Production angle:** large fold variance is a warning that production performance will also swing as the input mix changes — treat it as a robustness problem, not just an evaluation nuisance.
 
 ### 12.58 Your model predicts only the majority class. How do you fix it?
-
-> ✍️ _Drafted answer (not from the original notes)._
 
 Predicting only the majority class is the classic symptom of **severe class imbalance** combined with an objective (or metric) that rewards it: with 99% negatives, "always negative" gives 99% accuracy and a low unweighted loss.
 
