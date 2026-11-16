@@ -4,7 +4,7 @@ _Part IV — Generative AI and LLM Engineering_
 
 Transformers, attention, tokenization, pre-training, scaling laws, mixture of experts, reasoning models and hallucination.
 
-This chapter contains **142 questions**.
+This chapter contains **155 questions**.
 
 ## Contents
 
@@ -150,6 +150,19 @@ This chapter contains **142 questions**.
 - **17.140** [Why does MoE allow larger parameter counts without proportionally increasing compute?](#17140-why-does-moe-allow-larger-parameter-counts-without-proportionally-increasing-compute)
 - **17.141** [Explain expert routing and load balancing in MoE.](#17141-explain-expert-routing-and-load-balancing-in-moe)
 - **17.142** [What is the difference between System 1 and System 2 thinking?](#17142-what-is-the-difference-between-system-1-and-system-2-thinking)
+- **17.143** [How is pretraining data collected, filtered and mixed for a modern LLM?](#17143-how-is-pretraining-data-collected-filtered-and-mixed-for-a-modern-llm)
+- **17.144** [What causes instability in large-scale LLM pretraining, and how do you prevent loss spikes?](#17144-what-causes-instability-in-large-scale-llm-pretraining-and-how-do-you-prevent-loss-spikes)
+- **17.145** [What is maximal update parametrisation, and how does it let hyperparameters transfer across model sizes?](#17145-what-is-maximal-update-parametrisation-and-how-does-it-let-hyperparameters-transfer-across-model-sizes)
+- **17.146** [How do you extend an LLM's context window with position interpolation, NTK-aware scaling and YaRN?](#17146-how-do-you-extend-an-llms-context-window-with-position-interpolation-ntk-aware-scaling-and-yarn)
+- **17.147** [What is Multi-head Latent Attention, and what other architectural ideas did DeepSeek-V3 introduce?](#17147-what-is-multi-head-latent-attention-and-what-other-architectural-ideas-did-deepseek-v3-introduce)
+- **17.148** [How do chat templates, special tokens and system prompts work inside an LLM?](#17148-how-do-chat-templates-special-tokens-and-system-prompts-work-inside-an-llm)
+- **17.149** [How does in-context learning work, and what are induction heads?](#17149-how-does-in-context-learning-work-and-what-are-induction-heads)
+- **17.150** [What is test-time compute scaling, and how do reasoning models trade inference compute for accuracy?](#17150-what-is-test-time-compute-scaling-and-how-do-reasoning-models-trade-inference-compute-for-accuracy)
+- **17.151** [What are process reward models and outcome reward models, and how are they used?](#17151-what-are-process-reward-models-and-outcome-reward-models-and-how-are-they-used)
+- **17.152** [How is a reward model trained for RLHF, and what is the Bradley-Terry model?](#17152-how-is-a-reward-model-trained-for-rlhf-and-what-is-the-bradley-terry-model)
+- **17.153** [What is benchmark contamination, and how do you detect and prevent it in LLM evaluation?](#17153-what-is-benchmark-contamination-and-how-do-you-detect-and-prevent-it-in-llm-evaluation)
+- **17.154** [What is model merging, and how do task arithmetic, TIES and SLERP work?](#17154-what-is-model-merging-and-how-do-task-arithmetic-ties-and-slerp-work)
+- **17.155** [Why are modern LLMs trained on far more tokens than the Chinchilla-optimal amount?](#17155-why-are-modern-llms-trained-on-far-more-tokens-than-the-chinchilla-optimal-amount)
 
 ---
 
@@ -4790,6 +4803,575 @@ The distinction comes from the dual-process model of cognition popularized by Da
 - Iterative problem solving
 
 Modern AI agents often combine fast generation with additional reasoning, planning, tool use, or verification loops rather than treating inference as a single forward pass.
+
+### 17.143 How is pretraining data collected, filtered and mixed for a modern LLM?
+
+Modern pretraining data is built by a pipeline: crawl the web, pull out the text, filter it hard, remove duplicates, score its quality with classifiers, then mix it with curated sources such as code, math, books and papers. In recent open datasets, careful filtering and the right mix have improved quality about as much as a large jump in model size.
+
+**1. Collection and extraction**
+- Most open pipelines (RefinedWeb, FineWeb, DCLM, Dolma) start from Common Crawl. FineWeb processed 96 snapshots into roughly 15T tokens.
+- Text extraction from raw HTML (for example with trafilatura) works much better than the crawl's pre-extracted WET files, which keep menus, cookie banners and boilerplate.
+- Code comes from licence-filtered repositories, and math from arXiv, forums and math-heavy web pages. Books, encyclopedias and papers are added as smaller, higher-quality sources.
+
+**2. Heuristic filtering**
+- URL blocklists for adult, spam and malware domains.
+- Language identification with fastText, keeping pages above a confidence threshold.
+- Gopher and C4-style quality rules: word-count bounds, mean word length, symbol-to-word ratio, share of lines ending in punctuation, repeated n-grams, and "lorem ipsum" or JavaScript lines.
+- PII masking, removal of toxic or CSAM content, and decontamination against benchmarks using n-gram overlap.
+
+**3. Deduplication**
+- Exact dedup with hashes, then fuzzy dedup with MinHash and LSH at the document level, plus line or paragraph dedup to strip repeated boilerplate.
+- More dedup is not always better. FineWeb found that deduplicating each crawl snapshot separately beat one global pass, because the global pass kept a larger share of low-quality text that happened to be unique.
+- RefinedWeb showed that web-only data, if filtered and deduplicated aggressively, can match curated corpora.
+
+**4. Model-based quality filtering** (the biggest recent gain)
+- **FineWeb-Edu:** Llama-3-70B-Instruct scored about 450k pages for educational value on a 0–5 scale. A small regression head on an embedding model was trained on those scores, and keeping pages that score 3 or higher left about 1.3T tokens. Those tokens gave large gains on MMLU and ARC.
+- **DCLM:** a fastText classifier, with instruction-style data (OpenHermes and ELI5 answers) as positives and random web text as negatives. It beat perplexity filters and more complex scorers, and the resulting DCLM-Baseline set trained a strong 7B model with much less compute.
+- **Llama 3:** fastText and RoBERTa-style classifiers trained on Llama 2 judgements, plus separate domain classifiers for code and reasoning pages.
+- Risk: classifiers carry the preferences of the model that labelled the data. They can strip out dialects, niche topics and creative writing, so check diversity as well as benchmark scores.
+
+**5. Mixing**
+- Sources are weighted, not just concatenated. Llama 3 reports about 50% general knowledge, 25% math and reasoning, 17% code and 8% multilingual tokens. The mix was chosen with knowledge classifiers and small-scale scaling-law experiments.
+- **DoReMi** learns the weights. A small proxy model is trained with group distributionally robust optimisation, which upweights domains where its loss is far above a reference model's. The learned weights are then used for the large run. On The Pile, this reached the baseline's accuracy in about 2.6 times fewer steps.
+- **Upsampling and epochs:** high-value sources can be repeated a few times without harm, but many repeats cause memorisation and diminishing returns.
+- **Annealing / mid-training:** at the end of training, the learning rate is decayed while the mix shifts toward high-quality math, code and long-context data. Llama 3 also used this to measure the value of small candidate datasets.
+
+| Stage | Typical tool | Main failure if skipped |
+| --- | --- | --- |
+| Extraction | trafilatura, resiliparse | Boilerplate learned as language |
+| Heuristics | Gopher/C4 rules, fastText LID | Spam, gibberish, wrong language |
+| Dedup | MinHash + LSH | Memorisation, wasted compute |
+| Quality classifier | fastText / small encoder | Average web quality caps the model |
+| Mixing | Ablations, DoReMi, annealing | Weak code/math, poor multilingual |
+
+**How to decide:** every filter is an ablation. Train small models (about 1B parameters on tens of billions of tokens) on each data variant, and compare benchmarks that give signal at that scale. Only promote a change to the full run if it holds up across seeds.
+
+### 17.144 What causes instability in large-scale LLM pretraining, and how do you prevent loss spikes?
+
+Loss spikes come from a few causes that feed on each other. Logits (attention or output) grow too large, the optimiser behaves badly at scale, and the learning rate is too high for the model's size and depth. Large runs fail where small runs did not, because these effects get worse with width, depth and training length. Modern recipes fix them with architecture changes, optimiser settings and monitoring. Restarting from a checkpoint is the last resort.
+
+**What history taught us**
+- **OPT-175B:** the published logbook records dozens of manual restarts after divergences. The team lowered the learning rate, changed clipping and swapped hardware mid-run.
+- **PaLM 540B:** about 20 spikes appeared despite gradient clipping. The fix was to restart from a checkpoint about 100 steps before the spike and skip roughly 200–500 data batches. That suggests spikes come from a specific batch meeting a particular parameter state, rather than from simply "bad data".
+- **DeepSeek-V3** reports a full run with no irrecoverable spikes and no rollbacks, which shows that today's recipe works.
+
+**Root causes and fixes**
+
+| Cause | Symptom | Mitigation |
+| --- | --- | --- |
+| Attention logit growth | Attention entropy collapses to near one-hot, then divergence | QK-norm (LayerNorm/RMSNorm on Q and K before the dot product); logit soft-capping |
+| Output logit divergence | Softmax normaliser drifts, loss becomes NaN in low precision | z-loss $10^{-4}\,(\log Z)^2$; tied-embedding care |
+| Adam epsilon too large | Updates shrink as gradient RMS falls with scale; parameter norms grow | Lower $\epsilon$ (e.g. $10^{-15}$) |
+| Adam second-moment lag | Rare large gradients meet a stale $v_t$, producing huge updates | $\beta_2 = 0.95$, gradient clipping at 1.0 |
+| LR too high for width/depth | Spikes appear as the model is scaled up | Warmup, $\mu$P-style scaling, smaller LR for deeper models |
+| Bad or repeated data | Spikes at data-dependent steps | Dedup, skip batches on restart |
+| Low precision | Overflow in BF16/FP8 matmuls or reductions | FP32 for softmax, norms, master weights and loss; fine-grained scaling |
+
+**Small-scale proxies (Wortsman et al.)**
+The main practical result is that you can reproduce large-model instabilities in small models by raising the learning rate. Two failures, attention logit growth and output logit divergence, appear in small models at high LR. QK-layernorm and z-loss fix them as effectively there as at scale. The authors measure **LR sensitivity**, meaning how much the final loss worsens across a sweep of learning rates. This gives a cheap way to test a recipe before a large run. They also found that depth raises LR sensitivity faster than width does, and that the default AdamW epsilon becomes too large at scale.
+
+**The 2025–26 stability recipe**
+- Pre-norm with RMSNorm, plus QK-norm (OLMo 2, Gemma 3, Qwen3). Some models add a norm after attention and after the FFN, or apply soft-capping to logits.
+- z-loss on output logits, and on router logits for MoE models.
+- No weight decay on embeddings, and a careful init scale. Small or scaled embedding init helps avoid early spikes.
+- AdamW with $\beta_2 = 0.95$, a small $\epsilon$, global-norm clipping at 1.0, and warmup over a few thousand steps. Use a WSD or cosine schedule.
+- BF16 compute with FP32 master weights and FP32 reductions.
+
+**Operational playbook**
+- Watch more than the loss. Track the gradient norm, the maximum attention logit per layer, output logit RMS, per-layer update-to-weight ratio, and the Adam second moment. Rising attention logits usually show up before a spike.
+- Checkpoint often and keep data-loader state, so you can rewind and skip batches deterministically.
+- After a spike: if the loss recovers within a few hundred steps, keep going. If it does not, roll back, skip the batches and optionally lower the LR briefly. If spikes keep returning, fix the architecture instead of patching the run.
+
+### 17.145 What is maximal update parametrisation, and how does it let hyperparameters transfer across model sizes?
+
+**Maximal update parametrisation (μP)** is a rule for scaling initialisation, per-layer learning rates and output multipliers with model width. It keeps every layer's update size constant as width grows. Under μP, the best learning rate, init scale and similar settings stay roughly the same from a 40M-parameter model to a multi-billion-parameter one. You can therefore tune a small proxy and copy its hyperparameters to the large model. Yang et al. call this **μTransfer**.
+
+**Why standard parametrisation (SP) fails**
+- In SP, as width $n$ grows, some layers' updates grow with $n$ and blow up, while others shrink to nothing. The optimal learning rate therefore shifts, usually downward, as the model widens.
+- Tuning a small model and scaling up gives a learning rate that is too high (divergence) or too low (wasted compute). Tuning the large model directly is unaffordable.
+- Tensor Programs theory shows that in the infinite-width limit there is a unique parametrisation in which every layer, including embeddings and the readout, keeps learning features at a stable rate. That is μP. In the alternative "kernel" limit, features stop changing.
+
+**The rules (Adam, width multiplier $m = n / n_{\text{base}}$)**
+
+| Weight type | Init variance | Adam LR | Extra |
+| --- | --- | --- | --- |
+| Input / embedding | constant | constant | — |
+| Hidden matrices | $\propto 1/\text{fan-in}$ | $\propto 1/m$ | — |
+| Output (unembedding) | small or zero | constant | logits multiplied by $1/m$ |
+| Attention | — | — | scale scores by $1/d_{\text{head}}$ instead of $1/\sqrt{d_{\text{head}}}$ |
+
+The attention change follows from the same logic. Once trained, Q and K are correlated, so their dot product grows like $d$ rather than $\sqrt{d}$.
+
+**Evidence**
+- Yang et al. tuned a 40M-parameter proxy and transferred its settings to GPT-3 6.7B. The result beat the published GPT-3 6.7B numbers, and tuning cost about 7% of one pretraining run.
+- A 13M proxy transferred to BERT-large.
+- Cerebras-GPT, MiniCPM and several later open models used μP to fix hyperparameters before the large run, and many labs use μP-style per-layer LR scaling internally.
+
+**What transfers and what does not**
+- **Transfers across width:** learning rate, init scale, output and attention multipliers, Adam betas, and LR schedule shape.
+- **Transfers less reliably:** depth (later work adds residual-branch scaling of $1/\sqrt{L}$ for depth transfer), batch size and training length, which scaling laws handle better.
+- **Does not transfer:** regularisation such as dropout and weight decay, since its best value depends on data size and overfitting. Weight decay also interacts with μP's per-layer learning rates and needs care.
+
+**Practical workflow**
+1. Implement μP (the `mup` library, or a few multipliers in your own code) and run a **coordinate check**: train a few steps at several widths and confirm activation sizes stay flat.
+2. Sweep LR, init and multipliers on a 30–200M-parameter proxy at the target depth, with the same data and tokenizer.
+3. Scale width with the μP rules and copy the hyperparameters unchanged.
+4. Check at a mid-sized model (about 1B) that the loss-vs-LR curve's minimum has not moved.
+
+```python
+# Core μP changes for an Adam-trained Transformer (width multiplier m)
+hidden_lr = base_lr / m                  # per-layer LR for hidden matrices
+logits = (h @ W_out.T) / m               # readout multiplier
+attn = (q @ k.transpose(-1, -2)) / d_head  # 1/d, not 1/sqrt(d)
+```
+
+**Trade-offs:** μP adds implementation complexity, and bugs are silent: a missed multiplier quietly breaks transfer. Interactions with QK-norm, weight decay and newer optimisers (Muon, Shampoo) need fresh coordinate checks. Its benefit is that a single proxy sweep replaces guesswork at the scale where one failed run costs millions.
+
+### 17.146 How do you extend an LLM's context window with position interpolation, NTK-aware scaling and YaRN?
+
+All three methods change how RoPE maps positions to rotation angles. After the change, a longer sequence produces angles the model has already seen in training. A short fine-tune (hundreds to a few thousand steps on long documents) then adapts the model. They differ in which RoPE frequencies they compress.
+
+**The underlying problem**
+RoPE rotates each dimension pair $i$ by angle $m\,\theta_i$, with $\theta_i = b^{-2i/d}$ and base $b$ (often 10,000). Past the training length $L$, the low-frequency dimensions reach angles never seen in training. Attention scores then become erratic, and perplexity explodes almost immediately.
+
+**1. Position Interpolation (Chen et al.)**
+- Map position $m$ to $m \cdot L/L'$, so a sequence of $L'$ tokens is squeezed into the trained range. The scale factor is $s = L'/L$.
+- The paper shows an interpolation error bound about 600 times smaller than that of extrapolation. LLaMA models reached a 32k context with about 1,000 fine-tuning steps.
+- Downside: every frequency is compressed equally. High-frequency dimensions, which encode fine local order, lose resolution, so short-context quality drops slightly and nearby tokens get harder to tell apart.
+
+**2. NTK-aware scaling**
+- Instead of squashing positions, raise the base: $b' = b \cdot s^{d/(d-2)}$. High frequencies barely change, so local resolution is kept, while low frequencies get stretched to cover the new length.
+- Works reasonably well **without fine-tuning**, and better with it. **Dynamic NTK** recomputes $s$ from the current sequence length at inference, so short prompts stay unchanged.
+- Downside: some dimensions still extrapolate slightly out of range, and the theoretical scale must be overshot in practice.
+- Related idea: **adjusted base frequency** sets a very large base before long-context training. Code Llama used $10^6$, and Llama 3 used 500,000.
+
+**3. YaRN (Peng et al.)**
+YaRN combines two ideas.
+- **NTK-by-parts:** handle each dimension by its wavelength $\lambda_i = 2\pi/\theta_i$ compared with $L$.
+  - Wavelength much shorter than $L$: no interpolation, because these dimensions already cycle many times in training.
+  - Wavelength longer than $L$: full interpolation by $s$.
+  - In between: a linear ramp.
+- **Attention temperature:** longer contexts flatten the softmax, so logits are scaled up by a factor that grows with $\ln s$. The paper's empirical fit for LLaMA is $\sqrt{1/t} = 0.1 \ln s + 1$. It costs nothing at inference because it can be folded into the RoPE cos/sin tables.
+- Result: Llama 2 reached a 128k context with roughly 10 times fewer tokens and 2.5 times fewer steps than earlier methods, with little short-context loss. YaRN is now the default in many open models (Qwen, DeepSeek) and in inference servers.
+
+**4. LongRoPE and later methods**
+- LongRoPE uses evolutionary search to find a separate rescale factor for each RoPE dimension, and leaves the first tokens uninterpolated. It extended models in stages, first to 256k with fine-tuning and then to 2M tokens, and re-tuned the factors so short prompts were not hurt.
+- Llama 3.1 used a fixed frequency-dependent scaling with separate low- and high-frequency factors to reach 128k.
+
+| Method | What changes | Fine-tune needed | Short-context cost |
+| --- | --- | --- | --- |
+| Position Interpolation | All positions scaled by $1/s$ | Yes | Small loss of local resolution |
+| NTK-aware / dynamic NTK | RoPE base raised | Optional | Minimal |
+| YaRN | Per-band interpolation + temperature | Short | Minimal |
+| LongRoPE | Searched per-dimension factors | Staged | Minimal after readjustment |
+
+**What actually decides success**
+- **Data:** long-context fine-tuning needs truly long, coherent documents (books, code repositories, long papers), mixed with short data to avoid forgetting.
+- **Evaluation:** perplexity can look fine while retrieval fails. Test with needle-in-a-haystack, RULER-style multi-hop tasks and real long-document workloads. The *effective* context is often far shorter than the advertised one.
+- **Systems:** the KV cache, FlashAttention and context or sequence parallelism set the real limit on memory and latency, not the RoPE formula.
+
+### 17.147 What is Multi-head Latent Attention, and what other architectural ideas did DeepSeek-V3 introduce?
+
+**Multi-head Latent Attention (MLA)** compresses keys and values into one small latent vector per token and caches only that vector. Full per-head keys and values are rebuilt from it with up-projections. In DeepSeek-V2, this cut the KV cache by about 93% compared with standard multi-head attention and raised generation throughput by about 5.8 times. Quality was equal to or better than MHA, whereas GQA and MQA give up some quality to save memory.
+
+**How MLA works**
+- Down-project the hidden state to a latent $c^{KV}_t = W^{DKV} h_t$. Its dimension $d_c$ is 512, much smaller than $n_h d_h$.
+- Up-project: $k^C_t = W^{UK} c^{KV}_t$ and $v_t = W^{UV} c^{KV}_t$ for every head.
+- **Weight absorption:** at inference, $W^{UK}$ can be merged into the query projection and $W^{UV}$ into the output projection. Attention then runs directly against the cached latent, and full keys and values are never materialised.
+- **Decoupled RoPE:** rotary embeddings depend on position, so they cannot pass through the absorbed matrices. MLA adds a small separate RoPE key (64 dimensions) shared by all heads, and concatenates it with the compressed part.
+- The cache per token per layer is $d_c + d^R_h = 576$ values. That equals GQA with only about 2.25 groups, while attention keeps full multi-head expressiveness.
+- Queries are also low-rank compressed, but only to save activation memory in training.
+
+| Variant | KV cached per token per layer | Quality |
+| --- | --- | --- |
+| MHA | $2 n_h d_h$ | Baseline |
+| GQA | $2 n_g d_h$ | Slight loss |
+| MQA | $2 d_h$ | Noticeable loss |
+| MLA | $d_c + d^R_h$ | Matches or beats MHA |
+
+**DeepSeek-V3's other ideas** (671B total parameters, about 37B active, 14.8T tokens)
+
+**1. DeepSeekMoE**
+- **Fine-grained experts:** 256 small routed experts, with 8 active per token. This allows far more expert combinations than a few large experts.
+- **One shared expert** that processes every token and captures common knowledge, so routed experts can specialise.
+- **Sigmoid affinity scores**, normalised across the chosen experts (V2 used softmax), and **node-limited routing**: each token goes to experts on at most 4 nodes, which caps all-to-all traffic.
+
+**2. Auxiliary-loss-free load balancing**
+- The usual auxiliary balance loss conflicts with the language-modelling objective, and a strong one hurts quality.
+- V3 instead adds a per-expert bias $b_i$ to the affinity, used **only for choosing the top-k experts**. The gating weights still come from the raw scores.
+- After each step, the bias of an overloaded expert is lowered by a fixed $\gamma$ and that of an underloaded expert is raised.
+- Only a very small sequence-level balance loss is kept, to prevent extreme imbalance within a single sequence. No tokens are dropped in training or inference.
+
+**3. Multi-token prediction (MTP)**
+- Small sequential modules predict extra future tokens (depth 1, so one token further ahead). Each module reuses the shared embedding and output head, and the full causal chain is kept.
+- The MTP loss is weighted 0.3 for the first 10T tokens and 0.1 after that. It makes the training signal denser and pushes the model to plan ahead.
+- At inference the module can be dropped, or reused as a draft for speculative decoding. The second token was accepted about 85–90% of the time, giving roughly 1.8 times more tokens per second.
+
+**4. FP8 mixed-precision training at scale**
+- Most GEMMs run in FP8 (E4M3) with fine-grained scaling: 1×128 tiles for activations and 128×128 blocks for weights. This limits the damage from outliers.
+- Partial sums are moved to FP32 on CUDA cores at fixed intervals, because the tensor-core FP8 accumulation is not precise enough.
+- Master weights, optimiser states, normalisation, embeddings and the output head stay in higher precision. Loss stayed within 0.25% of a BF16 baseline.
+
+**5. Systems co-design**
+- **DualPipe** pipeline parallelism overlaps forward and backward compute with communication. Custom all-to-all kernels use both InfiniBand and NVLink. No tensor parallelism was needed.
+- Total cost was about 2.79M H800 GPU-hours for the full training.
+
+**Takeaway:** V3's gains come from designing the architecture, numerics and cluster together. MLA makes long-context serving cheap, the MoE design keeps active parameters low, and FP8 plus DualPipe make the training run affordable.
+### 17.148 How do chat templates, special tokens and system prompts work inside an LLM?
+
+To the model, a chat is a single stream of tokens. A **chat template** turns a list of role-tagged messages into that stream, using **special tokens** to mark where each turn starts and ends and who is speaking. A system prompt is not a separate channel. It is just the first segment of text, which the model learned in post-training to treat as higher priority. Getting the template wrong is one of the most common causes of silent quality loss.
+
+**What the model actually sees** (ChatML-style, used by Qwen and others)
+
+```text
+<|im_start|>system
+You are a concise SQL assistant.<|im_end|>
+<|im_start|>user
+Top 5 customers by revenue?<|im_end|>
+<|im_start|>assistant
+```
+
+Llama 3 expresses the same structure with `<|begin_of_text|>`, `<|start_header_id|>role<|end_header_id|>` and `<|eot_id|>`. The model generates until it emits the end-of-turn token, and the serving stack treats that token as a stop sequence.
+
+**Special tokens**
+- They are single, reserved vocabulary entries, not strings that BPE builds from pieces. The tokenizer matches them before normal tokenisation.
+- Roles include BOS, end-of-turn, role headers, tool-call and tool-result markers, and "thinking" delimiters in reasoning models.
+- Their embeddings are learned only in fine-tuning. A base model given a chat template sees nearly untrained vectors, which is why base and instruct checkpoints are not interchangeable.
+- **Security:** user text must never be turned into real special tokens. Otherwise a user can type a fake system or assistant turn. Tokenise untrusted content with special-token parsing switched off.
+
+**Chat templates in practice (Hugging Face)**
+- The template is a Jinja program stored with the tokenizer (`chat_template` in the tokenizer config) and called through `apply_chat_template`.
+- `add_generation_prompt=True` appends the opening assistant header, so the model answers instead of continuing the user's text. `continue_final_message` lets you prefill a partial assistant reply.
+- Tools and documents are passed as arguments, and the template renders them into the prompt, often as JSON schemas in the system turn.
+
+```python
+msgs = [{"role": "system", "content": "Answer in SQL only."},
+        {"role": "user", "content": "Top 5 customers by revenue?"}]
+ids = tok.apply_chat_template(msgs, add_generation_prompt=True,
+                              return_tensors="pt")
+out = model.generate(ids, max_new_tokens=200)
+```
+
+**Common production bugs**
+
+| Bug | Effect |
+| --- | --- |
+| Hand-built prompt string differs from training template | Rambling, role confusion, ignored instructions |
+| Template applied, then tokenised again with BOS added | Double BOS, subtle quality loss |
+| Missing generation prompt | Model continues the user turn |
+| Wrong stop token configured | Endless generation, or the model writes the next user turn itself |
+| Fine-tuning with a different template from inference | Model never learns your format |
+| Model without a system role (e.g. some Gemma versions) | Template silently folds the system text into the first user turn |
+
+**Fine-tuning implications**
+- Train with exactly the template you will serve with.
+- Mask the loss so only assistant tokens are learned. Hugging Face templates can mark assistant spans with generation tags to return an assistant-token mask.
+- If you add new special tokens, resize the embeddings and make sure they actually appear in the training data.
+
+**How system prompts gain authority**
+- Nothing in the architecture enforces precedence. The model gives system text priority only because SFT and RL data rewarded following it over conflicting user or tool text. Work on the *instruction hierarchy* trains this explicitly.
+- Some newer formats add more levels, such as a **developer** role between system and user, or separate channels for reasoning and the final answer.
+- Because this priority is learned, it is probabilistic. Prompt injection, very long contexts and the system prompt being far from the current turn all weaken it. Never treat the system prompt as a security boundary. Enforce permissions in code, and treat tool outputs as untrusted data.
+
+**Interview summary:** roles are a convention made of tokens, the template is part of the model's contract like the tokenizer, and system prompts work because the model was trained to defer to them, not because of a privileged channel.
+
+### 17.149 How does in-context learning work, and what are induction heads?
+
+**In-context learning (ICL)** is a model's ability to pick up a task from examples or instructions in its prompt, with no weight updates. The best mechanistic explanation for its simplest form is **induction heads**: attention circuits that find an earlier occurrence of the current token and copy whatever followed it. More abstract ICL seems to build on this with richer circuits. One useful framing is that the model infers the latent task from the prompt, which works like approximate Bayesian inference.
+
+**Induction heads (Olsson et al.)**
+- The pattern is `[A][B] ... [A] → predict [B]`. Two heads in different layers work together:
+  1. A **previous-token head** in an earlier layer writes "the token before me was A" into each position's residual stream.
+  2. The **induction head** in a later layer uses that information in its keys (called K-composition). From the current A, it attends to the position whose previous token was A, which is B, and its output-value circuit copies B into the prediction.
+- Two layers are required, so one-layer attention-only models cannot form them.
+- **Phase change:** early in training there is a sudden transition. A small bump appears in the loss curve, induction heads form, and the "ICL score" jumps. The ICL score is the loss on token 500 minus the loss on token 50, which measures how much later context helps prediction.
+- **Evidence:** in small attention-only models, removing these heads (ablation) removes ICL, which is strong causal evidence. In large models the evidence is mostly correlational. The same heads also do fuzzy matching, such as copying across languages or matching patterns of similar tokens, which links them to few-shot learning more broadly.
+
+**Other explanations, at other levels**
+
+| View | Claim | Key evidence |
+| --- | --- | --- |
+| Bayesian (Xie et al.) | Pretraining documents share a latent "concept"; the prompt lets the model infer it and predict accordingly | Synthetic GINC data reproduces ICL, including sensitivity to example order |
+| Learned algorithms (Garg et al.) | Transformers trained on function-class prompts learn an algorithm in-context | Matches least squares on linear regression; handles sparse linear models, trees, small MLPs |
+| Implicit optimisation | Attention can implement gradient-descent-like updates in the forward pass | Constructions and probing in linear-attention models |
+| Task vectors | Examples compress into a vector in the residual stream that steers later layers | Patching that vector reproduces the task without examples |
+
+**What this predicts in practice**
+- **Format matters more than labels.** In mid-sized models, swapping in random labels for the demonstrations hurts surprisingly little. The examples mainly tell the model the input distribution, the label space and the format. That fits the "locate the task" view.
+- **Scale changes it.** Large models can follow flipped or arbitrary labels, which means they really learn the mapping from the context and can override their priors. Smaller models stick to their priors.
+- **Order and recency effects:** results depend on example order and on which label appears most, which is why calibration and well-chosen demonstrations help.
+- **Data drives it.** ICL appears when training data is "bursty", with items recurring within a document and following a long-tailed distribution. In some settings it can fade with very long training, as weight-based memorisation takes over.
+
+**Engineering implications**
+- Use demonstrations that are diverse and close to the task, with a consistent format. Retrieve them per query (dynamic few-shot) rather than fixing them.
+- Long prompts made of repeated, similar content strongly trigger copying. That is good for extraction, but it also explains repetition loops and why injected text in retrieved documents can steer the model.
+- For interpretability or safety work, induction heads are a well-understood circuit for testing activation patching and other mechanistic tools before tackling larger behaviours.
+
+**Interview summary:** ICL is pattern completion learned in pretraining. Induction heads give a concrete copy-and-match mechanism, and at scale the model goes further and infers latent tasks or runs simple learning algorithms inside the forward pass.
+
+### 17.150 What is test-time compute scaling, and how do reasoning models trade inference compute for accuracy?
+
+**Test-time compute scaling** means improving answer quality by spending more FLOPs per query at inference time instead of more FLOPs on pretraining. A model can think longer in one chain, sample many answers and pick one, or search over partial solutions with a verifier. The point is that accuracy keeps rising smoothly, roughly log-linearly, as inference compute grows, so this becomes a budget you can tune per request.
+
+**Two families of methods**
+
+| Approach | How it spends compute | Needs | Typical failure |
+| --- | --- | --- | --- |
+| Sequential (longer chain of thought) | One long trace with self-checks, backtracking, revisions | RL-trained reasoning model | Overthinking easy questions, looping, "talking itself out" of a correct answer |
+| Parallel: majority vote (self-consistency) | $N$ independent samples, take the most common final answer | Extractable final answer | Plateaus once the wrong answer is the most common one |
+| Parallel: best-of-$N$ with a verifier | $N$ samples, a reward model or test suite picks the best | ORM, PRM or executable checks | Verifier exploited as $N$ grows |
+| Tree / beam search over steps | Expand promising partial solutions | Step-level verifier (PRM) | Expensive; brittle when the PRM is miscalibrated |
+
+**What the research showed**
+
+- **Compute-optimal allocation depends on difficulty.** Snell et al. (2024) found that the best strategy changes with how hard a prompt is. On easy problems, revising one answer sequentially works best, while harder problems gain more from parallel sampling or PRM-guided search. Choosing the strategy per prompt from a predicted difficulty was more than 4x as compute-efficient as plain best-of-$N$. In a FLOPs-matched comparison, a small model with well-allocated test-time compute beat a roughly 14x larger model on problems where the small model already had a reasonable success rate. On the hardest problems, extra pretraining still won.
+- **Reasoning models internalise the search.** OpenAI's o1 announcement showed accuracy rising with both RL training compute and test-time "thinking" compute. DeepSeek-R1 showed that plain RL with verifiable rewards (via GRPO), with no step-level reward model, was enough for long chains of thought, reflection and backtracking to emerge, and for response length to grow during training. Majority voting on top of R1-Zero added a further large jump on AIME.
+
+**The economics**
+
+Every reasoning token costs about the same as an output token, so a reasoning model that writes 10,000 hidden tokens to give a 200-token answer costs 50x more per query, and latency grows in proportion. The right comparison is cost per *correct* answer at your latency SLO, not cost per token. In production that leads to:
+
+- **Effort or budget controls**: expose a "reasoning effort" or thinking-token budget and set it per route. Extraction or classification gets none, while multi-step analysis gets a high budget.
+- **Routing**: a cheap model or classifier predicts difficulty and sends only hard queries to the reasoning tier, which mirrors Snell's difficulty-adaptive policy.
+- **Early stopping on agreement**: draw parallel samples in small batches and stop once enough of them agree on the answer.
+- **Verifiers where they exist**: for code, running unit tests is worth more than any amount of extra sampling. For open-ended text, a learned verifier saturates and then gets exploited.
+
+**Limits to state in an interview**
+
+- Test-time compute cannot add knowledge the model lacks. It helps when the model can sometimes solve the problem (pass@$k$ is well above pass@1).
+- Gains are largest in verifiable domains (maths, code, logic) and much smaller for open-ended writing.
+- Overthinking is real: very long traces can lower accuracy on easy items and increase how often the model drifts off-task.
+- Visible reasoning is not guaranteed to be faithful to the computation that produced the answer, so don't treat it as an audit log.
+
+**Interview one-liner:** "Pretraining compute buys a better prior. Test-time compute buys search over that prior. The two trade off, and the optimal split depends on the difficulty of the query and on whether you have a verifier."
+
+### 17.151 What are process reward models and outcome reward models, and how are they used?
+
+An **outcome reward model (ORM)** scores a whole solution by whether its final result is good, typically trained on labels like "final answer correct". A **process reward model (PRM)** scores *each intermediate step*, estimating whether that step is correct or still leads somewhere useful. ORMs are cheap to label and hard to exploit when the outcome check is exact. PRMs give dense, localised credit, which helps search and catches correct answers reached through flawed reasoning.
+
+**How each is trained**
+
+- **ORM:** sample many solutions, label each by checking the final answer (or by human judgement), and train a classifier that predicts correctness from the full trace. Applying an ORM to a prefix gives a weak "will this end up right?" estimate, but it was never trained to localise errors.
+- **PRM with human labels:** Lightman et al. ("Let's Verify Step by Step", OpenAI) had annotators label each step of model-generated MATH solutions as positive, negative or neutral. The result is PRM800K, about 800k step labels. A solution's score is usually the product of the per-step correctness probabilities, or their minimum.
+- **PRM with automatic labels:** Math-Shepherd removes the annotators. For each step, it rolls out several completions from that prefix and labels the step by whether any rollout (hard estimate) or what fraction of rollouts (soft estimate) reach the correct answer. This is a Monte Carlo estimate of the step's value, so a PRM label is really "can a correct answer still be reached from here?" rather than "is this step logically valid?".
+
+**Evidence**
+
+- Uesato et al. (DeepMind, 2022) found that on GSM8K, outcome and process supervision gave similar *final-answer* error rates. But process-based feedback, or a reward model that imitates it, was needed to bring the *trace error rate* down: correct answers reached through wrong reasoning fell from 14.0% to a few percent.
+- Lightman et al. found that with a stronger base model and much more data, the PRM clearly beat the ORM as a best-of-$N$ verifier on MATH (about 78% of a representative test subset solved), and active learning on convincing wrong answers made labelling more efficient.
+
+**Where each is used**
+
+| Use | ORM | PRM |
+| --- | --- | --- |
+| Best-of-$N$ reranking | Yes, simple and robust | Yes, usually better on long derivations |
+| Step-level beam or tree search | Weak | Main use case |
+| Dense reward in RL | Sparse terminal reward only | Per-step reward, better credit assignment |
+| Filtering synthetic reasoning data | Keeps correct answers | Also removes lucky-but-wrong traces |
+
+**Trade-offs in practice**
+
+- **Reward hacking:** a learned PRM is a neural judge inside the RL loop, so a policy can learn step patterns that look correct to it. DeepSeek-R1 reported trying model-based PRMs and dropping them for this reason (and because of the cost of retraining them), using rule-based outcome rewards instead. This is the main reason today's large-scale reasoning RL relies mostly on verifiable outcome rewards.
+- **Defining a step** is ambiguous outside maths (lines, sentences, tool calls). Inconsistent step boundaries add label noise.
+- **Monte Carlo labels** depend on the rollout policy. A step that a weak completer cannot recover from gets marked "bad" even when it is valid.
+- **Cost:** human step labels are expensive, and automatic labels need $k$ rollouts per step.
+
+**Rule of thumb:** use exact outcome checks (tests, answer matching) as the RL reward whenever they exist. Use PRMs as *verifiers at inference time* and for data filtering, where reward hacking is bounded because the policy is not being optimised against them. Keep a PRM as a training reward only with strong KL control and regular human audits.
+
+### 17.152 How is a reward model trained for RLHF, and what is the Bradley-Terry model?
+
+A reward model (RM) is an LLM with its LM head replaced by a scalar head. It is trained on human pairwise comparisons so that the preferred response scores higher than the rejected one. The training objective comes from the **Bradley-Terry model**, which turns score differences into preference probabilities.
+
+**Bradley-Terry**
+
+Originally a model of paired comparisons in sports and psychometrics, it assumes each item has a latent strength $r$, and that the probability $A$ beats $B$ is a logistic function of the difference in strengths:
+
+$$
+P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x, y_w) - r_\phi(x, y_l)\big)
+$$
+
+Maximising the likelihood of observed preferences gives the pairwise loss:
+
+$$
+\mathcal{L}(\phi) = -\mathbb{E}_{(x, y_w, y_l)}\left[\log \sigma\big(r_\phi(x, y_w) - r_\phi(x, y_l)\big)\right]
+$$
+
+Two consequences follow. Only *differences* matter, so the reward is defined up to a per-prompt constant. That is why InstructGPT added a bias so that labeller demonstrations had mean reward 0, and why rewards are often normalised before RL. Also, a 51/49 preference and a 99/1 preference produce the same label, so the RM learns an average preference rather than the strength of preference.
+
+**The InstructGPT recipe**
+
+- Start from the SFT model (a 6B RM was used even for the 175B policy, because the 175B RM was unstable to train).
+- Labellers rank $K$ = 4 to 9 responses per prompt, which gives $\binom{K}{2}$ pairs.
+- All pairs from one prompt are put in the *same* batch element. Treating them as independent samples caused overfitting after a single epoch, because each completion appears in $K-1$ pairs.
+- Train for about one epoch. RMs overfit quickly.
+
+**Minimal training step**
+
+```python
+r_w = rm(prompt, chosen)      # scalar per example
+r_l = rm(prompt, rejected)
+loss = -torch.nn.functional.logsigmoid(r_w - r_l).mean()
+acc = (r_w > r_l).float().mean()   # report held-out pairwise accuracy
+```
+
+**What goes wrong in production**
+
+- **Noise ceiling:** inter-annotator agreement is often around 65 to 75%, so held-out pairwise accuracy in the low 70s may already be close to the ceiling. Chasing 90% means overfitting to individual raters.
+- **Spurious features:** length, confident tone, markdown and refusals correlate with "chosen" in many datasets. Check RM score against length. Mitigations are length-balanced pairs, length-penalised rewards, or a separate length head.
+- **Overoptimisation:** Gao et al. replaced humans with a fixed "gold" RM and trained proxy RMs on its labels. As the policy is optimised against the proxy, proxy reward keeps rising while gold reward rises, peaks and falls, following predictable curves in the KL distance from the initial policy (different shapes for best-of-$n$ and for RL). Larger RMs and more preference data delay the peak. In practice, track KL, stop early, use ensembles, and re-collect labels on the current policy's outputs.
+- **Distribution shift:** the RM was trained on SFT-model outputs. Once the policy drifts, the RM is scoring out-of-distribution text, so iterate with fresh comparisons.
+
+**Variants worth knowing**
+
+- **Margin terms** that use rating strength, and **Plackett-Luce**, the extension of Bradley-Terry to full rankings.
+- **Generative or LLM-as-judge RMs** that reason before scoring.
+- **DPO**, which plugs the closed-form optimal KL-regularised policy into the same Bradley-Terry likelihood, so the policy acts as an implicit reward model.
+
+**Evaluating the RM itself:** RewardBench tests whether an RM prefers the verified-better response on curated pairs grouped into chat, hard chat (subtle instruction-following traps), safety (should and should not refuse) and reasoning (code and maths). It is useful as a sanity check, but high RewardBench accuracy does not guarantee good downstream policies. The real test is the policy's quality after RL, judged by humans.
+
+### 17.153 What is benchmark contamination, and how do you detect and prevent it in LLM evaluation?
+
+**Benchmark contamination** means test items, or close paraphrases of them, were in the model's pretraining or fine-tuning data, so the score measures memorisation instead of capability. With web-scale crawls it is the default, not the exception. Benchmarks are posted on GitHub, discussed on forums and copied into tutorials, and synthetic data generated by other models can carry them in again.
+
+**Types**
+
+- **Verbatim:** question and answer text in the corpus.
+- **Paraphrase or translation:** the same items reworded, which n-gram filters miss.
+- **Label or format leakage:** the model has seen answers or the canonical prompt template.
+- **Indirect or benchmark overfitting:** repeated model selection against a public test set, or training on data generated to look like it, with no literal overlap.
+
+**Detection when you control the training data**
+
+- **N-gram or substring overlap:** GPT-3 used 13-gram overlap and GPT-4 used 50-character substring matches. Build a suffix array or Bloom filter over the corpus and report clean versus dirty subset scores. A large gap means the dirty items are inflated.
+- **Embedding or MinHash near-duplicate search** to catch paraphrases (same machinery as dedup).
+- **Decontaminate before training:** strip matches for every benchmark you plan to report, and record the benchmark list and corpus snapshot version.
+
+**Detection for a black-box or third-party model**
+
+| Method | Idea | Caveat |
+| --- | --- | --- |
+| Memorisation probing (Sainz et al.) | Ask the model to reproduce examples from "the test split of dataset X" | Only catches strong verbatim memorisation |
+| Guided completion (Golchin and Surdeanu) | Give the dataset name, split and the first part of an instance, then compare the completion with an unguided prompt using ROUGE or an LLM judge | Needs a careful threshold; paraphrases are harder |
+| Exchangeability test (Oren et al.) | Benchmark examples are exchangeable, so a clean model should not prefer the canonical published order over shuffled orders. Compare log-likelihoods with a permutation test | Needs log-probs; detects whole-file contamination, gives a p-value with false-positive guarantees |
+| Min-K% probability | Contaminated text has few very-low-probability tokens | Threshold calibration is fragile |
+| Fresh-replica gap | Build a new test set with the same distribution and compare scores | Costly but the most convincing |
+
+The replica approach is what GSM1k did. Scale AI wrote 1,250 new grade-school maths problems matched to GSM8K in difficulty. Some model families (notably Phi and Mistral variants) dropped by up to about 13 points, while frontier models showed little gap. The size of the drop correlated with how likely each model was to generate GSM8K text, which is evidence of partial memorisation.
+
+**Prevention in your own evaluation programme**
+
+- **Private, held-out sets** built from your own domain data. Never post them publicly or paste them into third-party chat tools, and rotate items.
+- **Time-based splits:** LiveBench releases new questions regularly, drawn from recent maths competitions, arXiv papers and news, and scores them against objective ground truth so that no LLM judge is needed. Evaluate on items created after the model's training cutoff.
+- **Canary strings** embedded in benchmark files so crawlers can filter them and so a model that reproduces the string proves exposure.
+- **Perturbation checks:** reorder multiple-choice options, change numbers in word problems, paraphrase. Robust skill holds up, while memorisation collapses.
+- **Report clean-subset scores** next to headline numbers, and treat any vendor claim without a contamination analysis with suspicion.
+
+**Interview point:** for a model-selection decision, weight public leaderboard scores lightly. A few hundred private, task-specific items scored with a fixed harness tell you more than a five-point MMLU difference that may be memorisation.
+
+### 17.154 What is model merging, and how do task arithmetic, TIES and SLERP work?
+
+**Model merging** combines the *weights* of two or more fine-tuned models into one model without further training, so you get several skills at the cost of serving a single model. It works because fine-tunes from the **same base model** usually stay in a connected low-loss region of weight space, so their updates can be added or interpolated. Merging models with different architectures or different pretraining runs does not work this way.
+
+**Task vectors and task arithmetic** (Ilharco et al.)
+
+A task vector is the difference between fine-tuned and base weights, $\tau_t = \theta_t - \theta_{\text{base}}$. Merged weights are:
+
+$$
+\theta_{\text{merged}} = \theta_{\text{base}} + \lambda \sum_t \tau_t
+$$
+
+- **Adding** vectors combines skills (for example, code plus instruction-following).
+- **Negating** one removes a behaviour, for example subtracting a vector fine-tuned on toxic text reduces toxicity.
+- **Analogies** such as $\tau_C + (\tau_B - \tau_A)$ transfer a skill to a new domain.
+- $\lambda$ (often 0.3 to 1.0) is tuned on a validation set. Too high overwrites base knowledge.
+
+The problem is **interference**. Many entries in each task vector are small, redundant changes, and where two tasks push the same parameter in opposite directions, averaging cancels both.
+
+**TIES-Merging** (Yadav et al.) fixes this in three steps per parameter:
+
+1. **Trim:** keep only the top-$k$% largest-magnitude entries of each task vector (density, often 20 to 50%) and zero the rest.
+2. **Elect sign:** for each parameter, sum the trimmed values across tasks and keep the sign with the larger total mass.
+3. **Disjoint merge:** average only the values that agree with the elected sign, then add the result back to the base with a scale $\lambda$.
+
+**DARE** (Yu et al.) is a different form of sparsification. It randomly drops a fraction $p$ of each task-vector entry (even 90%) and rescales the survivors by $1/(1-p)$ so that the expected update is unchanged. It is often combined with TIES sign election ("DARE-TIES").
+
+**SLERP** (spherical linear interpolation) merges exactly two models by interpolating along the arc between their weight vectors rather than the straight line:
+
+$$
+\text{slerp}(\theta_0, \theta_1; t) = \frac{\sin((1-t)\Omega)}{\sin \Omega}\,\theta_0 + \frac{\sin(t\Omega)}{\sin \Omega}\,\theta_1
+$$
+
+Here $\Omega$ is the angle between the two weight vectors. Linear averaging of two nearly orthogonal high-dimensional vectors shrinks the norm, while SLERP preserves it. Tools apply it tensor by tensor and often vary $t$ across layers (for example, more of model A in attention, more of model B in MLPs). It falls back to linear interpolation when the vectors are nearly parallel.
+
+**Comparison**
+
+| Method | Models | Needs base model | Handles interference | Typical use |
+| --- | --- | --- | --- | --- |
+| Linear / model soup | Any number | No | No | Averaging checkpoints of one run |
+| Task arithmetic | Any number | Yes | No | Adding or removing a skill |
+| TIES / DARE-TIES | Any number | Yes | Yes | Combining several specialist fine-tunes |
+| SLERP | Two | No | Partly | Blending two strong fine-tunes |
+
+**In practice** (mergekit is the usual tool; you declare the base, the models, and the per-model weight and density in YAML):
+
+```yaml
+merge_method: ties
+base_model: meta-llama/Llama-3.1-8B
+models:
+  - model: org/llama-8b-sql
+    parameters: {weight: 0.5, density: 0.5}
+  - model: org/llama-8b-support
+    parameters: {weight: 0.5, density: 0.5}
+dtype: bfloat16
+```
+
+**Senior-level caveats**
+
+- All inputs must share the tokenizer and base checkpoint. Different chat templates or added tokens break merges quietly.
+- Merging is cheap (CPU, minutes), so it invites leaderboard overfitting through hundreds of merge recipes. Evaluate on private held-out sets for *each* source skill plus general capability and safety.
+- Merged models can lose safety tuning if one parent is unaligned. Re-run red-team suites.
+- Merging is not a replacement for multi-task fine-tuning when you have the data. It is a fast baseline, a way to combine fine-tunes owned by different teams, and a way to recover forgotten capabilities by merging partway back towards the base.
+
+### 17.155 Why are modern LLMs trained on far more tokens than the Chinchilla-optimal amount?
+
+Chinchilla answers one narrow question: for a **fixed training budget**, which model size and token count minimise loss? Real organisations care about the **lifetime cost** of a model, and for a widely served model, inference dominates. A smaller model trained for much longer reaches the same quality at higher training cost but much lower cost per query, so overtraining is the economically optimal choice, not a mistake.
+
+**The arithmetic**
+
+Training costs about $6ND$ FLOPs, while inference costs about $2N$ FLOPs per token, for every token served. With $D_{\text{inf}}$ lifetime inference tokens:
+
+$$
+C_{\text{total}} \approx 6 N D_{\text{train}} + 2 N D_{\text{inf}}
+$$
+
+Once $D_{\text{inf}}$ is in the trillions, which is routine for a popular API or product, the second term dominates and the optimum moves to a smaller $N$ with a larger $D_{\text{train}}$. Sardana et al. ("Beyond Chinchilla-Optimal") built this into the Chinchilla scaling law. For demand of around a billion requests, the cost-optimal model is noticeably smaller and trained longer than Chinchilla suggests. Their training runs showed quality still improving at up to 10,000 tokens per parameter, with no saturation point, although laws fitted only at typical ratios *overestimate* the gain at extreme ratios.
+
+**What practice looks like**
+
+| Model | Params | Tokens | Tokens per parameter |
+| --- | --- | --- | --- |
+| Chinchilla | 70B | 1.4T | about 20 |
+| Llama 2 7B | 7B | 2T | about 285 |
+| Llama 3 8B | 8B | over 15T | about 1,900 |
+| Llama 3 70B | 70B | over 15T | about 215 |
+
+Meta stated that the Chinchilla-optimal budget for an 8B model is about 200B tokens, yet the 8B and 70B models kept improving log-linearly up to 15T tokens. The 405B Llama 3 flagship, by contrast, was sized to be roughly compute-optimal for its budget. That illustrates the rule: train the flagship near the compute-optimal point, and overtrain the models you will serve at volume.
+
+**Other reasons beyond inference FLOPs**
+
+- **Deployment constraints:** an 8B model fits on one GPU, a laptop or a phone. The memory limit fixes $N$, so the only remaining lever is $D$.
+- **Latency:** decoding is memory-bandwidth bound, so fewer parameters means faster tokens, which matters more for reasoning models that produce thousands of tokens per answer.
+- **Cheaper downstream work:** fine-tuning, RL rollouts and distillation all run on the smaller model, and test-time compute techniques (17.150) multiply the inference share even further.
+- **Diminishing but positive returns:** loss keeps falling with more data. Training cost is paid once, while the quality gain is enjoyed on every request.
+
+**Costs and limits**
+
+- **Data supply:** 15T+ high-quality tokens is close to the limit of the deduplicated public web. Teams respond with heavier filtering, multi-epoch repetition (a few epochs of repeated data are nearly as good as fresh data, after which returns fall sharply), synthetic data and multilingual or code expansion.
+- **Training cost** grows linearly with tokens, so overtraining a 7B model to 15T costs more than training a compute-optimal model of the same quality, and the payback depends on actual traffic.
+- **Fine-tuning brittleness:** some studies report that heavily overtrained models are more sensitive to later fine-tuning and quantisation, because the weights are packed more tightly. Evaluate after the INT4 or FP8 conversion you plan to ship, not only at BF16.
+- **Capacity ceiling:** a small model saturates eventually. Hard knowledge-heavy tasks still need more parameters or retrieval.
+
+**Interview one-liner:** "Chinchilla minimises training compute. Production minimises training plus inference cost, so any model expected to serve heavy traffic should be smaller and trained far longer, as long as you have the data."
 
 ---
 
