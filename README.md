@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,645 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,662 interview questions with worked yes answers, in 31 chapters across 6 parts._
 
 Last updated 2026-11-16.
 
@@ -14,7 +14,7 @@ Senior Data and AI engineering interviews test more than one discipline. In one 
 
 The book is organised by domain rather than by source. It starts with the foundations that every later topic depends on, then moves through data engineering, machine learning and generative AI, and finishes with the production, architecture and leadership topics that separate senior candidates from mid-level ones. Each chapter is self-contained and can be read on its own before a targeted interview.
 
-It is also the first step on a longer path, from senior engineer today towards a Head of Data and AI role over the next ten to fifteen years. The [Future editions](#future-editions) section lists the leadership domains to be added along the way.
+It is also the first step on a longer path, from senior engineer today towards a Head of Data and AI role over the next ten to fifteen years.
 
 ## Role guide
 
@@ -92,13 +92,13 @@ _Taking data and AI systems to production: services, operations, infrastructure,
 
 | Chapter | Questions |
 |---|---:|
-| 25. [Backend Engineering, APIs and DevOps](part-5-production-systems/25-backend-engineering-apis-and-devops.md) | 20 |
+| 25. [Backend Engineering, APIs and DevOps](part-5-production-systems/25-backend-engineering-apis-and-devops.md) | 37 |
 | 26. [MLOps and LLMOps](part-5-production-systems/26-mlops-and-llmops.md) | 73 |
 | 27. [AI Infrastructure and Inference Optimization](part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md) | 62 |
 | 28. [Machine Learning System Design](part-5-production-systems/28-machine-learning-system-design.md) | 27 |
 | 29. [Generative AI System Design](part-5-production-systems/29-generative-ai-system-design.md) | 49 |
 | 30. [AI Safety, Security and Responsible AI](part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) | 52 |
-| **Part total** | **283** |
+| **Part total** | **300** |
 
 ### Part VI — Professional Practice
 
@@ -109,16 +109,4 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 44 |
 | **Part total** | **44** |
 
-**Total: 1,645 questions.**
-
----
-
-## Future editions
-
-The current edition covers the engineering ladder in depth. To support the move towards Head of Data and AI, planned chapters include:
-
-- **Data and AI strategy:** roadmaps, build vs. buy, and measuring the return on data and AI investment
-- **Data governance and regulation:** privacy, data contracts, and AI regulation such as the EU AI Act
-- **Organisation design:** hiring, leveling and structuring data and AI teams
-- **Executive communication:** stakeholder management and presenting to leadership and boards
-- **Leadership stories:** a bank of STAR-format examples for leadership-level behavioural interviews
+**Total: 1,662 questions.**
