@@ -2,9 +2,9 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,754 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,760 interview questions with worked answers, in 31 chapters across 6 parts._
 
-Last updated 2026-11-16.
+Last updated 2026-11-17.
 
 ---
 
@@ -106,7 +106,7 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 
 | Chapter | Questions |
 |---|---:|
-| 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 44 |
-| **Part total** | **44** |
+| 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 50 |
+| **Part total** | **50** |
 
-**Total: 1,754 questions.**
+**Total: 1,760 questions.**
