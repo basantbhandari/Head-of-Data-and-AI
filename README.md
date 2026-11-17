@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,802 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,807 interview questions with worked answers, in 31 chapters across 6 parts._
 
 Last updated 2026-11-17.
 
@@ -47,11 +47,11 @@ _Designing, storing, moving and governing data at scale: the platform that every
 
 | Chapter | Questions |
 |---|---:|
-| 4. [Data Engineering Fundamentals and Architecture](part-2-data-engineering/04-data-engineering-fundamentals-and-architecture.md) | 45 |
+| 4. [Data Engineering Fundamentals and Architecture](part-2-data-engineering/04-data-engineering-fundamentals-and-architecture.md) | 46 |
 | 5. [SQL, Databases and Data Modeling](part-2-data-engineering/05-sql-databases-and-data-modeling.md) | 49 |
 | 6. [Distributed Processing and Streaming](part-2-data-engineering/06-distributed-processing-and-streaming.md) | 47 |
 | 7. [Pipelines and Orchestration](part-2-data-engineering/07-pipelines-and-orchestration.md) | 29 |
-| **Part total** | **170** |
+| **Part total** | **171** |
 
 ### Part III — Machine Learning
 
@@ -62,13 +62,13 @@ _Classical and deep learning, from first principles to the judgment calls interv
 | 8. [Machine Learning Fundamentals](part-3-machine-learning/08-machine-learning-fundamentals.md) | 99 |
 | 9. [Machine Learning Algorithms](part-3-machine-learning/09-machine-learning-algorithms.md) | 81 |
 | 10. [Data Preprocessing and Feature Engineering](part-3-machine-learning/10-data-preprocessing-and-feature-engineering.md) | 38 |
-| 11. [Optimization and Training Dynamics](part-3-machine-learning/11-optimization-and-training-dynamics.md) | 38 |
+| 11. [Optimization and Training Dynamics](part-3-machine-learning/11-optimization-and-training-dynamics.md) | 41 |
 | 12. [Model Evaluation and Experimentation](part-3-machine-learning/12-model-evaluation-and-experimentation.md) | 58 |
 | 13. [Deep Learning](part-3-machine-learning/13-deep-learning.md) | 97 |
 | 14. [Natural Language Processing](part-3-machine-learning/14-natural-language-processing.md) | 43 |
 | 15. [Computer Vision](part-3-machine-learning/15-computer-vision.md) | 47 |
 | 16. [Reinforcement Learning](part-3-machine-learning/16-reinforcement-learning.md) | 86 |
-| **Part total** | **587** |
+| **Part total** | **590** |
 
 ### Part IV — Generative AI and LLM Engineering
 
@@ -78,13 +78,13 @@ _Large language models and the systems built around them: prompting, retrieval, 
 |---|---:|
 | 17. [Large Language Model Foundations](part-4-generative-ai/17-large-language-model-foundations.md) | 155 |
 | 18. [Prompt and Context Engineering](part-4-generative-ai/18-prompt-and-context-engineering.md) | 44 |
-| 19. [Embeddings and Vector Databases](part-4-generative-ai/19-embeddings-and-vector-databases.md) | 37 |
+| 19. [Embeddings and Vector Databases](part-4-generative-ai/19-embeddings-and-vector-databases.md) | 38 |
 | 20. [Retrieval-Augmented Generation](part-4-generative-ai/20-retrieval-augmented-generation.md) | 70 |
 | 21. [AI Agents and Agentic Systems](part-4-generative-ai/21-ai-agents-and-agentic-systems.md) | 64 |
 | 22. [Fine-Tuning and Model Adaptation](part-4-generative-ai/22-fine-tuning-and-model-adaptation.md) | 41 |
 | 23. [Multimodal AI](part-4-generative-ai/23-multimodal-ai.md) | 39 |
 | 24. [Evaluation and Testing of AI Systems](part-4-generative-ai/24-evaluation-and-testing-of-ai-systems.md) | 42 |
-| **Part total** | **492** |
+| **Part total** | **493** |
 
 ### Part V — Production Systems and Architecture
 
@@ -109,4 +109,4 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 50 |
 | **Part total** | **50** |
 
-**Total: 1,802 questions.**
+**Total: 1,807 questions.**

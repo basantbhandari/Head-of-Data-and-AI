@@ -905,18 +905,26 @@ Much business data arrives as **events**: clicks, transactions, logins, support 
 
 **Pitfalls:** windows that include events after the prediction time; events that arrive late (a refund recorded days later); entities with no events (decide between zero and missing, and add indicators); and very many generated features that overfit.
 
-```sql
-SELECT c.customer_id, c.as_of_date,
-       COUNT(t.txn_id)                                   AS txn_cnt_30d,
-       SUM(t.amount)                                     AS spend_30d,
-       COUNT(DISTINCT t.merchant_id)                     AS merchants_30d,
-       DATE_DIFF(c.as_of_date, MAX(t.txn_date), DAY)     AS days_since_last_txn
-FROM snapshots c
-LEFT JOIN transactions t
-  ON t.customer_id = c.customer_id
- AND t.txn_date <  c.as_of_date
- AND t.txn_date >= DATE_SUB(c.as_of_date, INTERVAL 30 DAY)
-GROUP BY c.customer_id, c.as_of_date;
+```python
+import pandas as pd
+
+# snapshots: one row per (customer_id, as_of_date); transactions: customer_id, txn_id, txn_date, amount, merchant_id
+joined = snapshots.merge(transactions, on="customer_id", how="left")
+in_window = (joined["txn_date"] < joined["as_of_date"]) & (
+    joined["txn_date"] >= joined["as_of_date"] - pd.Timedelta(days=30))   # strictly before the prediction time
+window = joined[in_window]
+
+feats = (window.groupby(["customer_id", "as_of_date"])
+         .agg(txn_cnt_30d=("txn_id", "count"),
+              spend_30d=("amount", "sum"),
+              merchants_30d=("merchant_id", "nunique"),
+              last_txn_date=("txn_date", "max"))
+         .reset_index())
+feats["days_since_last_txn"] = (feats["as_of_date"] - feats["last_txn_date"]).dt.days
+
+# keep customers with no events in the window: counts become 0, recency stays missing
+features = snapshots.merge(feats.drop(columns="last_txn_date"), on=["customer_id", "as_of_date"], how="left")
+features[["txn_cnt_30d", "spend_30d", "merchants_30d"]] = features[["txn_cnt_30d", "spend_30d", "merchants_30d"]].fillna(0)
 ```
 
 ### 10.33 How do you turn text into features for classical machine learning models?

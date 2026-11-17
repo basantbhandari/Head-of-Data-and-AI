@@ -4,7 +4,7 @@ _Part II — Data Engineering_
 
 Warehouses, lakes and lakehouses, storage formats, cloud data platforms, data quality, security and governance. These questions test whether a candidate can design a data platform, not just operate one.
 
-This chapter contains **45 questions**.
+This chapter contains **46 questions**.
 
 ## Contents
 
@@ -53,6 +53,7 @@ This chapter contains **45 questions**.
 - **4.43** [How do you control and optimise cost on a cloud data platform (warehouse and lakehouse FinOps)?](#443-how-do-you-control-and-optimise-cost-on-a-cloud-data-platform-warehouse-and-lakehouse-finops)
 - **4.44** [How would you design a real-time clickstream analytics pipeline for a large e-commerce site?](#444-how-would-you-design-a-real-time-clickstream-analytics-pipeline-for-a-large-e-commerce-site)
 - **4.45** [How would you design a data platform for a mid-size company from scratch, and what would you build vs buy?](#445-how-would-you-design-a-data-platform-for-a-mid-size-company-from-scratch-and-what-would-you-build-vs-buy)
+- **4.46** [How would you design an enterprise ontology, and how do data platforms and AI agents use it?](#446-how-would-you-design-an-enterprise-ontology-and-how-do-data-platforms-and-ai-agents-use-it)
 
 ---
 
@@ -829,6 +830,78 @@ For a mid-size company (say 200 to 2,000 employees, a data team of 5 to 20, tera
 3. **Months 9 to 18:** streaming only where a use case needs it, ML platform capabilities, data contracts with source teams, and domain ownership if the organisation is large enough.
 
 **Common mistakes:** building a Kubernetes-plus-Spark platform when a managed warehouse would do; buying ten tools before having one trusted metric; skipping governance until an audit forces it; and having no owner for each dataset. A senior candidate frames success in business terms: time to answer a new question, trust in the numbers, and cost per insight, not in the number of tools deployed.
+
+### 4.46 How would you design an enterprise ontology, and how do data platforms and AI agents use it?
+
+An **ontology** is a formal model of a domain: its entity types, their attributes, the relationships between them and the rules that constrain them (see 8.88 for the definition and 20.46 for its role in retrieval). An **enterprise ontology** applies this to the business itself (customers, accounts, products, orders, suppliers, assets) so that every system, analyst and AI application shares one meaning for each concept.
+
+**How it differs from related artefacts**
+
+| Artefact | What it defines | Example |
+| --- | --- | --- |
+| Business glossary | Words and definitions | "Active customer: purchased in the last 90 days" |
+| Semantic (metrics) layer | Certified metrics and dimensions for analytics | Revenue, churn rate by region |
+| Data catalog | Where data lives, owners, lineage | Table `sales.orders`, owned by the commerce team |
+| Ontology | Entity types, relationships and rules across systems | A Customer *owns* Accounts; an Order *contains* Products and *is fulfilled by* a Warehouse |
+| Knowledge graph | The actual instances and facts organised by the ontology | Customer 123 owns Account 456 |
+
+**Design process**
+
+1. **Start from use cases, not from modelling the whole world.** Write **competency questions** the ontology must answer, for example "Which customers are exposed to supplier X's delayed shipments?" or "Which contracts reference a sanctioned entity?". They define the scope and later serve as tests.
+2. **Reuse existing standards** where they fit: schema.org for general entities, FIBO for financial services, SNOMED CT and HL7 FHIR in healthcare, GS1 for products and supply chains. Extend rather than reinvent.
+3. **Model the core:** a small set of entity types with clear identifiers, the key relationships, cardinalities and constraints. Keep it to what the use cases need; add detail when a new use case requires it.
+4. **Choose a representation:**
+   - **RDF and OWL** with SHACL constraints: standards-based, strong for reasoning, integration and publishing linked data; a steeper learning curve.
+   - **Labelled property graph** (for example Neo4j) with a documented schema: easier for engineers, good for graph analytics and applications.
+   - **Object model in a data platform** (the approach popularised by Palantir's ontology): business objects backed by datasets, with typed links and **actions** that applications and agents can invoke.
+5. **Map sources to the ontology:** link each system's tables and fields to ontology types and properties. Resolve identities across systems (entity resolution, see 28.34) so that "customer" in the CRM, billing and support systems becomes one entity. Decide whether the knowledge graph is materialised (copied into a graph store) or virtual (queries translated to source systems).
+6. **Govern it like a product:** named owners per domain, versioning, a change process with review, documentation, and deprecation rules. An unowned ontology drifts out of date quickly.
+
+**How data platforms and AI use it**
+
+- **Data integration and quality:** one canonical model to map sources into; constraints become automated validation rules.
+- **Discovery and governance:** the catalog links datasets to business concepts; access policies can be defined on concepts (for example, all attributes typed as personal data).
+- **GraphRAG and question answering:** the ontology defines which entities and relations to extract from documents and how to traverse them for multi-hop questions (see 20.15).
+- **Structured extraction with LLMs:** ontology types become the output schemas for extraction, so LLM outputs are typed and validated against the ontology's constraints before loading.
+- **Text-to-SQL and analytics assistants:** describing entities, relationships and join paths in ontology terms gives the model a far better map of the data than raw table names.
+- **AI agents:** the ontology gives agents a typed world model: objects they can look up, relationships they can follow, and permitted actions with defined inputs and authorisation. This makes agent behaviour more reliable, auditable and safer than giving them raw database access.
+
+**Common pitfalls**
+
+- Trying to model the entire enterprise before delivering a use case ("boiling the ocean").
+- Academic over-modelling that engineers and analysts cannot use.
+- No adoption path: if applications and pipelines do not depend on it, it becomes documentation that nobody updates.
+- Ignoring identity resolution, so the graph contains several unconnected versions of the same customer.
+
+**Measuring success:** competency questions answered correctly, number of sources and applications mapped to it, time to integrate a new source, data quality issues caught by ontology constraints, and accuracy of AI applications grounded in it.
+
+```python
+from rdflib import Graph, Namespace, Literal, RDF, RDFS
+
+EX = Namespace("https://example.com/ontology/")
+g = Graph()
+g.bind("ex", EX)
+
+# Schema: classes and relationships
+for cls in ["Customer", "Account", "Order", "Product"]:
+    g.add((EX[cls], RDF.type, RDFS.Class))
+g.add((EX.owns, RDFS.domain, EX.Customer))
+g.add((EX.owns, RDFS.range, EX.Account))
+g.add((EX.placedBy, RDFS.domain, EX.Order))
+g.add((EX.placedBy, RDFS.range, EX.Customer))
+
+# Instances (the knowledge graph)
+g.add((EX.cust_123, RDF.type, EX.Customer))
+g.add((EX.cust_123, RDFS.label, Literal("Asha Shrestha")))
+g.add((EX.acct_456, RDF.type, EX.Account))
+g.add((EX.cust_123, EX.owns, EX.acct_456))
+g.add((EX.order_789, RDF.type, EX.Order))
+g.add((EX.order_789, EX.placedBy, EX.cust_123))
+
+# Traverse: which accounts belong to the customer who placed order_789?
+customer = g.value(EX.order_789, EX.placedBy)
+print([str(a) for a in g.objects(customer, EX.owns)])
+```
 
 ---
 

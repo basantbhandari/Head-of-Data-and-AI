@@ -4,7 +4,7 @@ _Part IV — Generative AI and LLM Engineering_
 
 Embedding models, similarity search, ANN index internals (HNSW, IVF, product quantisation), late interaction and learned sparse retrieval, and sizing, securing and operating a vector store.
 
-This chapter contains **37 questions**.
+This chapter contains **38 questions**.
 
 ## Contents
 
@@ -45,6 +45,7 @@ This chapter contains **37 questions**.
 - **19.35** [Why should you not use a fixed similarity score threshold to decide whether a result is relevant?](#1935-why-should-you-not-use-a-fixed-similarity-score-threshold-to-decide-whether-a-result-is-relevant)
 - **19.36** [Are embeddings sensitive data, and how do you secure a vector database?](#1936-are-embeddings-sensitive-data-and-how-do-you-secure-a-vector-database)
 - **19.37** [How would you estimate the size and cost of a vector database deployment?](#1937-how-would-you-estimate-the-size-and-cost-of-a-vector-database-deployment)
+- **19.38** [What are frozen embeddings, and when should you freeze an embedding model instead of fine-tuning it?](#1938-what-are-frozen-embeddings-and-when-should-you-freeze-an-embedding-model-instead-of-fine-tuning-it)
 
 ---
 
@@ -1471,6 +1472,68 @@ Capacity planning starts from four numbers: **number of vectors, dimensions, byt
 - **Re-embedding the whole corpus** for a model change costs the same as initial ingestion; budget for it.
 
 **Levers to cut cost:** quantisation with re-scoring, Matryoshka truncation, disk-based indexes (DiskANN-style), tiered storage for rarely queried data, smaller chunks only where needed, and deduplicating near-identical chunks before embedding.
+
+### 19.38 What are frozen embeddings, and when should you freeze an embedding model instead of fine-tuning it?
+
+A **frozen** embedding model or encoder is used with its pretrained weights unchanged: no gradients flow into it. You compute embeddings with it and train only what sits on top (a classifier head, a ranker, an adapter), or use the embeddings directly for search.
+
+**Where frozen embeddings appear**
+
+- **Feature extraction:** encode text or images once with a pretrained model, then train a small model (logistic regression, gradient-boosted trees, a small MLP) on the vectors. Evaluating a model this way is called a **linear probe**.
+- **Retrieval and RAG:** the embedding model that built the vector index is effectively frozen in production. Changing its weights changes the vector space and requires re-embedding the whole corpus (see 19.9).
+- **Multimodal models:** VLMs often keep the vision encoder frozen while training the projector and the language model (see Chapter 23).
+- **LLM fine-tuning:** the input token embedding matrix is often frozen (with LoRA it is frozen by default). The exception is when **new tokens are added** to the vocabulary: their embedding rows are new and must be trained, or the model cannot use them.
+
+**Frozen compared with fine-tuned**
+
+| Factor | Frozen | Fine-tuned |
+| --- | --- | --- |
+| Labelled data needed | Little (tens to thousands of examples) | More (thousands or more for good gains) |
+| Compute | Embed once, cache, train a tiny head in minutes | GPU training of the encoder |
+| Forgetting and stability | None; general knowledge preserved | Risk of overfitting and catastrophic forgetting |
+| Vector index | Stays valid | Must be rebuilt with every encoder change |
+| Reuse | One embedding store serves many downstream tasks | Each task may need its own encoder |
+| Quality ceiling | Limited by how well pretrained features fit the domain | Higher on domain-specific tasks with enough data |
+
+**When to freeze**
+
+- Little labelled data, or many tasks sharing the same embeddings.
+- The pretrained model already separates the classes well (check with a linear probe or k-nearest-neighbour baseline).
+- Production constraints: no budget for re-indexing, strict latency, or embeddings computed once and stored for a large corpus.
+
+**When to fine-tune**
+
+- The domain is far from the pretraining data (legal, medical, code, a low-resource language) and a linear probe plateaus too low.
+- Enough in-domain pairs or labels exist (see 19.17).
+
+**Middle grounds**
+
+- **Linear probe, then fine-tune (LP-FT):** train the head on frozen features first, then unfreeze with a small learning rate. This avoids the randomly initialised head damaging the pretrained features early in training.
+- **Partial unfreezing:** fine-tune only the top layers.
+- **Parameter-efficient tuning** (LoRA or adapters) on the encoder.
+- **Query-side adapter for retrieval:** keep document embeddings frozen and learn a small transformation applied only to query embeddings. Retrieval improves for your domain without re-embedding the corpus.
+
+```python
+from sentence_transformers import SentenceTransformer
+from sklearn.linear_model import LogisticRegression
+
+encoder = SentenceTransformer("all-MiniLM-L6-v2")      # frozen: used only for inference
+X_train = encoder.encode(train_texts, batch_size=64, normalize_embeddings=True)
+X_test = encoder.encode(test_texts, batch_size=64, normalize_embeddings=True)
+
+clf = LogisticRegression(max_iter=1000).fit(X_train, y_train)   # linear probe on frozen embeddings
+print("accuracy:", clf.score(X_test, y_test))
+```
+
+```python
+import torch
+
+# Freezing an encoder inside a PyTorch model: only the head receives gradient updates
+for p in model.encoder.parameters():
+    p.requires_grad = False
+model.encoder.eval()                                   # also fixes dropout and normalisation statistics
+optimizer = torch.optim.AdamW((p for p in model.parameters() if p.requires_grad), lr=1e-3)
+```
 
 ---
 
