@@ -2,9 +2,9 @@
 
 _Part IV — Generative AI and LLM Engineering_
 
-Prompting techniques, structured outputs, context management and prompt lifecycle in production.
+Prompting techniques, structured outputs, context engineering for agents, prompt caching, long context versus retrieval, reasoning models and prompt lifecycle in production.
 
-This chapter contains **36 questions**.
+This chapter contains **44 questions**.
 
 ## Contents
 
@@ -34,16 +34,24 @@ This chapter contains **36 questions**.
 - **18.24** [Your few-shot prompting gives inconsistent results across similar inputs. How do you stabilize it?](#1824-your-few-shot-prompting-gives-inconsistent-results-across-similar-inputs-how-do-you-stabilize-it)
 - **18.25** [Your LLM classification system is too sensitive to prompt wording changes. How do you reduce prompt sensitivity?](#1825-your-llm-classification-system-is-too-sensitive-to-prompt-wording-changes-how-do-you-reduce-prompt-sensitivity)
 - **18.26** [Your chatbot's system prompt containing proprietary business logic is being leaked by users. How do you prevent it?](#1826-your-chatbots-system-prompt-containing-proprietary-business-logic-is-being-leaked-by-users-how-do-you-prevent-it)
-- **18.27** [Your LLM agent is vulnerable to prompt injection that reveals the system prompt. How do you defend it?](#1827-your-llm-agent-is-vulnerable-to-prompt-injection-that-reveals-the-system-prompt-how-do-you-defend-it)
-- **18.28** [Your chain-of-thought prompting is not improving LLM accuracy on reasoning tasks. What do you fix?](#1828-your-chain-of-thought-prompting-is-not-improving-llm-accuracy-on-reasoning-tasks-what-do-you-fix)
-- **18.29** [Your AI system works in English but fails for other languages. How do you add multilingual support?](#1829-your-ai-system-works-in-english-but-fails-for-other-languages-how-do-you-add-multilingual-support)
-- **18.30** [Your zero-shot cross-lingual transfer from English fails on other languages. How do you fix it?](#1830-your-zero-shot-cross-lingual-transfer-from-english-fails-on-other-languages-how-do-you-fix-it)
-- **18.31** [What is an extraction pipeline?](#1831-what-is-an-extraction-pipeline)
-- **18.32** [What does schema enforcement mean, and how is it achieved?](#1832-what-does-schema-enforcement-mean-and-how-is-it-achieved)
-- **18.33** [What is a validation/repair loop?](#1833-what-is-a-validationrepair-loop)
-- **18.34** [What is context window budgeting?](#1834-what-is-context-window-budgeting)
-- **18.35** [What does "prompt versioning" mean?](#1835-what-does-prompt-versioning-mean)
-- **18.36** [What is dynamic few-shot selection?](#1836-what-is-dynamic-few-shot-selection)
+- **18.27** [Your chain-of-thought prompting is not improving LLM accuracy on reasoning tasks. What do you fix?](#1827-your-chain-of-thought-prompting-is-not-improving-llm-accuracy-on-reasoning-tasks-what-do-you-fix)
+- **18.28** [Your AI system works in English but fails for other languages. How do you add multilingual support?](#1828-your-ai-system-works-in-english-but-fails-for-other-languages-how-do-you-add-multilingual-support)
+- **18.29** [What is an extraction pipeline, and how do you build a reliable one with LLMs?](#1829-what-is-an-extraction-pipeline-and-how-do-you-build-a-reliable-one-with-llms)
+- **18.30** [What does schema enforcement mean for LLM outputs, and how is it achieved?](#1830-what-does-schema-enforcement-mean-for-llm-outputs-and-how-is-it-achieved)
+- **18.31** [What is a validation and repair loop?](#1831-what-is-a-validation-and-repair-loop)
+- **18.32** [What is context window budgeting?](#1832-what-is-context-window-budgeting)
+- **18.33** [What does prompt versioning mean, and how do you manage prompts in production?](#1833-what-does-prompt-versioning-mean-and-how-do-you-manage-prompts-in-production)
+- **18.34** [What is dynamic few-shot selection, and how do you implement it?](#1834-what-is-dynamic-few-shot-selection-and-how-do-you-implement-it)
+- **18.35** [What is context engineering, and how does it differ from prompt engineering?](#1835-what-is-context-engineering-and-how-does-it-differ-from-prompt-engineering)
+- **18.36** [How does prompt caching work, and how do you design prompts to benefit from it?](#1836-how-does-prompt-caching-work-and-how-do-you-design-prompts-to-benefit-from-it)
+- **18.37** [How do you manage context in long-running agents?](#1837-how-do-you-manage-context-in-long-running-agents)
+- **18.38** [How do you design tool descriptions and schemas so a model uses tools correctly?](#1838-how-do-you-design-tool-descriptions-and-schemas-so-a-model-uses-tools-correctly)
+- **18.39** [Long context or RAG: when should you put everything in the context window, and when should you retrieve?](#1839-long-context-or-rag-when-should-you-put-everything-in-the-context-window-and-when-should-you-retrieve)
+- **18.40** [How do you prompt reasoning models differently from standard chat models?](#1840-how-do-you-prompt-reasoning-models-differently-from-standard-chat-models)
+- **18.41** [How do you structure a production system prompt?](#1841-how-do-you-structure-a-production-system-prompt)
+- **18.42** [How do you handle prompt regressions when the underlying model is upgraded?](#1842-how-do-you-handle-prompt-regressions-when-the-underlying-model-is-upgraded)
+- **18.43** [What is context rot, and how do you find a model's effective context length?](#1843-what-is-context-rot-and-how-do-you-find-a-models-effective-context-length)
+- **18.44** [What is automatic prompt optimisation, and how do frameworks like DSPy work?](#1844-what-is-automatic-prompt-optimisation-and-how-do-frameworks-like-dspy-work)
 
 ---
 
@@ -996,21 +1004,11 @@ If the answer is contained only in **Document 50**, the model may fail to retrie
 - Monitor for **prompt-extraction attempts** and rate-limit suspicious behavior.
 - Test against common extraction techniques, including requests to *ignore previous instructions*, role-play attacks, and indirect prompt injection.
 - Assume that **anything placed in the model's context is potentially recoverable**; prompts should not be treated as a secure secret store.
+- **Filter outputs:** check responses for system-prompt leakage, credentials and internal URLs before returning them. A unique canary string placed in the system prompt makes leaks easy to detect in outputs and logs.
+- **Use injection detectors as a signal, not the only defence:** classifiers or rules can flag "ignore previous instructions" style attacks, including indirect injection hidden in retrieved documents and tool outputs, but the real protection is that the model has nothing secret to leak and no permissions to abuse.
+- **Turn every successful attack into a regression test,** covering direct, indirect, multi-turn and tool-based injection.
 
-### 18.27 Your LLM agent is vulnerable to prompt injection that reveals the system prompt. How do you defend it?
-
-- **Never trust user input:** Treat all retrieved documents, tool outputs, webpages, and user messages as untrusted data—not instructions.
-- **Separate instructions from data:** Keep system/developer instructions isolated from user-controlled content and clearly define trusted instruction boundaries.
-- **Do not expose secrets:** Never place API keys, credentials, internal policies, or sensitive business logic in the prompt if they can be avoided. Store secrets outside the LLM.
-- **Use least-privilege tools:** Give the agent only the tools and permissions it actually needs. Require authorization for sensitive actions.
-- **Validate tool calls:** Use schemas, allowlists, and server-side checks so the model cannot freely construct dangerous operations.
-- **Add an injection detector:** Detect patterns such as “ignore previous instructions,” requests for system prompts, or malicious instructions embedded in retrieved documents. Treat detection as a signal, not the sole defense.
-- **Constrain retrieved content:** Clearly mark RAG content as untrusted context and prevent retrieved text from overriding higher-priority instructions.
-- **Use output filtering:** Check responses for system-prompt leakage, credentials, internal URLs, or other sensitive information before returning them.
-- **Keep sensitive logic server-side:** Authorization, permissions, financial decisions, database access, and security rules should be enforced by application code—not by the LLM.
-- **Test continuously:** Red-team the agent with direct, indirect, multi-turn, and tool-based prompt-injection attacks and add successful attacks to regression tests.
-
-### 18.28 Your chain-of-thought prompting is not improving LLM accuracy on reasoning tasks. What do you fix?
+### 18.27 Your chain-of-thought prompting is not improving LLM accuracy on reasoning tasks. What do you fix?
 
 - **Verify whether CoT is actually the bottleneck:** Establish a baseline with direct prompting, few-shot prompting, and structured reasoning.
 - **Improve the examples:** Use high-quality few-shot examples that demonstrate the correct reasoning pattern, not just the final answer.
@@ -1023,7 +1021,7 @@ If the answer is contained only in **Document 50**, the model may fail to retrie
 - **Evaluate systematically:** Create a representative benchmark and analyze failure cases rather than assuming longer reasoning means better accuracy.
 - **Consider model limitations:** If the model consistently fails despite prompt improvements, use a stronger reasoning model, fine-tuning, retrieval, or a tool-augmented architecture.
 
-### 18.29 Your AI system works in English but fails for other languages. How do you add multilingual support?
+### 18.28 Your AI system works in English but fails for other languages. How do you add multilingual support?
 
 - **Identify target languages:** Prioritize languages based on user base and business requirements.
 - **Use a multilingual model:** Choose an LLM with strong native support for the required languages rather than relying entirely on English translation.
@@ -1035,43 +1033,404 @@ If the answer is contained only in **Document 50**, the model may fail to retrie
 - **Localize output:** Ensure the model responds in the user's language and preserves names, dates, numbers, units, and domain terminology correctly.
 - **Evaluate per language:** Measure accuracy, hallucination rate, retrieval quality, latency, and safety separately for each language instead of using only an overall score.
 - **Fine-tune if necessary:** If prompting and multilingual models are insufficient, fine-tune with high-quality language-specific examples.
+- **When zero-shot transfer from English fails:** add target-language few-shot examples rather than assuming English demonstrations transfer; for languages the model handles poorly, consider a translate, process, translate-back pipeline that preserves key terminology; and for low-resource languages, grow training and evaluation data with translation, back-translation and carefully reviewed synthetic data.
 
-### 18.30 Your zero-shot cross-lingual transfer from English fails on other languages. How do you fix it?
+### 18.29 What is an extraction pipeline, and how do you build a reliable one with LLMs?
 
-- **Use a multilingual model:** Replace an English-centric model with one pretrained on diverse multilingual data.
-- **Add multilingual few-shot examples:** Provide examples in the target language instead of assuming English demonstrations transfer perfectly.
-- **Use language-specific prompts:** Adapt terminology, formatting, cultural context, and task instructions to each language.
-- **Improve training data:** Add high-quality parallel and task-specific data for poorly performing languages.
-- **Use multilingual embeddings:** For cross-lingual RAG, use embeddings trained to align different languages in the same vector space.
-- **Handle low-resource languages:** Use translation, synthetic data, back-translation, and targeted fine-tuning to increase training coverage.
-- **Check tokenization:** Poor tokenization can hurt languages with different scripts or morphology, so evaluate token efficiency and vocabulary coverage.
-- **Use intermediate translation when appropriate:** For a language the model handles poorly, translate → reason/process → translate back, while preserving important terminology.
-- **Evaluate per language:** Create separate benchmarks for accuracy, hallucination, retrieval, and safety rather than relying on English performance.
-- **Fine-tune selectively:** Fine-tune on high-quality target-language examples when prompting and multilingual pretraining aren't enough.
+An **extraction pipeline** turns unstructured or semi-structured documents (PDFs, scanned forms, contracts, invoices, emails, filings) into **structured records**: JSON objects, database rows or events that downstream systems can use.
 
-### 18.31 What is an extraction pipeline?
+**Typical stages**
 
-A system that turns unstructured documents — PDFs, filings, etc. — into structured JSON or database rows.
+```text
+ingest ─► parse (text layer, OCR, layout and tables) ─► classify document type
+  ─► split into relevant sections ─► LLM extraction against a schema
+  ─► validate (types, business rules, cross-field checks) ─► repair or route to human review
+  ─► store with provenance (source page, span, model and prompt version) ─► downstream systems
+```
 
-### 18.32 What does schema enforcement mean, and how is it achieved?
+**Design choices that matter**
 
-Forcing model output into a predefined structure, using tools like Instructor, Outlines, or constrained decoding, so downstream systems can rely on consistent output shape.
+- **Parsing quality first.** Most extraction errors come from bad text: broken tables, reading order on multi-column pages, OCR errors. Use layout-aware parsers or vision-language models for complex documents.
+- **One schema per document type,** with field descriptions, types, enums and units. Classify the document first, then use the matching schema.
+- **Structured outputs** (JSON Schema with constrained decoding) so the result always parses.
+- **Ask for evidence:** have the model return the source text span or page for each field. This enables verification, highlighting in a review UI, and audits.
+- **Allow "not found".** Make fields nullable so the model does not invent values when information is missing.
+- **Chunk long documents** by section and merge results, with rules for conflicts (for example, take the value from the signature page).
+- **Validation and human review:** business rules (totals add up, dates in a valid range, IDs match a checksum), confidence signals, and a review queue for failures.
 
-### 18.33 What is a validation/repair loop?
+**Evaluation:** a labelled set of documents with field-level ground truth. Measure per-field precision, recall and exact match, document-level accuracy (all critical fields correct), the human review rate, and cost per document.
 
-An automated process that detects failed validation and retries or corrects the output, instead of letting the extraction fail silently.
+### 18.30 What does schema enforcement mean for LLM outputs, and how is it achieved?
 
-### 18.34 What is context window budgeting?
+**Schema enforcement** means guaranteeing that model output matches a predefined structure (required fields, types, enums, nesting), so downstream code can parse it without defensive guesswork. There are three levels of enforcement, from weakest to strongest.
 
-Deliberately managing what content fits inside the context window to balance cost against accuracy.
+**1. Prompting only**
 
-### 18.35 What does "prompt versioning" mean?
+- Describe the schema and give an example. Works most of the time, but nothing guarantees the output parses.
 
-Treating prompts like code — tracked in version control and rollback-able — rather than editing them ad hoc in production.
+**2. Validate after generation**
 
-### 18.36 What is dynamic few-shot selection?
+- Parse the output and validate it with Pydantic, JSON Schema or Zod. Libraries such as Instructor wrap this with automatic retries that send the validation error back to the model.
+- Catches errors, but each failure costs another call.
 
-Picking the best few-shot examples for each specific input, rather than using a fixed static set for every request.
+**3. Constrained decoding (guaranteed structure)**
+
+- At each generation step, the decoder **masks out every token that would make the output invalid** according to the schema or a grammar, so the model can only produce valid output.
+- The schema is compiled into a finite-state machine or grammar; libraries such as Outlines, XGrammar and llama.cpp grammars do this for self-hosted models, and most hosted APIs offer a strict structured-output mode that accepts a JSON Schema.
+
+**Caveats**
+
+- Constrained decoding guarantees **structure, not correctness**: a valid JSON object can still contain a wrong value. Business-rule validation is still needed.
+- Forcing the model to emit the answer field immediately can reduce quality on reasoning-heavy tasks. Put a reasoning or explanation field before the answer field, or let the model reason first and then produce the structured result.
+- Very large or deeply recursive schemas can slow compilation or are not supported by every provider; keep schemas simple and flat where possible.
+- Field names and descriptions are part of the prompt. Clear names (`invoice_total_amount`) improve accuracy.
+
+### 18.31 What is a validation and repair loop?
+
+A **validation and repair loop** checks every LLM output against explicit rules and, when a check fails, automatically corrects it, retries, or escalates, instead of letting bad output flow downstream or failing silently.
+
+```text
+generate ─► validate ─┬─ pass ─► accept
+                      └─ fail ─► repair attempt (feed back the specific error) ─► validate again
+                                   └─ still failing after N tries ─► fallback: stronger model, human review, or safe error
+```
+
+**What to validate**
+
+- **Syntax and schema:** parses as JSON, required fields present, correct types and enums.
+- **Business rules:** line items sum to the total, dates are valid and in range, IDs exist in the database, values within plausible bounds.
+- **Grounding:** extracted values or cited facts actually appear in the source document.
+- **Safety and policy:** no personal data where it is not allowed, no banned content.
+
+**Repair strategies, cheapest first**
+
+1. **Deterministic fixes** in code: trim whitespace, normalise dates and currencies, coerce numeric strings.
+2. **Targeted re-prompt:** send the output and the precise error ("`total` is 120.00 but line items sum to 112.50; re-check the document") rather than repeating the original request.
+3. **Escalation:** retry with a stronger model, then route to human review with the error attached.
+
+**Good practice**
+
+- Cap retries (usually one or two) to bound latency and cost.
+- Log every failure type and repair outcome; frequent failures indicate a prompt, schema or parsing problem to fix at the source.
+- Never let repair loops "fix" values by inventing them; if information is missing, the correct output is null plus a flag.
+
+### 18.32 What is context window budgeting?
+
+**Context window budgeting** is deliberately deciding how many tokens each component of a request may use, so that the most valuable information fits, cost and latency stay predictable, and quality does not degrade from overloaded context.
+
+**Components that compete for the window**
+
+| Component | Typical approach |
+| --- | --- |
+| System prompt and instructions | Fixed, kept as short as possible and cacheable |
+| Tool definitions | Only the tools relevant to the task; concise descriptions |
+| Few-shot examples | Few, chosen dynamically for the input |
+| Retrieved documents | Top-k after reranking, with a token cap |
+| Conversation history | Recent turns verbatim, older turns summarised |
+| Memory (user preferences, prior facts) | Retrieved selectively |
+| Reserved output space | Enough for the longest expected answer, plus reasoning tokens for reasoning models |
+
+**How to budget**
+
+1. Set a total input budget well below the model's maximum (quality and cost both suffer near the limit).
+2. Allocate a budget to each component and enforce it in code with a tokenizer, not by character count.
+3. When over budget, degrade in priority order: drop low-ranked retrieved chunks, summarise older history, remove optional examples, and never cut the core instructions.
+4. Measure quality against budget on your evaluation set. Often a smaller, better-selected context beats a larger one.
+
+**Why it matters:** cost and latency grow with input tokens; long contexts dilute attention (the "lost in the middle" effect and general degradation with length); and without a budget, a single long document or conversation can push out the instructions or overflow the window.
+
+### 18.33 What does prompt versioning mean, and how do you manage prompts in production?
+
+**Prompt versioning** means treating prompts as **production code**: every change is tracked, reviewed, tested and deployable or reversible, rather than edited ad hoc in a dashboard or hard-coded across services.
+
+**What to version together**
+
+- The prompt template text (system prompt, instructions, examples).
+- The model name and version, and decoding parameters (temperature, maximum tokens, reasoning effort).
+- Tool definitions and output schemas.
+- Retrieval settings that shape the context (top-k, filters).
+
+A change to any of these can change behaviour, so treat the combination as one versioned configuration.
+
+**Practices**
+
+- **Store prompts in version control** (or a prompt registry backed by it), with code review for changes.
+- **Templates with typed variables,** not string concatenation scattered through the code base.
+- **Automated evaluation in CI:** every change runs against a regression suite of representative and previously failed cases, with thresholds that block a merge if quality drops.
+- **Gradual rollout:** feature flags, A/B tests or canary releases for prompt changes, with fast rollback to the previous version.
+- **Traceability:** log the prompt version with every request, so any production output can be traced to the exact prompt and model that produced it.
+- **Ownership:** each prompt has an owner and a changelog explaining why it changed.
+
+**Tools:** plain git plus configuration files works well; prompt management features in observability platforms (Langfuse, LangSmith and similar) add registries, playgrounds and links to traces.
+
+### 18.34 What is dynamic few-shot selection, and how do you implement it?
+
+**Dynamic few-shot selection** chooses the examples included in the prompt **for each input**, picking those most useful for that particular case, instead of using the same fixed examples for every request.
+
+**Why it helps**
+
+- Examples similar to the input demonstrate exactly the pattern needed (the right label, format or edge-case handling).
+- A large pool of examples can be used without putting all of them in every prompt, which saves tokens.
+- New failure cases can be fixed by adding a corrected example to the pool, without rewriting the prompt.
+
+**Implementation**
+
+```text
+offline: curated example pool (input, ideal output, tags) ─► embed inputs ─► vector index
+online:  new input ─► embed ─► retrieve top-N similar examples
+       ─► select k (diversity, label balance, token budget) ─► order ─► build prompt ─► LLM
+```
+
+- **Similarity retrieval:** nearest neighbours by embedding, optionally filtered by metadata such as language or document type.
+- **Diversity:** use maximal marginal relevance so the examples are not near-duplicates of each other.
+- **Label balance:** for classification, avoid selecting examples that all share one label, which biases the model towards it.
+- **Ordering:** models are sensitive to example order; placing the most similar example last (closest to the input) often works well, but test it.
+
+**Risks and good practice**
+
+- **Pool quality is everything:** wrong examples teach wrong behaviour. Review and version the pool.
+- **Leakage in evaluation:** make sure test inputs are not in the example pool.
+- **Privacy:** examples from real data can expose one customer's information in another customer's prompt; anonymise them.
+- **Measure** against a fixed few-shot baseline and zero-shot; with strong modern models, good instructions sometimes make examples unnecessary.
+
+### 18.35 What is context engineering, and how does it differ from prompt engineering?
+
+**Prompt engineering** is about writing good instructions: wording, structure, examples and output format for a single call. **Context engineering** is the broader discipline of deciding **everything the model sees at each step**: instructions, retrieved knowledge, tool definitions, tool results, conversation history, memory and state, and assembling it within a limited token budget.
+
+The shift matters because modern applications, especially agents, make many model calls in a loop. The prompt text stays mostly fixed, while the context changes at every step. Most failures in such systems come from the context: missing information, irrelevant or conflicting information, stale tool results, or a window so full that important details are ignored.
+
+| Aspect | Prompt engineering | Context engineering |
+| --- | --- | --- |
+| Scope | The instruction text of one call | All information in the window, across many calls |
+| Main questions | How do I phrase the task? Which examples? | What does the model need right now, from where, and in what form? |
+| Typical techniques | Clear instructions, few-shot examples, output formats | Retrieval, memory, summarisation and compaction, tool design, sub-agents, caching, token budgets |
+| Typical failure | Ambiguous or conflicting instructions | Missing, stale, irrelevant or overloaded context |
+
+**Core principles**
+
+- **Smallest set of high-signal tokens:** include what the model needs for this step and nothing else. More context is not automatically better; quality often drops as irrelevant tokens grow.
+- **Just-in-time retrieval:** give the model lightweight references (file paths, document IDs, search tools) and let it fetch details when needed, rather than loading everything up front.
+- **Structure:** clearly separated sections (for example with XML tags or headings) for instructions, documents, tool results and history, so the model knows what each part is and what to trust.
+- **State outside the window:** keep durable state (task plans, notes, user preferences) in external storage and bring back only the relevant parts.
+
+### 18.36 How does prompt caching work, and how do you design prompts to benefit from it?
+
+**Prompt caching** lets an inference provider reuse the computed attention state (the KV cache) for a **prefix** of the prompt that was seen recently. When a new request starts with exactly the same tokens, the model skips recomputing that prefix. This cuts **time to first token** significantly for long prompts, and providers bill cached input tokens at a large discount.
+
+**How it works**
+
+- Caching is **prefix-based**: the cache matches from the first token up to the first difference. Change one token near the start and everything after it is a cache miss.
+- Providers differ in details. Some cache automatically for prompts above a minimum length; others require you to mark cache breakpoints explicitly. Cache entries expire after a short time without use (typically minutes, with longer options on some platforms), and writing to the cache may cost slightly more than a normal input token. Check your provider's current documentation and pricing.
+- Self-hosted servers such as vLLM and SGLang provide the same idea through automatic prefix caching.
+
+**Designing prompts for cache hits**
+
+- **Stable content first, variable content last:** put the system prompt, tool definitions, long reference documents and few-shot examples at the start; put the user's question and per-request data at the end.
+- **Keep the prefix byte-for-byte identical:** no timestamps, request IDs or randomly ordered tool lists near the top. Serialise JSON and tools deterministically.
+- **Append, do not rewrite:** in multi-turn conversations and agent loops, add new messages at the end so the earlier conversation stays cached. Editing or reordering earlier messages invalidates the cache from that point.
+- **Be careful with compaction:** summarising history changes the prefix, so do it occasionally in larger steps, not on every turn.
+- **Route consistently:** for self-hosted fleets, send requests with the same prefix to the same replica (prefix-aware load balancing), or the cache on other replicas does not help.
+
+**Measure it:** log cached versus uncached input tokens per request (most APIs return them), and track cache hit rate, time to first token and cost per request. A drop in hit rate usually means something started changing in the prefix.
+
+### 18.37 How do you manage context in long-running agents?
+
+An agent that works for many steps (coding, research, data analysis) accumulates tool calls, tool results, intermediate reasoning and messages. Eventually the context either overflows or becomes so long and cluttered that quality falls: the agent forgets the goal, repeats work, or acts on stale information. Managing this is one of the central problems of agent design.
+
+**Techniques**
+
+1. **Tool result hygiene**
+   - Return only what the agent needs: truncate long outputs, paginate, and summarise large results. A tool that dumps 50,000 tokens of logs into the context is a design bug.
+   - Clear or shorten old tool results once they have been used; the agent can call the tool again if it needs the detail.
+
+2. **Compaction**
+   - When the context approaches a threshold, summarise the conversation so far into a compact state: the goal, decisions made, important findings, open problems and next steps. Then continue from that summary plus the most recent turns.
+   - The art is choosing what to keep: decisions and unresolved issues are more important than the full history of how they were reached.
+
+3. **Structured external memory (note-taking)**
+   - The agent writes progress notes, a task list or a plan to a file or database, and reads them back when needed. This survives compaction and even new sessions.
+   - Long-term memories (user preferences, project facts) are stored separately and retrieved only when relevant.
+
+4. **Sub-agents**
+   - Delegate a focused sub-task (search a codebase, research a question) to a sub-agent with its own clean context. It returns only a short, distilled result, so the main agent's context stays small.
+   - Trade-off: more total tokens and coordination overhead, and information can be lost in the hand-off.
+
+5. **Just-in-time retrieval**
+   - Keep references (file paths, URLs, IDs) in the context instead of full content, and let the agent load details when it needs them.
+
+**Failure modes to watch for**
+
+- **Context poisoning:** an early mistake or hallucination stays in the context and keeps influencing later steps.
+- **Context distraction:** so much history that the model over-focuses on past actions instead of the goal.
+- **Context confusion and clash:** irrelevant tools or contradictory information lead to wrong actions.
+
+**Evaluation:** test on long tasks, not just short ones; measure task success, steps, tokens and cost; and inspect traces at the points where compaction happened to see what was lost.
+
+### 18.38 How do you design tool descriptions and schemas so a model uses tools correctly?
+
+For an agent or tool-using model, **tool definitions are part of the prompt**. The model decides whether to call a tool, which one, and with what arguments, almost entirely from the names, descriptions and parameter schemas you provide. Poorly designed tools are a leading cause of agent failures.
+
+**Principles**
+
+- **Clear, distinct purposes.** Each tool should do one meaningful job. Overlapping tools (`search_docs`, `find_documents`, `query_kb`) confuse the model about which to use.
+- **Descriptive names and detailed descriptions.** Explain what the tool does, when to use it, when *not* to use it, what it returns, and any limits. Write as if for a new colleague who has never seen the system.
+- **Well-typed parameters.** Use enums for fixed choices, clear formats (ISO dates, units), required versus optional fields, and descriptions with examples for each parameter. Unambiguous names (`user_id` rather than `user`).
+- **Design for the task, not the API.** Instead of exposing ten low-level endpoints the model must chain, offer a higher-level tool that does the common workflow (for example, `schedule_meeting` that checks availability and books, rather than separate list, check and create calls).
+- **Useful, compact outputs.** Return the information the model needs, in a readable form, with human-meaningful identifiers rather than opaque UUIDs where possible. Support pagination and filtering instead of returning huge payloads.
+- **Helpful errors.** When a call fails, return an error that tells the model how to fix it ("`date` must be in the future; received 2024-01-01"), so it can recover.
+- **Keep the tool set small.** Many tools consume context and increase confusion. Load tools dynamically by task, or group them behind a search tool when there are hundreds.
+
+**Safety**
+
+- Validate every argument server-side; never execute model-generated arguments blindly.
+- Least privilege: read-only tools by default, and human confirmation for destructive or external actions.
+- Treat tool outputs as untrusted data that may contain injected instructions.
+
+**Evaluate tools like prompts:** build test tasks, measure tool selection accuracy, argument correctness, number of calls and success rate, read traces of failures, and refine descriptions. Iterating on descriptions alone often produces large improvements.
+
+### 18.39 Long context or RAG: when should you put everything in the context window, and when should you retrieve?
+
+Models with very large context windows make it tempting to skip retrieval and send entire documents. Sometimes that is the right call, but it is a trade-off, not a replacement.
+
+| Factor | Favours long context | Favours retrieval (RAG) |
+| --- | --- | --- |
+| Corpus size | Fits comfortably in the window (one contract, one codebase module, a few reports) | Far larger than any window (a knowledge base, millions of documents) |
+| Task type | Needs the whole document: holistic summary, cross-references, finding inconsistencies | Needs a few specific facts |
+| Query volume and cost | Low volume, or the same document reused with prompt caching | High volume with different documents per query |
+| Latency | Can tolerate long time to first token | Needs fast responses |
+| Freshness and access control | Static content, single user | Frequently changing content, per-user permissions |
+| Citations and auditability | Less critical | Need precise sources |
+
+**Why long context is not free**
+
+- **Cost and latency** scale with input tokens on every call (caching helps when the same document is reused).
+- **Quality degrades with length:** models use information less reliably in very long inputs, especially in the middle, and distractors cause errors. Effective context is usually smaller than the advertised maximum.
+- **No access control** within the window: everything sent can appear in the answer.
+
+**Why RAG is not free either**
+
+- Retrieval can miss the relevant passage, and chunking can break context. Retrieval quality becomes the ceiling for answer quality.
+
+**Practical patterns**
+
+- **Hybrid:** retrieve generously (more and larger chunks, or whole relevant documents) and let a long-context model read them, rather than either extreme.
+- **Long context with caching** for repeated questions over the same document set.
+- **Decide with an evaluation:** compare both approaches on your own questions for accuracy, cost and latency.
+
+### 18.40 How do you prompt reasoning models differently from standard chat models?
+
+**Reasoning models** are trained (typically with reinforcement learning) to produce an extended internal chain of thought before answering. They are much stronger on mathematics, coding, planning and multi-step analysis, but they respond differently to prompting techniques developed for earlier models.
+
+**What changes**
+
+- **Do not script the reasoning.** Instructions such as "think step by step", or detailed step-by-step procedures for how to reason, are usually unnecessary and can even hurt; the model already reasons, often better than the scripted procedure. State the goal, constraints and success criteria instead, and let the model plan.
+- **Be clear about the outcome.** Describe what a good answer looks like, the audience, the format, and what to optimise (correctness, brevity, completeness). High-level guidance works better than micro-management.
+- **Provide complete context.** Reasoning cannot invent missing facts. Give the relevant documents, data and constraints.
+- **Few-shot examples need care.** Examples can over-constrain the approach. Start zero-shot; add examples mainly to show output format.
+- **Control reasoning effort.** Most APIs offer a reasoning effort or thinking budget setting. Use low effort for simple tasks (cheaper and faster) and high effort for hard problems. Remember that reasoning tokens are billed and count towards output limits, so leave enough room.
+- **Do not depend on the visible chain of thought.** Many APIs hide or summarise the reasoning. Ask for a short explanation in the final answer if you need one, and do not parse the internal reasoning in application logic.
+
+**When to use which model**
+
+- Reasoning models: complex analysis, coding, mathematics, planning, ambiguous multi-step tasks, and agent orchestration.
+- Standard models: simple extraction, classification, short rewrites and high-volume, latency-sensitive tasks, where reasoning adds cost and latency without benefit.
+- A router can send each request to the cheapest model that handles it well.
+
+### 18.41 How do you structure a production system prompt?
+
+A production system prompt is a **specification** of the assistant's job. It should be complete enough that a capable new colleague could do the job from it, and organised so that the model, and the engineers maintaining it, can find each part.
+
+**A common structure**
+
+```text
+<role_and_goal>       who the assistant is, who it serves, what success means
+<context>             product, domain facts, user type, current date or environment
+<instructions>        how to approach the task, in priority order
+<constraints>         what not to do, safety and policy rules, scope limits
+<tools>               when to use each tool (if not fully covered by tool descriptions)
+<output_format>       structure, length, tone, language, citation rules
+<examples>            a few representative input-output pairs, including edge cases
+<handling_uncertainty> what to do when information is missing or a request is out of scope
+```
+
+**Writing guidelines**
+
+- **Explain why, not just what.** "Keep answers under 100 words because users read them on mobile" generalises better than a bare rule.
+- **Be specific and positive.** Say what to do ("respond in plain prose paragraphs") rather than only what to avoid.
+- **Set priorities** for conflicting goals (safety over helpfulness, policy over user request) so the model knows how to resolve conflicts.
+- **Use clear delimiters** (XML tags or Markdown headings) to separate instructions from data, and refer to the sections by name.
+- **Put long documents before the instructions and question** when the prompt includes large reference material; models tend to use it better that way.
+- **Avoid contradictions and dead rules.** Prompts accumulate patches over time; review them periodically and remove rules that no longer apply.
+- **Do not put secrets in the prompt.** Assume the prompt can be extracted.
+
+**Process:** start with a minimal prompt, run it on an evaluation set, read the failures, and add instructions that address actual failures, not imagined ones. Version and test every change.
+
+### 18.42 How do you handle prompt regressions when the underlying model is upgraded?
+
+Model providers release new versions and retire old ones regularly, and self-hosted teams swap in better open models. Prompts tuned for one model often behave differently on another: output length, format adherence, refusal behaviour, tool-calling habits and tone all shift. Treat a model upgrade as a **migration project**, not a configuration change.
+
+**Process**
+
+1. **Pin model versions** in production (use dated or versioned model identifiers rather than floating aliases), so changes happen only when you choose.
+2. **Maintain a regression suite** for each prompt: representative cases, known edge cases, previously fixed failures, safety and injection tests, and format checks. This is the foundation; without it, an upgrade is guesswork.
+3. **Run the suite on the new model** with the current prompt. Compare quality metrics, format validity, refusal rate, latency, token usage and cost.
+4. **Read the differences,** not just the scores. Group failures by type (too verbose, ignores a constraint, different tool use).
+5. **Adapt the prompt** to the new model. Often prompts can be simplified: newer models follow instructions more literally, so emphatic or redundant instructions written for older models can cause over-compliance. Remove workarounds that are no longer needed.
+6. **Shadow and canary:** run the new model on a share of production traffic, compare with the current one, then roll out gradually with a quick rollback path.
+7. **Track deprecation dates** for every model in use, and start migrations well before the deadline.
+
+**Design for change:** keep prompts, model settings and evaluation together as versioned configuration; route calls through a gateway that makes switching models a configuration change; and keep the evaluation suite growing with every production incident.
+
+### 18.43 What is context rot, and how do you find a model's effective context length?
+
+**Context rot** is the observation that a model's performance degrades as the input gets longer, even when the input is well within the advertised context window and the relevant information is present. The more tokens in the context, the less reliably the model finds, combines and reasons over the parts that matter.
+
+**Why it happens**
+
+- Attention is spread across more tokens, and models see far fewer very long sequences during training than short ones.
+- **Distractors:** passages that look relevant but are not cause more errors as their number grows.
+- **Position effects:** information in the middle of a long input is often used less reliably than information at the beginning or end ("lost in the middle").
+- Tasks that need **combining several facts** spread across the context degrade much faster than simple lookups.
+
+**Why simple benchmarks overstate effective length:** "needle in a haystack" tests insert one obvious, unrelated sentence into filler text, which is easy because the needle stands out. Harder benchmarks (multi-needle retrieval, multi-hop reasoning, needles semantically similar to the haystack, aggregation tasks such as RULER-style suites) show performance falling well before the maximum length.
+
+**Finding the effective context length for your use case**
+
+1. Build an evaluation with your own kind of documents and questions, including multi-fact questions and realistic distractors.
+2. Run it at increasing context lengths (for example 8k, 32k, 64k, 128k tokens) and at different positions for the key information.
+3. Plot accuracy against length and choose an operating budget where quality is still acceptable.
+
+**Mitigations:** retrieve and rerank rather than including everything; put key information and instructions at the start or end; summarise or compact history; use sub-agents with focused contexts; and keep a context budget well below the maximum.
+
+### 18.44 What is automatic prompt optimisation, and how do frameworks like DSPy work?
+
+Manual prompt engineering is slow, subjective and has to be redone when models change. **Automatic prompt optimisation** treats the prompt as a parameter to be optimised against a metric on a dataset.
+
+**Approaches**
+
+- **LLM-proposed prompts:** an optimiser model proposes new instructions based on the task, current prompt and failures, and the best candidates by measured score are kept (APE and OPRO-style methods). This is meta-prompting with a measurement loop.
+- **Example selection and bootstrapping:** automatically choose or generate the few-shot demonstrations that most improve the metric.
+- **Gradient-like feedback:** use model-written critiques of failures as "textual gradients" to edit the prompt (TextGrad-style methods).
+
+**DSPy**
+
+- You write the program as **modules with signatures** (for example, `question, context -> answer`) instead of hand-written prompts. Modules can be composed into pipelines (retrieve, then reason, then answer).
+- You provide a **metric** (exact match, an LLM judge, a custom function) and a training set.
+- An **optimiser** compiles the program: it bootstraps demonstrations by running the pipeline and keeping traces that score well, and searches over instructions and example combinations (MIPRO-style optimisers propose candidates and search with Bayesian optimisation).
+- The result is optimised prompts for each module for the chosen model. When the model changes, you recompile rather than rewrite by hand.
+
+**When it pays off**
+
+- Tasks with a clear, automatic metric and a few hundred labelled examples.
+- Multi-step pipelines where hand-tuning every step is impractical.
+- Frequent model switches.
+
+**Cautions**
+
+- **Overfitting** to a small training set: keep a held-out test set.
+- **The metric is everything:** a weak LLM-judge metric gets optimised in the wrong direction.
+- **Cost:** optimisation runs many model calls.
+- Optimised prompts can be hard to read; review them before production, and still run the usual regression and safety tests.
 
 ---
 
