@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,840 interview questions with worked answers, in 32 chapters across 7 parts._
+_1,679 interview questions with worked answers, in 32 chapters across 7 parts._
 
 Last updated 2026-11-17.
 
@@ -36,10 +36,10 @@ _The mathematical, statistical and software-engineering bedrock that every other
 
 | Chapter | Questions |
 |---|---:|
-| 1. [Mathematics, Probability and Statistics](part-1-foundations/01-mathematics-probability-and-statistics.md) | 53 |
-| 2. [Python Engineering](part-1-foundations/02-python-engineering.md) | 95 |
+| 1. [Mathematics, Probability and Statistics](part-1-foundations/01-mathematics-probability-and-statistics.md) | 49 |
+| 2. [Python Engineering](part-1-foundations/02-python-engineering.md) | 77 |
 | 3. [Computer Science and Software Design](part-1-foundations/03-computer-science-and-software-design.md) | 26 |
-| **Part total** | **174** |
+| **Part total** | **152** |
 
 ### Part II — Data Engineering
 
@@ -47,11 +47,11 @@ _Designing, storing, moving and governing data at scale: the platform that every
 
 | Chapter | Questions |
 |---|---:|
-| 4. [Data Engineering Fundamentals and Architecture](part-2-data-engineering/04-data-engineering-fundamentals-and-architecture.md) | 46 |
+| 4. [Data Engineering Fundamentals and Architecture](part-2-data-engineering/04-data-engineering-fundamentals-and-architecture.md) | 44 |
 | 5. [SQL, Databases and Data Modeling](part-2-data-engineering/05-sql-databases-and-data-modeling.md) | 49 |
-| 6. [Distributed Processing and Streaming](part-2-data-engineering/06-distributed-processing-and-streaming.md) | 47 |
-| 7. [Pipelines and Orchestration](part-2-data-engineering/07-pipelines-and-orchestration.md) | 29 |
-| **Part total** | **171** |
+| 6. [Distributed Processing and Streaming](part-2-data-engineering/06-distributed-processing-and-streaming.md) | 46 |
+| 7. [Pipelines and Orchestration](part-2-data-engineering/07-pipelines-and-orchestration.md) | 23 |
+| **Part total** | **162** |
 
 ### Part III — Machine Learning
 
@@ -59,16 +59,16 @@ _Classical and deep learning, from first principles to the judgment calls interv
 
 | Chapter | Questions |
 |---|---:|
-| 8. [Machine Learning Fundamentals](part-3-machine-learning/08-machine-learning-fundamentals.md) | 99 |
-| 9. [Machine Learning Algorithms](part-3-machine-learning/09-machine-learning-algorithms.md) | 81 |
+| 8. [Machine Learning Fundamentals](part-3-machine-learning/08-machine-learning-fundamentals.md) | 62 |
+| 9. [Machine Learning Algorithms](part-3-machine-learning/09-machine-learning-algorithms.md) | 57 |
 | 10. [Data Preprocessing and Feature Engineering](part-3-machine-learning/10-data-preprocessing-and-feature-engineering.md) | 38 |
 | 11. [Optimization and Training Dynamics](part-3-machine-learning/11-optimization-and-training-dynamics.md) | 41 |
-| 12. [Model Evaluation and Experimentation](part-3-machine-learning/12-model-evaluation-and-experimentation.md) | 58 |
+| 12. [Model Evaluation and Experimentation](part-3-machine-learning/12-model-evaluation-and-experimentation.md) | 41 |
 | 13. [Deep Learning](part-3-machine-learning/13-deep-learning.md) | 100 |
 | 14. [Natural Language Processing](part-3-machine-learning/14-natural-language-processing.md) | 43 |
 | 15. [Computer Vision](part-3-machine-learning/15-computer-vision.md) | 47 |
 | 16. [Reinforcement Learning](part-3-machine-learning/16-reinforcement-learning.md) | 86 |
-| **Part total** | **593** |
+| **Part total** | **515** |
 
 ### Part IV — Generative AI and LLM Engineering
 
@@ -79,12 +79,12 @@ _Large language models and the systems built around them: prompting, retrieval, 
 | 17. [Large Language Model Foundations](part-4-generative-ai/17-large-language-model-foundations.md) | 155 |
 | 18. [Prompt and Context Engineering](part-4-generative-ai/18-prompt-and-context-engineering.md) | 44 |
 | 19. [Embeddings and Vector Databases](part-4-generative-ai/19-embeddings-and-vector-databases.md) | 38 |
-| 20. [Retrieval-Augmented Generation](part-4-generative-ai/20-retrieval-augmented-generation.md) | 70 |
+| 20. [Retrieval-Augmented Generation](part-4-generative-ai/20-retrieval-augmented-generation.md) | 44 |
 | 21. [AI Agents and Agentic Systems](part-4-generative-ai/21-ai-agents-and-agentic-systems.md) | 53 |
 | 22. [Fine-Tuning and Model Adaptation](part-4-generative-ai/22-fine-tuning-and-model-adaptation.md) | 41 |
 | 23. [Multimodal AI](part-4-generative-ai/23-multimodal-ai.md) | 39 |
-| 24. [Evaluation and Testing of AI Systems](part-4-generative-ai/24-evaluation-and-testing-of-ai-systems.md) | 42 |
-| **Part total** | **482** |
+| 24. [Evaluation and Testing of AI Systems](part-4-generative-ai/24-evaluation-and-testing-of-ai-systems.md) | 33 |
+| **Part total** | **447** |
 
 ### Part V — Production Systems and Architecture
 
@@ -94,11 +94,11 @@ _Taking data and AI systems to production: services, operations, infrastructure,
 |---|---:|
 | 25. [Backend Engineering, APIs and DevOps](part-5-production-systems/25-backend-engineering-apis-and-devops.md) | 37 |
 | 26. [MLOps and LLMOps](part-5-production-systems/26-mlops-and-llmops.md) | 88 |
-| 27. [AI Infrastructure and Inference Optimization](part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md) | 62 |
+| 27. [AI Infrastructure and Inference Optimization](part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md) | 45 |
 | 28. [Machine Learning System Design](part-5-production-systems/28-machine-learning-system-design.md) | 37 |
 | 29. [Generative AI System Design](part-5-production-systems/29-generative-ai-system-design.md) | 54 |
 | 30. [AI Safety, Security and Responsible AI](part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) | 56 |
-| **Part total** | **334** |
+| **Part total** | **317** |
 
 ### Part VI — Professional Practice
 
@@ -118,4 +118,4 @@ _Causal inference, recommender systems and forecasting: the applied methods behi
 | 32. [Causal Inference, Recommender Systems and Forecasting](part-7-applied-data-science/32-causal-inference-recommender-systems-and-forecasting.md) | 36 |
 | **Part total** | **36** |
 
-**Total: 1,840 questions.**
+**Total: 1,679 questions.**

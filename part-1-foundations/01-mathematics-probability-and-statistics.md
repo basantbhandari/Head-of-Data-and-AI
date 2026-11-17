@@ -2,16 +2,16 @@
 
 _Part I — Foundations_
 
-Linear algebra, probability, distributions, hypothesis testing and statistical reasoning. Interviewers use these questions to check that a candidate can reason about uncertainty and explain why a method works, not just call a library.
+Linear algebra, probability, distributions, hypothesis testing, power and multiple testing, Bayesian and frequentist inference, and the statistical reasoning mistakes that mislead business decisions. Interviewers use these questions to check that a candidate can reason about uncertainty and explain why a method works, not just call a library.
 
-This chapter contains **53 questions**.
+This chapter contains **49 questions**.
 
 ## Contents
 
-- **1.1** [Explain the Bias-Variance Tradeoff.](#11-explain-the-bias-variance-tradeoff)
-- **1.2** [Explain different probability distributions (Normal, Binomial, Poisson, Uniform).](#12-explain-different-probability-distributions-normal-binomial-poisson-uniform)
+- **1.1** [Explain the bias-variance trade-off.](#11-explain-the-bias-variance-trade-off)
+- **1.2** [What are the most common probability distributions, and where do they appear in machine learning?](#12-what-are-the-most-common-probability-distributions-and-where-do-they-appear-in-machine-learning)
 - **1.3** [What is the normal distribution and its functions?](#13-what-is-the-normal-distribution-and-its-functions)
-- **1.4** [What is an exponential distribution?](#14-what-is-an-exponential-distribution)
+- **1.4** [What is the exponential distribution?](#14-what-is-the-exponential-distribution)
 - **1.5** [What is the binomial distribution?](#15-what-is-the-binomial-distribution)
 - **1.6** [What is the Bernoulli distribution?](#16-what-is-the-bernoulli-distribution)
 - **1.7** [What is the multinomial distribution?](#17-what-is-the-multinomial-distribution)
@@ -20,106 +20,96 @@ This chapter contains **53 questions**.
 - **1.10** [What is the gamma distribution and its functions?](#110-what-is-the-gamma-distribution-and-its-functions)
 - **1.11** [What is the Poisson distribution, and what is its probability function?](#111-what-is-the-poisson-distribution-and-what-is-its-probability-function)
 - **1.12** [When would you use a Poisson distribution over a Binomial distribution?](#112-when-would-you-use-a-poisson-distribution-over-a-binomial-distribution)
-- **1.13** [What is the variance?](#113-what-is-the-variance)
-- **1.14** [What is stddev?](#114-what-is-stddev)
-- **1.15** [Explain the difference between mean, median, and mode.](#115-explain-the-difference-between-mean-median-and-mode)
-- **1.16** [What is the difference between correlation and covariance?](#116-what-is-the-difference-between-correlation-and-covariance)
-- **1.17** [What does a correlation coefficient of +1, 0, and -1 indicate?](#117-what-does-a-correlation-coefficient-of-1-0-and--1-indicate)
-- **1.18** [Explain Correlation vs. causation.](#118-explain-correlation-vs-causation)
-- **1.19** [What are Type I and Type II errors?](#119-what-are-type-i-and-type-ii-errors)
-- **1.20** [What is a p-value? What does statistical significance mean?](#120-what-is-a-p-value-what-does-statistical-significance-mean)
-- **1.21** [Explain p-values and their limitations.](#121-explain-p-values-and-their-limitations)
-- **1.22** [What is hypothesis testing, and when is it used in ML?](#122-what-is-hypothesis-testing-and-when-is-it-used-in-ml)
-- **1.23** [What statistical tests would you use to compare two models?](#123-what-statistical-tests-would-you-use-to-compare-two-models)
-- **1.24** [How do you assess if a feature is statistically significant?](#124-how-do-you-assess-if-a-feature-is-statistically-significant)
-- **1.25** [What is a confidence interval, and how is it used?](#125-what-is-a-confidence-interval-and-how-is-it-used)
-- **1.26** [What are z-score and t-score? When do you use each?](#126-what-are-z-score-and-t-score-when-do-you-use-each)
-- **1.27** [Explain Bayes' Theorem. How is it relevant to Naive Bayes or Bayesian methods?](#127-explain-bayes-theorem-how-is-it-relevant-to-naive-bayes-or-bayesian-methods)
-- **1.28** [What's the difference between MLE and MAP estimation?](#128-whats-the-difference-between-mle-and-map-estimation)
-- **1.29** [What is Maximum Likelihood Estimation (MLE)?](#129-what-is-maximum-likelihood-estimation-mle)
-- **1.30** [Explain the Bayesian vs. Frequentist approach in statistics.](#130-explain-the-bayesian-vs-frequentist-approach-in-statistics)
-- **1.31** [What is the Central Limit Theorem(CLT)? Why is it important?](#131-what-is-the-central-limit-theoremclt-why-is-it-important)
-- **1.32** [What are sampling techniques?](#132-what-are-sampling-techniques)
-- **1.33** [What is the bootstrap method, and how is it used?](#133-what-is-the-bootstrap-method-and-how-is-it-used)
-- **1.34** [What are eigenvalues and eigenvectors?](#134-what-are-eigenvalues-and-eigenvectors)
-- **1.35** [What is Selection Bias?](#135-what-is-selection-bias)
-- **1.36** [What is the difference between Correlation, Covariance, and Causality?](#136-what-is-the-difference-between-correlation-covariance-and-causality)
-- **1.37** [What are the differences between Type I error and Type II error?](#137-what-are-the-differences-between-type-i-error-and-type-ii-error)
-- **1.38** [What is P-value?](#138-what-is-p-value)
-- **1.39** [How would you define collinearity?](#139-how-would-you-define-collinearity)
-- **1.40** [What is the time series?](#140-what-is-the-time-series)
-- **1.41** [What is the Fourier Transform?](#141-what-is-the-fourier-transform)
-- **1.42** [How can you check for the Normality of a dataset?](#142-how-can-you-check-for-the-normality-of-a-dataset)
-- **1.43** [A game exists where you are required to roll two six-faced dice. You stand a chance to win \$50 if the sum of the two dice equals 7. However, you must pay \$4 to play each time you roll both dice. Would you partake in this game? Note: If you play 6 times, what is the probability of making money from this game?](#143-a-game-exists-where-you-are-required-to-roll-two-six-faced-dice-you-stand-a-chance-to-win-50-if-the-sum-of-the-two-dice-equals-7-however-you-must-pay-4-to-play-each-time-you-roll-both-dice-would-you-partake-in-this-game-note-if-you-play-6-times-what-is-the-probability-of-making-money-from-this-game)
-- **1.44** [Give an example where the median is a better measure than the mean](#144-give-an-example-where-the-median-is-a-better-measure-than-the-mean)
-- **1.45** [What’s the difference between probability and likelihood?](#145-whats-the-difference-between-probability-and-likelihood)
-- **1.46** [How will you find the correlation between a categorical variable and a continuous variable?](#146-how-will-you-find-the-correlation-between-a-categorical-variable-and-a-continuous-variable)
-- **1.47** [What are the differences between “Bayesian” and “Frequentist” approaches for Machine Learning?](#147-what-are-the-differences-between-bayesian-and-frequentist-approaches-for-machine-learning)
-- **1.48** [Describe the differences between and use cases for box plots and histograms](#148-describe-the-differences-between-and-use-cases-for-box-plots-and-histograms)
-- **1.49** [What is KL divergence, and how would you define its use case in ML?](#149-what-is-kl-divergence-and-how-would-you-define-its-use-case-in-ml)
-- **1.50** [List the most popular distribution curves along with scenarios where you will use them in an algorithm.](#150-list-the-most-popular-distribution-curves-along-with-scenarios-where-you-will-use-them-in-an-algorithm)
-- **1.51** [Which metrics can be used to measure correlation of categorical data?](#151-which-metrics-can-be-used-to-measure-correlation-of-categorical-data)
-- **1.52** [Where does linear algebra/statistics actually show up in day-to-day LLM/CV engineering work (not just theory)?](#152-where-does-linear-algebrastatistics-actually-show-up-in-day-to-day-llmcv-engineering-work-not-just-theory)
-- **1.53** [What is Singular Value Decomposition (SVD)?](#153-what-is-singular-value-decomposition-svd)
+- **1.13** [What are variance and standard deviation?](#113-what-are-variance-and-standard-deviation)
+- **1.14** [Explain the difference between mean, median, and mode.](#114-explain-the-difference-between-mean-median-and-mode)
+- **1.15** [What is the difference between covariance and correlation, and what do correlation values of +1, 0 and -1 mean?](#115-what-is-the-difference-between-covariance-and-correlation-and-what-do-correlation-values-of-1-0-and--1-mean)
+- **1.16** [Explain correlation versus causation.](#116-explain-correlation-versus-causation)
+- **1.17** [What are Type I and Type II errors, and how do they relate to statistical power?](#117-what-are-type-i-and-type-ii-errors-and-how-do-they-relate-to-statistical-power)
+- **1.18** [What is a p-value, what does statistical significance mean, and what are the limitations of p-values?](#118-what-is-a-p-value-what-does-statistical-significance-mean-and-what-are-the-limitations-of-p-values)
+- **1.19** [What is hypothesis testing, and when is it used in ML?](#119-what-is-hypothesis-testing-and-when-is-it-used-in-ml)
+- **1.20** [What statistical tests would you use to compare two models?](#120-what-statistical-tests-would-you-use-to-compare-two-models)
+- **1.21** [How do you assess if a feature is statistically significant?](#121-how-do-you-assess-if-a-feature-is-statistically-significant)
+- **1.22** [What is a confidence interval, and how is it used?](#122-what-is-a-confidence-interval-and-how-is-it-used)
+- **1.23** [What are z-score and t-score? When do you use each?](#123-what-are-z-score-and-t-score-when-do-you-use-each)
+- **1.24** [Explain Bayes' theorem. How is it relevant to Naive Bayes and Bayesian methods?](#124-explain-bayes-theorem-how-is-it-relevant-to-naive-bayes-and-bayesian-methods)
+- **1.25** [What are maximum likelihood estimation (MLE) and maximum a posteriori (MAP) estimation, and how do they differ?](#125-what-are-maximum-likelihood-estimation-mle-and-maximum-a-posteriori-map-estimation-and-how-do-they-differ)
+- **1.26** [How do the Bayesian and frequentist approaches differ, in statistics and in machine learning practice?](#126-how-do-the-bayesian-and-frequentist-approaches-differ-in-statistics-and-in-machine-learning-practice)
+- **1.27** [What is the Central Limit Theorem(CLT)? Why is it important?](#127-what-is-the-central-limit-theoremclt-why-is-it-important)
+- **1.28** [What are sampling techniques?](#128-what-are-sampling-techniques)
+- **1.29** [What is the bootstrap, and how do you build bootstrap confidence intervals?](#129-what-is-the-bootstrap-and-how-do-you-build-bootstrap-confidence-intervals)
+- **1.30** [What are eigenvalues and eigenvectors?](#130-what-are-eigenvalues-and-eigenvectors)
+- **1.31** [What is Selection Bias?](#131-what-is-selection-bias)
+- **1.32** [What is collinearity, and why does it matter?](#132-what-is-collinearity-and-why-does-it-matter)
+- **1.33** [What is a time series, and what makes time-series data different?](#133-what-is-a-time-series-and-what-makes-time-series-data-different)
+- **1.34** [What is the Fourier transform, and where is it used in data science and ML?](#134-what-is-the-fourier-transform-and-where-is-it-used-in-data-science-and-ml)
+- **1.35** [How can you check whether a data set is normally distributed, and when does it matter?](#135-how-can-you-check-whether-a-data-set-is-normally-distributed-and-when-does-it-matter)
+- **1.36** [You can roll two dice for \$4 and win \$50 if the sum is 7. Would you play, and what is the probability of making money if you play six times?](#136-you-can-roll-two-dice-for-4-and-win-50-if-the-sum-is-7-would-you-play-and-what-is-the-probability-of-making-money-if-you-play-six-times)
+- **1.37** [Give an example where the median is a better measure than the mean](#137-give-an-example-where-the-median-is-a-better-measure-than-the-mean)
+- **1.38** [What’s the difference between probability and likelihood?](#138-whats-the-difference-between-probability-and-likelihood)
+- **1.39** [How will you find the correlation between a categorical variable and a continuous variable?](#139-how-will-you-find-the-correlation-between-a-categorical-variable-and-a-continuous-variable)
+- **1.40** [Describe the differences between and use cases for box plots and histograms](#140-describe-the-differences-between-and-use-cases-for-box-plots-and-histograms)
+- **1.41** [What is KL divergence, and how would you define its use case in ML?](#141-what-is-kl-divergence-and-how-would-you-define-its-use-case-in-ml)
+- **1.42** [Which metrics can be used to measure correlation of categorical data?](#142-which-metrics-can-be-used-to-measure-correlation-of-categorical-data)
+- **1.43** [Where do linear algebra, probability and statistics actually show up in day-to-day LLM and computer vision engineering work?](#143-where-do-linear-algebra-probability-and-statistics-actually-show-up-in-day-to-day-llm-and-computer-vision-engineering-work)
+- **1.44** [What is Singular Value Decomposition (SVD)?](#144-what-is-singular-value-decomposition-svd)
+- **1.45** [What is statistical power, and how do you calculate the sample size for an experiment?](#145-what-is-statistical-power-and-how-do-you-calculate-the-sample-size-for-an-experiment)
+- **1.46** [What is the multiple testing problem, and how do you control the false discovery rate?](#146-what-is-the-multiple-testing-problem-and-how-do-you-control-the-false-discovery-rate)
+- **1.47** [What are heavy-tailed distributions, and why can the mean mislead?](#147-what-are-heavy-tailed-distributions-and-why-can-the-mean-mislead)
+- **1.48** [What are the most common statistical mistakes in business analysis, and how do you avoid them?](#148-what-are-the-most-common-statistical-mistakes-in-business-analysis-and-how-do-you-avoid-them)
+- **1.49** [How do you calculate confidence intervals for ratio metrics and clustered data, and what is the delta method?](#149-how-do-you-calculate-confidence-intervals-for-ratio-metrics-and-clustered-data-and-what-is-the-delta-method)
 
 ---
 
-### 1.1 Explain the Bias-Variance Tradeoff.
+### 1.1 Explain the bias-variance trade-off.
 
-##### Bias-Variance Tradeoff
+The expected prediction error of a model on new data splits into three parts: **bias** (error from wrong or too-simple assumptions), **variance** (error from sensitivity to the particular training sample) and **irreducible noise**. Making a model more flexible usually lowers bias and raises variance, so the goal is the complexity that minimises their sum on unseen data.
 
-The **bias-variance tradeoff** is the balance between two types of model error that determines how well a machine learning model generalizes to unseen data.
+For squared error, at a point $x$ with true function $f$ and noise variance $\sigma^2$:
 
-- **Bias:** Error caused by overly simplistic assumptions in the model.
-  - High bias → **underfitting**
-  - Example: Using a linear model for a highly nonlinear problem.
-- **Variance:** Error caused by the model being too sensitive to the training data.
-  - High variance → **overfitting**
-  - Example: A very complex model memorizing the training data, including noise.
-- **Tradeoff:**
-  - Increasing model complexity usually **reduces bias** but **increases variance**.
-  - Decreasing model complexity usually **increases bias** but **reduces variance**.
-  - The goal is to find a model complexity that achieves a good balance and minimizes **generalization error**.
+$$
+E\left[(y - \hat f(x))^2\right] = \left(E[\hat f(x)] - f(x)\right)^2 + \operatorname{Var}(\hat f(x)) + \sigma^2
+$$
 
-**In short:**
-
-> **High bias → underfitting; high variance → overfitting; the goal is to balance both for good generalization.**
-
-### 1.2 Explain different probability distributions (Normal, Binomial, Poisson, Uniform).
-
-##### Different Probability Distributions
-
-A **probability distribution** describes how likely different values or outcomes of a random variable are.
-
-- **Normal Distribution**
-  - Continuous probability distribution with a symmetric, bell-shaped curve.
-  - Defined by its **mean** and **standard deviation**.
-  - Values close to the mean are more likely than extreme values.
-  - Commonly used for measurements such as height, weight, test scores, and measurement errors.
-- **Binomial Distribution**
-  - Discrete distribution that models the number of **successes in a fixed number of independent trials**.
-  - Each trial has two possible outcomes: success or failure.
-  - Example: Number of heads obtained in 10 coin flips.
-  - Parameters: number of trials $n$ and probability of success $p$.
-- **Poisson Distribution**
-  - Discrete distribution that models the number of times an **event occurs within a fixed interval** of time or space.
-  - Useful when events occur independently at a roughly constant average rate.
-  - Example: Number of customer arrivals at a store per hour.
-  - Parameter: average event rate $\lambda$.
-- **Uniform Distribution**
-  - Distribution where all outcomes within a specified range are **equally likely**.
-  - Can be discrete or continuous.
-  - Example: A fair six-sided die has a discrete uniform distribution.
-  - A random number between 0 and 1 is an example of a continuous uniform distribution.
-
-**In short:**
-
-| Distribution | Type | Typical Use |
+| | High bias | High variance |
 | --- | --- | --- |
-| Normal | Continuous | Measurements and natural variation |
-| Binomial | Discrete | Number of successes in fixed trials |
-| Poisson | Discrete | Number of events in an interval |
-| Uniform | Discrete/Continuous | Equally likely outcomes |
+| Symptom | Underfitting: training and validation error both high | Overfitting: low training error, much higher validation error |
+| Example | Linear model on a strongly non-linear problem | Deep unpruned tree, 1-nearest neighbour |
+| Fixes | More features, more flexible model, less regularisation, boosting | More data, regularisation, simpler model, bagging, early stopping |
+
+**Practical points**
+
+- Diagnose with learning curves: if training and validation errors converge at a high value, more data will not help (bias); a persistent gap means variance, and more data or regularisation will help.
+- Ensembles attack each side: bagging and random forests reduce variance, boosting reduces bias (see 9.7).
+- Modern over-parameterised networks can generalise well despite fitting training data perfectly (double descent, see 11.30), so the classical U-shaped curve is a guide, not a law.
+
+See 8.6 for the full machine learning treatment.
+
+### 1.2 What are the most common probability distributions, and where do they appear in machine learning?
+
+A probability distribution describes how likely each value of a random variable is. Knowing the common ones matters because the assumed distribution of the data or target decides the right loss function, transformation and statistical test.
+
+| Distribution | Type | Describes | Where it shows up in ML |
+| --- | --- | --- | --- |
+| **Normal (Gaussian)** | Continuous | Sums of many small effects (central limit theorem) | Regression residuals, weight initialisation, Gaussian mixtures, Gaussian Naive Bayes, Gaussian processes, VAE prior, z-score anomaly detection |
+| **Bernoulli** | Discrete | One yes or no trial | Binary classification output (sigmoid with binary cross-entropy), dropout masks |
+| **Binomial** | Discrete | Number of successes in $n$ trials | Conversion counts, A/B test analysis |
+| **Categorical or multinomial** | Discrete | One of $K$ outcomes, or counts over $K$ | Softmax classifiers, LLM next-token sampling, multinomial Naive Bayes |
+| **Poisson** | Discrete | Count of events per interval | Orders or calls per hour, Poisson regression, demand forecasting |
+| **Exponential** | Continuous | Time between Poisson events | Time-to-event, queueing and latency |
+| **Uniform** | Both | Equally likely outcomes | Random initialisation, random hyperparameter search, simulation |
+| **Beta** | Continuous on $[0, 1]$ | Uncertainty about a probability | Bayesian A/B testing, Thompson sampling |
+| **Dirichlet** | Multivariate on the simplex | Uncertainty about a probability vector | Topic models (LDA), priors for categorical data |
+| **Gamma** | Continuous, positive | Waiting time for several events, positive skewed values | Insurance claims, priors for precision or rates |
+| **Student's t** | Continuous, heavy tails | Means of small samples | t-tests, t-SNE, robust regression |
+| **Log-normal, power law (Zipf)** | Continuous or discrete | Skewed positive values, long tails | Income, prices, latency; word frequencies, item popularity (see 1.47) |
+
+**Quick distinctions**
+
+- Fixed number of trials and a count of successes: binomial. Count of events in an interval with no fixed number of trials: Poisson (see 1.12).
+- Single trial: Bernoulli; many categories: categorical or multinomial.
+- Waiting time for one event: exponential; for several: gamma.
+
+**Why it matters:** the distribution maps to the loss (squared error assumes Gaussian noise, cross-entropy assumes Bernoulli or categorical, Poisson deviance suits counts), to the transformation (log for log-normal data) and to the test (t-test for means of roughly normal data, chi-square for counts). Questions 1.3 to 1.11 cover the individual distributions.
 
 ### 1.3 What is the normal distribution and its functions?
 
@@ -156,48 +146,50 @@ A **normal distribution** is a continuous probability distribution with a **symm
 
 **In short:** The normal distribution models continuous data around a mean, and its **PDF, CDF, PPF, and z-score** are commonly used for probability and statistical analysis.
 
-### 1.4 What is an exponential distribution?
+### 1.4 What is the exponential distribution?
 
-##### Exponential Distribution
+The exponential distribution models the **waiting time until the next event** when events occur independently at a constant average rate $\lambda$ (a Poisson process). It is the continuous counterpart of "time between Poisson arrivals".
 
-The **exponential distribution** is a continuous probability distribution used to model the **time until an event occurs** when events happen independently at a constant average rate.
+**Formulas** for $x \ge 0$:
 
-- It is commonly used for **waiting-time problems**.
-- Example: Time until the next customer arrives at a store.
-- It is controlled by a **rate parameter ($\lambda$)**.
-- A larger $\lambda$ means events happen more frequently, so the expected waiting time is shorter.
-- It is **right-skewed**: many observations are small, with fewer very large values.
-- It has the **memoryless property**, meaning the probability of waiting an additional amount of time does not depend on how long you have already waited.
+$$
+f(x) = \lambda e^{-\lambda x}, \qquad F(x) = P(X \le x) = 1 - e^{-\lambda x}
+$$
 
-##### Common Applications
+- Mean $1/\lambda$, variance $1/\lambda^2$, so the standard deviation equals the mean.
+- Right-skewed: many short waits, a few long ones. Median is $\ln 2 / \lambda$, below the mean.
 
-- Time between customer arrivals
-- Time until a machine fails
-- Network request arrival times
-- Waiting time between events
+**Memoryless property:** $P(X \gt s + t \mid X \gt s) = P(X \gt t)$. Having waited 10 minutes tells you nothing about how much longer you will wait. It is the only continuous distribution with this property, which is exactly why it is often a poor model for component lifetimes that wear out.
+
+**Example:** if a support queue receives 12 tickets per hour ($\lambda = 0.2$ per minute), the probability that the next ticket arrives within 5 minutes is $1 - e^{-1} \approx 0.63$.
+
+**Applications:** time between customer arrivals or requests, queueing models, time to failure for components with a constant hazard rate, survival analysis baselines.
+
+**Related distributions:** the sum of $k$ independent exponentials is gamma distributed (see 1.10); Weibull generalises it to increasing or decreasing hazard rates, which is more realistic for wear-out or early failures.
 
 ### 1.5 What is the binomial distribution?
 
-##### Binomial Distribution
+The binomial distribution gives the probability of observing $k$ successes in $n$ **independent** trials when each trial succeeds with the same probability $p$. It is the sum of $n$ independent Bernoulli trials.
 
-The **binomial distribution** is a discrete probability distribution that models the **number of successes in a fixed number of independent trials**, where each trial has only two possible outcomes: **success or failure**.
+**Probability mass function**
 
-- **Fixed number of trials:** $n$
-- **Two possible outcomes:** success or failure
-- **Constant probability of success:** $p$
-- **Trials are independent** of each other.
-- The random variable represents the **number of successes**.
+$$
+P(X = k) = \binom{n}{k} p^k (1 - p)^{n - k}, \qquad k = 0, 1, \ldots, n
+$$
 
-**Example:**
+- Mean $np$, variance $np(1-p)$.
+- Assumptions: fixed $n$, two outcomes per trial, constant $p$, independence.
 
-If you flip a coin 10 times, the binomial distribution can determine the probability of getting exactly 6 heads.
+**Example:** a model is 80 percent accurate; on 10 independent cases, the probability it gets exactly 8 right is $\binom{10}{8}0.8^8 0.2^2 \approx 0.30$.
 
-##### Applications
+**Approximations**
 
-- Number of successful predictions out of multiple predictions
-- Number of defective products in a sample
-- Number of customers who respond to an offer
-- Number of heads in repeated coin flips
+- **Normal:** when $np$ and $n(1-p)$ are both at least about 10, $X$ is approximately normal with mean $np$ and variance $np(1-p)$. This underlies the usual z-test for conversion rates in A/B tests.
+- **Poisson:** when $n$ is large and $p$ small, $X$ is approximately Poisson with $\lambda = np$ (see 1.12).
+
+**Applications:** conversion counts in experiments, defect counts in a sample, number of correct predictions on a test set (which gives a confidence interval for accuracy).
+
+**Pitfall:** independence and constant $p$ often fail in practice. Clicks from the same user are correlated, so treating every page view as an independent trial understates the variance; analyse at the level of randomisation (the user) instead (see 1.49).
 
 ### 1.6 What is the Bernoulli distribution?
 
@@ -386,40 +378,32 @@ Use a **Poisson distribution** when you want to model the **number of events occ
 >
 > **Fixed interval and count of events → Poisson**
 
-### 1.13 What is the variance?
+**Link between them:** when $n$ is large and $p$ is small, Binomial($n$, $p$) is well approximated by Poisson with $\lambda = np$ (a rule of thumb is $n \ge 20$ and $p \le 0.05$). For example, the number of fraudulent transactions among 100,000 with a fraud rate of 0.01 percent is approximately Poisson with $\lambda = 10$.
 
-##### Variance
+**Check the assumption:** real count data are often **overdispersed** (variance larger than the mean) because events cluster, for example a few heavy users generate many orders. Then use a negative binomial model instead of Poisson.
 
-**Variance** is a measure of how much values in a dataset **spread out from their mean**.
+### 1.13 What are variance and standard deviation?
 
-- **Low variance:** Values are close to the mean.
-- **High variance:** Values are far from the mean.
-- It is calculated using the **average of the squared differences from the mean**.
-- Variance is always **non-negative**.
-- Its unit is the **square of the original unit**.
+Both measure how spread out values are around the mean. **Variance** is the average squared deviation from the mean; **standard deviation** is its square root, which brings the measure back to the original units.
 
-**Example:**
+$$
+\sigma^2 = \frac{1}{N}\sum_{i=1}^{N}(x_i - \mu)^2, \qquad s^2 = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar x)^2
+$$
 
-- `48, 49, 50, 51, 52` → low variance
-- `10, 30, 50, 70, 90` → high variance
+- $\sigma^2$ is the population variance; $s^2$ is the sample estimate. Dividing by $n - 1$ (Bessel's correction) makes $s^2$ unbiased, because deviations from the sample mean are slightly smaller than deviations from the true mean.
+- Standard deviation $\sigma = \sqrt{\sigma^2}$ has the same unit as the data. For roughly normal data, about 68, 95 and 99.7 percent of values lie within one, two and three standard deviations of the mean.
 
-### 1.14 What is stddev?
+**Example:** `48, 49, 50, 51, 52` and `10, 30, 50, 70, 90` both have mean 50, but sample standard deviations of about 1.6 and 31.6.
 
-##### Standard Deviation (Std Dev)
+**Related quantities**
 
-**Standard deviation** is a measure of how much the values in a dataset **spread out from the mean**.
+- **Standard error** of the mean, $s/\sqrt{n}$: the uncertainty of the estimated mean, not the spread of the data. Confusing the two is a common mistake in reports.
+- **Coefficient of variation** $s / \bar x$: spread relative to the mean, for comparing variables on different scales.
+- Variance of a sum: $\operatorname{Var}(X + Y) = \operatorname{Var}(X) + \operatorname{Var}(Y) + 2\operatorname{Cov}(X, Y)$, the basis of portfolio risk and of ensemble variance reduction.
 
-- **Low standard deviation:** Values are close to the mean.
-- **High standard deviation:** Values are more spread out.
-- It is the **square root of the variance**.
-- Unlike variance, standard deviation has the **same unit as the original data**, making it easier to interpret.
+**Pitfalls:** both are sensitive to outliers (squares amplify large deviations); for skewed or heavy-tailed data use the interquartile range or median absolute deviation. In pandas, `Series.std()` uses $n - 1$ by default while NumPy's `np.std` uses $n$ unless you pass `ddof=1`.
 
-**Example:**
-
-- Mean = 50, standard deviation = 2 → values are generally close to 50.
-- Mean = 50, standard deviation = 20 → values are much more spread out.
-
-### 1.15 Explain the difference between mean, median, and mode.
+### 1.14 Explain the difference between mean, median, and mode.
 
 ##### Mean vs. Median vs. Mode
 
@@ -452,139 +436,124 @@ These are three common measures of **central tendency** used to describe the cen
 
 > **Mean = average, Median = middle, Mode = most frequent.**
 
-### 1.16 What is the difference between correlation and covariance?
+### 1.15 What is the difference between covariance and correlation, and what do correlation values of +1, 0 and -1 mean?
 
-##### Correlation vs. Covariance
+Both measure how two variables move together. **Covariance** gives the direction of the linear relationship in the variables' own units; **correlation** is covariance scaled by both standard deviations, so it is unit-free, lies between -1 and +1 and also shows strength.
 
-Both **covariance** and **correlation** measure how two variables change together, but they differ in scale and interpretation.
+$$
+\operatorname{Cov}(X, Y) = E[(X - \mu_X)(Y - \mu_Y)], \qquad \rho_{XY} = \frac{\operatorname{Cov}(X, Y)}{\sigma_X \sigma_Y}
+$$
 
-- **Covariance**
-  - Shows the **direction** of the relationship between two variables.
-  - Positive covariance → variables tend to increase together.
-  - Negative covariance → one tends to increase when the other decreases.
-  - Its value depends on the **units and scale** of the variables, so it is difficult to compare across datasets.
-- **Correlation**
-  - Shows both the **direction and strength** of the linear relationship.
-  - Always ranges from **−1 to +1**.
-  - `+1` → perfect positive correlation.
-  - `0` → no linear correlation.
-  - `−1` → perfect negative correlation.
-  - It is **unitless**, making it easier to compare relationships.
-
-##### Key Difference
-
-| Covariance | Correlation |
-| --- | --- |
-| Measures direction | Measures direction + strength |
-| Range is unbounded | Range: −1 to +1 |
-| Depends on units | Unitless |
-| Harder to interpret | Easier to interpret |
-
-### 1.17 What does a correlation coefficient of +1, 0, and -1 indicate?
-
-The **correlation coefficient** measures the direction and strength of a **linear relationship** between two variables. It ranges from **−1 to +1**.
-
-- **+1: Perfect positive correlation**
-  - Both variables move in exactly the same direction.
-  - As one increases, the other also increases proportionally.
-- **0: No linear correlation**
-  - There is no **linear relationship** between the variables.
-  - Note: A coefficient of 0 does **not necessarily mean there is no relationship at all**; a nonlinear relationship may still exist.
-- **−1: Perfect negative correlation**
-  - The variables move in exactly opposite directions.
-  - As one increases, the other decreases proportionally.
-
-### 1.18 Explain Correlation vs. causation.
-
-##### Correlation vs. Causation
-
-- **Correlation** means two variables are **associated** or tend to change together.
-- **Causation** means a change in one variable **directly produces a change** in another variable.
-
-##### Example
-
-Suppose data shows that **ice cream sales increase when the number of sunburn cases increases**.
-
-- There is a **correlation** between ice cream sales and sunburn cases.
-- But buying ice cream does **not cause** sunburn.
-- A third variable, **hot weather**, can cause both more ice cream sales and more sunburn.
-
-##### Key Difference
-
-| Correlation | Causation |
-| --- | --- |
-| Variables are associated | One variable causes a change in another |
-| Does not establish cause and effect | Establishes a cause-and-effect relationship |
-| Can be caused by confounding variables | Requires stronger evidence, often from controlled experiments |
-
-### 1.19 What are Type I and Type II errors?
-
-##### Type I and Type II Errors
-
-- **Type I Error (False Positive):**
-  - It predicts positive when the actual is negative
-  - Example: A medical test says a person has cancer although that person is normal.
-  - Rejecting the null hypothesis when it is actually true.
-  - You conclude there is an effect when there is actually no effect.
-  - Probability of Type I error = **$\alpha$ (significance level)**.
-- **Type II Error (False Negative):**
-  - It predicts negative when the actual is positive
-  - Example: A medical test says a person is normal although that person has cancer.
-  - Failing to reject the null hypothesis when it is actually false.
-  - You conclude there is no effect when there actually is one.
-  - Probability of Type II error = **$\beta$**.
-
-| Actual / Predicted | Positive | Negative |
+| | Covariance | Correlation |
 | --- | --- | --- |
-| **Positive** | True Positive (TP) | **False Negative (FN) → Type II Error** |
-| **Negative** | **False Positive (FP) → Type I Error** | True Negative (TN) |
+| Range | Unbounded | -1 to +1 |
+| Units | Product of the two variables' units | None |
+| Changes when you rescale a variable | Yes | No |
+| Use | Covariance matrices (PCA, portfolio risk, Gaussian models) | Comparing strength of relationships |
 
-### 1.20 What is a p-value? What does statistical significance mean?
+**Interpreting the correlation coefficient**
 
-##### P-value
+- **+1:** perfect positive linear relationship; all points lie on an upward line.
+- **0:** no linear relationship. There can still be a strong non-linear one: $y = x^2$ on a range symmetric around zero has correlation 0.
+- **-1:** perfect negative linear relationship.
 
-- It is the probability of obtaining a result at least as extreme as the observed result, assuming the null hypothesis is true.
-- Null hypothesis, **$H_0$** ⇒ no effect, no difference, or no relationship
-- Alternative hypothesis, **$H_1$** ⇒ there is an effect, there is a difference, or there is a relationship
-- A **small p-value** means the observed result would be unlikely if $H_0$ were true.
-- A **large p-value** means there is not enough evidence to reject $H_0$.
-- Common significance level: **$\alpha = 0.05$**.
+**Pitfalls**
 
-##### Statistical Significance
+- **Outliers:** a single extreme point can create or destroy a correlation; Anscombe's quartet has four very different data sets with identical correlations. Always plot.
+- **Non-linear or monotonic relationships:** use Spearman's rank correlation or Kendall's tau; for general dependence use mutual information.
+- **Restricted range:** correlation among only top performers understates the population relationship.
+- **Aggregation:** correlations of group averages are usually much stronger than correlations between individuals (ecological fallacy).
+- **Correlation is not causation** (see 1.16).
 
-A result is **statistically significant** when the p-value is smaller than the chosen significance level $\alpha$.
+```python
+import pandas as pd
+df[["x", "y"]].corr(method="pearson")    # or "spearman", "kendall"
+df[["x", "y"]].cov()
+```
 
-- **p-value $\lt 0.05$ → Statistically significant → Reject $H_0$, Accept $H_1$**
-- **p-value $\geq 0.05$ → Not statistically significant → Fail to reject $H_0$, Reject $H_1$**
+### 1.16 Explain correlation versus causation.
 
-**p-value $\lt \alpha$ → evidence against $H_0$ → statistically significant.**
+**Correlation** means two variables move together; **causation** means changing one would change the other. Correlation is a property of observed data; causation is a claim about what would happen under an intervention, and it needs either an experiment or strong assumptions.
 
-### 1.21 Explain p-values and their limitations.
+**Why correlated variables may not be causal**
 
-##### P-value
+- **Confounding:** a third variable drives both. Ice cream sales and drownings both rise in hot weather.
+- **Reverse causation:** hospitals have more sick people, but hospitals do not cause illness.
+- **Selection or collider bias:** conditioning on a common effect creates a spurious link (among admitted students, test scores and grades can appear negatively related).
+- **Coincidence and multiple testing:** search enough variable pairs and some will correlate by chance (see 1.46).
+- **Simpson's paradox:** a trend in every subgroup reverses in the aggregate (see 32.2).
 
-- A **p-value** measures how unusual the observed data would be **assuming the null hypothesis ($H_0$) is true**.
-- **Small p-value:** Data provides stronger evidence against $H_0$.
-- **Large p-value:** Data does not provide sufficient evidence to reject $H_0$.
-- Common significance level: **$\alpha = 0.05$**.
-  - **$p \lt 0.05$ → statistically significant**
-  - **$p \geq 0.05$ → not statistically significant**
+| | Correlation | Causation |
+| --- | --- | --- |
+| Question | Do they move together? | What happens if I change X? |
+| Evidence | Observational data | Randomised experiments, or causal designs on observational data |
+| Use | Prediction, monitoring | Decisions and interventions |
 
-##### Limitations of P-values
+**How to establish causation**
 
-- **Does not measure the size of an effect:** A tiny effect can have a very small p-value with a large sample.
-- **Does not measure practical importance:** Statistical significance does not necessarily mean the result is useful or meaningful in practice.
-- **Does not give the probability that $H_0$ is true:** A p-value is not $P(H_0 \text{ is true})$.
-- **Depends on sample size:** Larger samples can produce very small p-values even for weak effects.
-- **Sensitive to study design and assumptions:** Violating statistical assumptions can make p-values misleading.
-- **Multiple testing problem:** Testing many hypotheses increases the chance of obtaining a significant result by chance.
-- **Not a measure of certainty:** A p-value of 0.01 does not mean there is a 99% probability that the result is correct.
+1. **Randomised experiments** (A/B tests): randomisation breaks the link with confounders.
+2. When experiments are impossible: difference-in-differences, instrumental variables, regression discontinuity, matching or weighting, each with its own assumptions (see Chapter 32).
+3. Supporting evidence: a plausible mechanism, dose-response, temporal order, consistency across settings.
 
-**Short:**
+**Why it matters for ML:** predictive models exploit correlation, which is fine for forecasting but not for decisions. A churn model may find that customers who call support churn more; reducing calls will not reduce churn. Feature importance and SHAP values are not causal effects.
 
-**P-value tells how compatible the data is with $H_0$, but it does not tell you whether an effect is large, important, or certainly true.**
+### 1.17 What are Type I and Type II errors, and how do they relate to statistical power?
 
-### 1.22 What is hypothesis testing, and when is it used in ML?
+A **Type I error** is rejecting a null hypothesis that is actually true (a false positive); a **Type II error** is failing to reject a null hypothesis that is actually false (a false negative). Their probabilities are $\alpha$ and $\beta$, and **power** $= 1 - \beta$ is the probability of detecting a real effect.
+
+| | $H_0$ true (no effect) | $H_0$ false (real effect) |
+| --- | --- | --- |
+| Reject $H_0$ | **Type I error** (false positive), probability $\alpha$ | Correct detection, probability $1 - \beta$ (power) |
+| Fail to reject $H_0$ | Correct | **Type II error** (false negative), probability $\beta$ |
+
+**Examples**
+
+- Medical test: Type I says a healthy person has the disease; Type II misses a sick person.
+- A/B test: Type I ships a feature that does nothing (or harms); Type II abandons a feature that works.
+- Classification: a false positive is a Type I error, a false negative is Type II.
+
+**Easy memory aid:** Type I is a false alarm, Type II is a missed detection.
+
+**The trade-off**
+
+- For a fixed sample size, lowering $\alpha$ (being stricter) raises $\beta$.
+- The only ways to reduce both are **more data**, **less noise** (variance reduction, better measurement) or a **larger true effect**.
+- Power depends on $\alpha$, sample size, effect size and variance (see 1.45).
+
+**Choosing which error to protect against** is a business decision: in fraud screening a missed fraud (Type II) may cost more than a false alarm; in drug approval a false claim of efficacy (Type I) is worse. Set $\alpha$ and the target power accordingly, rather than defaulting to 0.05 and 80 percent without thought.
+
+### 1.18 What is a p-value, what does statistical significance mean, and what are the limitations of p-values?
+
+A **p-value** is the probability of seeing a result at least as extreme as the one observed **if the null hypothesis were true**. A result is **statistically significant** when the p-value is below a significance level $\alpha$ chosen in advance (often 0.05), meaning the data would be surprising under the null.
+
+**How to read it**
+
+- $H_0$: no effect, no difference or no relationship. $H_1$: there is one.
+- Small p-value: the data are hard to explain by chance alone under $H_0$, so reject $H_0$.
+- Large p-value: the data are compatible with $H_0$; you **fail to reject** it. This is not proof that $H_0$ is true, and it is not "accepting" anything; the study may simply be underpowered.
+
+**What a p-value is not**
+
+- Not the probability that $H_0$ is true.
+- Not the probability that the result is a fluke, or that it will replicate.
+- Not a measure of effect size or importance: $p = 0.01$ does not mean a 99 percent chance that the effect is real.
+
+**Limitations**
+
+- **Sample size dependence:** with millions of users, trivially small effects become significant; with small samples, important effects are not. Always report the effect size with a confidence interval.
+- **Multiple testing:** testing many metrics or segments guarantees some false positives (see 1.46).
+- **Peeking and p-hacking:** stopping a test when $p$ dips below 0.05, or trying many analyses and reporting the best, inflates the false positive rate far beyond $\alpha$.
+- **Assumption sensitivity:** independence, the correct variance estimate and distributional assumptions all matter; correlated observations (several events per user) make p-values too small.
+- **Arbitrary threshold:** $p = 0.049$ and $p = 0.051$ are practically the same evidence.
+
+**Good practice:** pre-register the hypothesis, metric, sample size and $\alpha$; report the effect estimate, its confidence interval and the p-value together; consider practical significance (is the effect worth shipping?) separately from statistical significance.
+
+```python
+from scipy import stats
+t, p = stats.ttest_ind(treatment, control, equal_var=False)   # Welch's t-test
+```
+
+### 1.19 What is hypothesis testing, and when is it used in ML?
 
 ##### Hypothesis Testing
 
@@ -604,7 +573,7 @@ A result is **statistically significant** when the p-value is smaller than the c
 - **Model evaluation:** Determine whether observed performance differences are likely due to chance.
 - **Experimentation:** Test whether a treatment, intervention, or ML system produces a meaningful effect.
 
-### 1.23 What statistical tests would you use to compare two models?
+### 1.20 What statistical tests would you use to compare two models?
 
 ##### Statistical Tests to Compare Two ML Models
 
@@ -628,7 +597,7 @@ It depends on **what you are comparing** and the type of predictions.
   - Randomly permutes model labels and evaluates whether the observed performance difference is likely due to chance.
   - Flexible and useful for model comparison.
 
-### 1.24 How do you assess if a feature is statistically significant?
+### 1.21 How do you assess if a feature is statistically significant?
 
 ##### Assessing Whether a Feature Is Statistically Significant
 
@@ -652,7 +621,7 @@ Also check:
 - **Multicollinearity**
 - **Out-of-sample performance**
 
-### 1.25 What is a confidence interval, and how is it used?
+### 1.22 What is a confidence interval, and how is it used?
 
 ##### Confidence Interval
 
@@ -680,7 +649,7 @@ Suppose a model's estimated accuracy improvement is **5%**, with a **95% CI of \
 
 **A confidence interval gives a range of plausible values for a population parameter and shows how uncertain the estimate is.**
 
-### 1.26 What are z-score and t-score? When do you use each?
+### 1.23 What are z-score and t-score? When do you use each?
 
 ##### Z-score
 
@@ -708,153 +677,112 @@ Suppose a model's estimated accuracy improvement is **5%**, with a **95% CI of \
 
 **Use Z when $\sigma$ is known; use T when $\sigma$ is unknown and estimated from the sample.**
 
-### 1.27 Explain Bayes' Theorem. How is it relevant to Naive Bayes or Bayesian methods?
+### 1.24 Explain Bayes' theorem. How is it relevant to Naive Bayes and Bayesian methods?
 
-##### Bayes' Theorem
+Bayes' theorem tells you how to update the probability of a hypothesis $A$ after observing evidence $B$:
 
-Bayes' Theorem describes how to **update the probability of a hypothesis when new evidence is observed**.
+$$
+P(A \mid B) = \frac{P(B \mid A)\thinspace P(A)}{P(B)}, \qquad P(B) = \sum_{a} P(B \mid a)\thinspace P(a)
+$$
 
-- **Prior probability:** $P(A)$ — probability of the hypothesis before seeing new evidence.
-- **Likelihood:** $P(B \mid A)$ — probability of observing the evidence if the hypothesis is true.
-- **Posterior probability:** $P(A \mid B)$ — updated probability of the hypothesis after seeing the evidence.
-- **Evidence:** $P(B)$ — overall probability of observing the evidence.
+- **Prior** $P(A)$: belief before the evidence.
+- **Likelihood** $P(B \mid A)$: how probable the evidence is if $A$ holds.
+- **Evidence** $P(B)$: total probability of the evidence, a normalising constant.
+- **Posterior** $P(A \mid B)$: updated belief.
 
-##### Relevance to Naive Bayes
+**Worked example (fraud alerts).** 0.5 percent of transactions are fraudulent. A detector flags 90 percent of fraud and 2 percent of legitimate transactions. For a flagged transaction:
 
-- **Naive Bayes** uses Bayes' Theorem for classification.
-- It calculates the probability of each class given the observed features.
-- It assumes the features are **conditionally independent given the class**.
-- The class with the highest posterior probability is selected.
+$$
+P(\text{fraud} \mid \text{flag}) = \frac{0.9 \times 0.005}{0.9 \times 0.005 + 0.02 \times 0.995} \approx 0.18
+$$
 
-Example: For spam detection, it calculates whether an email is more likely to be **Spam** or **Not Spam** based on its words/features.
+Only about 18 percent of alerts are real fraud. Ignoring the prior (**base-rate neglect**) is one of the most common reasoning errors in business and medicine.
 
-##### Relevance to Bayesian Methods
+**Relevance to Naive Bayes:** the classifier picks the class $C$ maximising $P(C)\prod_j P(x_j \mid C)$, applying Bayes' theorem with the assumption that features are conditionally independent given the class (see 9.17).
 
-Bayesian methods follow the principle:
+**Relevance to Bayesian methods**
 
-**Prior belief + New evidence → Updated belief (Posterior)**
+- **Parameter inference:** treat parameters as random, $p(\theta \mid D) \propto p(D \mid \theta)\thinspace p(\theta)$, and report the full posterior (see 1.26).
+- **Regularisation as a prior:** MAP estimation with a Gaussian prior is ridge regression (see 1.25).
+- **Sequential updating:** yesterday's posterior is today's prior, used in Bayesian A/B testing and Thompson sampling for bandits.
+- **Bayesian optimisation** of hyperparameters and **probabilistic graphical models** (see 9.26).
 
-They are used for parameter estimation, prediction, uncertainty quantification, and statistical inference.
+**What interviewers look for:** the formula, a base-rate example worked through, and the link to precision: in classification, $P(\text{positive} \mid \text{flagged})$ is precision, which collapses when the positive class is rare.
 
-**Short:**
+### 1.25 What are maximum likelihood estimation (MLE) and maximum a posteriori (MAP) estimation, and how do they differ?
 
-**Bayes' Theorem updates probabilities using new evidence. Naive Bayes applies it to classification, while Bayesian methods use it broadly for statistical inference and updating beliefs.**
+**MLE** picks the parameters that make the observed data most probable. **MAP** picks the parameters that are most probable given the data **and a prior**, i.e. it maximises the posterior. MAP is MLE plus a penalty from the prior, which is exactly what regularisation is.
 
-### 1.28 What's the difference between MLE and MAP estimation?
+$$
+\hat\theta_{\text{MLE}} = \arg\max_\theta \sum_i \log p(x_i \mid \theta)
+$$
 
-##### MLE vs MAP Estimation
+$$
+\hat\theta_{\text{MAP}} = \arg\max_\theta \left[\sum_i \log p(x_i \mid \theta) + \log p(\theta)\right]
+$$
 
-- **MLE (Maximum Likelihood Estimation)**
-  - Finds the parameter values that make the observed data **most likely**.
-  - Uses only the observed data.
-  - Does not include prior beliefs about the parameters.
-  - Objective: maximize $P(\text{Data} \mid \text{Parameters})$.
-- **MAP (Maximum A Posteriori) Estimation**
-  - Finds the parameter values that are **most probable after considering both data and prior beliefs**.
-  - Combines likelihood with a prior distribution.
-  - Objective: maximize $P(\text{Parameters} \mid \text{Data})$.
+Logs turn products into sums, which is numerically stable and easier to differentiate.
 
-##### Key Difference
+**Example (coin):** 7 heads in 10 flips. MLE gives $\hat p = 7/10 = 0.7$. With a Beta(2, 2) prior (a mild belief that the coin is fair), MAP gives $(7 + 1)/(10 + 2) \approx 0.67$, pulled towards 0.5. With 7,000 heads in 10,000 flips both give about 0.7: the data overwhelm the prior.
 
-|  | MLE | MAP |
+**Losses you already know are MLE**
+
+| Model assumption | Negative log-likelihood |
+| --- | --- |
+| Gaussian noise | Mean squared error (linear regression) |
+| Bernoulli outcome | Binary cross-entropy (logistic regression) |
+| Categorical outcome | Categorical cross-entropy (softmax classifiers, LLM pre-training) |
+| Poisson counts | Poisson deviance |
+
+**Priors you already know are regularisers**
+
+- Gaussian prior on weights gives an L2 penalty (ridge, weight decay).
+- Laplace prior gives an L1 penalty (lasso), which encourages sparsity.
+- A uniform prior gives MAP equal to MLE.
+
+| | MLE | MAP |
 | --- | --- | --- |
-| Uses data | Yes | Yes |
-| Uses prior | No | Yes |
-| Goal | Maximize likelihood | Maximize posterior |
-| Regularization | No inherent prior | Often equivalent to regularization |
+| Uses a prior | No | Yes |
+| Small data | Can overfit (a coin with 3 heads in 3 flips gives $\hat p = 1$) | More stable |
+| Large data | Same as MAP | Prior matters little |
+| Output | Point estimate | Point estimate (the posterior mode), not the full posterior |
 
-**Relationship:**
+**Properties of MLE:** consistent and asymptotically efficient under regularity conditions, invariant to reparameterisation, but biased in small samples (the MLE of variance divides by $n$, see 1.13).
 
-**MAP = MLE + Prior Information**
+**Limitation of MAP:** it is still a point estimate and ignores posterior uncertainty; full Bayesian inference keeps the whole posterior (see 1.26). See 1.38 for the distinction between probability and likelihood.
 
-If the prior is **uniform**, MAP and MLE give the same estimate.
+### 1.26 How do the Bayesian and frequentist approaches differ, in statistics and in machine learning practice?
 
-**Short:**
+The two schools differ in **what probability means**. Frequentists treat probability as long-run frequency and parameters as fixed unknown constants; Bayesians treat probability as a degree of belief and parameters as random variables with distributions that are updated by data.
 
-**MLE relies only on the data; MAP combines the data with prior beliefs about the parameters.**
-
-### 1.29 What is Maximum Likelihood Estimation (MLE)?
-
-##### Maximum Likelihood Estimation (MLE)
-
-- **MLE** is a statistical method for estimating unknown model parameters from observed data.
-- It chooses the parameter values that make the **observed data most likely**.
-- It maximizes the **likelihood function**:
-
-  $$
-  L(\theta) = P(\text{Data} \mid \theta)
-  $$
-
-- The parameter estimate is:
-
-  $$
-  \hat{\theta} = \arg\max_{\theta} L(\theta)
-  $$
-
-##### Example
-
-Suppose you toss a coin 10 times and get **7 heads**.
-
-- MLE estimates the probability of heads as **$p = 0.7$**.
-- This value makes the observed result of 7 heads out of 10 most likely.
-
-##### In ML
-
-MLE is widely used for:
-
-- Logistic regression
-- Linear regression under Gaussian noise
-- Naive Bayes
-- Gaussian mixture models
-- Many probabilistic models
-
-**Short:**
-
-**MLE chooses the model parameters that make the observed training data most likely.**
-
-### 1.30 Explain the Bayesian vs. Frequentist approach in statistics.
-
-##### Bayesian vs. Frequentist Approach
-
-|  | **Frequentist** | **Bayesian** |
+| | Frequentist | Bayesian |
 | --- | --- | --- |
-| Parameters | Fixed but unknown | Treated as uncertain/random variables |
-| Prior knowledge | Not used as a probability distribution | Uses a **prior distribution** |
-| Data | Used to estimate parameters | Updates prior beliefs |
-| Main result | Estimate, confidence interval, p-value | Posterior distribution, credible interval |
-| Common methods | MLE, hypothesis testing | MAP, Bayesian inference |
+| Probability | Long-run frequency of repeated events | Degree of belief, updated with evidence |
+| Parameters | Fixed but unknown | Random variables with a prior $p(\theta)$ |
+| Output | Point estimate (MLE), confidence interval, p-value | Posterior $p(\theta \mid D) \propto p(D \mid \theta)\thinspace p(\theta)$, credible interval |
+| Interval meaning | 95 percent of intervals built this way would contain the true value | 95 percent probability the parameter lies in this interval, given model and prior |
+| Typical ML | MLE-trained models, hypothesis tests, bootstrap | Bayesian regression, Gaussian processes, Bayesian optimisation, MCMC, variational inference |
 
-##### Frequentist Approach
+**Coin example:** a frequentist estimates $\hat p$ from the flips and builds a confidence interval; a Bayesian starts with a Beta prior, updates it to a Beta posterior and reads off any probability statement directly.
 
-- Treats the unknown parameter as **fixed**.
-- Uses observed data to estimate the parameter.
-- Example: **MLE** finds the parameter that makes the observed data most likely.
-- Uses **confidence intervals** and **p-values** for inference.
+**In practice**
 
-##### Bayesian Approach
+- **MAP links them:** L2 regularisation is a Gaussian prior, L1 a Laplace prior (see 1.25). Most regularised ML is Bayesian in flavour even when no one calls it that.
+- **With lots of data** the likelihood dominates and both give nearly the same answers; the choice matters most with small data, rare events or strong prior knowledge.
+- **A/B testing:** frequentist tests need a fixed sample size and careful handling of peeking; Bayesian analysis reports "probability that B beats A is 94 percent" and expected loss, which stakeholders find easier, but it does not remove the risk of stopping early on noise, and the prior must be justified.
+- **Hierarchical (multilevel) models** borrow strength across groups, e.g. estimating conversion for thousands of small segments or stores; this is a major practical Bayesian win.
+- **Uncertainty for decisions:** Bayesian posteriors feed naturally into expected-value calculations, bandits (Thompson sampling) and forecasting with uncertainty.
 
-- Treats the parameter as having a **probability distribution representing uncertainty**.
-- Starts with a **prior**.
-- Combines prior and observed data to obtain a **posterior**.
+**Trade-offs**
 
-**Prior + Data → Posterior**
+- **Bayesian strengths:** direct probability statements, natural use of prior knowledge, good with small data, sequential updating.
+- **Bayesian weaknesses:** priors can be contested; exact posteriors are usually intractable, so MCMC is slow and variational inference is approximate; harder to explain the machinery.
+- **Frequentist strengths:** standard, fast, well-understood procedures with known error rates; regulators and journals expect them.
+- **Frequentist weaknesses:** p-values and confidence intervals are routinely misinterpreted; no direct probability statements about parameters.
 
-- **MAP** estimates the parameter with the highest posterior probability.
+**What interviewers look for:** you can state the philosophical difference in one sentence, interpret a confidence interval correctly, and choose pragmatically: frequentist for standard, high-volume experiments; Bayesian for small data, hierarchical structure, sequential decisions or when stakeholders need probability statements.
 
-##### Simple Example
-
-Suppose you want to estimate the probability that a coin lands heads.
-
-- **Frequentist:** Estimate the probability from the observed coin flips.
-- **Bayesian:** Start with a prior belief about the probability, then update it using the observed flips.
-
-**Short:**
-
-**Frequentist = infer parameters from data without a prior distribution.**
-
-**Bayesian = combine prior beliefs with data to obtain updated beliefs.**
-
-### 1.31 What is the Central Limit Theorem(CLT)? Why is it important?
+### 1.27 What is the Central Limit Theorem(CLT)? Why is it important?
 
 ##### Central Limit Theorem (CLT)
 
@@ -877,11 +805,17 @@ Suppose you want to estimate the probability that a coin lands heads.
 
 Even if individual customer purchase amounts are highly skewed, the **average purchase amount across many sufficiently large random samples** will tend to follow a normal distribution.
 
+##### Caveats
+
+- The CLT needs independent observations and a **finite variance**. Correlated data (several events per user, time series) need cluster-aware or time-series methods.
+- "Sufficiently large" depends on skew: 30 is a myth for heavy-tailed data such as revenue, where thousands of observations may be needed and a few extreme values still dominate (see 1.47).
+- It describes the sampling distribution of the **mean**, not the data: the data themselves do not become normal.
+
 **Short:**
 
 **CLT says that the distribution of sample means becomes approximately normal as sample size increases, making statistical inference possible for many real-world problems.**
 
-### 1.32 What are sampling techniques?
+### 1.28 What are sampling techniques?
 
 ##### Sampling Techniques
 
@@ -892,7 +826,7 @@ Even if individual customer purchase amounts are highly skewed, the **average pu
 Every member has a known chance of being selected.
 
 - **Simple Random Sampling:** Every member has an equal chance of selection.
-- **Systematic Sampling:** Select every $k$th member after a random starting point.
+- **Systematic Sampling:** Select every $`k`$th member after a random starting point.
 - **Stratified Sampling:** Divide the population into groups (strata) and randomly sample from each group.
 - **Cluster Sampling:** Divide the population into clusters and randomly select entire clusters.
 - **Multistage Sampling:** Sampling is performed in multiple stages, often combining different techniques.
@@ -912,41 +846,58 @@ Not every member has a known or equal chance of selection.
 
 **Non-probability sampling → selection based on convenience or judgment and may introduce sampling bias.**
 
-### 1.33 What is the bootstrap method, and how is it used?
+### 1.29 What is the bootstrap, and how do you build bootstrap confidence intervals?
 
-##### Bootstrap Method
+The bootstrap estimates the sampling distribution of a statistic by **resampling the observed data with replacement** many times and recomputing the statistic each time. It gives standard errors and confidence intervals for almost any statistic (median, AUC, a ratio, a model's accuracy) without a closed-form formula.
 
-- **Bootstrap** is a resampling technique used to estimate the **uncertainty and variability** of a statistic.
-- It repeatedly creates new samples **with replacement** from the original dataset.
-- The statistic of interest is calculated for each resampled dataset.
-- The resulting distribution, called the **bootstrap distribution**, is used to estimate uncertainty.
+**Procedure**
 
-##### How it is used
+1. From a sample of size $n$, draw $n$ rows with replacement.
+2. Compute the statistic on the resample.
+3. Repeat $B$ times (1,000 for standard errors, 5,000 to 10,000 for interval endpoints).
+4. Use the spread of the $B$ values as the estimate of uncertainty.
 
-1. Start with the original dataset.
-2. Randomly sample from it **with replacement** to create a new dataset of the same size.
-3. Calculate the statistic, such as mean, median, accuracy, or model performance.
-4. Repeat this process many times.
-5. Use the resulting distribution to calculate:
-   - **Confidence intervals**
-   - **Standard errors**
-   - **Bias estimates**
-   - **Model performance uncertainty**
+**Types of bootstrap confidence interval**
 
-##### In ML
+| Method | How | Notes |
+| --- | --- | --- |
+| Percentile | 2.5th and 97.5th percentiles of the bootstrap statistics | Simple; can be off for skewed or biased statistics |
+| Basic (reverse percentile) | Reflect the percentiles around the estimate | Corrects some bias, can give impossible values |
+| Normal | Estimate plus or minus 1.96 bootstrap standard errors | Assumes a roughly normal sampling distribution |
+| BCa (bias-corrected and accelerated) | Adjusts percentiles for bias and skew | Usually the most accurate; default in `scipy.stats.bootstrap` |
+| Studentised (bootstrap-t) | Bootstraps a t-like statistic | Accurate but needs a standard error inside each resample |
 
-Bootstrap can be used to:
+```python
+import numpy as np
+from scipy.stats import bootstrap
 
-- Compare the performance of two models.
-- Estimate confidence intervals for metrics such as accuracy, F1, or AUC.
-- Assess the stability of model predictions.
-- Build **bagging** methods such as Random Forests.
+res = bootstrap((latencies,), np.median, n_resamples=10_000, confidence_level=0.95, method="BCa")
+print(res.confidence_interval)
 
-**Short:**
+# paired bootstrap for the AUC difference between two models on the same test set
+rng = np.random.default_rng(0)
+diffs = []
+for _ in range(2000):
+    idx = rng.integers(0, len(y), len(y))
+    diffs.append(roc_auc_score(y[idx], p_a[idx]) - roc_auc_score(y[idx], p_b[idx]))
+lo, hi = np.percentile(diffs, [2.5, 97.5])
+```
 
-**Bootstrap repeatedly resamples the observed data with replacement to estimate the sampling distribution and uncertainty of a statistic.**
+**Where it is used in ML**
 
-### 1.34 What are eigenvalues and eigenvectors?
+- Confidence intervals for evaluation metrics (AUC, F1, NDCG) and for differences between models, using a **paired** bootstrap on the same test rows.
+- A/B test metrics that are medians, percentiles or ratios.
+- Bagging and random forests train each model on a bootstrap sample (see 9.5).
+
+**Pitfalls**
+
+- **Resample the independent unit:** if users have many sessions, resample users, not sessions (cluster bootstrap); otherwise intervals are too narrow.
+- **Time series:** ordinary bootstrap destroys autocorrelation; use block bootstrap.
+- **Extremes:** the bootstrap is unreliable for the maximum, extreme quantiles and heavy-tailed data with infinite variance.
+- **Small samples:** the bootstrap cannot create information the sample does not contain; with 15 points intervals are rough whatever the method.
+- **Leakage in model evaluation:** when bootstrapping a training procedure, rows that appear in the training resample must not appear in its evaluation set (use the out-of-bag rows).
+
+### 1.30 What are eigenvalues and eigenvectors?
 
 **Eigenvalues and Eigenvectors**
 
@@ -966,7 +917,7 @@ Bootstrap can be used to:
   - Stability analysis
   - Optimization and numerical methods
 
-### 1.35 What is Selection Bias?
+### 1.31 What is Selection Bias?
 
 #### Selection Bias
 
@@ -985,161 +936,150 @@ If you survey customer satisfaction only among customers who voluntarily respond
 - Monitor for **underrepresented groups**.
 - Use appropriate sampling or weighting techniques.
 
-### 1.36 What is the difference between Correlation, Covariance, and Causality?
+### 1.32 What is collinearity, and why does it matter?
 
-#### **Correlation vs Covariance vs Causality**
+Collinearity means two predictors are strongly linearly related; **multicollinearity** extends this to one predictor being close to a linear combination of several others. It does not usually hurt predictions, but it makes individual coefficients unstable and hard to interpret.
 
-| Aspect | **Covariance** | **Correlation** | **Causality** |
-| --- | --- | --- | --- |
-| **Meaning** | Measures whether two variables move together | Measures the **strength and direction** of a linear relationship | Means a change in one variable **causes** a change in another |
-| **Direction** | Positive / Negative | Positive / Negative | Cause → Effect |
-| **Strength** | Difficult to interpret because scale-dependent | Easy to interpret, from $-1$ to $+1$ | Not represented by a simple fixed range |
-| **Range** | $(-\infty, +\infty)$ | $[-1, +1]$ | No fixed range |
-| **Units** | Depends on units of X and Y | Unitless | Depends on the causal effect being measured |
-| **Standardized?** | No | Yes | Not simply a statistical standardization |
-| **Does it prove cause-effect?** | No | **No** | **Yes**, when supported by valid causal evidence |
-| **Typical use** | Understand joint variation | Measure linear association | Determine whether changing X produces a change in Y |
+**Example:** in a salary model, age and years of experience are highly correlated. The model cannot tell whether salary rises with age or with experience, so it may give a large positive weight to one and a negative weight to the other, and the split changes from sample to sample.
 
-For example, whether **increasing advertising expenditure actually causes an increase in sales**, rather than simply observing that advertising and sales are correlated.
+**Consequences**
 
-#### Simple Example
+- Inflated standard errors and wide confidence intervals for coefficients.
+- Coefficients that flip sign or change a lot when a feature or a few rows are added.
+- Individually non-significant coefficients even though the features are jointly significant.
+- With **perfect** collinearity (e.g. including all dummy columns plus an intercept, or a feature that is the sum of two others) the least squares solution is not unique.
 
-Suppose we observe:
+**Detection:** pairwise correlation matrix, variance inflation factors (above 5 to 10 is a warning), condition number of the scaled design matrix.
 
-> **Ice cream sales ↑** and **drowning incidents ↑**
+**Remedies:** drop or combine redundant features, use ridge or elastic net, use PCA or PLS, or accept it if you only need predictions and the correlation is stable in production.
 
-- **Covariance:** Positive → both tend to increase together.
-- **Correlation:** Positive → there is a positive linear association.
-- **Causality:** No. Ice cream sales do not cause drowning. A **confounding variable**, such as hot weather, can increase both.
+See 9.13 for detection and handling in regression models and 10.36 for the feature-engineering view.
 
-#### Key Relationship
+### 1.33 What is a time series, and what makes time-series data different?
 
-**Covariance → standardized → Correlation**
+A time series is a sequence of observations indexed by time, usually at regular intervals (sales per day, CPU load per minute). What makes it different from ordinary tabular data is that **observations are not independent**: today's value depends on yesterday's, which changes how you model, validate and test.
 
-But:
+**Components**
 
-**Correlation ≠ Causality**
+- **Trend:** long-term increase or decrease.
+- **Seasonality:** fixed-period patterns (daily, weekly, yearly).
+- **Cycles:** longer fluctuations without a fixed period (business cycles).
+- **Noise:** the remaining irregular variation.
 
-### 1.37 What are the differences between Type I error and Type II error?
+Additive decomposition writes $y_t = T_t + S_t + R_t$; multiplicative decomposition, $y_t = T_t \times S_t \times R_t$, suits seasonal swings that grow with the level (often handled with a log transform).
 
-#### Type I Error vs Type II Error
+**Key concepts**
 
-| Aspect | **Type I Error ($\alpha$)** | **Type II Error ($\beta$)** |
-| --- | --- | --- |
-| **Meaning** | Rejecting a **true null hypothesis** | Failing to reject a **false null hypothesis** |
-| **Also called** | **False Positive** | **False Negative** |
-| **Occurs when** | We conclude there is an effect when there isn't one | We conclude there is no sufficient evidence of an effect when one actually exists |
-| **Probability** | $\alpha$ (significance level) | $\beta$ |
-| **Related concept** | Significance level | Statistical power $= 1 - \beta$ |
+- **Autocorrelation:** correlation of the series with its own lags; ACF and PACF plots guide model choice.
+- **Stationarity:** constant mean, variance and autocorrelation over time. Many classical models assume it; differencing and transforms help achieve it (see 32.25).
+- **Structural breaks:** sudden changes in level or behaviour from launches, policy changes or shocks such as the pandemic (see 32.34).
 
-#### Simple example
+**Practical consequences**
 
-Suppose we test whether a new medicine works:
+- **Validation must respect time:** train on the past and test on the future with rolling-origin backtests; random K-fold leaks the future (see 12.23).
+- **Statistical tests that assume independence** (t-tests, naive confidence intervals) understate uncertainty on autocorrelated data.
+- **Features:** lags, rolling statistics, calendar effects, holidays; all computed only from information available at prediction time.
+- **Spurious correlation:** two trending series correlate strongly even when unrelated; difference them before correlating.
 
-- **Type I Error:** We conclude the medicine works, but actually it **doesn't**. → **False Positive**
-- **Type II Error:** We conclude there isn't enough evidence that it works, but actually it **does**. → **False Negative**
+**Models:** seasonal naive and exponential smoothing baselines, ARIMA, gradient boosting with lag features, and deep or foundation models for many series. Chapter 32 (32.25 to 32.36) covers forecasting in depth.
 
-#### Easy way to remember
+### 1.34 What is the Fourier transform, and where is it used in data science and ML?
 
-> **Type I = False Alarm**
->
-> **Type II = Missed Detection**
+The Fourier transform rewrites a signal as a sum of sine and cosine waves, converting it from the **time (or space) domain** to the **frequency domain**. It shows which frequencies are present and how strong they are.
 
-**In short:** Type I error means **detecting something that isn't there**, while Type II error means **missing something that is there**.
+For a sampled signal $x_0 \ldots x_{N-1}$, the discrete Fourier transform is
 
-### 1.38 What is P-value?
+$$
+X_k = \sum_{n=0}^{N-1} x_n \thinspace e^{-2\pi i k n / N}, \qquad k = 0, \ldots, N-1
+$$
 
-- **P-value** is the probability of obtaining a result **at least as extreme as the observed result**, assuming the **null hypothesis ($H_0$) is true**.
-- In simple term: **How surprising is my result if the null hypothesis is actually true?**
-- It helps determine whether the observed result provides enough evidence to **reject the null hypothesis**.
-- A **small p-value** indicates stronger evidence against $H_0$.
-- Common significance level: **$\alpha = 0.05$**
+The magnitude $\lvert X_k\rvert$ is the strength of frequency $k$, and the phase gives its shift. The **fast Fourier transform (FFT)** computes this in $O(N \log N)$ instead of $O(N^2)$, which is what makes it practical.
 
-  - **p-value $\lt 0.05$:** Reject $H_0$
-  - **p-value $\geq 0.05$:** Fail to reject $H_0$
-- A p-value **does not** represent the probability that the null hypothesis is true.
-- It is **not** the probability that your test result is a random fluke.
+**Key properties**
 
-### 1.39 How would you define collinearity?
+- **Convolution theorem:** convolution in the time domain is multiplication in the frequency domain, so large convolutions and filters are computed quickly via the FFT.
+- **Sampling (Nyquist):** you can only resolve frequencies up to half the sampling rate; higher frequencies alias into lower ones.
+- **Spectral leakage:** a finite window smears frequencies; windowing functions (Hann, Hamming) reduce it.
 
-- **Collinearity** occurs when **two or more independent variables in a dataset are highly correlated with each other**.
-- In a regression model, this can make it difficult to determine the **individual effect of each independent variable** on the target variable.
-- High collinearity can lead to:
-  - Unstable model coefficients
-  - Large standard errors
-  - Difficulty interpreting the importance of individual features
-- **Example:** If a regression model uses both **age** and **years of experience**, these variables may be highly correlated, creating collinearity.
+**Uses in data science and ML**
 
-### 1.40 What is the time series?
+- **Time series:** detect dominant seasonal periods (a peak at 1/7 per day reveals weekly seasonality) and build Fourier features (sine and cosine terms) for regression or forecasting models, as Prophet does for seasonality.
+- **Audio and speech:** spectrograms and mel-frequency features via the short-time Fourier transform are the input to many speech models.
+- **Images:** compression (JPEG uses the related discrete cosine transform), filtering, and frequency-domain augmentation.
+- **Sensor and vibration data:** predictive maintenance looks for new frequency peaks in machine vibrations.
+- **Deep learning:** FFT-based convolutions, Fourier neural operators for PDEs, and the sinusoidal positional encodings in Transformers use the same idea.
 
-- A **time series** is a sequence of data points recorded **over time**, usually at regular intervals.
-- The observations are ordered chronologically, such as **daily, weekly, monthly, or yearly**.
-- Time series data is used to understand **patterns, trends, and changes over time**.
-- Common components of a time series include:
-  - **Trend** → Long-term upward or downward movement.
-  - **Seasonality** → Repeating patterns at regular intervals.
-  - **Cyclical patterns** → Longer-term fluctuations that do not necessarily repeat at fixed intervals.
-  - **Noise/Random variation** → Unpredictable fluctuations.
-- Common applications include:
-  - **Stock price forecasting**
-  - **Sales and demand forecasting**
-  - **Weather forecasting**
-  - **Electricity consumption prediction**
-  - **Economic forecasting**
-- Common time-series models include **ARIMA, SARIMA, Exponential Smoothing, Prophet, and LSTM**.
+```python
+import numpy as np
+spectrum = np.abs(np.fft.rfft(y - y.mean()))
+freqs = np.fft.rfftfreq(len(y), d=1.0)            # d = sampling interval (e.g. 1 day)
+dominant_period = 1 / freqs[np.argmax(spectrum[1:]) + 1]
+```
 
-### 1.41 What is the Fourier Transform?
+### 1.35 How can you check whether a data set is normally distributed, and when does it matter?
 
-#### Fourier Transform
+Use visual checks first and formal tests second, and remember that what usually matters is not the raw data but the **residuals** or the **sampling distribution** of the statistic you are testing.
 
-- **Fourier Transform** is a mathematical technique used to convert a signal from the **time domain** into the **frequency domain**.
-- It tells us **which frequencies are present in a signal and how strong they are**.
-- It is commonly used for **audio processing, image processing, signal processing, communications, and time-series analysis**.
-- For example, an audio signal that looks complex in the time domain can be broken down into its individual **frequency components**.
-- The **Fast Fourier Transform (FFT)** is an efficient algorithm used to calculate the Fourier Transform.
+**Visual checks**
 
-### 1.42 How can you check for the Normality of a dataset?
+- **Histogram or density plot:** roughly symmetric, single-peaked, bell shape.
+- **Q-Q plot:** sample quantiles against normal quantiles; points on a straight line indicate normality. Curvature shows skew; S-shapes show heavy or light tails. This is the most informative single check.
+- **Skewness and excess kurtosis:** both near 0 for a normal distribution.
 
-#### Methods to Check Normality of a Dataset
+**Formal tests**
 
-- **Histogram:** Check whether the data looks approximately **bell-shaped and symmetric**.
-- **Q-Q Plot:** If the points are close to a straight line, the data is approximately normally distributed.
-- **Shapiro-Wilk Test:** Statistical test commonly used to check normality.
-- **Anderson-Darling Test:** Tests how well the data fits a normal distribution.
-- **Kolmogorov-Smirnov Test:** Compares the data distribution with a theoretical normal distribution.
-- **D’Agostino Skewness Test:** Checks whether the data has **significant skewness**.
-- **Skewness and Kurtosis:** Values close to those expected for a normal distribution suggest approximate normality.
+| Test | Notes |
+| --- | --- |
+| Shapiro-Wilk | Most powerful general test for small to medium samples |
+| Anderson-Darling | Gives more weight to the tails |
+| D'Agostino-Pearson | Combines skewness and kurtosis |
+| Kolmogorov-Smirnov | Weak for normality; requires known parameters (use Lilliefors if estimated) |
 
-### 1.43 A game exists where you are required to roll two six-faced dice. You stand a chance to win \$50 if the sum of the two dice equals 7. However, you must pay \$4 to play each time you roll both dice. Would you partake in this game? Note: If you play 6 times, what is the probability of making money from this game?
+```python
+from scipy import stats
+import statsmodels.api as sm
+stat, p = stats.shapiro(residuals)                 # small p suggests non-normality
+sm.qqplot(residuals, line="s")
+```
 
-#### Should You Play the Game?
+**The large-sample trap:** with thousands of rows every test rejects normality because of tiny, harmless deviations; with 20 rows they rarely reject even clear non-normality. Use tests as a supplement to plots, not a gate.
 
-- There are **36 possible outcomes** when rolling two dice.
-- A sum of **7** can occur in **6 ways**:
-  - (1,6), (2,5), (3,4), (4,3), (5,2), (6,1)
-- Therefore, the probability of winning on one roll is **$\frac{6}{36} = \frac{1}{6}$**.
-- You win **\$50** and pay **\$4** per game.
+**When normality matters**
 
-For **6 games**:
+- Linear regression inference: the **residuals** should be roughly normal for small-sample confidence intervals and p-values; the predictors and target do not need to be normal.
+- t-tests with small samples. With large samples the central limit theorem makes the sample mean approximately normal anyway, unless the data are heavy-tailed (see 1.27).
+- Methods that assume Gaussian data explicitly: Gaussian Naive Bayes, LDA, z-score anomaly thresholds, Gaussian process noise.
 
-- Total cost = 6 × \$4 = **\$24**
-- Let **X** = number of wins.
-- You make money when your winnings exceed \$24:
-  - 1 win → \$50 − \$24 = **\$26 profit**
-  - So you need **at least 1 win**.
+**When it does not matter:** tree ensembles and most ML models make no normality assumption.
 
-Probability of making money:
+**If data are not normal:** log or Box-Cox transforms for right skew (see 10.15), non-parametric tests (Mann-Whitney, Wilcoxon), bootstrap confidence intervals (see 1.29), or a model with a suitable distribution (Poisson, gamma).
 
-- Probability of no wins in 6 rolls = **$(5/6)^6 \approx 0.335$**
-- Probability of at least one win = **$1 - (5/6)^6 \approx 0.665$**
+### 1.36 You can roll two dice for \$4 and win \$50 if the sum is 7. Would you play, and what is the probability of making money if you play six times?
 
-#### Final Answer
+**Yes: the game has positive expected value, and you make money in six plays about two-thirds of the time.**
 
-**Probability of making money after 6 plays ≈ 66.5%.**
+**Single roll**
 
-So, based purely on the probability of making money in 6 plays, **yes, I would play**.
+- 36 equally likely outcomes; a sum of 7 occurs in 6 of them, so $P(\text{win}) = 1/6$.
+- You pay the \$4 fee on every roll and receive \$50 on a win, so the net outcome of one roll is +\$46 with probability 1/6 and -\$4 with probability 5/6.
+- Expected value per roll: $50/6 - 4 \approx 4.33$ dollars, so the game favours the player by about \$4.33 per play.
 
-### 1.44 Give an example where the median is a better measure than the mean
+**Six plays**
+
+- Total cost is \$24. Let $W$ be the number of wins, $W \sim \text{Binomial}(6, 1/6)$.
+- Net result is $50W - 24$, which is positive whenever $W \ge 1$.
+
+$$
+P(W \ge 1) = 1 - \left(\frac{5}{6}\right)^6 \approx 1 - 0.335 = 0.665
+$$
+
+So there is about a 66.5 percent chance of finishing ahead, and the expected profit over six plays is $6 \times 4.33 \approx 26$ dollars.
+
+**Variance matters too:** about one time in three you lose all \$24. A positive expected value is a good bet for someone who can play many times or absorb the loss; with a small bankroll, the risk of ruin matters. This is the same reasoning used for any business decision with uncertain payoffs: compute the expected value, then look at the spread of outcomes.
+
+**What interviewers look for:** setting up the sample space correctly, using the complement for "at least one", stating the expected value, and noticing the interpretation question (is the \$4 fee deducted from the \$50 prize or not).
+
+### 1.37 Give an example where the median is a better measure than the mean
 
 The **median is better when the distribution is skewed or has outliers**, because the mean is pulled toward extreme values while the median depends only on the middle observation.
 
@@ -1155,7 +1095,7 @@ The **median is better when the distribution is skewed or has outliers**, becaus
 
 **Practice:** look at the histogram or box plot, report both mean and median when they differ, and consider a log transform for heavily skewed features.
 
-### 1.45 What’s the difference between probability and likelihood?
+### 1.38 What’s the difference between probability and likelihood?
 
 They use the same function $p(x \mid \theta)$, read in two different directions.
 
@@ -1168,7 +1108,7 @@ They use the same function $p(x \mid \theta)$, read in two different directions.
 
 **Example:** 7 heads in 10 flips gives $L(0.7) = \binom{10}{7}0.7^7 0.3^3 \approx 0.267$ and $L(0.5) \approx 0.117$, so $p = 0.7$ is more likely given the data. The MLE is $\hat p = 0.7$.
 
-### 1.46 How will you find the correlation between a categorical variable and a continuous variable?
+### 1.39 How will you find the correlation between a categorical variable and a continuous variable?
 
 It depends on whether the categorical variable is binary, nominal or ordinal:
 
@@ -1191,33 +1131,7 @@ def correlation_ratio(cat, num):
 
 **Interview caveats:** don't just label-encode a nominal variable and compute Pearson, since the result depends on the arbitrary codes. Association isn't causation, and with large samples tiny effects become statistically significant, so report the effect size ($\eta$), not just the p-value.
 
-### 1.47 What are the differences between “Bayesian” and “Frequentist” approaches for Machine Learning?
-
-The two schools differ in **what probability means**.
-
-| | Frequentist | Bayesian |
-| --- | --- | --- |
-| Probability | Long-run frequency of repeated events | Degree of belief, updated with evidence |
-| Parameters | Fixed but unknown constants | Random variables with distributions |
-| Prior knowledge | Not formally used | Encoded in a **prior** $p(\theta)$ |
-| Output | Point estimate (e.g. MLE) + confidence interval / p-value | Full **posterior** $p(\theta \mid D) \propto p(D \mid \theta)p(\theta)$ + credible interval |
-| Typical ML | MLE, standard SGD-trained nets, hypothesis tests | Bayesian linear regression, Gaussian processes, Bayesian optimization, MCMC/variational inference |
-
-**Links in practice:**
-
-- **MAP estimation** = MLE + prior. L2 regularization equals a Gaussian prior on the weights; L1 equals a Laplace prior. So most regularized ML is "Bayesian-flavoured".
-- With lots of data the likelihood dominates and both give similar answers.
-
-**Tradeoffs:**
-
-- **Bayesian pros:** principled uncertainty estimates, natural use of prior knowledge, works well with small data, good for sequential updating (A/B tests, bandits like Thompson sampling).
-- **Bayesian cons:** priors can be subjective; exact posteriors are usually intractable, so MCMC or variational approximations are slow or approximate at scale.
-- **Frequentist pros:** simpler, scalable, objective procedures, well-established tests.
-- **Frequentist cons:** confidence intervals and p-values are easy to misinterpret; no direct probability statements about parameters.
-
-**Production example:** Bayesian A/B testing gives "$P(\text{variant B is better}) = 0.94$" (a 94% chance), which is often easier for stakeholders than a p-value.
-
-### 1.48 Describe the differences between and use cases for box plots and histograms
+### 1.40 Describe the differences between and use cases for box plots and histograms
 
 Both show the distribution of a numeric variable, at different levels of detail.
 
@@ -1237,7 +1151,7 @@ Both show the distribution of a numeric variable, at different levels of detail.
 
 **Practical tip:** violin plots or box plots overlaid with strip/jitter points combine both views. In EDA I'd use histograms per feature to understand shape and box plots of the feature by target class to see which features separate classes.
 
-### 1.49 What is KL divergence, and how would you define its use case in ML?
+### 1.41 What is KL divergence, and how would you define its use case in ML?
 
 **KL divergence** measures how much one probability distribution $P$ differs from a reference distribution $Q$:
 
@@ -1247,7 +1161,7 @@ $$
 
 Interpretation: the expected extra bits (nats) needed to encode samples from $P$ using a code optimized for $Q$.
 
-**Properties:** always $\ge 0$, zero only if $P = Q$; **not symmetric** ($D_{\text{KL}}(P \parallel Q) \neq D_{\text{KL}}(Q \parallel P)$), so it's not a true distance; infinite if $Q(x) = 0$ where $P(x) \gt 0$. Forward KL is "mean-seeking" (covers all modes); reverse KL is "mode-seeking".
+**Properties:** always $\ge 0$, zero only if $P = Q$; **not symmetric** ($`D_{\text{KL}}(P \parallel Q) \neq D_{\text{KL}}(Q \parallel P)`$), so it's not a true distance; infinite if $Q(x) = 0$ where $P(x) \gt 0$. Forward KL is "mean-seeking" (covers all modes); reverse KL is "mode-seeking".
 
 **Use cases in ML:**
 
@@ -1266,35 +1180,16 @@ def kl(p, q, eps=1e-12):
     return float(np.sum(p * np.log(p / q)))
 ```
 
-### 1.50 List the most popular distribution curves along with scenarios where you will use them in an algorithm.
-
-| Distribution | Type | Describes | Where it shows up in ML |
-| --- | --- | --- | --- |
-| **Normal (Gaussian)** | Continuous | Sums of many small effects (CLT) | Linear regression residuals, weight initialization, GMMs, Gaussian Naive Bayes, Gaussian processes, VAE latent prior, anomaly detection via z-scores |
-| **Bernoulli** | Discrete | One yes/no trial | Binary classification output (logistic regression, sigmoid + BCE), dropout masks |
-| **Binomial** | Discrete | Number of successes in $n$ trials | Conversion counts, A/B test analysis |
-| **Categorical / Multinomial** | Discrete | One of $K$ outcomes / counts over $K$ | Softmax classifiers, LLM next-token sampling, Multinomial Naive Bayes for text |
-| **Poisson** | Discrete | Count of events per interval | Modeling calls/orders per hour, Poisson regression, demand forecasting |
-| **Exponential** | Continuous | Time between Poisson events | Survival/time-to-event, queueing and latency modeling |
-| **Uniform** | Both | Equal likelihood | Random initialization, random search for hyperparameters, simulation |
-| **Beta** | Continuous on $[0, 1]$ | Distribution of a probability | Bayesian A/B testing, Thompson sampling for bandits |
-| **Dirichlet** | Multivariate on simplex | Distribution over probability vectors | Topic models (LDA), Bayesian priors for categorical data |
-| **Gamma** | Continuous, positive | Waiting times, positive skewed values | Insurance claim sizes, Bayesian priors for precision |
-| **Student's t** | Continuous, heavy tails | Small-sample means | t-tests, t-SNE's low-dimensional similarities, robust regression |
-| **Log-normal / power law (Zipf)** | Continuous / discrete | Skewed positive values / long tails | Income, prices, latency; word frequencies, item popularity in recommenders |
-
-**Why it matters:** the assumed distribution determines the right loss (MSE ↔ Gaussian, cross-entropy ↔ Bernoulli/categorical, Poisson deviance ↔ counts), the right transformation (log for log-normal data) and the right statistical test.
-
-### 1.51 Which metrics can be used to measure correlation of categorical data?
+### 1.42 Which metrics can be used to measure correlation of categorical data?
 
 **Categorical vs. categorical (nominal):**
 
 - **Chi-square test of independence:** tests whether an association exists (gives a p-value, not strength).
 - **Cramér's V:** effect size from chi-square, range 0–1, works for any table size (use the bias-corrected version for small samples):
 
-  $$
+  ```math
   V = \sqrt{\frac{\chi^2/n}{\min(r-1, c-1)}}
-  $$
+  ```
 
 - **Phi coefficient ($\phi$):** for 2×2 tables; equals Pearson on two binary variables.
 - **Contingency coefficient** and **Tschuprow's T:** older alternatives to Cramér's V.
@@ -1318,11 +1213,36 @@ def cramers_v(x, y):
 
 **Caveat:** with large samples chi-square is almost always significant, so report an effect size like Cramér's V. Label-encoding nominal categories and computing Pearson is meaningless.
 
-### 1.52 Where does linear algebra/statistics actually show up in day-to-day LLM/CV engineering work (not just theory)?
+### 1.43 Where do linear algebra, probability and statistics actually show up in day-to-day LLM and computer vision engineering work?
 
-Linear algebra: embeddings are vectors, similarity search relies on dot product/cosine similarity, attention mechanisms are matrix multiplications, and dimensionality reduction (PCA) is used for visualizing/analyzing embeddings. Statistics/probability: evaluating model outputs (confidence calibration, sampling temperature/top-p in generation), A/B testing changes to a RAG pipeline or prompt, understanding precision/recall/F1 and ROC curves for CV classifiers, and reasoning about uncertainty in retrieval relevance scores. Calculus underlies backpropagation/gradient descent when fine-tuning models — understanding learning rate effects, loss landscapes, and why training might diverge.
+They show up constantly, mostly as practical judgement rather than derivations: reasoning about vectors and matrices when working with embeddings and model internals, and about uncertainty and variance when evaluating and shipping changes.
 
-### 1.53 What is Singular Value Decomposition (SVD)?
+**Linear algebra**
+
+- **Embeddings and retrieval:** text and images become vectors; similarity is a dot product or cosine; normalising vectors makes the two equivalent. Approximate nearest neighbour indexes (HNSW, IVF) and quantisation are geometry problems.
+- **Attention:** $\operatorname{softmax}(QK^\top / \sqrt{d})V$ is matrix multiplication; the $\sqrt{d}$ scaling keeps dot products from growing with dimension.
+- **Low-rank structure:** LoRA fine-tuning adds a low-rank update $BA$ to a weight matrix; SVD-based compression and PCA for inspecting embedding spaces rely on the same idea (see 1.44).
+- **Shapes and memory:** estimating parameter counts, activation memory and FLOPs from matrix dimensions to plan GPU budgets.
+- **Computer vision:** convolutions, camera projections and homographies, and image transforms are all linear maps.
+
+**Probability**
+
+- **Generation:** the model outputs a categorical distribution over tokens; temperature, top-k and top-p reshape it. Log-probabilities support confidence estimates and perplexity.
+- **Calibration:** whether a classifier's 0.9 score is right 90 percent of the time decides whether you can threshold it.
+- **Loss functions:** cross-entropy is a negative log-likelihood; KL divergence appears in distillation and RLHF (see 1.41).
+
+**Statistics**
+
+- **Evaluation with uncertainty:** an eval set of 200 questions gives an accuracy confidence interval of roughly plus or minus 7 points, so a 2-point gain between prompts is noise. Use bootstrap intervals and paired comparisons (see 1.29 and 1.20).
+- **A/B tests** of a RAG pipeline or prompt change: power, sample size and multiple metrics (see 1.45 and 1.46).
+- **LLM-as-judge agreement** with humans: correlation, Cohen's kappa and position-bias checks.
+- **Monitoring:** detecting drift in input or embedding distributions with statistical distances.
+
+**Calculus and optimisation:** backpropagation and learning-rate behaviour during fine-tuning, diagnosing divergence and loss spikes (see Chapter 11).
+
+**What interviewers look for:** concrete examples from your own work, especially catching a false improvement by quantifying evaluation noise.
+
+### 1.44 What is Singular Value Decomposition (SVD)?
 
 > **See also:** [Question 17.72 — What is SVD (singular value decomposition)?](../part-4-generative-ai/17-large-language-model-foundations.md#1772-what-is-svd-singular-value-decomposition), which covers the same question from another angle.
 
@@ -1541,6 +1461,207 @@ So the key relationship is: $\boxed{A=U\Sigma V^T}$
 **AI connection:** Once you have $U, \Sigma, V^T$, you can keep only the largest $k$ singular values to create a low-rank approximation: $A\approx U_k\Sigma_kV_k^T$
 
 This is the core idea behind **SVD-based dimensionality reduction, compression, LSA, recommendation systems, and low-rank neural-network compression**.
+
+### 1.45 What is statistical power, and how do you calculate the sample size for an experiment?
+
+**Power** is the probability that a test detects an effect of a given size when that effect really exists, $1 - \beta$. A sample size calculation chooses $n$ so that the smallest effect worth acting on, the **minimum detectable effect (MDE)**, would be detected with the desired power (usually 80 percent) at the chosen significance level (usually 5 percent).
+
+**The four linked quantities:** significance level $\alpha$, power $1 - \beta$, effect size $\delta$, and noise $\sigma$. Fix any three and the fourth follows; together they set $n$.
+
+**Formula for comparing two means** (per group, two-sided test):
+
+$$
+n = \frac{2\left(z_{1-\alpha/2} + z_{1-\beta}\right)^2 \sigma^2}{\delta^2}
+$$
+
+With $\alpha = 0.05$ and 80 percent power, $(1.96 + 0.84)^2 \approx 7.84$, giving the handy rule $n \approx 16\sigma^2/\delta^2$ per group. For a conversion rate, $\sigma^2 = p(1 - p)$.
+
+**Worked example:** baseline conversion 5 percent, and you want to detect a 5 percent relative lift (5.00 to 5.25 percent, so $\delta = 0.0025$). Then $\sigma^2 = 0.0475$ and $n \approx 16 \times 0.0475 / 0.0025^2$, about 121,600 users per group. Halving the MDE quadruples the sample size, which is why small lifts on low base rates need very large experiments.
+
+```python
+from statsmodels.stats.power import NormalIndPower
+from statsmodels.stats.proportion import proportion_effectsize
+
+es = proportion_effectsize(0.0525, 0.05)          # Cohen's h
+n = NormalIndPower().solve_power(effect_size=es, alpha=0.05, power=0.8, ratio=1.0)
+print(round(n))                                    # about 122,000 per group
+```
+
+**How to get more power without more users**
+
+- **Variance reduction:** CUPED uses a pre-experiment covariate (last month's spend) to reduce variance by a factor of $1 - \rho^2$, where $\rho$ is its correlation with the metric; stratification and regression adjustment do similar things.
+- **More sensitive metrics:** a proxy closer to the change (clicks on the new widget) moves more than revenue.
+- **Cap or transform heavy-tailed metrics** (see 1.47).
+- **Run longer**, or use a unit with less noise.
+- **One-sided tests** only when you genuinely would not act on a negative result.
+
+**Pitfalls**
+
+- **Underpowered tests** mostly return "not significant", and the significant results they do find overestimate the true effect (the winner's curse or Type M error).
+- **Post-hoc power** computed from the observed effect adds nothing beyond the p-value; plan power before the test.
+- **Wrong unit of analysis:** if you randomise users but analyse page views, the variance is underestimated and the planned sample size is wrong (see 1.49).
+- **Peeking** at results and stopping early changes the error rates; use a fixed horizon or a sequential design.
+- **Choose the MDE from the business case** (the smallest lift that pays for the change), not from what makes the sample size convenient.
+
+**What interviewers look for:** the four quantities and their trade-off, a quick estimate with $16\sigma^2/\delta^2$, and practical levers such as CUPED when traffic is limited.
+
+### 1.46 What is the multiple testing problem, and how do you control the false discovery rate?
+
+If you run many hypothesis tests at $\alpha = 0.05$, some will be significant by chance even when nothing is going on. With $m$ independent true-null tests, the chance of at least one false positive is $1 - 0.95^m$: about 40 percent for 10 tests and 64 percent for 20. Correction methods control either the probability of any false positive or the expected share of false positives among discoveries.
+
+**Where it happens in practice**
+
+- An A/B test with 20 metrics, or the same test sliced by 15 segments ("it worked for Android users in Germany").
+- Feature screening across thousands of candidate features, genomics, or monitoring many dashboards for anomalies.
+- Repeatedly checking an experiment and stopping when $p$ dips below 0.05 (peeking), which is multiple testing over time.
+- Trying many model variants and reporting the best on the same test set.
+
+**Two error rates**
+
+| Error rate | Definition | Methods | Use when |
+| --- | --- | --- | --- |
+| Family-wise error rate (FWER) | Probability of at least one false positive | Bonferroni, Holm | Few tests, any false claim is costly (primary metrics, regulatory decisions) |
+| False discovery rate (FDR) | Expected proportion of false positives among the rejected hypotheses | Benjamini-Hochberg, Benjamini-Yekutieli | Many tests, exploratory screening where some false leads are acceptable |
+
+**Methods**
+
+- **Bonferroni:** test each at $\alpha/m$. Simple and valid under any dependence, but very conservative.
+- **Holm (step-down):** sort p-values ascending; compare the $k$-th smallest with $\alpha/(m - k + 1)$ and stop at the first failure. Same guarantee as Bonferroni, uniformly more powerful.
+- **Benjamini-Hochberg:** sort p-values $p_{(1)} \le \ldots \le p_{(m)}$, find the largest $k$ with $p_{(k)} \le (k/m)\thinspace q$ and reject hypotheses 1 to $k$. Controls FDR at level $q$ under independence or positive dependence; Benjamini-Yekutieli handles arbitrary dependence at a cost in power.
+
+```python
+from statsmodels.stats.multitest import multipletests
+reject, p_adj, _, _ = multipletests(p_values, alpha=0.05, method="fdr_bh")   # or "holm", "bonferroni"
+```
+
+**Practical approach for experiments**
+
+1. Pre-register **one primary metric** (or a small set) and its analysis; secondary and guardrail metrics are reported but interpreted more cautiously.
+2. Treat segment analyses as hypothesis-generating; confirm surprising segment effects in a follow-up test.
+3. For peeking, use sequential methods designed for it (group sequential designs with alpha spending, or always-valid p-values) rather than repeated fixed-horizon tests.
+4. Keep a final untouched test set for model selection, or account for the number of variants tried.
+
+**Pitfalls:** corrections reduce power, so required sample sizes grow; correcting for metrics you would never act on wastes power; and no correction fixes undisclosed analyses (the "garden of forking paths"). Transparency about how many things were tried matters as much as the method.
+
+### 1.47 What are heavy-tailed distributions, and why can the mean mislead?
+
+A distribution is heavy-tailed when extreme values are far more likely than under a normal distribution, so a few observations can dominate totals and averages. Revenue per customer, insurance claims, file sizes, request latency, city sizes and item popularity are typical. For such data the sample mean is unstable, slow to converge and often unrepresentative.
+
+**Examples and degrees of heaviness**
+
+- **Log-normal:** all moments finite, but strongly skewed; the mean sits well above the median.
+- **Power law (Pareto):** $P(X \gt x) \propto x^{-\alpha}$. If $\alpha \le 2$ the variance is infinite; if $\alpha \le 1$ even the mean is infinite. Word frequencies (Zipf), wealth and network degrees look like this.
+- **Student's t** with few degrees of freedom, **Cauchy** (no mean at all).
+
+**Why the mean misleads**
+
+- **Dominated by a few points:** if 1 percent of customers produce 50 percent of revenue, average revenue per user mainly measures whether a few "whales" landed in your sample.
+- **Slow convergence:** the central limit theorem still applies when the variance is finite, but may need enormous samples before the mean looks normal; with infinite variance it does not apply in its usual form, and the sample mean keeps jumping as new extremes arrive.
+- **High variance in experiments:** one big spender in the treatment group can create a "significant" revenue lift or hide a real one.
+- **The mean describes no one:** "average session length is 40 minutes" when the median is 4.
+
+**What to use instead or as well**
+
+| Need | Tool |
+| --- | --- |
+| Typical value | Median, other quantiles (p90, p99 for latency) |
+| Robust average | Trimmed or winsorised mean, Hodges-Lehmann estimator |
+| Modelling | Log transform; Tweedie, gamma or log-normal models; quantile regression |
+| Concentration | Share of total from the top 1 or 10 percent, Lorenz curve, Gini coefficient |
+| Tail risk | Extreme value theory, tail index estimates (Hill estimator), expected shortfall |
+| Experiments | Cap (winsorise) at a pre-agreed percentile, CUPED, bootstrap intervals, or test on a transformed metric |
+
+**Business reality:** totals still matter (total revenue is mean times count), so you cannot ignore the mean, but you should report it with its uncertainty and alongside the median and concentration. When you cap a metric in an A/B test you change the question from "effect on revenue" to "effect on revenue excluding the extreme tail"; say so explicitly.
+
+**Diagnose:** plot on log-log axes (a straight tail suggests a power law), compare mean and median, check how much the mean moves when you remove the top 0.1 percent, and look at the maximum relative to the sum.
+
+**What interviewers look for:** recognising heavy tails in common business metrics, explaining why the average is unstable, and choosing robust summaries and experiment designs. See 1.37 for the median versus mean basics.
+
+### 1.48 What are the most common statistical mistakes in business analysis, and how do you avoid them?
+
+Most wrong conclusions in analytics come from a small set of recurring mistakes: comparing the wrong groups, ignoring randomness, misreading aggregates and confusing correlation with cause. A senior analyst is expected to spot them in other people's work as well as their own.
+
+| Mistake | What happens | Example | Guard |
+| --- | --- | --- | --- |
+| Simpson's paradox | A trend in every subgroup reverses when groups are combined | Overall conversion falls while it rises in every channel, because the mix shifted to a low-converting channel | Break results down by key segments and mix (see 32.2) |
+| Selection bias | The analysed group differs systematically from the population | Users who opted into a new feature are already more engaged | Randomise, or compare like with like |
+| Survivorship bias | Only the "survivors" are analysed | Studying current customers to learn why customers stay | Include churned and failed cases |
+| Regression to the mean | Extreme values move towards average on their own | Stores with the worst month "improve" after a coaching programme | Use a control group |
+| Before-and-after comparisons | Seasonality, trends or other launches explain the change | Sales up after a redesign launched in December | Experiments, or difference-in-differences (see 32.6) |
+| Base-rate neglect | Ignoring how rare the event is | A 95 percent accurate fraud model where most alerts are false | Compute precision at the real base rate (see 1.24) |
+| Multiple comparisons | Slicing until something is significant | "Worked for iOS users aged 25 to 34 in Spain" | Pre-register, correct, replicate (see 1.46) |
+| Peeking | Stopping a test the moment it looks significant | False positive rate several times the nominal 5 percent | Fixed horizon or sequential design |
+| Wrong unit of analysis | Analysing page views when users were randomised | Confidence intervals far too narrow | Analyse at the randomisation unit, delta method (see 1.49) |
+| Averaging averages | Unweighted mean of ratios | Mean of per-store conversion rates treats a 10-visit store like a 10,000-visit store | Ratio of totals, or weight properly |
+| Relative versus absolute | "Risk doubled" from 0.01 to 0.02 percent | Overreaction to a tiny absolute change | Report both |
+| Ignoring uncertainty | Point estimates without intervals | Ranking regions by a noisy metric each month | Confidence intervals, shrinkage for small groups |
+| Small denominators | Extreme rates from tiny samples | The "best" store has 3 sales from 3 visits | Minimum sample thresholds, Bayesian shrinkage |
+| Correlation as causation | Acting on an association | "Users who use feature X retain better, so push X" | Experiments or causal methods (see 1.16 and Chapter 32) |
+| Novelty and primacy effects | Short-term reaction differs from long-term | A new UI gets a spike of curious clicks | Run longer, look at effect over time |
+| Sample ratio mismatch | Groups have different sizes than designed | 50/50 split shows 52/48 because of a logging bug | Check SRM with a chi-square test before reading results |
+| Goodhart's law | The metric becomes the target and stops measuring the goal | Optimising clicks increases clickbait | Guardrail metrics, long-term outcomes |
+
+**A useful habit (Twyman's law):** any figure that looks surprisingly interesting is probably wrong. Check data quality, joins, filters, time windows and definitions before celebrating.
+
+**Checklist before presenting a result**
+
+1. What is the comparison, and are the groups comparable?
+2. How big is the effect, with what uncertainty, at what unit of analysis?
+3. How many things were tried before this one?
+4. Does it hold across segments and time periods, and could mix shifts explain it?
+5. Is there a plausible mechanism, and what would falsify it?
+
+**What interviewers look for:** concrete examples from your own experience, especially a time you caught a wrong conclusion before it drove a decision, and a habit of quantifying uncertainty.
+
+### 1.49 How do you calculate confidence intervals for ratio metrics and clustered data, and what is the delta method?
+
+Many business metrics are **ratios of two random quantities** measured on a different unit from the one that was randomised: click-through rate (clicks per page view), revenue per session, average order value. If users are randomised but you treat every page view as independent, the standard error is too small, sometimes by a factor of two or more, and you get false positives. The fix is to compute variance at the randomisation unit, with the **delta method**, a cluster-robust estimator or a cluster bootstrap.
+
+**Why naive formulas fail**
+
+- Page views from the same user are correlated (heavy users click more), so they are not independent Bernoulli trials.
+- The denominator (page views) is itself random and differs between groups.
+- The effective sample size is closer to the number of users than the number of events.
+
+**The delta method:** for per-user totals $Y_i$ (clicks) and $X_i$ (views) over $n$ users, the metric is $R = \bar Y / \bar X$. A first-order Taylor expansion gives
+
+$$
+\operatorname{Var}(R) \approx \frac{1}{\mu_X^2}\left[\operatorname{Var}(\bar Y) - 2\frac{\mu_Y}{\mu_X}\operatorname{Cov}(\bar Y, \bar X) + \frac{\mu_Y^2}{\mu_X^2}\operatorname{Var}(\bar X)\right]
+$$
+
+where $\operatorname{Var}(\bar Y) = s_Y^2/n$ and so on, all computed from **per-user** values. A confidence interval is then $R \pm 1.96\sqrt{\operatorname{Var}(R)}$, and the difference between two independent groups has variance equal to the sum of their variances.
+
+```python
+import numpy as np
+
+def ratio_var(y, x):
+    """Delta-method variance of sum(y)/sum(x) with per-user arrays y and x."""
+    n = len(y)
+    mx, my = x.mean(), y.mean()
+    vy, vx = y.var(ddof=1) / n, x.var(ddof=1) / n
+    cov = np.cov(y, x, ddof=1)[0, 1] / n
+    return (vy - 2 * (my / mx) * cov + (my / mx) ** 2 * vx) / mx ** 2
+
+r_t, r_c = y_t.sum() / x_t.sum(), y_c.sum() / x_c.sum()
+se = np.sqrt(ratio_var(y_t, x_t) + ratio_var(y_c, x_c))
+ci = (r_t - r_c - 1.96 * se, r_t - r_c + 1.96 * se)
+```
+
+**Alternatives**
+
+- **Cluster bootstrap:** resample users (with all their events), recompute the ratio; simple and flexible for medians and percentiles too (see 1.29).
+- **Regression with cluster-robust standard errors:** regress the event-level outcome on the treatment indicator with errors clustered by user; this also allows covariate adjustment.
+- **Change the metric to the randomisation unit:** e.g. average clicks per user, which is a simple mean with a standard t-test, if it answers the business question.
+
+**Other clustered situations:** students within schools, patients within hospitals, stores within regions, and switchback or geo experiments where whole cities are randomised. The rule is the same: the effective sample size is driven by the number of independent clusters, not the number of rows, and with few clusters (under about 30 to 50) even cluster-robust methods need small-sample corrections.
+
+**Pitfalls**
+
+- The delta method is a large-sample approximation; with very few users or a denominator near zero, use the bootstrap.
+- Mean of per-user ratios and ratio of totals are different metrics with different answers; choose deliberately and keep the definition fixed.
+- Heavy-tailed numerators (revenue) make any variance estimate noisy (see 1.47).
+
+**What interviewers look for:** recognising the mismatch between analysis unit and randomisation unit, knowing the delta method exists and roughly what it does, and checking this before trusting an experiment's p-value.
 
 ---
 

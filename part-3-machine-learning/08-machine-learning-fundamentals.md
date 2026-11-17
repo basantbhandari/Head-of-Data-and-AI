@@ -2,507 +2,850 @@
 
 _Part III — Machine Learning_
 
-The learning problem, bias and variance, overfitting, regularization, data leakage and the ML project lifecycle. Expect these in every ML loop, often as the opening questions.
+The learning problem and generalisation theory, bias and variance, overfitting, regularisation, losses, data leakage, problem framing and the ML project lifecycle. Expect these in every ML loop, often as the opening questions.
 
-This chapter contains **99 questions**.
+This chapter contains **62 questions**.
 
 ## Contents
 
-- **8.1** [Why do we need Machine Learning?](#81-why-do-we-need-machine-learning)
-- **8.2** [What is Machine Learning, formally?](#82-what-is-machine-learning-formally)
-- **8.3** [Give some real-world applications of Machine Learning.](#83-give-some-real-world-applications-of-machine-learning)
-- **8.4** [What is the difference between Deduction and Induction?](#84-what-is-the-difference-between-deduction-and-induction)
-- **8.5** [How does Machine Learning relate to induction?](#85-how-does-machine-learning-relate-to-induction)
-- **8.6** [Why should Machine Learning work at all?](#86-why-should-machine-learning-work-at-all)
-- **8.7** [What is Overfitting?](#87-what-is-overfitting)
-- **8.8** [What is Underfitting?](#88-what-is-underfitting)
-- **8.9** [How would you find a good balance between overfitting and underfitting?](#89-how-would-you-find-a-good-balance-between-overfitting-and-underfitting)
-- **8.10** [What is the difference between parametric and non-parametric models?](#810-what-is-the-difference-between-parametric-and-non-parametric-models)
-- **8.11** [What is the difference between online and offline learning?](#811-what-is-the-difference-between-online-and-offline-learning)
-- **8.12** [What is an Epoch?](#812-what-is-an-epoch)
-- **8.13** [What is a Batch?](#813-what-is-a-batch)
-- **8.14** [What is Batch Size?](#814-what-is-batch-size)
-- **8.15** [What is an Iteration?](#815-what-is-an-iteration)
-- **8.16** [If I have 1,000 training examples and a batch size of 100, how many iterations are in one epoch?](#816-if-i-have-1000-training-examples-and-a-batch-size-of-100-how-many-iterations-are-in-one-epoch)
-- **8.17** [If I train for 5 epochs with the setup above, how many total iterations happen?](#817-if-i-train-for-5-epochs-with-the-setup-above-how-many-total-iterations-happen)
-- **8.18** [Why not just feed the entire dataset in one go instead of using batches?](#818-why-not-just-feed-the-entire-dataset-in-one-go-instead-of-using-batches)
-- **8.19** [What's the trade-off between large and small batch sizes?](#819-whats-the-trade-off-between-large-and-small-batch-sizes)
-- **8.20** [What is (Batch) Gradient Descent?](#820-what-is-batch-gradient-descent)
-- **8.21** [What is Stochastic Gradient Descent (SGD)?](#821-what-is-stochastic-gradient-descent-sgd)
-- **8.22** [What is Mini-Batch Gradient Descent?](#822-what-is-mini-batch-gradient-descent)
-- **8.23** [Which GD is used more now?](#823-which-gd-is-used-more-now)
-- **8.24** [What are embeddings in Machine Learning?](#824-what-are-embeddings-in-machine-learning)
-- **8.25** [What is the Softmax Activation Function?](#825-what-is-the-softmax-activation-function)
-- **8.26** [What is Machine Learning?](#826-what-is-machine-learning)
-- **8.27** [Differentiate between Supervised and Unsupervised Learning.](#827-differentiate-between-supervised-and-unsupervised-learning)
-- **8.28** [What is Reinforcement Learning?](#828-what-is-reinforcement-learning)
-- **8.29** [What is Bias?](#829-what-is-bias)
-- **8.30** [What is the difference between Classification and Regression?](#830-what-is-the-difference-between-classification-and-regression)
-- **8.31** [Explain Overfitting and Underfitting. How can you prevent them?](#831-explain-overfitting-and-underfitting-how-can-you-prevent-them)
-- **8.32** [What Are L1 and L2 Loss Functions?](#832-what-are-l1-and-l2-loss-functions)
-- **8.33** [What is Regularization? Explain L1 (Lasso) and L2 (Ridge) regularization.](#833-what-is-regularization-explain-l1-lasso-and-l2-ridge-regularization)
-- **8.34** [What are Loss Functions and Cost Functions? Explain the key difference between them.](#834-what-are-loss-functions-and-cost-functions-explain-the-key-difference-between-them)
-- **8.35** [What are dropouts?](#835-what-are-dropouts)
-- **8.36** [What is a Perceptron?](#836-what-is-a-perceptron)
-- **8.37** [Explain Multilayer Perception (MLP).](#837-explain-multilayer-perception-mlp)
-- **8.38** [What is Cross-Entropy?](#838-what-is-cross-entropy)
-- **8.39** [What are Logits?](#839-what-are-logits)
-- **8.40** [Explain Cross-Validation. Why is it used?](#840-explain-cross-validation-why-is-it-used)
-- **8.41** [What is Confusion Matrix?](#841-what-is-confusion-matrix)
-- **8.42** [What are precision, recall, and F1-score?](#842-what-are-precision-recall-and-f1-score)
-- **8.43** [What is anomaly detection?](#843-what-is-anomaly-detection)
-- **8.44** [What is the difference between policy-based and value-based methods?](#844-what-is-the-difference-between-policy-based-and-value-based-methods)
-- **8.45** [What is Q-Learning?](#845-what-is-q-learning)
-- **8.46** [Explain the concept of exploration vs. exploitation.](#846-explain-the-concept-of-exploration-vs-exploitation)
-- **8.47** [Explain the curse of dimensionality and how to address it.](#847-explain-the-curse-of-dimensionality-and-how-to-address-it)
-- **8.48** [Explain Local Loss, Focal Loss, and Gradient Blending in the context of Multi-Task Learning.](#848-explain-local-loss-focal-loss-and-gradient-blending-in-the-context-of-multi-task-learning)
-- **8.49** [Explain Contrastive Learning](#849-explain-contrastive-learning)
-- **8.50** [What is Generative AI?](#850-what-is-generative-ai)
-- **8.51** [Differentiate between Training Sets and Test Sets?](#851-differentiate-between-training-sets-and-test-sets)
-- **8.52** [Define Bias and Variance.](#852-define-bias-and-variance)
-- **8.53** [What are Machine Learning and Artificial Intelligence?](#853-what-are-machine-learning-and-artificial-intelligence)
-- **8.54** [Differentiate between Deep Learning and Machine Learning?](#854-differentiate-between-deep-learning-and-machine-learning)
-- **8.55** [What are the types of Machine learning?](#855-what-are-the-types-of-machine-learning)
-- **8.56** [What different targets do classification and regression algorithms require?](#856-what-different-targets-do-classification-and-regression-algorithms-require)
-- **8.57** [What is semi-supervised learning?](#857-what-is-semi-supervised-learning)
-- **8.58** [Where is semi-supervised learning applied?](#858-where-is-semi-supervised-learning-applied)
-- **8.59** [What is Inductive Logic Programming?](#859-what-is-inductive-logic-programming)
-- **8.60** [What is deductive learning and inductive learning?](#860-what-is-deductive-learning-and-inductive-learning)
-- **8.61** [How would you differentiate data mining from Machine learning?](#861-how-would-you-differentiate-data-mining-from-machine-learning)
-- **8.62** [Why does overfitting occur in ML?](#862-why-does-overfitting-occur-in-ml)
-- **8.63** [What are the functions of unsupervised learning?](#863-what-are-the-functions-of-unsupervised-learning)
-- **8.64** [What are some functions of supervised learning?](#864-what-are-some-functions-of-supervised-learning)
-- **8.65** [What is Regularization in ML?](#865-what-is-regularization-in-ml)
-- **8.66** [What do you understand about the Bias-Variance Tradeoff?](#866-what-do-you-understand-about-the-bias-variance-tradeoff)
-- **8.67** [How can you differentiate between a parametric and a non-parametric model?](#867-how-can-you-differentiate-between-a-parametric-and-a-non-parametric-model)
-- **8.68** [How can overfitting be avoided in ML?](#868-how-can-overfitting-be-avoided-in-ml)
-- **8.69** [How would you handle a dataset suffering from high variance?](#869-how-would-you-handle-a-dataset-suffering-from-high-variance)
-- **8.70** [How Regularization reduces the cost term?](#870-how-regularization-reduces-the-cost-term)
-- **8.71** [What do you mean by the unreasonable effectiveness of data?](#871-what-do-you-mean-by-the-unreasonable-effectiveness-of-data)
-- **8.72** [What is Online Machine Learning? How is it different from Offline machine learning? List some of its applications](#872-what-is-online-machine-learning-how-is-it-different-from-offline-machine-learning-list-some-of-its-applications)
-- **8.73** [What is the No Free Lunch Theorem?](#873-what-is-the-no-free-lunch-theorem)
-- **8.74** [What are the main differences between Structured and Unstructured Data?](#874-what-are-the-main-differences-between-structured-and-unstructured-data)
-- **8.75** [What is Data Leakage? List some ways by which you can overcome this problem.](#875-what-is-data-leakage-list-some-ways-by-which-you-can-overcome-this-problem)
-- **8.76** [What are the different types of bias in Machine Learning?](#876-what-are-the-different-types-of-bias-in-machine-learning)
-- **8.77** [Why does L2 regularization give sparse coefficients?](#877-why-does-l2-regularization-give-sparse-coefficients)
-- **8.78** [List some ways using which you can improve a model’s performance.](#878-list-some-ways-using-which-you-can-improve-a-models-performance)
-- **8.79** [What is active learning, and where is it useful?](#879-what-is-active-learning-and-where-is-it-useful)
-- **8.80** [What types of models tend to overfit?](#880-what-types-of-models-tend-to-overfit)
-- **8.81** [Can you tell the complete life cycle of a data science project?](#881-can-you-tell-the-complete-life-cycle-of-a-data-science-project)
-- **8.82** [What are the properties of a good ML model?](#882-what-are-the-properties-of-a-good-ml-model)
-- **8.83** [What do you mean by the curse of Dimensionality?](#883-what-do-you-mean-by-the-curse-of-dimensionality)
-- **8.84** [Considering the long list of machine learning algorithms, given a data set, how do you decide which one to use?](#884-considering-the-long-list-of-machine-learning-algorithms-given-a-data-set-how-do-you-decide-which-one-to-use)
-- **8.85** [How will you know which machine learning algorithm to choose for your classification problem?](#885-how-will-you-know-which-machine-learning-algorithm-to-choose-for-your-classification-problem)
-- **8.86** [Is more data always better?](#886-is-more-data-always-better)
-- **8.87** [How would you differentiate between multi-label and multi-class classification?](#887-how-would-you-differentiate-between-multi-label-and-multi-class-classification)
-- **8.88** [What is an AI ontology?](#888-what-is-an-ai-ontology)
-- **8.89** [Can AI systems be conscious?](#889-can-ai-systems-be-conscious)
-- **8.90** [What is unsupervised learning through compression?](#890-what-is-unsupervised-learning-through-compression)
-- **8.91** [Explain the bias-variance tradeoff mathematically and practically.](#891-explain-the-bias-variance-tradeoff-mathematically-and-practically)
-- **8.92** [Why can a model with lower training loss have worse test performance?](#892-why-can-a-model-with-lower-training-loss-have-worse-test-performance)
-- **8.93** [How do you detect overfitting beyond simply comparing train and validation accuracy?](#893-how-do-you-detect-overfitting-beyond-simply-comparing-train-and-validation-accuracy)
-- **8.94** [What is data leakage? Give examples that are difficult to detect.](#894-what-is-data-leakage-give-examples-that-are-difficult-to-detect)
-- **8.95** [What is the difference between model capacity and model complexity?](#895-what-is-the-difference-between-model-capacity-and-model-complexity)
-- **8.96** [Why does regularization reduce variance?](#896-why-does-regularization-reduce-variance)
-- **8.97** [Explain L1 vs L2 regularization geometrically.](#897-explain-l1-vs-l2-regularization-geometrically)
-- **8.98** [What is the difference between generative and discriminative models?](#898-what-is-the-difference-between-generative-and-discriminative-models)
-- **8.99** [What is the singularity in AI?](#899-what-is-the-singularity-in-ai)
+- **8.1** [Why do we need machine learning, and where is it used?](#81-why-do-we-need-machine-learning-and-where-is-it-used)
+- **8.2** [What is machine learning, formally, and how does it relate to AI and deep learning?](#82-what-is-machine-learning-formally-and-how-does-it-relate-to-ai-and-deep-learning)
+- **8.3** [What is the difference between deduction and induction, and how does machine learning relate to induction?](#83-what-is-the-difference-between-deduction-and-induction-and-how-does-machine-learning-relate-to-induction)
+- **8.4** [Why should machine learning work at all? Explain generalisation, PAC learning and VC dimension at an interview level.](#84-why-should-machine-learning-work-at-all-explain-generalisation-pac-learning-and-vc-dimension-at-an-interview-level)
+- **8.5** [What are overfitting and underfitting, why do they occur, and how do you fix each?](#85-what-are-overfitting-and-underfitting-why-do-they-occur-and-how-do-you-fix-each)
+- **8.6** [Explain the bias-variance trade-off mathematically and practically.](#86-explain-the-bias-variance-trade-off-mathematically-and-practically)
+- **8.7** [What is the difference between parametric and non-parametric models?](#87-what-is-the-difference-between-parametric-and-non-parametric-models)
+- **8.8** [What is the difference between online and offline learning, and where is online learning used?](#88-what-is-the-difference-between-online-and-offline-learning-and-where-is-online-learning-used)
+- **8.9** [What are epochs, batches, batch size and iterations, and how do you choose the batch size?](#89-what-are-epochs-batches-batch-size-and-iterations-and-how-do-you-choose-the-batch-size)
+- **8.10** [Compare batch, stochastic and mini-batch gradient descent. Which is used in practice?](#810-compare-batch-stochastic-and-mini-batch-gradient-descent-which-is-used-in-practice)
+- **8.11** [What are embeddings in Machine Learning?](#811-what-are-embeddings-in-machine-learning)
+- **8.12** [What are logits, softmax and cross-entropy, and how do they fit together?](#812-what-are-logits-softmax-and-cross-entropy-and-how-do-they-fit-together)
+- **8.13** [What are the main types of machine learning, and how do supervised and unsupervised learning differ?](#813-what-are-the-main-types-of-machine-learning-and-how-do-supervised-and-unsupervised-learning-differ)
+- **8.14** [What is Reinforcement Learning?](#814-what-is-reinforcement-learning)
+- **8.15** [What is the difference between classification and regression, and what targets does each require?](#815-what-is-the-difference-between-classification-and-regression-and-what-targets-does-each-require)
+- **8.16** [What are L1 and L2 loss functions, and when would you use each?](#816-what-are-l1-and-l2-loss-functions-and-when-would-you-use-each)
+- **8.17** [What is regularisation? Explain L1 (lasso), L2 (ridge) and elastic net, and how the penalty changes the cost.](#817-what-is-regularisation-explain-l1-lasso-l2-ridge-and-elastic-net-and-how-the-penalty-changes-the-cost)
+- **8.18** [What is the difference between a loss function, a cost function and an objective function?](#818-what-is-the-difference-between-a-loss-function-a-cost-function-and-an-objective-function)
+- **8.19** [What is a perceptron, and how does a multilayer perceptron overcome its limits?](#819-what-is-a-perceptron-and-how-does-a-multilayer-perceptron-overcome-its-limits)
+- **8.20** [Explain Cross-Validation. Why is it used?](#820-explain-cross-validation-why-is-it-used)
+- **8.21** [What is Confusion Matrix?](#821-what-is-confusion-matrix)
+- **8.22** [What are precision, recall, and F1-score?](#822-what-are-precision-recall-and-f1-score)
+- **8.23** [What is anomaly detection?](#823-what-is-anomaly-detection)
+- **8.24** [What is the difference between policy-based and value-based methods?](#824-what-is-the-difference-between-policy-based-and-value-based-methods)
+- **8.25** [What is Q-Learning?](#825-what-is-q-learning)
+- **8.26** [Explain the concept of exploration vs. exploitation.](#826-explain-the-concept-of-exploration-vs-exploitation)
+- **8.27** [What is the curse of dimensionality, and how do you address it?](#827-what-is-the-curse-of-dimensionality-and-how-do-you-address-it)
+- **8.28** [How do you combine losses in multi-task learning? Explain per-task losses, focal loss and gradient blending.](#828-how-do-you-combine-losses-in-multi-task-learning-explain-per-task-losses-focal-loss-and-gradient-blending)
+- **8.29** [Explain Contrastive Learning](#829-explain-contrastive-learning)
+- **8.30** [What is Generative AI?](#830-what-is-generative-ai)
+- **8.31** [What are the training, validation and test sets, and how should you split data?](#831-what-are-the-training-validation-and-test-sets-and-how-should-you-split-data)
+- **8.32** [Differentiate between Deep Learning and Machine Learning?](#832-differentiate-between-deep-learning-and-machine-learning)
+- **8.33** [What is semi-supervised learning, and where is it applied?](#833-what-is-semi-supervised-learning-and-where-is-it-applied)
+- **8.34** [What is Inductive Logic Programming?](#834-what-is-inductive-logic-programming)
+- **8.35** [How would you differentiate data mining from Machine learning?](#835-how-would-you-differentiate-data-mining-from-machine-learning)
+- **8.36** [What do you mean by the unreasonable effectiveness of data?](#836-what-do-you-mean-by-the-unreasonable-effectiveness-of-data)
+- **8.37** [What is the No Free Lunch theorem, and what does inductive bias mean in practice?](#837-what-is-the-no-free-lunch-theorem-and-what-does-inductive-bias-mean-in-practice)
+- **8.38** [What are the main differences between Structured and Unstructured Data?](#838-what-are-the-main-differences-between-structured-and-unstructured-data)
+- **8.39** [What is data leakage, which forms are hard to detect, and how do you prevent it?](#839-what-is-data-leakage-which-forms-are-hard-to-detect-and-how-do-you-prevent-it)
+- **8.40** [What are the different types of bias in Machine Learning?](#840-what-are-the-different-types-of-bias-in-machine-learning)
+- **8.41** [Why does L1 regularisation give sparse coefficients while L2 does not? Explain geometrically.](#841-why-does-l1-regularisation-give-sparse-coefficients-while-l2-does-not-explain-geometrically)
+- **8.42** [List some ways using which you can improve a model’s performance.](#842-list-some-ways-using-which-you-can-improve-a-models-performance)
+- **8.43** [What is active learning, and where is it useful?](#843-what-is-active-learning-and-where-is-it-useful)
+- **8.44** [What types of models tend to overfit?](#844-what-types-of-models-tend-to-overfit)
+- **8.45** [Can you tell the complete life cycle of a data science project?](#845-can-you-tell-the-complete-life-cycle-of-a-data-science-project)
+- **8.46** [What are the properties of a good ML model?](#846-what-are-the-properties-of-a-good-ml-model)
+- **8.47** [Given a dataset, how do you decide which machine learning algorithm to use?](#847-given-a-dataset-how-do-you-decide-which-machine-learning-algorithm-to-use)
+- **8.48** [Is more data always better?](#848-is-more-data-always-better)
+- **8.49** [How would you differentiate between multi-label and multi-class classification?](#849-how-would-you-differentiate-between-multi-label-and-multi-class-classification)
+- **8.50** [What is an AI ontology?](#850-what-is-an-ai-ontology)
+- **8.51** [Can AI systems be conscious?](#851-can-ai-systems-be-conscious)
+- **8.52** [What is unsupervised learning through compression?](#852-what-is-unsupervised-learning-through-compression)
+- **8.53** [Why can a model with lower training loss have worse test performance?](#853-why-can-a-model-with-lower-training-loss-have-worse-test-performance)
+- **8.54** [How do you detect overfitting beyond simply comparing train and validation accuracy?](#854-how-do-you-detect-overfitting-beyond-simply-comparing-train-and-validation-accuracy)
+- **8.55** [What is the difference between model capacity and model complexity?](#855-what-is-the-difference-between-model-capacity-and-model-complexity)
+- **8.56** [Why does regularization reduce variance?](#856-why-does-regularization-reduce-variance)
+- **8.57** [What is the difference between generative and discriminative models?](#857-what-is-the-difference-between-generative-and-discriminative-models)
+- **8.58** [How do you frame a business problem as a machine learning problem, and when should you not use machine learning?](#858-how-do-you-frame-a-business-problem-as-a-machine-learning-problem-and-when-should-you-not-use-machine-learning)
+- **8.59** [What is the difference between data-centric and model-centric improvement, and when should you focus on each?](#859-what-is-the-difference-between-data-centric-and-model-centric-improvement-and-when-should-you-focus-on-each)
+- **8.60** [How do you use learning curves to diagnose whether more data, more capacity or better features will help?](#860-how-do-you-use-learning-curves-to-diagnose-whether-more-data-more-capacity-or-better-features-will-help)
+- **8.61** [What is Bayes error, how do you estimate the best achievable performance, and how do you know when to stop improving a model?](#861-what-is-bayes-error-how-do-you-estimate-the-best-achievable-performance-and-how-do-you-know-when-to-stop-improving-a-model)
+- **8.62** [What is the i.i.d. assumption, and what happens to generalisation when it breaks?](#862-what-is-the-iid-assumption-and-what-happens-to-generalisation-when-it-breaks)
 
 ---
 
-### 8.1 Why do we need Machine Learning?
+### 8.1 Why do we need machine learning, and where is it used?
 
-Many tasks are too complex to solve with explicitly hand-coded rules (e.g., recognizing handwriting, detecting objects, driving a car). Machine Learning lets a computer learn how to perform such tasks directly from training examples, instead of a programmer trying to anticipate every rule manually. This makes it possible to build systems for spam filtering, bioinformatics, medical image analysis, language processing, and game-playing agents like AlphaGo, where explicit programming is impractical.
+We need machine learning when the rules that map inputs to outputs are too complex, too numerous or too fast-changing to write by hand, but examples of the right behaviour are plentiful. Instead of a programmer anticipating every case, the system learns the mapping from data and keeps improving as more data arrives.
 
-### 8.2 What is Machine Learning, formally?
+**Traditional programming versus machine learning:**
 
-A set of algorithms that allow a computer to learn a specific task from training examples. "Learning" here doesn't mean memorizing the seen examples — it means generalizing to previously unseen instances. Ideally, the computer should use the training examples to extract a general rule describing how the task should be performed correctly.
+```text
+Traditional:   rules + data      -> program -> answers
+ML:            data + answers    -> training -> model (the learned rules)
+               model + new data  -> predictions
+```
 
-### 8.3 Give some real-world applications of Machine Learning.
+**When ML is the right tool:**
 
-Handwritten letter recognition, object detection, self-driving cars, spam filtering, bioinformatics, medical image analysis, natural language processing, and game-playing systems like AlphaGo and chess engines.
+- **Rules are too complex to write down:** recognising handwriting, faces or speech. Nobody can write the if-else rules for "this is a cat".
+- **Rules change constantly:** spam, fraud and abuse patterns shift as attackers adapt; a learned model can be retrained instead of rewritten.
+- **Decisions must be personalised at scale:** ranking feeds, recommending products or pricing for millions of users, each with different behaviour.
+- **Patterns are hidden in large data:** predicting machine failure from thousands of sensor signals, or protein structure from sequences.
+- **Humans are the bottleneck:** triaging support tickets, extracting fields from invoices, transcribing calls.
 
-### 8.4 What is the difference between Deduction and Induction?
+**Typical applications by domain:**
 
-- **Deduction** reasons from one or more general premises to a logically certain conclusion. If the premises are true, the conclusion is guaranteed to be true.
-- **Induction** reasons from specific examples to construct or evaluate a general proposition. We can never be fully certain the conclusion is correct — it's a generalization, not a guarantee.
+| Domain | Examples |
+| --- | --- |
+| Perception | Image classification, object detection, OCR, speech recognition |
+| Language | Search, translation, summarisation, chatbots, document extraction |
+| Commerce | Recommendations, demand forecasting, dynamic pricing, churn prediction |
+| Finance | Fraud detection, credit scoring, anti-money laundering, algorithmic trading |
+| Healthcare | Medical image analysis, risk scores, drug discovery, protein folding |
+| Operations | Predictive maintenance, route optimisation, anomaly detection, quality control |
+| Autonomy and games | Self-driving perception and planning, robotics, AlphaGo-style game play |
 
-### 8.5 How does Machine Learning relate to induction?
+**When ML is the wrong tool:** the logic is simple and stable enough for rules, the cost of an error is unacceptable without guarantees, there is little or no representative data, or nobody will act on the prediction. Framing this decision is covered in 8.58.
 
-Machine Learning can be viewed as an attempt to automate the process of inductive inference — using specific training examples to derive a general rule or model, without any certainty that the rule is perfectly correct.
+**What interviewers look for:** not a list of buzzwords but the reasoning: ML trades explicit logic for learned statistical patterns, which buys flexibility and scale at the cost of guarantees, interpretability and a dependency on data quality.
 
-### 8.6 Why should Machine Learning work at all?
+### 8.2 What is machine learning, formally, and how does it relate to AI and deep learning?
 
-It only works if there is actually something to learn — i.e., if the data contains an underlying pattern or structure. If the examples were pure noise with no consistent relationship between inputs and outputs, no algorithm could extract a meaningful general rule.
+Machine learning is the study of algorithms that improve their performance on a task from experience (data), without being explicitly programmed with the rules. "Learning" does not mean memorising the training examples; it means extracting a general rule that performs well on new, unseen examples from the same distribution.
 
-### 8.7 What is Overfitting?
+**Mitchell's classic definition (1997):** a program learns from experience E with respect to a class of tasks T and performance measure P if its performance at tasks in T, as measured by P, improves with experience E.
 
-Overfitting happens when a model is too complex and fits the training data extremely well — including its noise — rather than the true underlying pattern. It has low training (approximation) error but high test (estimation) error, because it fails to generalize to unseen data.
+- **Spam filter:** T = classify emails, P = precision and recall on new mail, E = a corpus of labelled emails.
+- **Chess engine:** T = play chess, P = win rate, E = games played against itself.
 
-- **Overfitting** occurs when a machine learning model learns the **training data too closely**, including its noise and random patterns, instead of learning general patterns.
-- As a result:
-  - **Training performance** → Very high
-  - **Test/validation performance** → Poor
-- An overfitted model performs well on data it has seen but **fails to generalize to new, unseen data**.
-- Common causes include:
-  - Model is **too complex**
-  - Training for **too many iterations/epochs**
-  - **Too little training data**
-  - Too many irrelevant features
-- Common ways to reduce overfitting:
-  - Use **regularization**
-  - Collect more training data
-  - Reduce model complexity
-  - Use **early stopping**
-  - Use **cross-validation**
-  - Apply **dropout** in neural networks
+**Statistical-learning formulation:** we have examples $(x_i, y_i)$ drawn from an unknown distribution $P$, a hypothesis class $\mathcal{H}$ of candidate functions and a loss $L$. We want the function with the lowest expected (true) risk, but we can only measure the empirical risk on the sample:
 
-### 8.8 What is Underfitting?
+$$
+R(f) = \mathbb{E}_{(x,y) \sim P}\left[L(f(x), y)\right], \qquad \hat{R}(f) = \frac{1}{n}\sum_{i=1}^{n} L(f(x_i), y_i)
+$$
 
-Underfitting happens when a model is too simplistic to capture the underlying pattern. It tends to be stable with respect to noise, so the training error is high, but paradoxically the "estimation gap" (variance) can be low — the model consistently fails, both on training and test data.
+Training is (regularised) empirical risk minimisation: pick $\hat{f}$ in $\mathcal{H}$ that makes $\hat{R}$ small. The central question of ML is when a small $\hat{R}$ implies a small $R$, which is generalisation (see 8.4).
 
-- **Underfitting** occurs when a machine learning model is **too simple to learn the important patterns** in the training data.
-- It is associated with **high bias and low variance**.
-- As a result:
-  - **Training performance** → Poor
-  - **Test/validation performance** → Poor
-- Common causes include:
-  - Model is **too simple**
-  - Insufficient training
-  - Too few or poor-quality features
-  - Excessive regularization
-- Ways to reduce underfitting:
-  - Use a **more complex model**
-  - Add relevant features
-  - Train for longer
-  - Reduce excessive regularization
-  - Use a more suitable algorithm
+**The three ingredients of every learner:**
 
-**In simple terms:** Underfitting means the model **has high bias and is too simple to capture the important patterns in the data**.
+1. **Representation:** the hypothesis class (linear models, trees, neural networks).
+2. **Evaluation:** the loss or objective that scores a hypothesis.
+3. **Optimisation:** the search procedure (closed form, gradient descent, greedy splitting).
 
-### 8.9 How would you find a good balance between overfitting and underfitting?
+**How ML relates to AI and deep learning:**
 
-By choosing model complexity that minimizes total error — balancing bias (underfitting) and variance (overfitting) — often through techniques like cross-validation, regularization, or pruning, rather than maximizing fit to the training set alone.
+```text
+Artificial intelligence  (any technique that makes machines act intelligently:
+ |                        search, planning, logic, knowledge graphs, ML)
+ +-- Machine learning    (learns behaviour from data)
+      +-- Deep learning  (ML with multi-layer neural networks that learn their own features)
+           +-- Foundation models / generative AI (very large pretrained deep networks)
+```
 
-### 8.10 What is the difference between parametric and non-parametric models?
+| Aspect | Artificial intelligence | Machine learning |
+| --- | --- | --- |
+| Scope | The broad goal: systems that perceive, reason, plan and act | One family of methods for reaching that goal |
+| Approach | Can be rule-based, search-based, logic-based or learned | Always learned from data |
+| Example | A chess engine using hand-written search and evaluation | A spam filter trained on labelled email |
+
+**Main types:** supervised, unsupervised, semi-supervised, self-supervised and reinforcement learning (see 8.13). Deep learning versus classical ML is compared in 8.32.
+
+**Interview tip:** give the one-line intuition first, then the formal E/T/P or empirical-risk view. Mentioning that the goal is generalisation, not fitting the training data, is what separates a strong answer.
+
+### 8.3 What is the difference between deduction and induction, and how does machine learning relate to induction?
+
+Deduction reasons from general rules to a specific conclusion that is guaranteed if the premises are true. Induction reasons from specific observations to a general rule that is probable but never certain. Supervised machine learning is automated induction: it generalises from a finite sample of examples to a rule meant to hold on unseen cases.
+
+| | Deduction | Induction |
+| --- | --- | --- |
+| Direction | General to specific | Specific to general |
+| Certainty | Conclusion is guaranteed if premises are true | Conclusion is probable and can be overturned by new data |
+| Adds new knowledge? | No, it makes implicit knowledge explicit | Yes, it proposes a new general rule |
+| Example | All humans are mortal; Socrates is human; so Socrates is mortal | Every swan I have seen is white; so all swans are white (until a black swan appears) |
+| In AI | Expert systems, logic programming, theorem provers, rule engines | Machine learning, statistical estimation |
+
+A third mode, **abduction**, infers the most plausible explanation for an observation (the lawn is wet, so it probably rained). Diagnosis systems and root-cause analysis are abductive.
+
+**How ML relates to induction:**
+
+- A model is fitted to training examples and then applied to new inputs. That leap from "seen" to "unseen" is inductive.
+- Because induction is never certain, ML outputs are statistical: we report expected error, confidence intervals and calibration rather than proofs.
+- Hume's **problem of induction** says no finite set of observations logically justifies a general rule. ML sidesteps it with assumptions: the future resembles the past (training and test data come from the same distribution) and the true rule lies in, or near, the model family we chose.
+- Those assumptions are the learner's **inductive bias** (see 8.37). Without some bias, induction is impossible: infinitely many functions agree with any finite training set and disagree everywhere else.
+
+**Deduction still has a place:** once a model is trained, applying it is deductive (rule plus input gives output). Hybrid systems combine both: business rules or ontologies (see 8.50) constrain learned models, and inductive logic programming (see 8.34) learns logical rules that are then used deductively.
+
+**Practical consequence:** an inductive system can be confidently wrong when the world changes. That is why production ML needs held-out evaluation, monitoring for distribution shift and fallbacks, whereas a deductive rule engine needs only its rules to be correct.
+
+### 8.4 Why should machine learning work at all? Explain generalisation, PAC learning and VC dimension at an interview level.
+
+Machine learning works when three things hold: the data contains a real, stable pattern; the training and future data come from the same distribution; and the model family is rich enough to capture the pattern but constrained enough that the sample pins it down. Learning theory makes the last point precise: with enough data relative to model capacity, low training error implies low test error with high probability.
+
+**Why it can fail entirely:** if labels were pure noise, or the future distribution unrelated to the past, no algorithm could beat guessing. The No Free Lunch theorem (see 8.37) says that averaged over all possible problems no learner wins; ML works because real problems have structure that our inductive biases match.
+
+**Generalisation gap:** the quantity we care about is the difference between true risk $R(h)$ and training risk $\hat{R}(h)$. For a single fixed hypothesis, Hoeffding's inequality says the training average concentrates around the true risk at rate $1/\sqrt{n}$. The difficulty is that we choose $h$ after looking at the data, so we need the bound to hold for every hypothesis in the class at once.
+
+**PAC learning (Probably Approximately Correct, Valiant 1984):** a class is PAC-learnable if, for any accuracy $\varepsilon$ and confidence $\delta$, enough samples guarantee that with probability at least $1 - \delta$ the learned hypothesis has error at most $\varepsilon$. For a finite hypothesis class, a union bound gives, simultaneously for all $h$ in $\mathcal{H}$:
+
+$$
+R(h) \le \hat{R}(h) + \sqrt{\frac{\ln \lvert \mathcal{H} \rvert + \ln(2/\delta)}{2n}}
+$$
+
+Read it as: the gap shrinks with more data $n$ and grows (only logarithmically) with the size of the model class.
+
+**VC dimension (Vapnik and Chervonenkis):** most model classes are infinite, so $\ln \lvert \mathcal{H} \rvert$ is replaced by a measure of capacity. The VC dimension is the largest number of points the class can **shatter**, that is, label in every possible way.
+
+| Model class | VC dimension |
+| --- | --- |
+| Threshold on a line | 1 |
+| Linear classifier in $d$ dimensions (with bias) | $d + 1$ |
+| Axis-aligned rectangles in 2D | 4 |
+| Sine classifiers $\text{sign}(\sin(\omega x))$ | Infinite, despite one parameter |
+
+The VC bound has the same shape: the gap is roughly of order $\sqrt{(d_{VC}\log n + \log(1/\delta))/n}$. A rule of thumb that follows is that you want many more examples than the effective capacity of the model.
+
+**What this explains in practice:**
+
+- Why overfitting happens: high capacity relative to $n$ makes the gap large (see 8.5 and 8.6).
+- Why regularisation, simpler models and more data all help: they reduce effective capacity or increase $n$.
+- Why the sine example matters: capacity is not the same as parameter count.
+
+**Where the classical theory falls short:** modern neural networks have enormous VC dimension and can fit random labels (Zhang et al., 2017), yet they generalise well on real data. The classical bounds are vacuous for them. Current explanations involve the implicit bias of SGD, flat minima, margin and norm-based bounds, PAC-Bayes and double descent (see 11.29, 11.30 and 11.31).
+
+**What interviewers look for:** at a senior level, not derivations but the intuition (gap shrinks with data, grows with capacity), awareness of the i.i.d. assumption behind every guarantee, and honesty that deep learning generalisation is only partly explained by classical theory.
+
+### 8.5 What are overfitting and underfitting, why do they occur, and how do you fix each?
+
+Overfitting is when a model learns the training data too closely, including its noise, so it performs well on training data and poorly on unseen data (low bias, high variance). Underfitting is when a model is too simple or too constrained to capture the real pattern, so it performs poorly on both (high bias, low variance). The aim is the capacity that minimises error on unseen data.
+
+**Symptoms:**
+
+| | Underfitting | Good fit | Overfitting |
+| --- | --- | --- | --- |
+| Training error | High | Low | Very low |
+| Validation error | High, close to training | Low, close to training | Much higher than training |
+| Bias and variance | High bias, low variance | Balanced | Low bias, high variance |
+| Learning curves | Both plateau high and close together | Converge at a low error | Large gap that narrows slowly with more data |
+
+"High" is relative to a reference such as human-level or Bayes error (see 8.61). A 10 percent error is underfitting if experts achieve 2 percent, and fine if the labels are 10 percent noisy.
+
+**Why overfitting occurs:**
+
+- Model capacity is large relative to the amount of data (deep unpruned trees, 1-NN, huge networks on small datasets; see 8.44).
+- Too many irrelevant or noisy features, especially when features outnumber samples.
+- Training too long without early stopping, so the network starts memorising.
+- Too little regularisation.
+- Noisy labels, which a flexible model will memorise.
+- Indirect overfitting: tuning many hyperparameters against one validation set, or data leakage that makes validation look better than reality (see 8.39).
+
+**Why underfitting occurs:**
+
+- The model family cannot express the relationship (a linear model on a strongly non-linear problem).
+- Missing or poor features: the signal is not in the inputs given to the model.
+- Too much regularisation, or training stopped too early.
+- Optimisation problems: learning rate too low or too high, bad initialisation, vanishing gradients.
+
+**Fixes:**
+
+| Fix overfitting (reduce variance) | Fix underfitting (reduce bias) |
+| --- | --- |
+| More, or more diverse, training data; data augmentation | More expressive model (deeper trees, more layers, kernels) |
+| Regularisation (L1, L2, elastic net, weight decay) | Less regularisation |
+| Simpler model, pruning, fewer features | Better features, interactions, domain signals |
+| Early stopping | Train longer, fix the optimiser and learning rate |
+| Dropout (neural networks) | Remove dropout or reduce its rate |
+| Bagging and random forests | Boosting (sequentially reduces bias) |
+| Cross-validation for honest model selection | Check the data pipeline: wrong joins or missing signal often look like underfitting |
+
+**A practical diagnostic order:**
+
+1. Make sure the model can overfit a tiny subset. If it cannot, there is a bug or an optimisation problem, not a bias problem.
+2. Compare training error to a target (human level, a strong baseline). If far off, attack bias first.
+3. Compare validation to training error. If the gap is large, attack variance.
+4. Plot learning curves to decide whether more data will help (see 8.60).
+5. Check for leakage and train/serve skew before trusting any improvement.
+
+**Pitfall:** "overfitting" also happens to the validation set when you iterate on it many times. Keep a final test set that is used once, and treat large validation-to-test drops as a warning (see 8.54).
+
+### 8.6 Explain the bias-variance trade-off mathematically and practically.
+
+The bias-variance trade-off says that a model's expected error on unseen data comes from three sources: bias (systematic error from wrong or overly simple assumptions), variance (sensitivity to the particular training sample) and irreducible noise. Increasing model flexibility usually lowers bias but raises variance, so good generalisation means choosing the capacity, regularisation and data size that minimise their sum.
+
+**Definitions:**
+
+- **Bias:** how far the average prediction (averaged over many hypothetical training sets) is from the truth. High bias means underfitting.
+- **Variance:** how much predictions change when the model is trained on a different sample of the same size. High variance means overfitting.
+- **Noise:** randomness in the target that no model can predict, which sets a floor on achievable error.
+
+**Derivation for squared error.** Assume $y = f(x) + \varepsilon$ with $\mathbb{E}[\varepsilon] = 0$ and $\text{Var}(\varepsilon) = \sigma^2$. Let $\hat{f}$ be trained on a random dataset $D$. At a point $x$, taking expectation over datasets and noise:
+
+$$
+\mathbb{E}\left[(y - \hat{f}(x))^2\right] = \underbrace{\left(\mathbb{E}_D[\hat{f}(x)] - f(x)\right)^2}_{\text{bias}^2} + \underbrace{\mathbb{E}_D\left[\left(\hat{f}(x) - \mathbb{E}_D[\hat{f}(x)]\right)^2\right]}_{\text{variance}} + \underbrace{\sigma^2}_{\text{noise}}
+$$
+
+The cross terms vanish because the noise has zero mean and is independent of $D$. Averaging over $x$ gives the expected test MSE.
+
+**A concrete example, k-nearest neighbours regression:** the variance term is roughly $\sigma^2 / k$, so a larger $k$ lowers variance, while averaging over more distant neighbours raises bias. $k = 1$ has near-zero bias and high variance; $k = n$ predicts the global mean, with high bias and low variance.
+
+**How common levers move the two terms:**
+
+| Lever | Bias | Variance |
+| --- | --- | --- |
+| More flexible model (deeper trees, more features, larger network) | Down | Up |
+| Stronger regularisation (larger $\lambda$, more dropout) | Up | Down |
+| More training data | Unchanged | Down |
+| Bagging and random forests | Roughly unchanged | Down |
+| Boosting | Down | Can rise with many rounds |
+| Better features | Down | Usually unchanged |
+
+**Simulating it in Python** makes the idea concrete in an interview:
+
+```python
+import numpy as np
+from sklearn.tree import DecisionTreeRegressor
+
+rng = np.random.default_rng(0)
+f = lambda x: np.sin(2 * np.pi * x)
+x_test = np.linspace(0, 1, 200).reshape(-1, 1)
+
+for depth in [1, 3, 10]:
+    preds = []
+    for _ in range(200):                      # 200 independent training sets
+        x = rng.uniform(0, 1, (50, 1))
+        y = f(x).ravel() + rng.normal(0, 0.3, 50)
+        preds.append(DecisionTreeRegressor(max_depth=depth).fit(x, y).predict(x_test))
+    preds = np.array(preds)
+    bias2 = np.mean((preds.mean(0) - f(x_test).ravel()) ** 2)
+    var = np.mean(preds.var(0))
+    print(f"depth={depth:2d}  bias^2={bias2:.3f}  variance={var:.3f}")
+```
+
+Shallow trees show high bias and low variance; deep trees the opposite.
+
+**Practical use:**
+
+1. Estimate the noise floor (human-level or Bayes error).
+2. The gap between training error and that floor approximates avoidable bias.
+3. The gap between validation and training error approximates variance.
+4. Attack the larger of the two first (see 8.5 for the fixes).
+
+**Nuances a senior candidate should mention:**
+
+- The clean decomposition holds for squared error. For 0-1 loss and cross-entropy, analogous decompositions exist but are messier; the intuition still applies.
+- Very large over-parameterised models break the classic U-shaped curve: test error can fall again past the interpolation threshold (double descent, see 11.30). Implicit regularisation from SGD keeps effective variance low (see 11.31).
+- Bias in this sense is statistical. It is unrelated to fairness bias in data (see 8.40) and to the bias (intercept) term of a model.
+
+### 8.7 What is the difference between parametric and non-parametric models?
+
+A parametric model assumes a fixed functional form with a fixed, finite number of parameters chosen before seeing the data; learning means estimating those parameters. A non-parametric model makes weaker assumptions about the form, and its effective number of parameters (its complexity) grows with the amount of data.
 
 **Parametric models:**
 
-- Assume a fixed functional form with a **fixed, finite number of parameters**, decided *before* seeing the data
-- Learning = estimating those parameters from data
-- Once trained, the training data can be discarded — the parameters *are* the model
-- Model complexity doesn't grow with more data
+- Assume a specific form or distribution (linear relationship, Gaussian class densities).
+- Fixed, finite number of parameters, decided before training.
+- Once trained, the training data can be discarded: the parameters are the model.
+- Parameters often have a clear statistical interpretation (coefficients, means, variances).
+- Complexity does not grow with more data.
 
 **Non-parametric models:**
 
-- Don't assume a fixed functional form (or make much weaker assumptions)
-- Number of "parameters" effectively **grows with the size of the data**
-- Often need to keep the training data around at prediction time
-- Model complexity can grow as you get more data
+- Make few or no assumptions about the form of the function or distribution.
+- The effective number of parameters grows with the size of the data.
+- Often keep the training data (or a large summary of it) at prediction time.
+- More flexible, so they need more data and more care to avoid overfitting.
 
-#### Examples
+| Feature | Parametric | Non-parametric |
+| --- | --- | --- |
+| Distribution or form assumption | Required | Weak or none |
+| Number of parameters | Fixed | Grows with data |
+| Flexibility | Lower | Higher |
+| Data requirement | Usually less | Usually more |
+| Inference cost | Small and constant | Can grow with the training set |
+| Examples | Linear and logistic regression, Naive Bayes, Gaussian Mixture Models | k-NN, decision trees, random forests, kernel density estimation, Gaussian processes, DBSCAN |
+
+**Edge cases worth discussing:**
 
 | Parametric | Non-parametric |
 | --- | --- |
 | Linear regression | k-NN |
 | Logistic regression | Decision trees (can grow unbounded) |
 | Naive Bayes (with assumed distribution) | Kernel density estimation |
-| Neural nets with fixed architecture\* | k-means (arguably semi-parametric — see below) |
+| Neural nets with fixed architecture\* | k-means (arguably semi-parametric, see below) |
 
-**About the two footnoted rows in the table:**
-
-- **\*Neural nets with a fixed architecture** are technically parametric: the parameter count is set before training and does not grow with the data. In practice, very large networks behave a lot like non-parametric models. They can memorize their training set, and when there is more data we usually pick a bigger architecture, so their effective capacity grows with the data.
+- **\*Neural nets with a fixed architecture** are technically parametric: the parameter count is set before training and does not grow with the data. In practice, very large networks behave a lot like non-parametric models. They can memorise their training set, and when there is more data we usually pick a bigger architecture, so their effective capacity grows with the data.
 - **k-means as "semi-parametric":** once trained, the model is just k centroids (k × d numbers). That is a fixed, finite set of parameters, which points to parametric. But the number of clusters is often chosen from the data (elbow or silhouette), and k-means assumes no distributional form beyond spherical, similarly sized clusters. So it sits between the two. A Gaussian Mixture Model is the clearly parametric probabilistic counterpart.
+- **Kernel SVMs** keep a subset of training points (the support vectors), whose number can grow with the data, so they behave non-parametrically.
 
 **Trade-offs to mention in an interview:**
 
 - **Parametric:** fast, small and easy to interpret. It works with little data but has high bias if the assumed form is wrong (for example, a linear model on a non-linear relationship).
 - **Non-parametric:** flexible, with low bias. It needs more data and is prone to overfitting without controls such as k, tree depth or kernel bandwidth. Inference can be expensive because k-NN and KDE keep the whole training set, which matters for latency and memory in production.
 
-### 8.11 What is the difference between online and offline learning?
+### 8.8 What is the difference between online and offline learning, and where is online learning used?
 
-| Aspect | **Online Learning** | **Offline Learning (Batch Learning)** |
+**Online learning** updates the model incrementally as each new example (or mini-batch) arrives, typically discarding the data after the update. **Offline (batch) learning** trains on a fixed, complete dataset at once and is retrained periodically, usually from scratch.
+
+| | Offline / batch | Online |
 | --- | --- | --- |
-| **Definition** | Model learns continuously from new data | Model learns from a fixed dataset |
-| **Data** | Data arrives incrementally/continuously | Data is collected first, then used for training |
-| **Training** | Updates model frequently | Retrains periodically |
-| **Memory** | Usually requires less memory | Can require large memory/storage |
-| **Adaptability** | Quickly adapts to changing patterns | Does not automatically adapt to new patterns |
-| **Computation** | Small, frequent updates | Large, less frequent computations |
-| **Use case** | Streaming data, real-time systems | Static or periodically updated datasets |
-| **Example** | Fraud detection adapting to new transactions | Training an image classifier on a fixed dataset |
+| Data | Full historical dataset available | Streaming, one example or mini-batch at a time |
+| Updates | Periodic full retrains (daily or weekly) | Continuous, incremental |
+| Adaptation to drift | Slow (until the next retrain) | Fast |
+| Compute and memory | High per retrain; needs all data | Low per update; constant memory |
+| Stability and reproducibility | High, easier to validate | Risk of drift, catastrophic forgetting and data poisoning |
+| Algorithms | Most models | SGD-based linear models, online gradient descent, Hoeffding trees, bandits, `partial_fit` in scikit-learn, River, Vowpal Wabbit |
+| Example | Training an image classifier on a fixed dataset | Fraud detection adapting to new transactions |
 
-### 8.12 What is an Epoch?
+**Applications of online learning:**
 
-One complete pass through the entire training dataset. E.g., 5 epochs means the model has seen every training example 5 times.
+- **Ad click-through and recommendation ranking**, where user interests change quickly.
+- **Fraud and spam detection**, where attackers adapt.
+- **Stock and price prediction, dynamic pricing.**
+- **News and feed personalisation**, and contextual bandits as an adaptive alternative to A/B tests.
+- **IoT and sensor anomaly detection** on streams, and **datasets too large to fit in memory** (out-of-core learning).
 
-### 8.13 What is a Batch?
+```python
+from sklearn.linear_model import SGDClassifier
 
-A single chunk or group of training examples processed together in one pass before the model updates its weights.
+model = SGDClassifier(loss="log_loss")
+for X_batch, y_batch in stream_of_batches():          # e.g. read from Kafka or files
+    model.partial_fit(X_batch, y_batch, classes=[0, 1])
+```
 
-### 8.14 What is Batch Size?
+**Production concerns:**
 
-The number of training examples in one batch. E.g., batch size = 100 means the model processes 100 examples at a time.
+- The learning rate controls how fast the model forgets; too high and it chases noise, too low and it does not adapt.
+- Guard against bad or adversarial data with validation gates and anomaly checks before updates are applied.
+- Keep shadow evaluation, model snapshots and fast rollback.
+- Labels often arrive late (a chargeback weeks after a transaction), so "online" is limited by feedback delay.
+- Many teams use a hybrid: a periodic offline model plus online fine-tuning or recalibration of the last layer or bias terms.
 
-### 8.15 What is an Iteration?
+### 8.9 What are epochs, batches, batch size and iterations, and how do you choose the batch size?
 
-One weight update, which happens after the model processes one batch.
+An **epoch** is one full pass over the training set. A **batch** (mini-batch) is a subset of examples processed together before one weight update. **Batch size** is the number of examples in a batch. An **iteration** (step) is one weight update, that is, one batch processed.
 
-### 8.16 If I have 1,000 training examples and a batch size of 100, how many iterations are in one epoch?
+**The relationship:**
 
-10 iterations ($1{,}000 \div 100 = 10$ batches, and each batch = 1 iteration).
+$$
+\text{iterations per epoch} = \left\lceil \frac{N}{B} \right\rceil, \qquad \text{total iterations} = \text{epochs} \times \left\lceil \frac{N}{B} \right\rceil
+$$
 
-### 8.17 If I train for 5 epochs with the setup above, how many total iterations happen?
+**Worked example:** 1,000 training examples with batch size 100 give 10 iterations per epoch. Training for 5 epochs gives 50 iterations. With 1,050 examples there are 11 iterations per epoch, the last batch holding 50 examples, unless you set `drop_last=True`.
 
-50 total iterations (5 epochs × 10 iterations per epoch).
+```python
+from torch.utils.data import DataLoader
 
-### 8.18 Why not just feed the entire dataset in one go instead of using batches?
+loader = DataLoader(train_ds, batch_size=100, shuffle=True, drop_last=False)
+for epoch in range(5):
+    for X, y in loader:            # one iteration per batch
+        optimizer.zero_grad()
+        loss = loss_fn(model(X), y)
+        loss.backward()
+        optimizer.step()
+```
 
-Large datasets often don't fit in memory (especially GPU memory), and smaller batches allow more frequent weight updates, which can speed up learning.
+**Why not feed the whole dataset at once?**
 
-### 8.19 What's the trade-off between large and small batch sizes?
+- It usually does not fit in GPU memory: activations for every example must be stored for backpropagation.
+- One update per epoch is slow; mini-batches give many cheaper, slightly noisy updates and reach a good solution faster in wall-clock time.
+- Some gradient noise helps optimisation escape sharp minima and saddle points (see 11.16).
 
-Large batches give smoother, more accurate gradient estimates but are slower per update. Small batches update faster but produce noisier gradients (batch size = 1 is called stochastic gradient descent).
+**Batch size trade-offs:**
 
-### 8.20 What is (Batch) Gradient Descent?
+| | Small batches (for example 16 to 64) | Large batches (for example 1,024 and up) |
+| --- | --- | --- |
+| Gradient estimate | Noisy (noise falls roughly as $1/\sqrt{B}$) | Accurate, smooth |
+| Updates per epoch | Many | Few |
+| Hardware use | Poor GPU utilisation | High throughput, good parallelism |
+| Memory | Low | High |
+| Generalisation | Noise acts as a regulariser | Can converge to sharper minima without retuning (see 11.28) |
+| Learning rate | Smaller | Larger, scaled with batch size plus warmup (see 11.34) |
 
-An optimization method where the model computes the gradient using the **entire training dataset** before making a single weight update.
+**How to choose in practice:**
 
-### 8.21 What is Stochastic Gradient Descent (SGD)?
+1. Start with the largest batch that fits comfortably in memory with a typical value (32 to 512 for most supervised tasks).
+2. When you change batch size, retune the learning rate; the linear scaling rule (multiply the learning rate by the same factor) with warmup is a common starting point.
+3. If the batch you need does not fit, use gradient accumulation (see 11.39) or mixed precision.
+4. Watch for batch-dependent layers: batch normalisation behaves badly with very small batches (see 13.13).
+5. Measure by time-to-target-accuracy, not by epochs, because a larger batch does fewer steps per epoch.
 
-An optimization method where the model computes the gradient and updates weights using **just one training example** at a time (batch size = 1).
+**Pitfall:** comparing runs "at 10 epochs" with different batch sizes compares different numbers of updates. Compare at equal compute or equal samples seen.
 
-<!-- Merged from 05-optimization.md, where the same question appeared again ("What is stochastic gradient descent (SGD)?"). Original content follows. -->
+### 8.10 Compare batch, stochastic and mini-batch gradient descent. Which is used in practice?
 
-**Stochastic Gradient Descent (SGD)**
+All three minimise the loss by stepping against the gradient; they differ in how many examples are used to estimate each gradient. Batch gradient descent uses the whole dataset, stochastic gradient descent (SGD) uses one example, and mini-batch gradient descent uses a small batch. Almost all modern training uses mini-batches.
 
-- Variant of gradient descent that updates parameters using one random training sample at a time (instead of full dataset)
-- Update rule: $\theta = \theta - \alpha \nabla J(\theta; x_i, y_i)$ for a single sample $i$
-- Much faster per update than Batch GD, especially for large datasets
-- Noisy updates — high variance in path to minimum, but noise can help escape local minima/saddle points
-- Requires more iterations to converge, but each iteration is cheap
-- Often used with mini-batches in practice (Mini-Batch SGD) for balance between speed and stability
+The general update with learning rate $\alpha$ over a set of examples $S$ is:
 
-### 8.22 What is Mini-Batch Gradient Descent?
+$$
+\theta \leftarrow \theta - \alpha \thinspace \frac{1}{\lvert S \rvert} \sum_{i \in S} \nabla_{\theta} L(f_{\theta}(x_i), y_i)
+$$
 
-A middle ground — the gradient is computed on a small batch (e.g., 32, 64, 100 examples) instead of the whole dataset or a single example. This is what's used in most real-world deep learning.
+where $S$ is the full dataset (batch GD), a single random example (SGD) or a random mini-batch.
 
-### 8.23 Which GD is used more now?
+| | Batch GD | Stochastic GD | Mini-batch GD |
+| --- | --- | --- | --- |
+| Examples per update | All $N$ | 1 | $B$, typically 32 to 4,096 |
+| Gradient quality | Exact | Very noisy | Noisy but usable |
+| Cost per update | Very high | Very low | Moderate |
+| Updates per epoch | 1 | $N$ | $N / B$ |
+| Convergence path | Smooth, deterministic | Erratic, fluctuates around the minimum | Fairly smooth |
+| Hardware | Memory-bound for large data | Cannot use vectorised GPU maths well | Matches GPU parallelism |
+| Escaping saddles and sharp minima | Poor | Good | Good |
+| Typical use | Small convex problems, L-BFGS | Online learning, streaming | Deep learning and most large-scale ML |
 
-lmost always **mini-batch gradient descent** — it balances the computational efficiency of SGD with the more stable convergence of full-batch gradient descent. It's often just called "SGD" loosely in frameworks like PyTorch/TensorFlow, even though it technically uses mini-batches.
+**Points to make about each:**
 
-### 8.24 What are embeddings in Machine Learning?
+- **Batch GD:** with a suitable learning rate it converges steadily to the minimum of a convex loss, but each step needs a full pass over the data, which is impractical for millions of examples.
+- **SGD:** each update is cheap and the noise can help escape poor regions, but the path oscillates. A decaying learning rate is needed to settle (see 11.20).
+- **Mini-batch GD:** balances both and uses vectorised hardware efficiently. It is the default.
+
+**Terminology trap:** frameworks call the optimiser "SGD" (`torch.optim.SGD`) even though it is used with mini-batches. In practice, "SGD" usually means mini-batch SGD, often with momentum.
+
+**What is used now:** mini-batch training with an adaptive or momentum-based optimiser, usually AdamW for Transformers and SGD with momentum for many vision models (see 11.17). Full-batch methods survive for small convex problems, for example L-BFGS in scikit-learn's logistic regression.
+
+See 11.12 for a deeper comparison of SGD and GD, and 11.16 for why SGD noise can improve generalisation.
+
+### 8.11 What are embeddings in Machine Learning?
 
 > **See also:** [Question 17.15 — What are embeddings?](../part-4-generative-ai/17-large-language-model-foundations.md#1715-what-are-embeddings), which covers the same question from another angle.
 
-- Dense, low-dimensional vector representations of data (text, images, users, etc.) that capture semantic meaning
-- Convert discrete/high-dimensional data into continuous numerical form usable by ML models
-- Similar items lie close together in vector space (measured via cosine similarity, dot product, etc.)
-- Learned through neural networks (e.g., Word2Vec, BERT, transformers) during training
-- Reduce dimensionality while preserving meaningful relationships (e.g., king − man + woman ≈ queen)
-- Used in search, recommendations, clustering, RAG, and vector databases
+An **embedding** is a learned, dense vector representation of an object (a word, sentence, image, product, user or graph node) in which **geometric closeness reflects similarity that matters for the task**. Embeddings turn discrete or high-dimensional inputs into compact continuous features that models can compare, search and learn from.
 
-### 8.25 What is the Softmax Activation Function?
+**How embeddings are learned**
 
-- Converts a vector of raw scores (logits) into a probability distribution
-- Formula: $\operatorname{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$ (for all $j$ classes)
-- Output values are between 0 and 1, and sum to 1
-- Used in the output layer for multi-class classification problems
-- Amplifies differences — larger logits get pushed closer to 1, smaller ones toward 0
-- Often paired with cross-entropy loss during training
+- **As a by-product of a supervised task:** an embedding layer (a lookup table of trainable vectors) is trained along with the rest of a network, for example user and item IDs in a recommender.
+- **Self-supervised objectives:** word2vec predicts neighbouring words; language models learn contextual token embeddings; contrastive learning pulls matching pairs together and pushes others apart (see 8.29).
+- **Pretrained encoders:** sentence-embedding models and image encoders (for example CLIP) produce general-purpose embeddings that can be reused without training.
 
-### 8.26 What is Machine Learning?
+**Key properties**
 
-- A field of AI where systems learn patterns from data to make predictions or decisions, without being explicitly programmed with rules
-- Models improve performance on a task through experience (training data)
-- Main types: supervised, unsupervised, and reinforcement learning
-- Core process: input data → model learns patterns → outputs predictions on new data
+- **Dimensionality:** typically 64 to 4,096 dimensions; far smaller than one-hot encodings of large vocabularies or catalogues.
+- **Similarity:** cosine similarity or dot product; the right choice depends on how the model was trained.
+- **Static versus contextual:** word2vec gives one vector per word; transformer models give a different vector for the same word in different contexts ("bank" of a river versus a bank account).
+- **Task-specific geometry:** an embedding trained for one notion of similarity may be poor for another (see 19.24).
 
-### 8.27 Differentiate between Supervised and Unsupervised Learning.
+**Where they are used**
 
-**Supervised vs Unsupervised Learning**
+- Features for downstream models (text, categorical IDs, images).
+- Semantic search, retrieval-augmented generation and recommendation (nearest-neighbour search, see Chapter 19).
+- Clustering, deduplication, anomaly detection and visualisation.
+
+**Pitfalls**
+
+- Embeddings inherit **biases** in their training data.
+- Vectors from different models (or model versions) are **not comparable**; changing the model means re-embedding everything.
+- High similarity does not guarantee relevance or correctness; evaluate on your own task.
+
+### 8.12 What are logits, softmax and cross-entropy, and how do they fit together?
+
+Logits are the raw, unnormalised scores a model outputs; softmax turns them into a probability distribution over classes; cross-entropy measures how much probability that distribution assigns to the correct class and is the loss minimised for classification. Together they form the standard output stack of almost every classifier and language model.
+
+**Logits:** real numbers of any sign and size, one per class, produced by the final linear layer. For binary classification there is often a single logit, which is the log-odds: $z = \log \frac{p}{1 - p}$.
+
+**Softmax** converts a logit vector $z$ into probabilities:
+
+$$
+\text{softmax}(z)_i = \frac{e^{z_i / T}}{\sum_{j} e^{z_j / T}}
+$$
+
+- Outputs lie between 0 and 1 and sum to 1.
+- It is invariant to adding the same constant to all logits, which is used for numerical stability: subtract $\max_j z_j$ before exponentiating.
+- It amplifies differences: the largest logit takes most of the mass.
+- **Temperature** $T$ (normally 1) controls sharpness: $T \lt 1$ makes the distribution peakier, $T \gt 1$ flatter. This is what LLM sampling temperature changes.
+- For two classes, softmax reduces to the sigmoid of the logit difference.
+
+**Cross-entropy** between the true distribution $y$ (usually one-hot) and the prediction $p$:
+
+$$
+L_{\text{CE}} = -\sum_{i} y_i \log p_i, \qquad L_{\text{BCE}} = -\left[y \log p + (1 - y)\log(1 - p)\right]
+$$
+
+- With a one-hot label it is simply $-\log p_{\text{correct}}$: confident wrong predictions are punished very heavily.
+- It equals the negative log-likelihood, so minimising it is maximum likelihood estimation.
+- Cross-entropy equals the entropy of $y$ plus the KL divergence from $y$ to $p$, so minimising it minimises the KL divergence (see 17.74).
+
+**Why the combination is so convenient:** the gradient of softmax followed by cross-entropy with respect to the logits is simply $p - y$. It is bounded and well behaved, unlike MSE on sigmoid outputs, which saturates and learns slowly when the model is confidently wrong.
+
+**In code, pass logits, not probabilities:**
+
+```python
+import torch
+import torch.nn as nn
+
+logits = model(x)                          # shape (batch, num_classes), no softmax
+loss = nn.CrossEntropyLoss()(logits, y)    # applies log-softmax internally, stable
+
+binary_logit = model_bin(x).squeeze(-1)
+loss_bin = nn.BCEWithLogitsLoss()(binary_logit, y_bin.float())
+
+probs = torch.softmax(logits, dim=-1)      # only for reporting or decisions
+```
+
+`CrossEntropyLoss` combines `log_softmax` and `NLLLoss` using the log-sum-exp trick. Applying softmax yourself and then taking the log loses precision and can produce `-inf` and NaN losses.
+
+**Practical extras:**
+
+- **Label smoothing** replaces one-hot targets with, for example, 0.9 and 0.1 spread over other classes, which reduces over-confidence.
+- **Calibration:** softmax outputs from modern networks are often over-confident; temperature scaling on a validation set fixes this cheaply.
+- **Multi-label problems** use independent sigmoids with binary cross-entropy, not softmax (see 8.49).
+- **Class imbalance:** use class weights or focal loss (see 8.28).
+
+### 8.13 What are the main types of machine learning, and how do supervised and unsupervised learning differ?
+
+The main types are defined by the feedback signal available: supervised learning has labelled examples, unsupervised learning has only inputs, semi-supervised learning mixes a few labels with many unlabelled examples, self-supervised learning creates labels from the data itself, and reinforcement learning learns from rewards gained by acting in an environment.
+
+| Type | Data and signal | Goal | Typical tasks and algorithms |
+| --- | --- | --- | --- |
+| Supervised | Labelled input-output pairs | Predict the output for new inputs | Classification, regression; linear models, trees, gradient boosting, neural networks |
+| Unsupervised | Inputs only | Discover structure | Clustering (k-means, DBSCAN), dimensionality reduction (PCA, UMAP), density estimation, association rules |
+| Semi-supervised | Few labels, many unlabelled examples | Supervised performance with fewer labels | Pseudo-labelling, consistency regularisation, label propagation (see 8.33) |
+| Self-supervised | Labels generated from the data (next token, masked patch, augmented pair) | Learn general representations | LLM pretraining, BERT, contrastive learning (see 8.29), masked autoencoders |
+| Reinforcement | Scalar rewards from interaction | Learn a policy maximising cumulative reward | Q-learning, policy gradients, PPO (see 8.14) |
+
+**Supervised versus unsupervised in more detail:**
 
 | Aspect | Supervised | Unsupervised |
 | --- | --- | --- |
-| Data | Labeled (input-output pairs) | Unlabeled (input only) |
-| Goal | Predict output for new inputs | Find hidden patterns/structure |
-| Examples | Classification, Regression | Clustering, Dimensionality Reduction |
-| Algorithms | Linear Regression, SVM, Decision Trees | K-Means, PCA, Hierarchical Clustering |
-| Feedback | Direct error signal (label vs prediction) | No explicit feedback |
-| Use cases | Spam detection, price prediction | Customer segmentation, anomaly detection |
+| Data | Labelled | Unlabelled |
+| Feedback | Direct error signal (prediction versus label) | No ground truth |
+| Main functions | Classification, regression, ranking, forecasting, risk scoring | Clustering, dimensionality reduction, anomaly detection, association rules, feature learning, exploration |
+| Examples | Spam detection, house prices, credit risk | Customer segmentation, market-basket analysis, fraud outliers |
+| Evaluation | Accuracy, F1, ROC-AUC, RMSE on held-out labels | Silhouette score, reconstruction error, downstream usefulness, human review |
+| Main cost | Labelling | Interpreting and validating the output |
 
-#### Supervised vs. Unsupervised Learning
+**Points that show seniority:**
 
-| **Aspect** | **Supervised Learning** | **Unsupervised Learning** |
-| --- | --- | --- |
-| **Data** | Uses **labeled data** | Uses **unlabeled data** |
-| **Goal** | Predict a target/output | Discover hidden patterns or structure |
-| **Training** | Learns from input-output pairs | Learns from relationships within the data |
-| **Main Tasks** | Classification, Regression | Clustering, Dimensionality Reduction |
-| **Examples** | Linear Regression, Decision Tree, XGBoost, SVM | K-Means, DBSCAN, PCA |
-| **Evaluation** | Accuracy, F1, RMSE, etc. | Silhouette Score, clustering analysis, etc. |
+- **Labels are the bottleneck.** Most real projects are limited by label cost and quality, which is why semi-supervised learning, active learning (see 8.43) and weak supervision matter.
+- **The boundaries blur.** Self-supervised pretraining followed by supervised fine-tuning is now the dominant recipe for text, images and audio. LLMs are trained self-supervised, then with supervised fine-tuning and RL from feedback.
+- **Unsupervised results are hard to validate.** Clusters always appear, whether or not they are meaningful; judge them by stability and by whether they drive a decision.
+- **Anomaly detection spans both:** unsupervised when you have no labelled anomalies, supervised when you have enough labelled fraud, and semi-supervised when you train only on known-normal data.
 
-### 8.28 What is Reinforcement Learning?
+### 8.14 What is Reinforcement Learning?
 
 > **See also:** [Question 17.78 — What is reinforcement learning?](../part-4-generative-ai/17-large-language-model-foundations.md#1778-what-is-reinforcement-learning), which covers the same question from another angle.
 
-- Learning paradigm where an agent learns to make decisions by interacting with an environment
-- Agent takes actions → receives rewards/penalties → learns policy to maximize cumulative reward
-- No labeled data — learns through trial and error
-- Key components: agent, environment, state, action, reward, policy
-- Examples: game playing (AlphaGo), robotics, recommendation systems
+**Reinforcement learning (RL)** trains an **agent** to choose **actions** in an **environment** so as to maximise **cumulative reward** over time. Unlike supervised learning, there are no labelled correct actions: the agent learns from the consequences of its own actions, and rewards may arrive long after the actions that caused them. Chapter 16 covers RL in depth; this is the overview.
 
-### 8.29 What is Bias?
+**Core concepts**
 
-- Error introduced when a model makes overly simplistic assumptions about the data
-- Represents the gap between average model prediction and true value
-- High bias → underfitting (model too simple, misses patterns)
-- Leads to poor performance on both training and test data
-- Trade-off exists with variance (Bias-Variance tradeoff)
+- **State:** what the agent observes about the environment.
+- **Action:** what the agent can do.
+- **Reward:** a scalar signal of how good the immediate outcome was.
+- **Policy:** the agent's strategy, mapping states to actions.
+- **Value function:** expected future reward from a state (or state and action) under a policy.
+- **Discount factor:** how much future rewards count compared with immediate ones.
 
-### 8.30 What is the difference between Classification and Regression?
+**How it differs from other learning**
 
-**Classification vs Regression**
+| Aspect | Supervised learning | Reinforcement learning |
+| --- | --- | --- |
+| Feedback | Correct label for each example | Reward for the outcome, often delayed |
+| Data | Fixed dataset | Generated by the agent's own behaviour |
+| Main difficulty | Generalisation | Credit assignment and exploration (see 8.26) |
+
+**Main families of methods**
+
+- **Value-based:** learn action values and act greedily (Q-learning, DQN).
+- **Policy-based:** optimise the policy directly (policy gradients, PPO).
+- **Actor-critic:** combine both.
+- **Model-based:** learn a model of the environment and plan with it (for example MuZero).
+
+**Where it is used**
+
+- Games and simulation (AlphaGo, AlphaZero), robotics and control, resource allocation, and **training large language models** (RL from human feedback and RL with verifiable rewards, see Chapter 22).
+- In business problems, simpler **bandits** often suffice for decisions such as which content or offer to show (see 16.74 and 28.37).
+
+**Practical caveats:** RL needs many interactions, careful reward design (agents exploit flawed rewards), and safe exploration; offline RL and simulators are used when real-world exploration is costly.
+
+### 8.15 What is the difference between classification and regression, and what targets does each require?
+
+Classification predicts a discrete category (a class label or class probabilities); regression predicts a continuous numeric value. The difference is in the type of target variable, which then drives the loss function, the output layer and the evaluation metrics.
 
 | Aspect | Classification | Regression |
 | --- | --- | --- |
-| Output | Discrete categories/classes | Continuous numerical value |
-| Example | Spam vs Not Spam, Cat vs Dog | House price, Temperature prediction |
-| Algorithms | Logistic Regression, SVM, Decision Trees | Linear Regression, Ridge, Lasso |
-| Evaluation | Accuracy, Precision, Recall, F1 | MSE, RMSE, MAE, $R^2$ |
-| Output type | Class labels/probabilities | Real numbers |
+| Target variable | Categorical or discrete, for example $y \in \lbrace 0, 1 \rbrace$ or one of $K$ classes | Continuous, $y \in \mathbb{R}$ |
+| Question answered | "Which category?" | "How much?" |
+| Example | Will this customer churn? Is this email spam? | What will this customer spend next year? What is this house worth? |
+| Output | Class label, or a probability per class | A real number (or a predictive distribution) |
+| Typical loss | Cross-entropy (log loss), hinge | Squared error, absolute error, Huber |
+| Output layer | Sigmoid or softmax | Linear (identity) |
+| Algorithms | Logistic regression, decision trees, random forests, gradient boosting, SVM, neural networks | Linear regression, ridge, lasso, trees and forests, gradient boosting, SVR, neural networks |
+| Metrics | Accuracy, precision, recall, F1, ROC-AUC, PR-AUC, log loss | MAE, MSE, RMSE, MAPE, $R^2$ |
 
-#### Regression vs Classification
+**Nuances interviewers like to probe:**
 
-| Regression | Classification |
-| --- | --- |
-| Predicts a **continuous numerical value** | Predicts a **category or class** |
-| Output can be any numerical value | Output belongs to a fixed set of classes |
-| Example: Predict house **price** | Example: Predict whether a customer will **churn or not** |
-| Common algorithms: Linear Regression, Ridge, Lasso | Common algorithms: Logistic Regression, Decision Tree, SVM |
-| Metrics: MAE, MSE, RMSE, $R^2$ | Metrics: Accuracy, Precision, Recall, F1-score |
+- **Logistic regression is a classifier** despite its name; it regresses the log-odds and thresholds the probability (see 9.11).
+- **Many algorithms do both:** trees split to minimise impurity (classification) or variance (regression); neural networks just change the output layer and loss.
+- **Not every numeric target is regression.** Ratings from 1 to 5 are ordinal; treat them with ordinal regression or as classification, depending on whether the gaps are meaningful. Counts are better modelled with Poisson or Tweedie losses than plain MSE.
+- **Converting between them:** a regression output can be thresholded into classes (predicted spend above a level means "high value"), and a classification probability is itself a regression on a 0-1 scale. Bucketing a continuous target into classes throws away information and should be a deliberate choice.
+- **Probabilistic outputs matter:** in both cases, predicting a distribution (calibrated class probabilities, or quantiles for regression) is often more useful for decisions than a point prediction.
+- **Related task types:** ranking (order items), multi-label classification (several labels per item, see 8.49) and forecasting (regression over time with temporal validation).
 
-**Simple way to remember:**
+### 8.16 What are L1 and L2 loss functions, and when would you use each?
 
-- **Regression → "How much?"**<br>Example: How much will the house cost? → \$250,000
-- **Classification → "Which category?"**<br>Example: Is the email spam? → Yes/No
+L1 loss (mean absolute error) penalises the absolute difference between prediction and target; L2 loss (mean squared error) penalises the squared difference. The choice decides what the model estimates: minimising L2 gives the conditional **mean** of the target, minimising L1 gives the conditional **median**, which is why L1 is far more robust to outliers.
 
-### 8.31 Explain Overfitting and Underfitting. How can you prevent them?
+$$
+\text{L1 (MAE)} = \frac{1}{n}\sum_{i=1}^{n} \lvert y_i - \hat{y}_i \rvert, \qquad \text{L2 (MSE)} = \frac{1}{n}\sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+$$
 
-**Overfitting vs Underfitting**
+| | L1 / MAE | L2 / MSE |
+| --- | --- | --- |
+| Optimal constant prediction | Median | Mean |
+| Sensitivity to outliers | Low: an error of 100 costs 100 | High: an error of 100 costs 10,000 |
+| Gradient | Constant magnitude ($\pm 1$), undefined at 0 | Proportional to the error, smooth everywhere |
+| Optimisation | Harder: non-smooth, needs subgradients or smaller learning rates near the optimum | Easy: smooth and convex, closed form for linear regression |
+| Statistical view | Maximum likelihood under Laplace noise | Maximum likelihood under Gaussian noise |
+| Interpretation | Same units as the target | Squared units; take the root (RMSE) for reporting |
 
-**Overfitting**
+**When to use which:**
 
-- Model learns training data too well, including noise
-- Performs great on training data, poorly on test/unseen data
-- Caused by: too complex model, too little data, too many features
+- **L2** when large errors are disproportionately costly, noise is roughly Gaussian and outliers are rare or meaningful.
+- **L1** when the data has outliers or heavy tails that you do not want to dominate the fit, or when the business cares about typical (median) error, such as delivery time estimates.
+- **Huber loss** (quadratic near zero, linear beyond a threshold $\delta$) combines smooth optimisation with robustness; **quantile (pinball) loss** generalises L1 to any percentile and is used for prediction intervals and demand forecasting.
 
-**Underfitting**
+```python
+from sklearn.linear_model import HuberRegressor, LinearRegression, QuantileRegressor
 
-- Model too simple to capture underlying patterns
-- Performs poorly on both training and test data
-- Caused by: too simple model, insufficient training, high bias
+ols = LinearRegression().fit(X, y)                    # L2
+huber = HuberRegressor(epsilon=1.35).fit(X, y)        # robust
+median = QuantileRegressor(quantile=0.5, alpha=0).fit(X, y)  # L1
+```
 
-**Prevention**
+**Common confusion to correct:** L1 and L2 **losses** act on the prediction errors; L1 and L2 **regularisation** act on the model weights. An L1 loss does not make weights sparse; an L1 penalty on the weights does (see 8.17 and 8.41). The two can be combined freely, for example MSE loss with an L1 penalty (lasso).
 
-| Overfitting | Underfitting |
-| --- | --- |
-| Regularization (L1/L2) | Increase model complexity |
-| Cross-validation | Add more features |
-| More training data | Train longer |
-| Dropout (neural nets) | Reduce regularization |
-| Early stopping | Use better features |
-| Reduce model complexity |  |
+**Metric versus loss:** you can train with one and report another. A model trained on MSE will look worse on MAE than one trained on MAE, so train with the loss that matches the metric the business uses (see 12.12).
 
-### 8.32 What Are L1 and L2 Loss Functions?
+### 8.17 What is regularisation? Explain L1 (lasso), L2 (ridge) and elastic net, and how the penalty changes the cost.
 
-**L1 and L2 Loss Functions**
+Regularisation is any technique that constrains a model to reduce overfitting and improve generalisation, usually at the cost of a slightly higher training error. The classic form adds a penalty on the size of the weights to the cost function, so the optimiser trades data fit against simplicity, controlled by a hyperparameter $\lambda$.
 
-**L1 Loss (Mean Absolute Error)**
+**The regularised cost:**
 
-- Sum/average of absolute differences: $L_1 = \sum \lvert y_{\text{true}} - y_{\text{pred}} \rvert$
-- Robust to outliers
-- Produces sparse solutions (used in L1 regularization/Lasso)
-- Gradient is constant, not smooth at zero
+$$
+J(w) = \underbrace{\frac{1}{n}\sum_{i=1}^{n} L(f_w(x_i), y_i)}_{\text{data fit}} + \lambda \thinspace \Omega(w)
+$$
 
-**L2 Loss (Mean Squared Error)**
+| | L1 (lasso) | L2 (ridge) | Elastic net |
+| --- | --- | --- | --- |
+| Penalty $\Omega(w)$ | $\sum_j \lvert w_j \rvert$ | $\sum_j w_j^2$ | $\alpha \sum_j \lvert w_j \rvert + (1 - \alpha)\sum_j w_j^2$ |
+| Effect on weights | Drives some exactly to zero | Shrinks all smoothly towards zero | Sparse, but keeps groups of correlated features |
+| Feature selection | Yes | No | Yes |
+| Correlated features | Picks one arbitrarily, unstable | Spreads weight across them | Handles them well |
+| Bayesian view | Laplace prior on weights | Gaussian prior on weights | Mixture of both |
+| Closed form (linear regression) | No | Yes: $(X^\top X + \lambda I)^{-1} X^\top y$ | No |
 
-- Sum/average of squared differences: $L_2 = \sum (y_{\text{true}} - y_{\text{pred}})^2$
-- Penalizes larger errors more heavily
-- Sensitive to outliers
-- Smooth gradient, easier to optimize (used in L2 regularization/Ridge)
+**How the penalty reduces the cost term and the weights:** to minimise $J$, the optimiser must justify every unit of weight by a matching reduction in data loss. For L2, the gradient step becomes:
 
-### 8.33 What is Regularization? Explain L1 (Lasso) and L2 (Ridge) regularization.
+$$
+w \leftarrow w - \eta\left(\nabla L + 2\lambda w\right) = (1 - 2\eta\lambda)\thinspace w - \eta \nabla L
+$$
 
-**Regularization**
+Each step multiplies the weights by a factor slightly below 1, which is why L2 is called **weight decay**. Weights that the data does not strongly support decay towards zero. The L1 gradient has constant magnitude $\lambda$, so it pushes small weights all the way to zero (see 8.41 for why).
 
-- Technique to prevent overfitting by adding a penalty term to the loss function based on model weights
-- Discourages overly complex models by shrinking coefficients
-- Controlled by hyperparameter $\lambda$ (lambda) — higher $\lambda$ = more penalty
+**Why it helps:** smaller weights mean a smoother function that reacts less to small input changes and to the quirks of one training sample, which lowers variance at the cost of a little bias (see 8.56).
 
-**L1 (Lasso)**
+**Other regularisers:**
 
-- Adds penalty $= \lambda \sum_i \lvert w_i \rvert$
-- Shrinks some coefficients to exactly zero → performs feature selection
-- Produces sparse models
+- **Dropout** in neural networks (see 13.10 and 13.73).
+- **Early stopping**, which behaves like an L2 penalty for gradient descent (see 13.77).
+- **Data augmentation**, **label smoothing**, **noise injection**.
+- **Structural limits:** maximum tree depth, minimum samples per leaf, pruning, fewer features.
+- **Ensembling** (bagging) and **batch normalisation** have regularising side effects.
 
-**L2 (Ridge)**
+**Practical guidance:**
 
-- Adds penalty $= \lambda \sum_i w_i^2$
-- Shrinks coefficients toward zero but rarely to exactly zero
-- Handles multicollinearity well, keeps all features
+1. **Scale features first.** Penalties compare weights directly, so unscaled features are penalised unequally.
+2. **Do not penalise the intercept.**
+3. **Tune $\lambda$ by cross-validation** on a log scale. In scikit-learn, `alpha` is $\lambda$ for `Ridge` and `Lasso`, but `C` in `LogisticRegression` and SVMs is the inverse ($C = 1/\lambda$), so smaller C means stronger regularisation.
+4. **With Adam, use decoupled weight decay (AdamW)** rather than adding L2 to the loss (see 11.18).
 
-### 8.34 What are Loss Functions and Cost Functions? Explain the key difference between them.
+```python
+from sklearn.linear_model import ElasticNetCV
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-**Loss Function vs Cost Function**
+model = make_pipeline(StandardScaler(), ElasticNetCV(l1_ratio=[0.1, 0.5, 0.9, 1.0], cv=5))
+model.fit(X_train, y_train)
+```
 
-- **Loss function**: Error for a single training example
-- **Cost function**: Average (or sum) of loss over the entire training dataset
-- Loss = per-sample error; Cost = overall model error used to guide training
-- Both measure how far predictions are from actual values, but at different scales (individual vs aggregate)
+**Pitfall:** too much regularisation causes underfitting; if training error is far above the target, reduce $\lambda$ before adding model complexity.
 
-### 8.35 What are dropouts?
+### 8.18 What is the difference between a loss function, a cost function and an objective function?
 
-- Regularization technique used in neural networks to prevent overfitting
-- Randomly "drops" (deactivates) a fraction of neurons during each training iteration
-- Forces network to not rely on specific neurons, improving generalization
-- Dropout rate ($p$) typically 0.2–0.5
-- Only applied during training; all neurons active during inference (with scaling)
+A loss function measures the error on a single example; a cost function aggregates the loss over the training set (usually the average, often plus a regularisation term); and the objective function is whatever quantity the optimiser actually minimises or maximises. In everyday use the terms are often interchanged, but the distinction matters when you design or debug training.
 
-### 8.36 What is a Perceptron?
+| Term | Scope | Example |
+| --- | --- | --- |
+| Loss $L(\hat{y}_i, y_i)$ | One example | Squared error $(y_i - \hat{y}_i)^2$; log loss for one prediction |
+| Cost $J(\theta)$ | Whole training set (or a batch) | Mean squared error over all examples, plus $\lambda \lVert w \rVert^2$ |
+| Objective | What the optimiser targets | Minimise the cost; or maximise a likelihood or reward |
 
-- Simplest form of a neural network — a single-layer binary classifier
-- Takes weighted inputs, sums them, adds bias, passes through activation function (step function)
-- Formula: $\text{output} = f\left(\sum_i w_i x_i + b\right)$
-- Can only solve linearly separable problems (e.g., fails on XOR)
-- Foundation/building block for multi-layer neural networks (MLPs)
+$$
+J(\theta) = \frac{1}{n}\sum_{i=1}^{n} L(f_{\theta}(x_i), y_i) + \lambda\thinspace \Omega(\theta)
+$$
 
-### 8.37 Explain Multilayer Perception (MLP).
+The data part of $J$ is the **empirical risk**; its expectation over the true distribution is the **true risk** we actually care about (see 8.2).
 
-- Feedforward neural network with multiple layers: input, one or more hidden layers, output
-- Each layer fully connected to the next; uses non-linear activation functions (ReLU, sigmoid, tanh)
-- Can solve non-linearly separable problems (unlike single perceptron)
-- Trained via backpropagation + gradient descent
-- Forms the basis of deep learning architectures
+**Why the distinction matters in practice:**
 
-### 8.38 What is Cross-Entropy?
+- **Mini-batch training** optimises a noisy estimate of the cost computed on each batch, not the full cost.
+- **Losses are often surrogates.** Accuracy (0-1 loss) is not differentiable, so we train on cross-entropy or hinge loss as a convex surrogate and evaluate on accuracy. A model can improve its loss while the metric stays flat.
+- **The metric the business uses may differ again** (profit, recall at a fixed precision). Align them through the loss choice, sample weights, threshold tuning or a final selection step (see 11.40).
+- **Per-example losses are a debugging tool:** sorting training examples by loss surfaces mislabelled data and hard cases.
+- **Reduction matters:** `reduction="sum"` versus `"mean"` changes the effective learning rate when batch size changes.
 
-> **See also:** [Question 17.74 — What is entropy vs. cross-entropy?](../part-4-generative-ai/17-large-language-model-foundations.md#1774-what-is-entropy-vs-cross-entropy), which covers the same question from another angle.
+See 11.13 for the same distinction from the optimisation angle.
 
-- Loss function that measures difference between predicted probability distribution and true distribution
-- Formula (binary): $L = -\left[y \log(p) + (1 - y) \log(1 - p)\right]$
-- Formula (multi-class): $L = -\sum_i y_i \log(p_i)$
-- Penalizes confident wrong predictions heavily
-- Commonly used with Softmax for classification tasks
+### 8.19 What is a perceptron, and how does a multilayer perceptron overcome its limits?
 
-### 8.39 What are Logits?
+A perceptron is the simplest neural unit: a linear binary classifier that computes a weighted sum of its inputs plus a bias and applies a step function. A multilayer perceptron (MLP) stacks layers of such units with non-linear activations, which lets it represent non-linear decision boundaries that a single perceptron cannot.
 
-- Raw, unnormalized output scores from a model's final layer, before activation (like softmax/sigmoid)
-- Can be any real number (positive, negative, unbounded)
-- Converted to probabilities by applying softmax (multi-class) or sigmoid (binary)
-- Used directly in some loss functions (e.g., `CrossEntropyLoss` in PyTorch expects logits, not probabilities)
+**The perceptron (Rosenblatt, 1958):**
 
-### 8.40 Explain Cross-Validation. Why is it used?
+$$
+\hat{y} = \text{step}\left(\sum_{i} w_i x_i + b\right), \qquad w \leftarrow w + \eta\thinspace (y - \hat{y})\thinspace x
+$$
+
+- The update changes weights only on mistakes.
+- **Perceptron convergence theorem:** if the data is linearly separable, the algorithm finds a separating hyperplane in a finite number of steps. If it is not separable, it never converges.
+- **Limit:** it can only learn linear boundaries. Minsky and Papert (1969) famously showed it cannot learn XOR, which contributed to the first "AI winter".
+
+**The multilayer perceptron:**
+
+```text
+input x  ->  [hidden layer: W1 x + b1 -> ReLU]  ->  [hidden layer ...]  ->  [output: softmax or linear]
+```
+
+- Fully connected feed-forward layers with non-linear activations (ReLU, GELU, tanh).
+- Trained with backpropagation and gradient descent, which needs differentiable activations, so the step function is replaced (see 13.64).
+- **Solves XOR:** one hidden layer with two units can carve the plane into the regions XOR needs.
+- **Universal approximation theorem:** one hidden layer with enough units can approximate any continuous function on a compact domain. In practice, depth is far more parameter-efficient than width.
+- **Why the non-linearity is essential:** without it, stacked linear layers collapse into a single linear map (see 13.65).
+
+| | Perceptron | MLP |
+| --- | --- | --- |
+| Layers | One (no hidden layer) | One or more hidden layers |
+| Activation | Step function | Differentiable non-linearities |
+| Decision boundary | Linear | Arbitrary non-linear |
+| Training | Perceptron rule | Backpropagation with gradient descent |
+| Output | Hard 0/1 label | Probabilities or real values |
+
+```python
+import numpy as np
+from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
+
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([0, 1, 1, 0])                                   # XOR
+print(Perceptron().fit(X, y).score(X, y))                    # at most 0.75
+mlp = MLPClassifier(hidden_layer_sizes=(4,), activation="tanh", solver="lbfgs", random_state=1)
+print(mlp.fit(X, y).score(X, y))                             # typically 1.0
+```
+
+**Where MLPs are used today:** as the feed-forward blocks inside every Transformer layer, as classification heads on top of pretrained encoders, and as baselines for tabular data, where gradient-boosted trees usually still win (see 13.90).
+
+### 8.20 Explain Cross-Validation. Why is it used?
 
 **Cross-Validation**
 
@@ -517,9 +860,9 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 - Makes better use of limited data
 - Helps in hyperparameter tuning and model selection
 
-### 8.41 What is Confusion Matrix?
+### 8.21 What is Confusion Matrix?
 
-> **See also:** [Question 12.25 — What is the confusion matrix?](12-model-evaluation-and-experimentation.md#1225-what-is-the-confusion-matrix), which covers the same question from another angle.
+> **See also:** [Question 12.3 — What is the confusion matrix, why do we need it, and how do you interpret it?](12-model-evaluation-and-experimentation.md#123-what-is-the-confusion-matrix-why-do-we-need-it-and-how-do-you-interpret-it), which covers the same question from another angle.
 
 **Confusion Matrix**
 
@@ -536,7 +879,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 - **FN**: Predicted negative, actually positive (Type II error)
 - Used to derive accuracy, precision, recall, F1-score
 
-### 8.42 What are precision, recall, and F1-score?
+### 8.22 What are precision, recall, and F1-score?
 
 **Precision, Recall, F1-Score**
 
@@ -547,18 +890,38 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 - Recall matters when false negatives are costly (e.g., disease detection)
 - F1 balances both, useful for imbalanced datasets
 
-### 8.43 What is anomaly detection?
+### 8.23 What is anomaly detection?
 
-- Technique to identify data points, events, or observations that deviate significantly from normal patterns
-- Also called outlier detection
-- **Methods**:
-  - Statistical (z-score, IQR)
-  - Distance-based (k-NN, clustering)
-  - Density-based (DBSCAN, LOF)
-  - ML-based (Isolation Forest, One-Class SVM, Autoencoders)
-- **Use cases**: Fraud detection, network intrusion, equipment failure, medical diagnosis, quality control
+**Anomaly detection** (outlier or novelty detection) finds observations that deviate from expected behaviour: fraudulent transactions, failing machines, intrusions, data quality errors. The hard part is rarely the algorithm; it is that anomalies are **rare, varied and often unlabelled**, and that "normal" changes over time.
 
-### 8.44 What is the difference between policy-based and value-based methods?
+**Problem settings**
+
+- **Unsupervised:** no labels; model normal behaviour and flag what does not fit. The most common case.
+- **Semi-supervised (novelty detection):** train only on known-normal data.
+- **Supervised:** enough labelled anomalies exist to train a classifier; usually limited to known patterns.
+
+**Method families**
+
+| Family | Examples | Good for |
+| --- | --- | --- |
+| Statistical | z-score, robust z-score with the median absolute deviation, IQR rules, seasonal baselines | Simple, explainable single metrics |
+| Distance and density | k-nearest neighbours distance, Local Outlier Factor, DBSCAN | Moderate dimensions, local anomalies |
+| Isolation-based | Isolation Forest | Tabular data at scale; fast and robust default |
+| Boundary-based | One-Class SVM | Smaller datasets with clear normal regions |
+| Reconstruction-based | Autoencoders, PCA reconstruction error | High-dimensional data, images, sensor signals |
+| Forecast-based | Large residuals from a time-series forecast | Metrics with trend and seasonality |
+
+**Practical design points**
+
+- **Point, contextual and collective anomalies differ:** a temperature of 30 degrees is normal in summer and anomalous in winter (contextual); a sequence of normal-looking events can be anomalous together (collective).
+- **Thresholds drive alert volume:** choose them from the cost of missed anomalies versus analyst time; alert fatigue kills anomaly systems.
+- **Evaluation without labels:** inject synthetic anomalies, use past incidents, and track precision of alerts reviewed by people.
+- **Drift:** normal behaviour changes; retrain or use adaptive baselines.
+- **Explainability:** say *why* something was flagged (which feature, how far from normal).
+
+Chapter 9 compares the algorithms in more detail, and 28.20, 28.23 and 29.40 design production anomaly detection systems.
+
+### 8.24 What is the difference between policy-based and value-based methods?
 
 **Policy-Based vs Value-Based Methods (Reinforcement Learning)**
 
@@ -572,7 +935,7 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 | Convergence | Can converge to local optima, higher variance | More stable but can be less flexible |
 | Exploration | Naturally stochastic (built-in exploration) | Needs explicit strategy (e.g., $\varepsilon$-greedy) |
 
-### 8.45 What is Q-Learning?
+### 8.25 What is Q-Learning?
 
 - Model-free, value-based reinforcement learning algorithm
 - Learns a Q-value function $Q(s, a)$ representing expected cumulative reward for taking action $a$ in state $s$
@@ -582,110 +945,197 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 - Uses a Q-table (or neural network in Deep Q-Learning/DQN) to store/approximate values
 - Agent picks action with highest Q-value (often via $\varepsilon$-greedy for exploration)
 
-### 8.46 Explain the concept of exploration vs. exploitation.
+### 8.26 Explain the concept of exploration vs. exploitation.
 
-- Core dilemma in reinforcement learning: whether to try new actions or use known best actions
-- **Exploration**: Trying new/unknown actions to discover potentially better rewards
-- **Exploitation**: Choosing the best-known action to maximize immediate reward
-- Too much exploration → slow convergence, inefficient
-- Too much exploitation → risk getting stuck in suboptimal policy (local optima)
-- **Common strategies**: $\varepsilon$-greedy (random action with probability $\varepsilon$), decaying $\varepsilon$, softmax action selection, UCB (Upper Confidence Bound)
+The **exploration-exploitation trade-off** is the dilemma of any learner that makes decisions under uncertainty: **exploit** what currently looks best to collect reward now, or **explore** less-known options to learn something that may pay off later. Too much exploitation locks in a suboptimal choice; too much exploration wastes reward.
 
-### 8.47 Explain the curse of dimensionality and how to address it.
+**Where it appears**
 
-**Curse of Dimensionality**
+- Reinforcement learning agents choosing actions (see 16.7).
+- **Multi-armed bandits:** choosing which ad, headline, price or recommendation to show (see 16.74).
+- Recommender systems, where showing only known favourites creates feedback loops and starves new items (see 32.19).
+- Hyperparameter search and Bayesian optimisation (acquisition functions balance the two).
 
-- As the number of features/dimensions increases, data becomes sparse in the feature space
-- Distance metrics become less meaningful (points appear equidistant)
-- Requires exponentially more data to maintain statistical significance
-- Leads to overfitting, increased computation, and poor model performance
+**Common strategies**
 
-**How to address it**
-
-- **Dimensionality reduction**: PCA, t-SNE, UMAP, LDA
-- **Feature selection**: Remove irrelevant/redundant features
-- **Regularization**: L1 (Lasso) to shrink less important features
-- **Increase data**: More samples relative to dimensions
-- **Autoencoders**: Learn compressed representations
-
-### 8.48 Explain Local Loss, Focal Loss, and Gradient Blending in the context of Multi-Task Learning.
-
-**Local Loss**
-
-- Loss computed independently for each task/branch before combining into total loss
-- Helps each task-specific head learn effectively without being dominated by others
-- Often combined via weighted sum: $L_{\text{total}} = \sum_i w_i L_i$ (local losses)
-
-**Focal Loss**
-
-- Modified cross-entropy loss that down-weights easy/well-classified examples
-- Formula: $\text{FL} = -\alpha (1 - p)^{\gamma} \log(p)$
-- Focuses training on hard/misclassified examples
-- Useful in multi-task settings with class imbalance across tasks
-
-**Gradient Blending**
-
-- Technique to combine gradients from multiple tasks/modalities to prevent one task from dominating training
-- Addresses overfitting/imbalance when tasks learn at different rates (e.g., multimodal learning — audio vs video)
-- Computes optimal blend of per-modality/task losses based on overfitting-to-generalization ratio
-- Introduced by Facebook AI (Wang et al.) for audio-visual multi-task learning
-
-### 8.49 Explain Contrastive Learning
-
-- Self-supervised learning technique that learns representations by comparing similar vs dissimilar pairs
-- Pulls similar (positive) pairs closer together in embedding space, pushes dissimilar (negative) pairs apart
-- Doesn't require labeled data — positive pairs often created via augmentation (e.g., two crops of same image)
-- **Common loss**: InfoNCE / Contrastive loss (based on similarity scores, e.g., cosine similarity)
-- **Examples**: SimCLR, MoCo (images), CLIP (text-image)
-- **Use cases**: Representation learning, embedding models, self-supervised pretraining
-
-### 8.50 What is Generative AI?
-
-- Subset of AI focused on creating new content (text, images, audio, video, code) rather than just analyzing/predicting
-- Learns underlying patterns/distribution of training data to generate novel, similar outputs
-- **Key architectures**: GANs, VAEs, Diffusion Models, Transformers (GPT, etc.)
-- **Examples**: ChatGPT (text), DALL-E/Midjourney (images), Stable Diffusion, GitHub Copilot (code)
-- **Use cases**: Content creation, code generation, data augmentation, chatbots, design
-
-### 8.51 Differentiate between Training Sets and Test Sets?
-
-| Aspect | Training Set | Test Set |
+| Strategy | Idea | Notes |
 | --- | --- | --- |
-| **Purpose** | Train the model | Evaluate the model |
-| **Data** | Seen by the model | Unseen by the model |
-| **Used for** | Learning parameters/patterns | Measuring generalization |
-| **Model exposure** | During training | Only after training |
-| **Typical split** | 80% | 20% |
-| **Main concern** | Overfitting | Data leakage |
+| Epsilon-greedy | With probability $\varepsilon$ pick a random action, otherwise the best | Simple; usually decay $\varepsilon$ over time |
+| Softmax (Boltzmann) | Choose actions with probability increasing in their estimated value | Temperature controls exploration |
+| Upper confidence bound (UCB) | Pick the action with the highest optimistic estimate: value plus an uncertainty bonus | Explores where uncertainty is high; strong guarantees |
+| Thompson sampling | Sample a value for each action from its posterior and pick the best sample | Excellent in practice; natural for Bayesian models |
+| Intrinsic motivation | Reward novelty or prediction error | For sparse-reward RL problems |
 
-### 8.52 Define Bias and Variance.
+**Practical considerations**
 
-| Aspect | **Bias** | **Variance** |
+- **Cost of exploration:** in production, exploring means showing users worse options; limit it to a small share of traffic or to low-risk decisions.
+- **Non-stationarity:** when the environment changes, keep exploring a little forever, or use sliding windows.
+- **Delayed rewards:** exploration decisions may be judged only days later, which slows learning.
+- **Logging:** record the probability with which each action was chosen, so data from exploration can be used for off-policy evaluation later.
+
+### 8.27 What is the curse of dimensionality, and how do you address it?
+
+The curse of dimensionality is the set of problems that appear as the number of features grows: the space grows exponentially, so data becomes sparse, distances stop discriminating between near and far points, and models need far more data to avoid fitting noise.
+
+**What goes wrong:**
+
+- **Data becomes sparse:** to keep the same density in 10 dimensions as 10 points give in 1 dimension, you need $10^{10}$ points. Any fixed dataset covers a high-dimensional space ever more thinly.
+- **Volume moves to the edges:** in a unit hypercube, the fraction of volume within 0.05 of the boundary is $1 - 0.9^d$, which is about 65 percent at $d = 10$ and over 99 percent at $d = 50$. "Typical" points are all near the corners.
+- **Distances concentrate:** for many distributions the ratio of the farthest to the nearest neighbour distance tends to 1 as dimension grows, which breaks k-NN, k-means, kernel methods with Euclidean distance and density estimation.
+- **Overfitting risk rises:** with many features and few samples ($p \gg n$), a model can always find spurious patterns that look predictive.
+- **Compute and memory cost** grow, and visual inspection becomes impossible.
+
+**How to address it:**
+
+| Approach | Examples | Notes |
 | --- | --- | --- |
-| **Definition** | Error from overly simplistic assumptions | Error from being too sensitive to training data |
-| **Model behavior** | **Underfitting** | **Overfitting** |
-| **Training error** | High | Low |
-| **Test error** | High | High |
-| **Example** | Linear model for a complex nonlinear problem | Very complex model fitting noise |
-| **Goal** | Reduce bias by increasing model complexity | Reduce variance using regularization/more data |
+| Feature selection | Filter methods (mutual information), wrapper methods, L1 regularisation | Keeps features interpretable |
+| Dimensionality reduction | PCA, truncated SVD, autoencoders; UMAP and t-SNE for visualisation only | Loses direct interpretability |
+| Regularisation and simpler models | Ridge, lasso, shallow trees | Controls variance when $p$ is large |
+| Learned embeddings | Replace huge one-hot or sparse vectors with dense embeddings | Standard for categorical IDs and text |
+| Better distance measures | Cosine similarity on normalised embeddings, learned metrics | Helps retrieval and clustering |
+| More data or domain knowledge | Engineer fewer, more informative features | Often the most effective |
 
-**In short:**
+**Nuance a senior candidate should add:** real data usually lies near a low-dimensional manifold. Natural images have millions of pixels but far fewer degrees of freedom, which is why deep networks work on them. The curse bites hardest for methods that rely on raw Euclidean distance over many uninformative features. Tree ensembles and regularised linear models cope well with many irrelevant features; k-NN does not.
 
-- **High Bias → Underfitting**
-- **High Variance → Overfitting**
+**Practical checks:** compare the number of features with the number of examples, look at the explained-variance curve of PCA to estimate intrinsic dimension, and test whether removing feature groups hurts validation performance.
 
-### 8.53 What are Machine Learning and Artificial Intelligence?
+### 8.28 How do you combine losses in multi-task learning? Explain per-task losses, focal loss and gradient blending.
 
-#### Artificial Intelligence (AI) vs. Machine Learning (ML)
+In multi-task (or multi-modal) learning, one network optimises several objectives at once, and the main difficulty is balancing them: tasks have different loss scales, difficulty, noise and learning speed, so a naive sum lets one task dominate. Per-task losses, loss weighting schemes, focal loss and gradient blending are tools for that balancing.
 
-| **Aspect** | **Artificial Intelligence (AI)** | **Machine Learning (ML)** |
+**Per-task ("local") losses.** Each task head computes its own loss, and the shared trunk receives a weighted sum:
+
+$$
+L_{\text{total}} = \sum_{k=1}^{K} w_k \thinspace L_k
+$$
+
+"Local loss" is not a standard term; it usually means these per-head or per-branch losses, or auxiliary losses attached to intermediate layers (deep supervision) that give earlier layers a direct training signal. Keeping per-task losses separate also lets you monitor each task independently.
+
+**Choosing the weights** is the real problem:
+
+| Method | Idea |
+| --- | --- |
+| Manual or grid-searched weights | Simple; normalise losses to similar scales first |
+| Uncertainty weighting (Kendall, Gal and Cipolla, 2018) | Learn a noise parameter per task; noisier tasks get lower weight automatically |
+| GradNorm (Chen et al., 2018) | Adjust weights so each task's gradient norm on shared layers trains at a similar rate |
+| Dynamic weight averaging | Weight tasks by how slowly their loss is falling |
+| PCGrad and other gradient-surgery methods (Yu et al., 2020) | When two task gradients conflict, project one onto the normal plane of the other |
+
+**Focal loss (Lin et al., 2017, RetinaNet).** A modified cross-entropy that down-weights easy, well-classified examples so training focuses on hard ones. With $p_t$ the predicted probability of the true class:
+
+$$
+\text{FL}(p_t) = -\alpha_t \thinspace (1 - p_t)^{\gamma} \log(p_t)
+$$
+
+- $\gamma = 0$ recovers weighted cross-entropy; $\gamma = 2$ is the common default.
+- Designed for extreme foreground-background imbalance in dense object detection; used in multi-task settings when some heads have heavily imbalanced labels.
+- It distorts probabilities, so recalibrate if you need calibrated outputs.
+
+**Gradient blending (Wang, Tran and Feiszli, 2020, Facebook AI).** In multi-modal networks (for example audio plus video), the joint model often performs worse than the best single modality, because different modalities overfit at different rates. Gradient blending attaches a classification head to each modality and to the fused representation, estimates each head's overfitting-to-generalisation ratio on held-out data, and sets the loss weights to favour heads that generalise rather than overfit.
+
+**Practical guidance:**
+
+1. Start with normalised losses and equal weights; log each task's loss and metric separately.
+2. If one task degrades when others are added (negative transfer), try uncertainty weighting or GradNorm, then gradient surgery, and finally separate trunks for unrelated tasks.
+3. Use focal loss or class weights per head for imbalanced tasks.
+4. Choose checkpoints by a weighted business metric across tasks, not by the total loss.
+
+**What interviewers look for:** recognising that multi-task gains depend on task relatedness, that loss scale and gradient conflict are the failure modes, and that per-task monitoring is essential.
+
+### 8.29 Explain Contrastive Learning
+
+**Contrastive learning** learns representations by comparison: an encoder is trained so that **related pairs** (two views of the same image, an image and its caption, a question and its answer) have similar embeddings, while **unrelated pairs** have dissimilar ones. It is the main recipe behind modern self-supervised pretraining and embedding models.
+
+**How it works**
+
+1. Build **positive pairs:** two augmentations of one image (crop, colour change), a caption and its image, a query and a relevant passage.
+2. Treat other items in the batch as **negatives**.
+3. Encode everything, compute similarities, and train with a loss that makes each positive pair score higher than the negatives, usually **InfoNCE** (a softmax cross-entropy over similarities with a temperature, see 19.23).
+
+**Key design choices**
+
+- **Augmentations** decide what the model learns to ignore; they encode the notion of "sameness".
+- **Negatives:** more and harder negatives help; methods use large batches (SimCLR), a queue of past embeddings (MoCo), or hard-negative mining. Some methods avoid explicit negatives altogether (BYOL, DINO, which use a teacher network as the target).
+- **Temperature** controls how sharply the loss focuses on hard negatives.
+- **False negatives:** items in the batch that are actually related get pushed apart, which hurts; deduplication and careful sampling help.
+
+**Well-known examples**
+
+- **SimCLR, MoCo:** self-supervised image representations.
+- **CLIP:** aligns images and text from web image-caption pairs, enabling zero-shot classification and cross-modal search (see 15.28).
+- **Sentence and retrieval embedding models:** trained contrastively on query-document pairs.
+
+**Why it matters in practice:** contrastive pretraining produces general-purpose embeddings from unlabelled or weakly labelled data, so downstream tasks need far fewer labels. Chapter 15 (15.41) covers self-supervised learning for vision in more depth.
+
+### 8.30 What is Generative AI?
+
+**Generative AI** refers to models that **create new content** (text, images, audio, video, code, molecules) by learning the distribution of their training data and sampling from it, as opposed to discriminative models that predict a label or value for a given input (see 8.57 and 13.17).
+
+**Main model families**
+
+| Family | Idea | Typical use |
 | --- | --- | --- |
-| **Definition** | A broader field focused on creating systems that perform tasks requiring human-like intelligence. | A subset of AI where systems learn patterns from data to make predictions or decisions. |
-| **Goal** | Simulate capabilities such as reasoning, planning, perception, and decision-making. | Learn from data and improve performance without explicitly programming every rule. |
-| **Relationship** | **AI is the broader concept.** | **ML is a subset of AI.** |
-| **Example** | Autonomous systems, AI assistants, game-playing systems. | Spam detection, house-price prediction, recommendation systems. |
+| Autoregressive transformers | Predict the next token given previous ones | Text, code, increasingly images and audio (LLMs) |
+| Diffusion models | Learn to reverse a gradual noising process | Images, video, audio |
+| GANs | A generator and a discriminator trained against each other | Fast image synthesis; largely replaced by diffusion for quality |
+| VAEs and normalising flows | Learn a latent space with explicit probabilistic structure | Representation learning, components of larger systems |
 
-### 8.54 Differentiate between Deep Learning and Machine Learning?
+**What changed with modern generative AI**
+
+- **Foundation models:** one large pretrained model adapts to many tasks through prompting, retrieval and fine-tuning, instead of training a model per task.
+- **Instruction tuning and alignment** made models follow natural-language requests.
+- **Multimodality:** models that read and generate across text, images and audio.
+
+**Where it creates value**
+
+- Drafting and summarising, coding assistance, customer support, search and question answering over company knowledge, document processing, content generation, synthetic data.
+
+**Limitations a senior practitioner should name**
+
+- **Hallucination:** fluent but false output; mitigated with retrieval, grounding and verification.
+- **Non-determinism and evaluation difficulty:** quality is hard to measure automatically (see Chapter 24).
+- **Cost and latency** of inference at scale (see Chapter 27).
+- **Security and safety:** prompt injection, data leakage, harmful content (see Chapter 30).
+- **Intellectual property and privacy** questions about training data and outputs.
+
+Part IV of this book (Chapters 17 to 24) covers large language models and generative AI engineering in depth.
+
+### 8.31 What are the training, validation and test sets, and how should you split data?
+
+The training set is used to fit model parameters, the validation set to choose hyperparameters, features and models, and the test set to estimate final performance on unseen data exactly once. Keeping these roles separate is what makes an offline score a trustworthy estimate of production performance.
+
+| | Training set | Validation set | Test set |
+| --- | --- | --- | --- |
+| Purpose | Learn parameters | Tune and select | Final, unbiased estimate |
+| Seen during training? | Yes | Indirectly, through decisions | No |
+| How often used | Every step | Many times | Once, at the end |
+| Main risk | Overfitting | Overfitting to the validation set through repeated tuning | Leakage or reuse, which makes it optimistic |
+
+**How to split:**
+
+- **Typical ratios:** 60/20/20 or 70/15/15 for modest data; with millions of examples, 98/1/1 can be enough because 1 percent is already a large, stable test set. What matters is that the validation and test sets are large enough to detect the differences you care about.
+- **With little data:** use k-fold cross-validation on the training portion instead of a fixed validation set, and still hold out a test set (see 8.20).
+- **Match production:** split by time for anything temporal (train on the past, test on the future), by group for repeated entities (a customer, patient or document should appear in one split only), and stratify by class for imbalanced labels.
+- **Make the validation and test sets come from the distribution you will serve.** If production traffic differs from your historical training data, build test data from recent or production-like samples.
+
+```python
+from sklearn.model_selection import GroupShuffleSplit
+
+gss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+train_idx, test_idx = next(gss.split(X, y, groups=customer_id))
+```
+
+**Pitfalls:**
+
+- Fitting scalers, encoders or feature selection on all the data before splitting (see 8.39).
+- Duplicates or near-duplicates across splits.
+- Repeatedly "peeking" at the test set; once it guides decisions it becomes a second validation set.
+- Using a random split on time series, which lets the model see the future.
+
+See 10.11 for the mechanics of splitting and 12.23 for time-series validation.
+
+### 8.32 Differentiate between Deep Learning and Machine Learning?
 
 #### Deep Learning vs. Machine Learning
 
@@ -699,95 +1149,46 @@ lmost always **mini-batch gradient descent** — it balances the computational e
 | **Best suited for** | Structured/tabular data | Unstructured data such as images, audio, and text |
 | **Interpretability** | Often more interpretable | Generally more difficult to interpret |
 
-### 8.55 What are the types of Machine learning?
+### 8.33 What is semi-supervised learning, and where is it applied?
 
-#### Types of Machine Learning
+Semi-supervised learning trains a model on a small amount of labelled data together with a large amount of unlabelled data, using the structure of the unlabelled data to improve on what the labels alone could achieve. It is valuable when labels are expensive (they need experts or time) but raw data is plentiful.
 
-| **Type** | **Definition** | **Examples** |
+**Example:** 10,000 X-ray images, of which only 500 are labelled by radiologists. The model learns from the 500 and uses the other 9,500 to learn what normal variation looks like.
+
+| Learning type | Labelled data | Unlabelled data |
 | --- | --- | --- |
-| **Supervised Learning** | Learns from **labeled data** to predict outputs. | Classification, Regression |
-| **Unsupervised Learning** | Finds patterns or structures in **unlabeled data**. | Clustering, Dimensionality Reduction |
-| **Semi-Supervised Learning** | Uses a combination of **labeled and unlabeled data**. | Image and text classification |
-| **Reinforcement Learning** | Learns by interacting with an environment using **rewards and penalties**. | Robotics, Game Playing, Autonomous Systems |
+| Supervised | Large amount | Not used |
+| Unsupervised | None | Large amount |
+| Semi-supervised | Small amount | Large amount |
 
-### 8.56 What different targets do classification and regression algorithms require?
+**Assumptions that make it work** (if they fail, unlabelled data can hurt):
 
-The main difference is **the type of target (output) variable they predict**:
+- **Smoothness:** points close together in input space tend to share a label.
+- **Cluster assumption:** the decision boundary should pass through low-density regions, between clusters.
+- **Manifold assumption:** data lies on a low-dimensional manifold, which unlabelled data helps map out.
 
-| Aspect | Classification | Regression |
-| --- | --- | --- |
-| **Target variable** | **Categorical / discrete** | **Continuous / numerical** |
-| **Goal** | Predict a **class or category** | Predict a **numeric value** |
-| **Example target** | `Spam` / `Not Spam` | House price = `$250,000` |
-| **Output** | Class label or probability | Real-valued number |
-| **Common algorithms** | Logistic Regression, Decision Tree, Random Forest, SVM, Neural Networks | Linear Regression, Decision Tree, Random Forest, SVR, Neural Networks |
-| **Common metrics** | Accuracy, Precision, Recall, F1, ROC-AUC | MAE, MSE, RMSE, $R^2$ |
+**Common techniques:**
 
-#### Simple examples
+- **Self-training and pseudo-labelling:** train on labelled data, predict on unlabelled data, add high-confidence predictions as labels, retrain.
+- **Consistency regularisation:** the model should give the same prediction for different augmentations of an unlabelled input (Mean Teacher, FixMatch, which combines both ideas).
+- **Graph-based label propagation:** spread labels along a similarity graph.
+- **Self-supervised pretraining then fine-tuning:** pretrain on all unlabelled data (contrastive or masked modelling), then fine-tune on the labelled subset. This is now often the strongest practical approach.
 
-**Classification:**
+**Applications:**
 
-> Predict whether a customer will **churn or not**.
+1. **Medical imaging:** X-rays, MRI and CT with limited expert labels.
+2. **Speech recognition:** small transcribed sets with large untranscribed audio.
+3. **Text classification and NLP:** sentiment, intent and document categorisation with few labelled examples.
+4. **Fraud and cybersecurity:** few confirmed cases among many unlabelled transactions or network events.
+5. **Web and content classification**, and **image classification** over large partially labelled collections.
 
-Target: y ∈ \{0, 1\}
+**Risks and good practice:**
 
-**Regression:**
+- **Confirmation bias:** wrong pseudo-labels reinforce themselves. Use confidence thresholds, class-balanced selection and keep a clean labelled validation set.
+- **Distribution mismatch** between labelled and unlabelled data (for example unlabelled data containing new classes) degrades results.
+- Always compare against a supervised baseline trained on the labelled data only; and consider whether labelling more data (with active learning, see 8.43) is cheaper than the added complexity.
 
-> Predict a customer's **annual spending**.
-
-Target: y ∈ R
-
-### 8.57 What is semi-supervised learning?
-
-#### Semi-Supervised Learning
-
-**Semi-supervised learning** is a Machine Learning approach that uses a **small amount of labeled data** together with a **large amount of unlabeled data** to train a model.
-
-#### How it works
-
-For example, suppose we have **10,000 images**:
-
-- **500 images** → labeled (e.g., cat/dog)
-- **9,500 images** → unlabeled
-
-The model learns from the labeled examples and uses the structure of the unlabeled data to improve its predictions.
-
-#### Comparison
-
-| Learning Type | Labeled Data | Unlabeled Data |
-| --- | --- | --- |
-| **Supervised** | Large amount | Usually not required |
-| **Unsupervised** | None | Large amount |
-| **Semi-supervised** | Small amount | Large amount |
-
-#### Common techniques
-
-- **Pseudo-labeling**
-- **Self-training**
-- **Consistency regularization**
-- **Label propagation**
-
-#### Example
-
-In **medical image classification**, labeling thousands of X-rays can be expensive because it requires experts. A model can use a smaller set of expert-labeled X-rays along with many unlabeled X-rays.
-
-### 8.58 Where is semi-supervised learning applied?
-
-#### Applications of Semi-Supervised Learning
-
-Semi-supervised learning is useful when **labeled data is expensive or difficult to obtain**, but large amounts of unlabeled data are available.
-
-Common applications include:
-
-1. **Medical Imaging** – Classifying X-rays, MRI scans, and CT scans with limited expert-labeled data.
-2. **Image Classification** – Classifying large collections of images when only some are labeled.
-3. **Speech Recognition** – Learning from a small amount of transcribed speech and large amounts of untranscribed audio.
-4. **Natural Language Processing (NLP)** – Text classification, sentiment analysis, and document categorization with limited labeled text.
-5. **Fraud Detection** – Detecting unusual transactions when only a small portion of transactions have confirmed labels.
-6. **Web Content Classification** – Categorizing webpages or online content using limited labeled examples.
-7. **Cybersecurity** – Detecting malicious or abnormal network activity when labeled attack data is limited.
-
-### 8.59 What is Inductive Logic Programming?
+### 8.34 What is Inductive Logic Programming?
 
 #### Inductive Logic Programming (ILP)
 
@@ -802,48 +1203,7 @@ Common applications include:
 
 **In simple terms:** ILP **learns logical rules from examples and existing knowledge, then uses those rules to make predictions on new cases**.
 
-### 8.60 What is deductive learning and inductive learning?
-
-#### Deductive Learning vs Inductive Learning
-
-##### 1. Deductive Learning
-
-- **Deductive learning** starts with **general rules or existing knowledge** and applies them to reach a **specific conclusion**.
-- The conclusion is logically derived from the given rules and facts.
-- If the rules and facts are correct, the conclusion is guaranteed to be correct.
-
-**Example:**
-
-- Rule: All humans are mortal.
-- Fact: Socrates is a human.
-- Conclusion: Socrates is mortal.
-
-**In simple terms:** **General rule → Specific conclusion**
-
-##### 2. Inductive Learning
-
-- **Inductive learning** starts with **specific examples or observations** and learns a **general rule or pattern** from them.
-- The learned rule is then used to make predictions about new cases.
-- The conclusion is **probable**, not guaranteed.
-
-**Example:**
-
-- Observation: Several observed birds can fly.
-- Learned pattern: Birds generally can fly.
-- Prediction: A new bird may be able to fly.
-
-**In simple terms:** **Specific examples → General rule**
-
-##### Key Difference
-
-| Deductive Learning | Inductive Learning |
-| --- | --- |
-| General → Specific | Specific → General |
-| Applies existing rules | Learns new rules/patterns |
-| Conclusion is logically guaranteed | Conclusion is probabilistic |
-| Knowledge-driven | Data/example-driven |
-
-### 8.61 How would you differentiate data mining from Machine learning?
+### 8.35 How would you differentiate data mining from Machine learning?
 
 #### Data Mining vs Machine Learning
 
@@ -875,176 +1235,7 @@ Common applications include:
 | Uses statistical and computational techniques | Uses algorithms that learn from data |
 | Example: Find purchasing patterns | Example: Predict future purchases |
 
-### 8.62 Why does overfitting occur in ML?
-
-#### Why Does Overfitting Occur in ML?
-
-- **Overfitting occurs when a model learns the training data too closely**, including its noise and random variations.
-- As a result, the model performs **very well on training data but poorly on unseen test data**.
-- **Overfitting = Low Bias + High Variance**
-- Common causes include:
-  - **Model is too complex** for the amount of data available.
-  - **Too little training data**.
-  - **Too many irrelevant or noisy features**.
-  - **Training for too long**, especially in neural networks.
-  - **Insufficient regularization**.
-- Overfitting means the model has **low training error but high test/validation error**.
-- It can be reduced using:
-  - More training data
-  - Simpler models
-  - Regularization
-  - Feature selection
-  - Cross-validation
-  - Early stopping
-  - Dropout for neural networks
-
-### 8.63 What are the functions of unsupervised learning?
-
-#### Functions of Unsupervised Learning
-
-- **Clustering:** Groups similar data points together without predefined labels.
-  - Example: Customer segmentation using K-Means.
-- **Dimensionality Reduction:** Reduces the number of features while preserving important information.
-  - Example: PCA.
-- **Association Rule Learning:** Discovers relationships or patterns between variables.
-  - Example: Finding products frequently purchased together.
-- **Anomaly Detection:** Identifies unusual or abnormal data points.
-  - Example: Detecting fraudulent transactions.
-- **Data Exploration:** Helps discover hidden patterns, structures, and relationships in data.
-- **Feature Learning:** Automatically learns useful representations or features from raw data.
-
-### 8.64 What are some functions of supervised learning?
-
-#### Functions of Supervised Learning
-
-- **Classification:** Predicts a **category or class** from labeled data.
-  - Example: Spam vs. Not Spam.
-- **Regression:** Predicts a **continuous numerical value**.
-  - Example: Predicting house prices.
-- **Prediction:** Uses learned patterns from historical data to predict outcomes for **new, unseen data**.
-- **Pattern Learning:** Learns the relationship between **input features and known target labels**.
-- **Decision Making:** Helps systems make automated decisions based on learned patterns.
-  - Example: Credit risk prediction.
-- **Anomaly Detection:** Can identify unusual cases when trained with appropriate labeled examples.
-
-### 8.65 What is Regularization in ML?
-
-#### Regularization in Machine Learning
-
-- **Regularization** is a technique used to **reduce overfitting** and improve a model’s ability to **generalize to unseen data**.
-- It adds a **penalty for model complexity**, encouraging the model to learn simpler patterns.
-- Common types include:
-  - **L1 Regularization (Lasso):** Can make some feature weights exactly zero, helping with feature selection.
-  - **L2 Regularization (Ridge):** Shrinks model weights toward zero without usually making them exactly zero.
-  - **Dropout:** Randomly deactivates some neurons during training in neural networks.
-- Regularization helps prevent the model from **memorizing noise in the training data**.
-
-### 8.66 What do you understand about the Bias-Variance Tradeoff?
-
-#### Bias-Variance Tradeoff
-
-- The **Bias-Variance Tradeoff** is the balance between **bias** and **variance** that affects a machine learning model's ability to generalize to unseen data.
-
-##### Bias
-
-- **Bias** is the error caused by a model being **too simple** and making strong assumptions.
-- High bias leads to **underfitting**.
-- The model performs poorly on both training and test data.
-
-##### Variance
-
-- **Variance** is the error caused by a model being **too sensitive to the training data**.
-- High variance leads to **overfitting**.
-- The model performs very well on training data but poorly on test data.
-
-##### Tradeoff
-
-- Increasing model complexity generally **reduces bias but increases variance**.
-- Decreasing model complexity generally **increases bias but reduces variance**.
-- The goal is to find the **right level of complexity** that gives good performance on unseen data.
-
-**In simple terms:**
-
-- **High Bias + Low Variance → Underfitting**
-- **Low Bias + High Variance → Overfitting**
-- **Balanced Bias + Variance → Good Generalization**
-
-### 8.67 How can you differentiate between a parametric and a non-parametric model?
-
-#### Parametric vs Non-Parametric Models
-
-- **Parametric model:**
-  - Assumes the data follows a specific distribution or relationship.
-  - Uses a **fixed number of parameters** to describe the model.
-  - Parameters usually have a clear statistical interpretation.
-  - Examples: **Linear Regression, Logistic Regression, Naive Bayes**.
-- **Non-parametric model:**
-  - Does **not assume a specific distribution** for the data.
-  - Model complexity can grow with the amount of data.
-  - More flexible and can capture complex patterns.
-  - Examples: **K-Nearest Neighbors (KNN), Decision Trees, Random Forest, DBSCAN**.
-
-| Feature | Parametric | Non-parametric |
-| --- | --- | --- |
-| Distribution assumption | Usually required | Usually not required |
-| Number of parameters | Fixed | Can grow with data |
-| Flexibility | Lower | Higher |
-| Data requirement | Usually less | Usually more |
-| Examples | Linear Regression, Logistic Regression | KNN, Decision Tree, Random Forest |
-
-### 8.68 How can overfitting be avoided in ML?
-
-- **Use more training data:** Helps the model learn general patterns instead of memorizing the training data.
-- **Use a simpler model:** Reduce model complexity to prevent learning noise.
-- **Regularization:** Use **L1, L2, or Elastic Net** to penalize overly complex models.
-- **Cross-validation:** Use techniques such as **k-fold cross-validation** to check how well the model generalizes.
-- **Feature selection:** Remove irrelevant or noisy features.
-- **Early stopping:** Stop training when validation performance starts getting worse.
-- **Dropout:** Randomly deactivate some neurons during neural-network training.
-- **Data augmentation:** Create variations of training data, especially for images and other structured data.
-- **Pruning:** Remove unnecessary branches or parameters from complex models such as decision trees or neural networks.
-- **Ensembling:** Combine multiple models to improve generalization and reduce the risk of relying too heavily on one model.
-
-### 8.69 How would you handle a dataset suffering from high variance?
-
-High variance usually means the **model is overfitting** — it performs very well on training data but poorly on unseen data.
-
-- **Use more training data:** Helps the model learn general patterns.
-- **Use a simpler model:** Reduce model complexity.
-- **Use regularization:** Apply **L1, L2, or Elastic Net**.
-- **Feature selection:** Remove irrelevant or noisy features.
-- **Cross-validation:** Use **k-fold cross-validation** to evaluate generalization.
-- **Early stopping:** Stop training when validation performance starts getting worse.
-- **Dropout:** Useful for neural networks to reduce overfitting.
-- **Pruning:** Reduce unnecessary branches in decision trees.
-- **Ensembling:** Techniques like **Bagging and Random Forest** can reduce variance.
-
-#### High Variance and Low Bias
-
-A model with **high variance and low bias** is usually **overfitting** the training data.
-
-To handle it:
-
-- **Use more training data:** Helps the model learn general patterns instead of memorizing the training data.
-- **Reduce model complexity:** Use a simpler model or reduce the number of parameters.
-- **Apply regularization:** Use **L1, L2, or Elastic Net** to control model complexity.
-- **Use feature selection:** Remove irrelevant or noisy features.
-- **Use cross-validation:** Helps check whether the model generalizes well to unseen data.
-- **Early stopping:** Stop training when validation performance starts getting worse.
-- **Use dropout:** Useful for neural networks to reduce overfitting.
-- **Use pruning:** Reduce unnecessary branches in decision trees.
-- **Use ensembling:** Methods such as **Bagging and Random Forest** can help reduce variance.
-
-### 8.70 How Regularization reduces the cost term?
-
-- Regularization **adds a penalty term** to the original cost function.
-- This penalty increases when the model's **weights become too large**.
-- To minimize the total cost, the model tries to keep the weights **small**.
-- Smaller weights make the model **less complex** and reduce its tendency to overfit.
-- **L1 regularization:** Can make some weights exactly zero.
-- **L2 regularization:** Shrinks weights toward zero.
-
-### 8.71 What do you mean by the unreasonable effectiveness of data?
+### 8.36 What do you mean by the unreasonable effectiveness of data?
 
 "**The Unreasonable Effectiveness of Data**" is a 2009 paper by Halevy, Norvig and Pereira (Google), echoing Wigner's "unreasonable effectiveness of mathematics". The thesis: for many real-world problems, **simple models trained on very large datasets outperform sophisticated models trained on less data**.
 
@@ -1057,44 +1248,36 @@ To handle it:
 - It anticipated **scaling laws** and LLMs: performance improves predictably with more data and compute.
 - Qualifications today: data **quality** and deduplication matter as much as quantity (Chinchilla, Phi); diminishing returns follow power laws; labeled data is expensive; and more data can amplify bias.
 
-**Practical takeaway:** before spending weeks tuning a model, ask whether acquiring, labeling or cleaning more representative data would yield a bigger gain — it often does. Learning curves tell you which regime you are in.
+**Practical takeaway:** before spending weeks tuning a model, ask whether acquiring, labeling or cleaning more representative data would yield a bigger gain — it often does. Learning curves tell you which regime you are in (see 8.60).
 
-### 8.72 What is Online Machine Learning? How is it different from Offline machine learning? List some of its applications
+### 8.37 What is the No Free Lunch theorem, and what does inductive bias mean in practice?
 
-**Online learning** updates the model **incrementally as each new example (or mini-batch) arrives**, typically discarding the data after the update. **Offline (batch) learning** trains on a fixed, complete dataset at once and is retrained periodically from scratch.
+The No Free Lunch (NFL) theorem (Wolpert, 1996, for supervised learning; Wolpert and Macready, 1997, for optimisation) states that averaged over all possible problems (all possible data-generating functions), every learning algorithm has the same expected performance. No algorithm is universally best: any gain on one class of problems is paid for by losses on another. An algorithm does well only when its **inductive bias**, the assumptions it brings beyond the data, matches the structure of the real problem.
 
-| | Offline / batch | Online |
+**Inductive bias** is everything that makes a learner prefer one hypothesis over another that fits the training data equally well. Without it, learning from a finite sample is impossible.
+
+| Model | Inductive bias | Works well when |
 | --- | --- | --- |
-| Data | Full historical dataset available | Streaming, one example or mini-batch at a time |
-| Updates | Periodic full retrains (daily/weekly) | Continuous, incremental |
-| Adaptation to drift | Slow (until next retrain) | Fast |
-| Compute/memory | High per retrain; needs all data | Low per update; constant memory |
-| Stability/reproducibility | High, easier to validate | Risk of drift, catastrophic forgetting, poisoning |
-| Algorithms | Most models | SGD-based linear models, online gradient descent, Hoeffding trees, bandits, `partial_fit` in scikit-learn, River, Vowpal Wabbit |
+| Linear and logistic regression | Effects are additive and linear in the features | Relationships are roughly linear, or features are well engineered |
+| Decision trees and gradient boosting | Axis-aligned splits, interactions via hierarchy | Tabular data with heterogeneous features and thresholds |
+| k-NN, kernel methods | Smoothness: similar inputs have similar outputs | Low-dimensional data with a meaningful distance |
+| CNNs | Locality and translation equivariance | Images, audio spectrograms |
+| RNNs and state space models | Sequential order, recency | Time series, streams |
+| Transformers | Weak bias; relations learned via attention | Very large data, where weak bias pays off |
+| Graph neural networks | Permutation invariance over neighbours | Relational and network data |
+| Regularisation, priors | Preference for small or sparse weights | Noisy, limited data |
 
-**Applications of online learning**
-- **Ad click-through / recommendation ranking** (rapidly changing user interests).
-- **Fraud and spam detection** where attackers adapt.
-- **Stock/price prediction and dynamic pricing.**
-- **News/feed personalization**, contextual bandits for A/B testing.
-- **IoT/sensor anomaly detection** on streams; **datasets too large to fit in memory** (out-of-core learning).
+**What NFL means in practice:**
 
-**Production concerns:** the learning rate controls how fast it forgets; guard against bad data with validation gates and anomaly checks; keep shadow evaluation and rollback snapshots. Many teams use a hybrid approach: a periodic offline model plus online fine-tuning or recalibration.
+- Real-world problems are not uniformly distributed over "all possible functions": they have structure, so some algorithms are reliably good in particular domains (gradient boosting on tabular data, Transformers on language).
+- You must **compare candidate models empirically** on your data with proper validation rather than assuming a favourite always wins.
+- **Encoding the right bias is a lever:** data augmentation, architecture choice, monotonic constraints, feature engineering and pretrained representations all inject prior knowledge. The less data you have, the more the right inductive bias matters; with huge data, weaker biases (Transformers) can catch up and surpass stronger ones.
 
-### 8.73 What is the No Free Lunch Theorem?
+**Interview framing:** "NFL is why I start with a baseline and a few model families suited to the data type, evaluate them with cross-validation on the metric that matters, and pick based on evidence, while also weighing interpretability, latency and maintenance cost."
 
-The **No Free Lunch (NFL) theorem** (Wolpert & Macready, 1997, for optimization; Wolpert, 1996, for supervised learning) states that **averaged over all possible problems (all possible data-generating functions), every learning algorithm has the same expected performance**. No algorithm is universally best: any gain on one class of problems is paid for by losses on another.
+**Common misreading:** NFL does not say all algorithms are equally good on your problem, only when averaged over all conceivable problems, most of which look like random noise.
 
-**What it means in practice**
-- An algorithm only does well because its **inductive bias** (assumptions) matches the structure of the real problem: CNNs assume spatial locality; linear models assume additive effects; trees assume axis-aligned splits; k-NN assumes smoothness.
-- Real-world problems are not uniformly distributed over "all possible functions" — they have structure — so some algorithms are reliably good in particular domains (GBMs on tabular data, Transformers on language).
-- You must **empirically compare** candidate models on your data with proper validation rather than assuming a favorite always wins.
-
-**Interview framing:** "NFL is why I start with a baseline and a few model families suited to the data type, evaluate them with cross-validation on the metric that matters, and pick based on evidence — while also weighing interpretability, latency and maintenance cost."
-
-**Common misreading:** NFL does *not* say all algorithms are equally good on *your* problem — only when averaged over all conceivable problems.
-
-### 8.74 What are the main differences between Structured and Unstructured Data?
+### 8.38 What are the main differences between Structured and Unstructured Data?
 
 | | Structured data | Unstructured data |
 | --- | --- | --- |
@@ -1113,33 +1296,60 @@ The **No Free Lunch (NFL) theorem** (Wolpert & Macready, 1997, for optimization;
 - GenAI has made unstructured data far more valuable: RAG, document extraction and VLMs turn PDFs and images into structured fields or searchable embeddings.
 - Governance differs: PII is easy to locate in columns but hidden inside free text and scans, so unstructured data needs detection and redaction pipelines.
 
-### 8.75 What is Data Leakage? List some ways by which you can overcome this problem.
+### 8.39 What is data leakage, which forms are hard to detect, and how do you prevent it?
 
-**Data leakage** happens when information that would not be available at prediction time gets into training. The result is optimistic offline metrics that collapse in production.
+**Data leakage** happens when information that would not be available at prediction time gets into training or model selection. The result is optimistic offline metrics that collapse in production. It is one of the most common reasons a model "works in the notebook" and fails when deployed.
 
 **Common forms:**
-- **Target leakage:** features derived from the label or recorded after the outcome (e.g. "refund_issued" when predicting fraud).
-- **Train–test contamination:** fitting scalers, imputers, encoders or feature selection on the full dataset before splitting.
+
+- **Target leakage:** features derived from the label or recorded after the outcome (for example `refund_issued` when predicting fraud).
+- **Train-test contamination:** fitting scalers, imputers, encoders or feature selection on the full dataset before splitting.
 - **Temporal leakage:** random splits on time-dependent data; features built with future windows.
 - **Group leakage:** the same patient, user or document appears in both train and test.
-- **Duplicates / near-duplicates** across splits.
+- **Duplicates and near-duplicates** across splits.
+
+**Examples that are difficult to detect:**
+
+1. **Post-outcome features:** predicting loan default with `days_overdue`, which only takes non-zero values once the customer is already defaulting.
+2. **Aggregates computed over the whole period:** predicting January behaviour with `customer_total_transactions` calculated over the whole year.
+3. **Process-generated features:** predicting fraud with `fraud_investigation_status`, which exists because the transaction was already suspected.
+4. **Feature windows that cross the label time:** `average_support_tickets_before_churn` that accidentally includes tickets raised after the churn date.
+5. **Preprocessing before splitting:**
+
+   ```python
+   scaler.fit(X)                       # learns test-set statistics
+   X = scaler.transform(X)
+   X_train, X_test, y_train, y_test = train_test_split(X, y)
+   ```
+
+6. **Imputation or target encoding** computed on the full dataset rather than inside each training fold.
+7. **Entity leakage:** splitting transactions randomly instead of by customer, so the model learns the customer rather than the pattern.
+8. **Near-duplicates with different IDs:** the same image resized, the same document re-scanned, the same patient re-registered.
+9. **Model-selection leakage:** repeatedly tuning against the test set, so it gradually influences decisions even though it is never trained on.
+10. **Upstream leakage in data pipelines:** tables that are overwritten with corrected values, so the training snapshot contains information that was not available at the original decision time.
 
 **How to prevent it:**
+
 1. **Split first**, then do all preprocessing inside a `Pipeline` so it is fitted only on training folds.
-2. Use **time-based splits** (`TimeSeriesSplit`, rolling-origin) and **point-in-time correct** feature joins (feature stores with as-of joins).
-3. Use **group-aware CV** (`GroupKFold`) for entity-level data.
-4. Audit features: for each one ask "would I know this at prediction time?" Treat suspiciously high importance or near-perfect AUC as a red flag.
-5. Deduplicate before splitting.
-6. Keep a truly untouched holdout set and validate with a shadow deployment.
+2. Use **time-based splits** (`TimeSeriesSplit`, rolling origin) and **point-in-time correct** feature joins (feature stores with as-of joins).
+3. Use **group-aware cross-validation** (`GroupKFold`) for entity-level data.
+4. Audit features: for each one ask "would I know this, with this value, at prediction time?" Treat suspiciously high feature importance or near-perfect AUC as a red flag (see 12.33).
+5. Deduplicate, including near-duplicates, before splitting.
+6. Keep a truly untouched holdout set and validate with a shadow deployment before trusting offline numbers.
 
 ```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import cross_val_score, TimeSeriesSplit
-pipe = make_pipeline(StandardScaler(), LogisticRegression())
-cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
+from sklearn.preprocessing import StandardScaler
+
+pipe = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
+scores = cross_val_score(pipe, X, y, cv=TimeSeriesSplit(n_splits=5))   # scaler refitted per fold
 ```
 
-### 8.76 What are the different types of bias in Machine Learning?
+See 10.30 for leakage specific to feature engineering.
+
+### 8.40 What are the different types of bias in Machine Learning?
 
 "Bias" means two different things in ML. Separate them in an interview.
 
@@ -1160,24 +1370,69 @@ cross_val_score(pipe, X, y, cv=TimeSeriesSplit(5))
 
 **Mitigation:** audit data coverage, use stratified sampling, compute per-group metrics (equal opportunity, demographic parity), reweight or resample, apply fairness constraints, use diverse annotators with clear guidelines, monitor slices in production, and keep a human review for high-stakes decisions.
 
-### 8.77 Why does L2 regularization give sparse coefficients?
+### 8.41 Why does L1 regularisation give sparse coefficients while L2 does not? Explain geometrically.
 
-**The premise is wrong: L2 (Ridge) regularization does *not* give sparse coefficients. L1 (Lasso) does.**
+L1 (lasso) produces exact zeros; L2 (ridge) only shrinks coefficients towards zero. (A common trick question asks why L2 gives sparse coefficients: the premise is wrong.) The reason can be seen three ways: from the gradient, from the geometry of the constraint region and from the Bayesian prior.
 
-**Why L2 isn't sparse:** the penalty $\lambda \sum w_j^2$ has gradient $2\lambda w_j$, which shrinks toward zero in proportion to the weight. As $w_j$ gets small the push gets small too, so weights become tiny but almost never exactly zero. Ridge shrinks all coefficients smoothly and spreads weight across correlated features.
+**Gradient view:**
 
-**Why L1 is sparse:**
-- **Gradient view:** the penalty $\lambda \sum \lvert w_j \rvert$ has a constant-magnitude (sub)gradient $\lambda \operatorname{sign}(w_j)$, so it keeps pushing small weights at the same rate until they reach exactly 0. The solution is the soft-thresholding operator: $w_j = \operatorname{sign}(z)\max(\lvert z \rvert - \lambda, 0)$.
-- **Geometric view:** the constrained problem $\min \text{loss} \ \text{s.t.}\ \lVert w \rVert_1 \le t$ has a diamond-shaped feasible region with corners on the axes. The elliptical loss contours usually touch it at a corner, where some coordinates are exactly zero. The L2 ball is round, with no corners, so contact points are generically off-axis.
-- **Bayesian view:** L1 equals a Laplace prior (peaked at 0) and L2 a Gaussian prior.
+- L2 penalty $\lambda \sum_j w_j^2$ has gradient $2\lambda w_j$, which shrinks in proportion to the weight. As $w_j$ gets small, the push gets small too, so weights become tiny but almost never exactly zero.
+- L1 penalty $\lambda \sum_j \lvert w_j \rvert$ has a constant-magnitude subgradient $\lambda \thinspace \text{sign}(w_j)$, so it keeps pushing small weights at the same rate until they reach exactly zero. For an orthonormal design, the lasso solution is the soft-thresholding operator, which sets every coefficient whose least-squares value is below $\lambda$ in magnitude to zero:
 
-**Practical use:** use L1 for feature selection or interpretability, L2 for stability with multicollinearity, and **Elastic Net** for both (sparse, but it handles groups of correlated features better than Lasso, which picks one arbitrarily).
+$$
+w_j = \text{sign}(z_j)\max(\lvert z_j \rvert - \lambda, 0)
+$$
 
-### 8.78 List some ways using which you can improve a model’s performance.
+**Geometric view.** The penalised problem is equivalent to minimising the loss subject to a budget on the weights, $\lVert w \rVert_1 \le t$ or $\lVert w \rVert_2^2 \le t$. Picture the elliptical contours of the loss growing out from the unregularised optimum until they first touch the constraint region.
+
+For two weights, the L1 region $\lvert w_1 \rvert + \lvert w_2 \rvert \le t$ is a diamond with corners on the axes:
+
+```text
+          w2
+           |
+          /\
+         /  \
+        /    \
+-------+------+------- w1
+        \    /
+         \  /
+          \/
+```
+
+The expanding ellipse usually touches the diamond at a corner, where one coordinate is exactly zero. In many dimensions the L1 ball has many corners and edges lying in coordinate subspaces, so many weights end up at zero.
+
+The L2 region $w_1^2 + w_2^2 \le t$ is a circle:
+
+```text
+          w2
+           |
+        .-----.
+      .'       '.
+     /           \
+----+-------------+---- w1
+     \           /
+      '.       .'
+        '-----'
+```
+
+It has no corners, so the contact point is generically off the axes: weights are small but non-zero.
+
+**Bayesian view:** L1 corresponds to a Laplace prior, sharply peaked at zero; L2 to a Gaussian prior, smooth at zero. The MAP estimate under a Laplace prior often sits exactly at the peak.
+
+**Memory aid:** L1 = diamond = sparse; L2 = circle = small weights.
+
+**Practical use:**
+
+- **L1** for feature selection and interpretability with many candidate features. It is unstable with correlated features: it picks one of a correlated group somewhat arbitrarily.
+- **L2** for stability under multicollinearity and when most features carry some signal.
+- **Elastic net** for both: sparse, while keeping groups of correlated features together.
+- Sparsity also needs scaled features; otherwise the penalty zeros out features measured in large units first.
+
+### 8.42 List some ways using which you can improve a model’s performance.
 
 Work systematically: diagnose first, then pick the lever.
 
-**1. Diagnose:** compare train vs validation error. A high-bias model underfits; a high-variance model overfits. Do error analysis on misclassified examples and slices. Learning curves show whether more data would help.
+**1. Diagnose:** compare train vs validation error. A high-bias model underfits; a high-variance model overfits. Do error analysis on misclassified examples and slices. Learning curves show whether more data would help (see 8.60).
 
 **2. Data (usually the biggest win):**
 - More or better labelled data; fix label noise; active learning.
@@ -1200,7 +1455,7 @@ Work systematically: diagnose first, then pick the lever.
 
 **Production angle:** measure gains against latency, cost and maintainability, and confirm them with an A/B test, because an offline lift is not a business lift.
 
-### 8.79 What is active learning, and where is it useful?
+### 8.43 What is active learning, and where is it useful?
 
 **Active learning** is a semi-supervised loop in which the model **chooses which unlabelled examples a human should label next**, so you reach a target accuracy with far fewer labels.
 
@@ -1220,7 +1475,7 @@ Work systematically: diagnose first, then pick the lever.
 
 **Pitfalls:** the selected samples are biased (not i.i.d.), so keep a **random, separately labelled test set**. Cold start needs a reasonable seed. Pure uncertainty sampling can chase label noise and outliers. Factor annotator latency into the batch size.
 
-### 8.80 What types of models tend to overfit?
+### 8.44 What types of models tend to overfit?
 
 Models with **high capacity and few built-in constraints** relative to the amount of data overfit most easily.
 
@@ -1240,7 +1495,7 @@ Models with **high capacity and few built-in constraints** relative to the amoun
 
 **Controls:** regularization, pruning, early stopping, dropout, cross-validation, more data or augmentation, feature selection and ensembling. The bias–variance tradeoff says to match model capacity to data size and noise.
 
-### 8.81 Can you tell the complete life cycle of a data science project?
+### 8.45 Can you tell the complete life cycle of a data science project?
 
 A typical end-to-end lifecycle (CRISP-DM extended with MLOps):
 
@@ -1257,7 +1512,7 @@ A typical end-to-end lifecycle (CRISP-DM extended with MLOps):
 
 The process is **iterative, not linear**. Most time goes into the data steps, and most failures come from poor problem framing or missing monitoring, not from the choice of algorithm.
 
-### 8.82 What are the properties of a good ML model?
+### 8.46 What are the properties of a good ML model?
 
 A good ML model is judged by more than its validation score:
 
@@ -1273,72 +1528,49 @@ A good ML model is judged by more than its validation score:
 
 **Interview angle:** the "best" model is often not the most accurate one. A gradient-boosted model 0.5% worse in AUC but 10x cheaper, explainable and easy to retrain usually wins in production. Frame the answer as a tradeoff between accuracy, cost, risk and maintainability.
 
-### 8.83 What do you mean by the curse of Dimensionality?
+### 8.47 Given a dataset, how do you decide which machine learning algorithm to use?
 
-The **curse of dimensionality** is the set of problems that appear as the number of features grows:
+There is no universally best algorithm (see 8.37), so the choice is driven by the problem, the data and the constraints, then confirmed empirically against a baseline.
 
-- **Data becomes sparse:** the volume of the space grows exponentially, so a fixed number of samples covers it ever more thinly. To keep the same density in 10 dimensions as with 10 points in 1 dimension you'd need $10^{10}$ points.
-- **Distances lose meaning:** in high dimensions, the nearest and farthest neighbours of a point end up at almost the same distance, which breaks k-NN, k-means and other distance-based methods.
-- **Overfitting risk rises:** with many features and few samples, the model can always find spurious patterns (the $p \gg n$ problem).
-- **Compute and memory cost** grow, and visualization becomes impossible.
-
-**Mitigations:**
-
-- Feature selection (filter, wrapper, L1 regularization).
-- Dimensionality reduction (PCA, autoencoders, UMAP for visualization).
-- Regularization and simpler models.
-- Learned embeddings instead of huge one-hot/sparse vectors.
-- More data, or domain knowledge to engineer fewer, better features.
-
-**Nuance:** real data usually lies near a low-dimensional manifold, which is why deep nets work on million-pixel images. The curse bites hardest for methods that rely on raw Euclidean distance over many uninformative features.
-
-### 8.84 Considering the long list of machine learning algorithms, given a data set, how do you decide which one to use?
-
-There's no universally best algorithm (No Free Lunch), so the choice is driven by the problem, the data and the constraints, then confirmed empirically.
-
-**1. Define the problem:** supervised (classification, regression, ranking), unsupervised (clustering, anomaly detection) or sequential decision-making (RL). What metric and what error costs matter?
+**1. Define the problem:** supervised (classification, regression, ranking), unsupervised (clustering, anomaly detection) or sequential decision-making (reinforcement learning or bandits). Which metric matters, and what does each kind of error cost?
 
 **2. Look at the data:**
 
-- **Size:** small data favours simple, regularized models (logistic regression, Naive Bayes, SVM); large data allows boosting and deep learning.
-- **Type:** tabular → gradient boosting (XGBoost/LightGBM/CatBoost) is the usual winner; images → CNNs/ViTs; text → Transformers or TF-IDF + linear baseline; time series → seasonal baselines, ARIMA, boosting with lag features.
-- **Dimensionality, sparsity, missing values, categorical cardinality, label noise, class imbalance.**
+- **Size:** a few hundred rows favours simple, regularised models (logistic regression, Naive Bayes, small trees, SVMs); hundreds of thousands or more allows gradient boosting and neural networks.
+- **Type:** tabular data, use gradient boosting (XGBoost, LightGBM, CatBoost) as the usual strong default; text, a TF-IDF plus linear baseline and then fine-tuned Transformers; images and audio, CNNs or vision Transformers via transfer learning; time series, seasonal naive baselines, then ARIMA or boosting with lag features.
+- **Structure:** is the boundary likely linear? Dimensionality, sparsity, missing values, high-cardinality categoricals, label noise, class imbalance. Trees handle missing values and mixed types well; k-NN suffers in high dimensions; Naive Bayes is robust with tiny data.
 
-**3. Constraints:** interpretability or regulatory needs, latency and memory at inference, training budget, how often you must retrain.
+**3. Constraints:**
+
+- **Interpretability or regulation:** logistic regression, shallow trees, or boosting with monotonic constraints and SHAP explanations.
+- **Latency and memory at inference:** edge or high-QPS services favour small linear or tree models.
+- **Calibrated probabilities:** logistic regression is naturally well calibrated; others may need Platt or isotonic calibration.
+- **Training budget and retraining frequency**, and the team's ability to maintain the model.
 
 **4. Empirical process:**
 
-- Start with a trivial baseline (majority class, mean) and a simple model.
-- Try a few strong candidate families with cross-validation and the right metric.
-- Tune the best one or two; compare on a held-out test set.
-- Do error analysis before adding complexity.
+1. Start with a trivial baseline (majority class, mean, current rule) and a simple model.
+2. Shortlist two to four model families and evaluate them with cross-validation that mirrors production (stratified, grouped or time-based) on the business metric, for example PR-AUC for rare fraud.
+3. Tune the best one or two; inspect errors per segment; check calibration and latency.
+4. Pick the simplest model within noise of the best, and confirm on the untouched test set.
 
-**Example:** churn prediction on 200k rows of tabular CRM data with a requirement to explain decisions → logistic regression baseline, then LightGBM with SHAP explanations; pick LightGBM if the uplift justifies it.
+| Situation | Sensible first choices |
+| --- | --- |
+| Small tabular data, explanation needed | Regularised logistic or linear regression |
+| Medium to large tabular data | LightGBM, XGBoost or CatBoost |
+| Text classification | TF-IDF plus logistic regression, then a fine-tuned encoder or LLM |
+| Images, audio | Pretrained CNN or ViT, fine-tuned |
+| Unlabelled data, find groups | k-means or GMM, HDBSCAN for irregular shapes |
+| Rare-event detection without labels | Isolation Forest, autoencoders |
 
-### 8.85 How will you know which machine learning algorithm to choose for your classification problem?
+**Examples:**
 
-Choosing a classifier is a mix of constraints and experiments:
+- Churn prediction on 200k rows of tabular CRM data with a requirement to explain decisions: logistic regression baseline, then LightGBM with SHAP; pick LightGBM only if the uplift justifies the extra complexity.
+- Loan default with 50k rows, mixed features and regulatory explainability: logistic regression versus LightGBM with monotonic constraints and SHAP.
 
-**Questions to ask first**
+**What interviewers look for:** a process, not a favourite algorithm: baseline first, a few candidates chosen for the data type, validation that mirrors production and a decision that weighs accuracy against cost, latency and explainability.
 
-- **How much data?** Few hundred rows → logistic regression, Naive Bayes, small trees, SVM. Hundreds of thousands+ → gradient boosting, neural nets.
-- **What kind of data?** Tabular → gradient-boosted trees (LightGBM/XGBoost/CatBoost) are the default strong choice. Text → TF-IDF + logistic regression baseline, then fine-tuned Transformers. Images/audio → CNNs/ViTs, usually via transfer learning.
-- **Is the boundary likely linear?** If yes, linear models; if not, trees, kernel SVM, neural nets.
-- **Interpretability needs?** Regulated decisions → logistic regression, shallow trees, or boosting + SHAP.
-- **Latency/memory at inference?** Edge or high-QPS services favour small linear or tree models.
-- **Imbalance, noise, missing values, high-cardinality categoricals?** Trees handle missing values and mixed types well; Naive Bayes is robust with tiny data; k-NN suffers in high dimensions.
-- **Do you need calibrated probabilities?** Logistic regression is naturally calibrated; others may need Platt/isotonic calibration.
-
-**Then validate empirically**
-
-1. Baseline (majority class / simple rule).
-2. Shortlist 2–4 model families, evaluate with stratified k-fold on the business metric (e.g. PR-AUC for rare fraud).
-3. Tune, inspect errors per segment, check calibration and latency.
-4. Pick the simplest model within noise of the best.
-
-**Example:** loan default with 50k rows, mixed features, explainability required → logistic regression baseline vs. LightGBM with monotonic constraints and SHAP.
-
-### 8.86 Is more data always better?
+### 8.48 Is more data always better?
 
 **No.** More data usually helps, but not always, and not for free.
 
@@ -1356,9 +1588,9 @@ Choosing a classifier is a mix of constraints and experiments:
 - **Bias amplification:** more of a skewed source makes the imbalance worse.
 - **Cost:** labeling, storage, compute, privacy and compliance risk all grow; returns are typically diminishing (often roughly logarithmic).
 
-**How to decide in practice:** plot a **learning curve** (validation score vs. training-set size). If it's still rising, collecting data is worthwhile; if it has flattened, invest in features, model changes or label quality instead. Targeted collection via active learning or error analysis usually beats collecting more of the same.
+**How to decide in practice:** plot a **learning curve** (validation score vs. training-set size). If it's still rising, collecting data is worthwhile; if it has flattened, invest in features, model changes or label quality instead (see 8.60 and 8.59). Targeted collection via active learning or error analysis usually beats collecting more of the same.
 
-### 8.87 How would you differentiate between multi-label and multi-class classification?
+### 8.49 How would you differentiate between multi-label and multi-class classification?
 
 **Multi-class:** each sample belongs to **exactly one** of $K \gt 2$ mutually exclusive classes.
 Example: classifying a digit as 0–9, or a ticket as Billing / Technical / Sales.
@@ -1380,7 +1612,7 @@ Example: tagging a movie as Action + Comedy, or an image containing both a dog a
 
 **Production gotchas:** multi-label often has strong label imbalance (rare tags), so threshold tuning per label and label co-occurrence analysis matter. Using softmax for a multi-label problem silently forces labels to compete and caps recall.
 
-### 8.88 What is an AI ontology?
+### 8.50 What is an AI ontology?
 
 In AI, an **ontology** is a formal, explicit model of a domain: the **concepts** (classes), their **properties**, the **relationships** between them, and **rules/constraints**, expressed in a machine-readable way so software can reason over it.
 
@@ -1403,7 +1635,7 @@ In AI, an **ontology** is a formal, explicit model of a domain: the **concepts**
 
 **Tradeoffs:** expensive to design and maintain, requires domain experts, can be rigid. A pragmatic approach is a lightweight ontology for core entities, extended with LLM-assisted extraction and human review.
 
-### 8.89 Can AI systems be conscious?
+### 8.51 Can AI systems be conscious?
 
 In an AI interview this usually means: **can AI systems be conscious, and how should engineers think about the claim?**
 
@@ -1426,7 +1658,7 @@ In an AI interview this usually means: **can AI systems be conscious, and how sh
 
 A good interview answer is calibrated: explain the distinctions, note the uncertainty, and tie it back to practical concerns like trust, safety and honest UX.
 
-### 8.90 What is unsupervised learning through compression?
+### 8.52 What is unsupervised learning through compression?
 
 The idea: **learning = compression**. A model that can compress data well must have captured its underlying structure, so you can learn useful representations without labels by training a model to compress (or predict) the data.
 
@@ -1448,43 +1680,9 @@ The idea: **learning = compression**. A model that can compress data well must h
 
 **Caveats:** compressing raw pixels perfectly wastes capacity on irrelevant details (noise, texture), which motivates predicting in latent space (JEPA) instead of reconstructing inputs; and good compression doesn't guarantee representations aligned with the downstream task.
 
-### 8.91 Explain the bias-variance tradeoff mathematically and practically.
+### 8.53 Why can a model with lower training loss have worse test performance?
 
-#### Bias-Variance Tradeoff
-
-Prediction error can be decomposed as:
-
-$$
-\boxed{\text{MSE} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Noise}}
-$$
-
-- **Bias** → error from overly simple assumptions → **underfitting**
-- **Variance** → error from being too sensitive to training data → **overfitting**
-- **Noise** → randomness that cannot be eliminated
-
-#### As model complexity increases
-
-$$
-\text{Complexity}\uparrow \Rightarrow \text{Bias}\downarrow,\quad \text{Variance}\uparrow
-$$
-
-So:
-
-```txt
-Simple model  → High bias, low variance
-Optimal model → Balanced
-Complex model → Low bias, high variance
-```
-
-**Goal:** Find a model complexity that minimizes **generalization/test error**.
-
-$$
-\text{Test Error} \approx \text{Bias}^2 + \text{Variance} + \text{Noise}
-$$
-
-### 8.92 Why can a model with lower training loss have worse test performance?
-
-**training loss measures fit to the training data**, while **test performance measures generalization to unseen data**.
+A lower training loss does not guarantee better test performance, because **training loss measures fit to the training data**, while **test performance measures generalization to unseen data**.
 
 #### Intuition
 
@@ -1537,7 +1735,7 @@ because $f_A$ has learned **training-specific patterns/noise** rather than gener
 
 > **Lower training loss ≠ better generalization.**
 
-### 8.93 How do you detect overfitting beyond simply comparing train and validation accuracy?
+### 8.54 How do you detect overfitting beyond simply comparing train and validation accuracy?
 
 You can detect overfitting using several signals beyond just train vs validation accuracy:
 
@@ -1557,54 +1755,7 @@ You can detect overfitting using several signals beyond just train vs validation
 6. **Training-set memorization**<br>Check whether the model performs unusually well on individual training examples but poorly on perturbed or similar unseen examples.
 7. **Prediction confidence**<br>An overfit classifier may produce **very high-confidence predictions on incorrect test examples**.
 
-### 8.94 What is data leakage? Give examples that are difficult to detect.
-
-#### Data Leakage
-
-**Data leakage** happens when information that should be unavailable to the model at prediction time indirectly enters the training process. It often produces **unrealistically good validation/test performance**.
-
-#### Difficult-to-detect examples
-
-1. **Post-outcome features**
-   - Predict loan default using `days_overdue`.
-   - The value may only exist **after** the customer has already started defaulting.
-2. **Aggregated features using future data**
-   - Predict January customer behavior using `customer_total_transactions`, where the total was calculated using the **whole year**.
-3. **Preprocessing before splitting**
-   ```py
-   scaler.fit(X)
-   X = scaler.transform(X)
-   train_test_split(X, y)
-   ```
-
-   The scaler has learned statistics from the test set.
-4. **Target-derived features**
-   - Predict fraud using `fraud_investigation_status`.
-   - The investigation status may be created because the transaction was already suspected to be fraud.
-5. **Duplicate or near-duplicate samples**
-   - The same patient, transaction, image, or document appears in both train and test.
-   - Even if IDs differ, the underlying information can be almost identical.
-6. **Entity leakage**
-   - Randomly split transactions instead of splitting by customer.
-   - The model sees the same customer's behavior in both training and validation.
-7. **Time leakage**
-   - Predict an event in March using a feature calculated from April data.
-   - This is especially easy to miss in time-series pipelines.
-8. **Feature engineering with the target**
-   ```txt
-   target = customer_churn
-   feature = average_support_tickets_before_churn
-   ```
-
-   If the feature calculation accidentally includes tickets created after churn, it leaks the target.
-9. **Imputation leakage**
-   - Missing values are filled using statistics calculated from the complete dataset rather than the training set only.
-10. **Model-selection leakage**
-
-- You repeatedly tune the model based on test-set performance.
-- Even without directly training on test examples, the test set gradually influences your decisions.
-
-### 8.95 What is the difference between model capacity and model complexity?
+### 8.55 What is the difference between model capacity and model complexity?
 
 #### Model Capacity vs Model Complexity
 
@@ -1637,7 +1788,7 @@ $$
 
 the **effective complexity of the learned solution** may still be low.
 
-### 8.96 Why does regularization reduce variance?
+### 8.56 Why does regularization reduce variance?
 
 Regularization reduces **variance** because it prevents the model from becoming overly sensitive to the particular training dataset.
 
@@ -1685,87 +1836,7 @@ Models are more similar → lower variance
 
 The penalty makes the model **less sensitive to individual training examples**, so changes in the training data cause smaller changes in the learned function.
 
-### 8.97 Explain L1 vs L2 regularization geometrically.
-
-#### L1 vs L2 Regularization Geometrically
-
-Think of regularization as putting a **constraint around the possible weight values**.
-
-##### L1 Regularization
-
-$$
-\lambda \sum_i \lvert w_i \rvert
-$$
-
-For two weights $w_1, w_2$:
-
-$$
-\lvert w_1 \rvert + \lvert w_2 \rvert \leq c
-$$
-
-The constraint forms a **diamond**:
-
-```txt
-          w₂
-           |
-          /\
-         /  \
-        /    \
--------+------+------- w₁
-        \    /
-         \  /
-          \/
-```
-
-The diamond has **sharp corners on the axes**.
-
-Because the optimum often lands on these corners:
-
-$$
-w_1 = 0 \quad \text{or} \quad w_2 = 0
-$$
-
-So **L1 encourages sparse models**, effectively performing feature selection.
-
----
-
-##### L2 Regularization
-
-$$
-\lambda \sum_i w_i^2
-$$
-
-For two weights:
-
-$$
-w_1^2 + w_2^2 \leq c
-$$
-
-The constraint forms a **circle**:
-
-```txt
-          w₂
-           |
-        .-----.
-      .'       '.
-     /           \
-----+-------------+---- w₁
-     \           /
-      '.       .'
-        '-----'
-```
-
-The boundary has no sharp corners, so the optimum is **less likely to land exactly on an axis**.
-
-Therefore, L2 usually makes weights **small**, but does not usually make them exactly zero.
-
-**Easy memory trick:**
-
-> **L1 = diamond = sparse**
->
-> **L2 = circle = small weights**
-
-### 8.98 What is the difference between generative and discriminative models?
+### 8.57 What is the difference between generative and discriminative models?
 
 The key difference is **what probability distribution they learn**.
 
@@ -1820,31 +1891,240 @@ $$
 
 without explicitly modeling how spam emails themselves are generated.
 
-### 8.99 What is the singularity in AI?
+### 8.58 How do you frame a business problem as a machine learning problem, and when should you not use machine learning?
 
-**AI Singularity** refers to a hypothetical point where **artificial intelligence becomes capable of improving its own intelligence**, potentially leading to extremely rapid technological progress that humans can no longer effectively predict or control.
+Framing means translating a business goal into a precise prediction or decision task: what is predicted, for whom, when, with what data, how the prediction changes an action and how success is measured. Most failed ML projects fail here, not in modelling, so a senior engineer starts by asking whether ML is needed at all.
 
-#### Key idea
+**A framing checklist:**
 
-```txt
-Advanced AI
-    ↓
-AI improves AI
-    ↓
-More capable AI
-    ↓
-Faster AI improvement
-    ↓
-Rapid intelligence growth
+1. **Decision first:** what action will change because of the prediction, who takes it and how often? "Predict churn" is not a framing; "each Monday, rank active subscribers by 60-day churn risk so the retention team can call the top 500" is.
+2. **Target definition:** the exact label, observation window and prediction horizon. What counts as churn: cancelled, inactive for 30 days or downgraded? When is the label known?
+3. **Prediction point and available features:** what is known at the moment of prediction? This defines the point-in-time data you may use and prevents leakage (see 8.39).
+4. **Task type:** classification, regression, ranking, forecasting, anomaly detection, recommendation, or a bandit or RL problem when actions influence future data.
+5. **Success metrics at three levels:** business KPI (retained revenue), ML metric aligned to it (precision in the top 500), and guardrails (latency, fairness, cost per prediction, complaint rate).
+6. **Baseline:** the current process or a simple rule. The model must beat it by enough to pay for itself.
+7. **Value of being right and cost of being wrong:** the cost of a false positive versus a false negative sets the threshold and tells you whether the economics work.
+8. **Constraints:** latency, batch versus real time, explainability, regulation, privacy, retraining cadence.
+9. **Feedback loop:** how will labels arrive after deployment, and will the model's own actions bias them (treated customers stop churning, so future labels change)?
+
+```text
+Business goal  ->  Decision/action  ->  Prediction target + horizon  ->  Data at prediction time
+      |                                                                       |
+      +-- KPI and guardrails  <--  Offline metric  <--  Baseline  <--  Model  +
 ```
 
-#### Important points
+**When not to use machine learning:**
 
-- **Self-improvement:** AI could improve its own algorithms, architecture, or capabilities.
-- **Recursive improvement:** Improvements could enable even faster improvements.
-- **Superintelligence:** AI might eventually exceed human intellectual capabilities across many domains.
-- **Unpredictability:** Future technological and societal changes could become difficult to predict.
-- **Not achieved:** The AI singularity is currently **hypothetical**, not an established event or technology.
+| Situation | Better alternative |
+| --- | --- |
+| The logic is simple, stable and known | Rules, SQL or a lookup table |
+| A heuristic gets 90 percent of the value | Ship the heuristic; revisit later |
+| Errors are unacceptable and must be guaranteed | Deterministic logic, formal verification, human decision |
+| No representative data or labels, and no way to get them | Collect data first, or use rules with logging |
+| Nobody will act on the prediction | Fix the process; a model adds nothing |
+| Full explainability is legally required and a simple model is not good enough | Redesign the decision or keep a human in the loop |
+| The environment changes faster than you can retrain | Rules owned by domain experts, or online learning with strong safeguards |
+| The cost of building and running the system exceeds the value | Do nothing, or buy a product |
+
+**A quick value estimate** often settles it: number of decisions per year times uplift per decision times the share that changes because of the model, minus build, run and maintenance cost.
+
+**Rules of thumb:**
+
+- Start with the simplest thing that could work and log everything, so you collect the data a model would need later.
+- If you cannot describe how the prediction will be used in one sentence, the problem is not yet framed.
+- Agree on the success criteria and the go/no-go threshold with stakeholders before modelling, not after seeing the results.
+
+**What interviewers look for:** questions before solutions, a clear link from decision to label to metric, attention to leakage and feedback loops, and the confidence to recommend not using ML when it does not pay.
+
+### 8.59 What is the difference between data-centric and model-centric improvement, and when should you focus on each?
+
+Model-centric improvement keeps the data fixed and iterates on the algorithm, architecture, hyperparameters and training procedure. Data-centric improvement keeps the model fairly fixed and systematically improves the data: labels, coverage, consistency and features. On most real projects, once a reasonable model family is in place, data work delivers larger and more durable gains, which is the point of the "data-centric AI" movement popularised by Andrew Ng.
+
+| | Model-centric | Data-centric |
+| --- | --- | --- |
+| What changes | Architecture, loss, hyperparameters, ensembles | Labels, label guidelines, coverage of rare cases, data cleaning, augmentation, features |
+| Typical tools | Hyperparameter search, new architectures, distillation | Error analysis, label audits, confident learning, active learning, slice-based evaluation, data validation |
+| Gains | Often small once a strong model family is used | Often large, especially for noisy or narrow datasets |
+| Where it shines | Benchmarks with fixed, clean data; large-scale pretraining research | Industrial applications with small, messy or shifting data |
+| Durability | Gains can disappear when data changes | Better data helps every future model |
+
+**Signals that the data is the bottleneck:**
+
+- Different strong model families plateau at the same error.
+- Error analysis shows mistakes clustered on specific slices (a region, device type, rare class) or on ambiguous examples.
+- Annotators disagree with each other at rates close to the model's error rate.
+- Many "errors" turn out to be wrong labels on inspection.
+- Learning curves are still rising, but only for some slices (see 8.60).
+
+**Signals that the model is the bottleneck:**
+
+- Training error is high even on clean, unambiguous examples (high bias).
+- A clearly better inductive bias exists for the data type (pretrained encoders for text, CNNs or ViTs for images).
+- The model ignores obviously useful signals because of its form (a linear model with strong interactions).
+
+**A data-centric workflow:**
+
+1. Fix the evaluation set first: clean, representative, with slices that matter to the business.
+2. Run error analysis: sample errors, categorise them (label noise, ambiguity, missing coverage, missing feature) and count each category.
+3. Fix the largest category: rewrite label guidelines, relabel, collect targeted examples, add augmentation or features.
+4. Retrain the same model and measure, then repeat.
+
+```python
+# find likely label errors with out-of-fold predicted probabilities
+import numpy as np
+from sklearn.model_selection import cross_val_predict
+
+proba = cross_val_predict(model, X, y, cv=5, method="predict_proba")
+self_confidence = proba[np.arange(len(y)), y]          # probability of the given label
+suspects = np.argsort(self_confidence)[:200]           # send to human review
+```
+
+Libraries such as cleanlab implement this idea (confident learning) more rigorously.
+
+**For a data or AI leader:** data-centric work needs investment in labelling tools, guidelines, annotator training, data versioning and quality monitoring, which are organisational capabilities rather than individual model tweaks. The same principle drives LLM work today: curated, deduplicated, high-quality training and fine-tuning data routinely beats more data or bigger models (see 8.36).
+
+**Balanced answer:** both matter. Use a strong standard model to get to a reasonable baseline quickly, then let error analysis decide whether the next week is better spent on the data or on the model.
+
+### 8.60 How do you use learning curves to diagnose whether more data, more capacity or better features will help?
+
+A learning curve plots training and validation performance against the size of the training set (sometimes also against training time). Its shape tells you whether the model is limited by variance, in which case more data helps, or by bias, in which case more data will not help and you need more capacity or better features. It is the cheapest way to answer "should we pay to label more data?".
+
+**How to read it:**
+
+| Pattern | Diagnosis | What helps |
+| --- | --- | --- |
+| Large gap between training and validation; validation still improving as data grows | High variance | More data, augmentation, regularisation, simpler model |
+| Both curves converge quickly at a poor level, small gap | High bias | More capacity, better features, less regularisation; more data will not help |
+| Both curves converge at a good level | Well fitted | Stop or focus on cost and robustness |
+| Validation curve noisy or non-monotonic | Small or unrepresentative validation set, or leakage | Larger validation set, repeated cross-validation, check splits |
+| Training score falls as data grows, validation flat | Model capacity saturated | Bigger model or better features |
+
+```text
+ error
+   |  validation \
+   |              \______________   <- plateau: more data will not help
+   |                ______________   <- gap = variance
+   |  training  ___/
+   +-------------------------------- training set size
+```
+
+**Computing one in Python:**
+
+```python
+import numpy as np
+from sklearn.model_selection import learning_curve, StratifiedKFold
+
+sizes, train_scores, val_scores = learning_curve(
+    model, X, y,
+    train_sizes=np.linspace(0.1, 1.0, 8),
+    cv=StratifiedKFold(5, shuffle=True, random_state=0),
+    scoring="roc_auc", n_jobs=-1,
+)
+for n, tr, va in zip(sizes, train_scores.mean(1), val_scores.mean(1)):
+    print(f"{n:>7d}  train={tr:.3f}  val={va:.3f}")
+```
+
+**Extrapolating the value of more data:** validation error often follows an approximate power law in the number of examples, $\text{error}(n) \approx a \thinspace n^{-b} + c$. Fitting this to the curve, ideally on a log-log plot, gives a rough forecast of the gain from doubling the data and of the asymptotic floor $c$. Treat it as an estimate, not a promise.
+
+**Related diagnostic curves:**
+
+- **Validation (complexity) curves:** performance against a hyperparameter such as tree depth or $\lambda$, which shows where underfitting turns into overfitting (`validation_curve` in scikit-learn).
+- **Training curves:** loss against epochs, for spotting overfitting during training and choosing early stopping (see 11.41).
+- **Per-slice learning curves:** the overall curve may be flat while a rare segment is still improving; targeted collection for that segment is then the best investment.
+
+**Pitfalls:**
+
+- Use the same validation set (or the same folds) at every training size, and subsample training data in a way that preserves class balance and time order.
+- For time series, grow the training window forward in time rather than sampling randomly.
+- Report variance across folds; with small data, differences between points can be noise.
+- The curve tells you about more data **from the same distribution**. If production data differs, collecting more historical data may not help at all.
+
+**What interviewers look for:** the ability to turn the plot into a decision with a cost attached ("labelling 20k more examples should gain about one point of AUC, worth X; feature work on the bias side is cheaper").
+
+### 8.61 What is Bayes error, how do you estimate the best achievable performance, and how do you know when to stop improving a model?
+
+Bayes error is the lowest error any model could achieve on a problem, because the inputs do not fully determine the target: noise, missing information and ambiguous labels put a floor under the error. Knowing roughly where that floor is tells you whether remaining error is fixable (avoidable bias or variance) or not, and therefore when further model work stops paying.
+
+**Formally,** for classification the Bayes-optimal classifier predicts the most probable class given $x$, and its error is:
+
+$$
+\varepsilon_{\text{Bayes}} = \mathbb{E}_x\left[1 - \max_k P(y = k \mid x)\right]
+$$
+
+It is zero only if the label is a deterministic function of the features. It depends on the features you have: adding an informative feature lowers the Bayes error itself.
+
+**Ways to estimate the floor in practice:**
+
+- **Human-level performance** as a proxy, especially for perception tasks. Use the best achievable human performance (a panel of experts), not the average annotator.
+- **Inter-annotator agreement:** have several people label the same sample. If experts disagree on 8 percent of cases, expecting a model to be 99 percent accurate against those labels is unrealistic.
+- **Duplicate inputs with different labels:** identical feature vectors with conflicting labels give a direct lower bound on irreducible error for those features.
+- **Repeated measurements:** in regression, the variance between repeated measurements of the same quantity estimates the noise term $\sigma^2$.
+- **Strong-model plateau:** if very different high-capacity models, more data and more tuning all converge at the same error, you are probably near the floor for the current features.
+- **Label audits:** relabel a random sample carefully and measure how often the original label was wrong.
+
+**Using it to decide what to do next** (Andrew Ng's framing):
+
+| Gap | Meaning | Action |
+| --- | --- | --- |
+| Training error minus Bayes estimate | Avoidable bias | Bigger model, better features, train longer |
+| Validation error minus training error | Variance | More data, regularisation |
+| Test or production error minus validation error | Mismatch or overfitting to validation | Fix splits, collect production-like data |
+
+**Knowing when to stop:**
+
+1. **The model is near the estimated floor:** further gains need new information (new features or data sources, cleaner labels), not more tuning.
+2. **Marginal gains are below marginal value:** estimate the business value of one more point of the metric and compare it with engineering cost, compute and added complexity.
+3. **Offline gains no longer translate online:** if the last improvements did not move the A/B test, the offline metric has stopped being a good proxy.
+4. **Gains are within noise:** differences smaller than the confidence interval across folds or seeds are not real improvements (see 12.34).
+5. **Other properties matter more:** at this point, calibration, robustness, latency, monitoring and fairness often deliver more value than another 0.2 percent of accuracy.
+
+**Pitfalls:**
+
+- Measuring "human level" with a single non-expert, which makes the floor look higher than it is.
+- Assuming the floor is fixed: better sensors, features or problem reformulation can lower it.
+- Super-human results against noisy labels usually mean the model has learned annotator biases or leakage, not that it is better than experts.
+
+### 8.62 What is the i.i.d. assumption, and what happens to generalisation when it breaks?
+
+Almost every guarantee and evaluation practice in ML assumes training and test examples are independent and identically distributed (i.i.d.): each example is drawn independently from the same fixed distribution. When this holds, a held-out score is an unbiased estimate of future performance. In production it rarely holds exactly, and most "the model worked offline but failed in production" stories are i.i.d. violations.
+
+**The two parts:**
+
+- **Independent:** knowing one example tells you nothing extra about another. Violated by repeated entities, time dependence, network effects and duplicates.
+- **Identically distributed:** training, validation, test and production data come from the same distribution. Violated by drift, selection effects and feedback loops.
+
+**Common violations and their consequences:**
+
+| Violation | Example | Consequence | Mitigation |
+| --- | --- | --- | --- |
+| Temporal dependence | Daily sales, sensor readings | Random splits leak future into past; optimistic scores | Time-based splits, rolling-origin validation (see 12.23) |
+| Grouped data | Many rows per customer or patient | Model memorises entities; scores inflated | Group-aware splits (`GroupKFold`) |
+| Covariate shift | New market, new device, new customer mix | Inputs move to regions the model has rarely seen | Monitoring, importance weighting, adversarial validation (see 10.37) |
+| Label shift | Fraud rate doubles during an attack | Probabilities miscalibrated, thresholds wrong | Recalibrate priors, monitor prediction distribution |
+| Concept drift | Customer behaviour changes after a price change | The same input now means a different outcome | Retraining, online updates, drift detection (see 26.65) |
+| Selection bias | Credit model trained only on approved applicants | Model never sees the population it will score | Reject inference, exploration, randomised holdouts |
+| Feedback loops | Recommender trained on clicks it caused | Model reinforces its own past choices | Exploration traffic, logging propensities, counterfactual evaluation |
+| Adversarial behaviour | Spammers adapting to the filter | Distribution moves in response to the model | Frequent retraining, robust features, red-teaming |
+
+**Why it matters for generalisation theory:** the bounds in 8.4 hold only under the i.i.d. assumption. Under shift, low test error on old data says little about future error, and capacity control alone cannot fix it.
+
+**Designing evaluation around the real deployment:**
+
+1. Ask how the model will be used: on new customers, on future time periods, in new regions? Build the test set the same way (future time slice, unseen groups, new region).
+2. Compare a random split with the deployment-like split. A large difference reveals how much your random-split score overstates performance.
+3. Use adversarial validation to check whether training and recent production data are distinguishable.
+4. Monitor input, prediction and outcome distributions after launch, and define what triggers retraining.
+
+```python
+from sklearn.model_selection import GroupKFold, TimeSeriesSplit, cross_val_score
+
+random_cv = cross_val_score(model, X, y, cv=5).mean()
+group_cv = cross_val_score(model, X, y, cv=GroupKFold(5), groups=customer_id).mean()
+time_cv = cross_val_score(model, X_sorted, y_sorted, cv=TimeSeriesSplit(5)).mean()
+print(random_cv, group_cv, time_cv)   # a big drop exposes dependence the random split hid
+```
+
+**What interviewers look for:** recognising that the held-out score is only as good as the match between the split and deployment, naming the specific violation in a scenario, and proposing both an evaluation fix and a production safeguard.
 
 ---
 

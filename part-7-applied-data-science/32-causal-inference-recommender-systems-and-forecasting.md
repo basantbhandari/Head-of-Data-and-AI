@@ -49,7 +49,7 @@ This chapter contains **36 questions**.
 
 ### 32.1 What is causal inference, and how do the potential outcomes and causal graph frameworks describe it?
 
-**Causal inference** estimates what *would happen* if we intervened: changed a price, launched a feature, sent a discount. Predictive models answer "what is likely to happen given what we observe"; causal questions ask "what difference does our action make". Correlation alone cannot answer that (see 1.36), because the same correlation can come from causation, reverse causation, confounding or selection.
+**Causal inference** estimates what *would happen* if we intervened: changed a price, launched a feature, sent a discount. Predictive models answer "what is likely to happen given what we observe"; causal questions ask "what difference does our action make". Correlation alone cannot answer that (see 1.16), because the same correlation can come from causation, reverse causation, confounding or selection.
 
 **Potential outcomes framework (Neyman, Rubin)**
 
@@ -241,7 +241,7 @@ print(f"effect = {theta:.3f} +/- {1.96 * se:.3f}")
 
 **The estimate**
 
-$\hat{\tau} = (\bar{Y}_{\text{treated, after}} - \bar{Y}_{\text{treated, before}}) - (\bar{Y}_{\text{control, after}} - \bar{Y}_{\text{control, before}})$
+$`\hat{\tau} = (\bar{Y}_{\text{treated, after}} - \bar{Y}_{\text{treated, before}}) - (\bar{Y}_{\text{control, after}} - \bar{Y}_{\text{control, before}})`$
 
 The control group's change estimates what would have happened to the treated group without treatment. Subtracting it removes time trends common to both groups and fixed differences between the groups.
 
@@ -514,7 +514,7 @@ print(e_value(1.8))   # 3.0: a confounder would need RR of about 3 with both tre
 
 ### 32.13 How does matrix factorisation work for implicit feedback, and what are ALS and BPR?
 
-Basic matrix factorisation (see 9.60) learns user and item vectors whose dot product reconstructs explicit ratings. Most real data is **implicit feedback**: clicks, views, purchases, listening time. Implicit data needs different handling.
+Basic matrix factorisation (see 9.36) learns user and item vectors whose dot product reconstructs explicit ratings. Most real data is **implicit feedback**: clicks, views, purchases, listening time. Implicit data needs different handling.
 
 **Why implicit feedback is different**
 
@@ -532,7 +532,7 @@ Basic matrix factorisation (see 9.60) learns user and item vectors whose dot pro
 **Bayesian personalised ranking (BPR, Rendle et al., 2009)**
 
 - Treats recommendation as **ranking**: for a user, an item they interacted with should score higher than one they did not.
-- Samples triples $(u, i, j)$ with $i$ observed and $j$ unobserved, and maximises $\sum \ln \sigma(\hat{x}_{ui} - \hat{x}_{uj})$ with regularisation, using stochastic gradient descent.
+- Samples triples $(u, i, j)$ with $i$ observed and $j$ unobserved, and maximises $`\sum \ln \sigma(\hat{x}_{ui} - \hat{x}_{uj})`$ with regularisation, using stochastic gradient descent.
 - Optimises a pairwise ranking objective related to AUC, which aligns better with top-N recommendation than squared error.
 
 **Choosing in practice**
@@ -830,7 +830,7 @@ def mmr(scores, item_emb, k=10, lam=0.7):
 
 ### 32.21 How do you evaluate recommender systems offline, and why do offline and online results often disagree?
 
-Basic ranking metrics are covered in 12.19 and 12.37. At a senior level, the hard part is designing an **evaluation protocol** that predicts online results.
+Basic ranking metrics are covered in 12.17. At a senior level, the hard part is designing an **evaluation protocol** that predicts online results.
 
 **Protocol choices that matter**
 
@@ -990,7 +990,7 @@ Most recommenders optimise **immediate** signals: clicks, watch time in the sess
 - **AR(p):** the value depends linearly on the previous $p$ values: $y_t = c + \phi_1 y_{t-1} + \dots + \phi_p y_{t-p} + \varepsilon_t$.
 - **I(d):** the series is differenced $d$ times to become stationary.
 - **MA(q):** the value depends on the previous $q$ forecast errors: $+ \theta_1 \varepsilon_{t-1} + \dots + \theta_q \varepsilon_{t-q}$.
-- **SARIMA(p, d, q)(P, D, Q)$_s$** adds the same structure at the seasonal lag $s$ (for example 7 for daily data with weekly seasonality, 12 for monthly data with yearly seasonality).
+- **SARIMA(p, d, q)(P, D, Q)$`_s`$** adds the same structure at the seasonal lag $s$ (for example 7 for daily data with weekly seasonality, 12 for monthly data with yearly seasonality).
 - **ARIMAX / regression with ARIMA errors** adds external regressors (price, promotions, holidays).
 
 **Choosing the orders**
@@ -1183,7 +1183,7 @@ Choosing metrics and a validation design is where many forecasting projects go w
 
 **Backtesting design (rolling-origin evaluation)**
 
-- Simulate the production process: train on data up to a cut-off, forecast the next horizon, move the cut-off forward, repeat (see 12.50 for why random cross-validation fails on time series).
+- Simulate the production process: train on data up to a cut-off, forecast the next horizon, move the cut-off forward, repeat (see 12.23 for why random cross-validation fails on time series).
 - Use several origins covering different seasons and events.
 - Respect **data availability**: features and actuals must be as they were known at each cut-off, including reporting delays.
 - Use the same horizon and frequency as production (for example weekly forecasts for 1 to 8 weeks ahead).

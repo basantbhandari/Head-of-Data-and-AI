@@ -127,11 +127,11 @@ This chapter contains **155 questions**.
 - **17.117** [How do you implement a tokenizer (training, encoding, decoding, special tokens)?](#17117-how-do-you-implement-a-tokenizer-training-encoding-decoding-special-tokens)
 - **17.118** [What does the LM head do, and what is weight tying?](#17118-what-does-the-lm-head-do-and-what-is-weight-tying)
 - **17.119** [Explain self-attention mathematically.](#17119-explain-self-attention-mathematically)
-- **17.120** [Why divide by $\sqrt{d_k}$?](#17120-why-divide-by-sqrtd_k)
+- **17.120** [Why divide by $`\sqrt{d_k}`$?](#17120-why-divide-by-sqrtd_k)
 - **17.121** [What is the difference between self-attention and cross-attention?](#17121-what-is-the-difference-between-self-attention-and-cross-attention)
 - **17.122** [Why do Transformers need positional information?](#17122-why-do-transformers-need-positional-information)
 - **17.123** [Compare absolute positional embeddings, RoPE, ALiBi, and relative positional encoding.](#17123-compare-absolute-positional-embeddings-rope-alibi-and-relative-positional-encoding)
-- **17.124** [Why does self-attention have $O(n^2)$ complexity?](#17124-why-does-self-attention-have-on2-complexity)
+- **17.124** [Why does self-attention have $`O(n^2)`$ complexity?](#17124-why-does-self-attention-have-on2-complexity)
 - **17.125** [What techniques reduce Transformer attention complexity?](#17125-what-techniques-reduce-transformer-attention-complexity)
 - **17.126** [Explain Multi-Head Attention.](#17126-explain-multi-head-attention)
 - **17.127** [Why are multiple attention heads useful?](#17127-why-are-multiple-attention-heads-useful)
@@ -212,7 +212,7 @@ This chapter contains **155 questions**.
 
 ### 17.6 What is Quantization?
 
-> **See also:** [Question 27.26 — What is quantization?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#2726-what-is-quantization), which covers the same question from another angle.
+> **See also:** [Question 27.11 — What is quantization, and how does it affect model quality, especially when it is aggressive?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#2711-what-is-quantization-and-how-does-it-affect-model-quality-especially-when-it-is-aggressive), which covers the same question from another angle.
 
 - **Quantization is the process of representing a model's weights and sometimes activations using lower-precision numerical formats, such as INT8 or INT4, instead of higher-precision formats like FP32 or FP16.**
 - **The main goal is to reduce model memory usage, storage requirements, and inference latency, while maintaining as much model accuracy as possible. This is particularly useful for deploying large language models on GPUs or resource-constrained environments.**
@@ -457,7 +457,7 @@ The same tokens have different meanings when their positions change.
 
 ### 17.15 What are embeddings?
 
-> **See also:** [Question 8.24 — What are embeddings in Machine Learning?](../part-3-machine-learning/08-machine-learning-fundamentals.md#824-what-are-embeddings-in-machine-learning), which covers the same question from another angle.
+> **See also:** [Question 8.11 — What are embeddings in Machine Learning?](../part-3-machine-learning/08-machine-learning-fundamentals.md#811-what-are-embeddings-in-machine-learning), which covers the same question from another angle.
 
 #### Embeddings
 
@@ -1363,9 +1363,9 @@ Combine outputs
 
 ##### The Problem It Solves
 
-- **Standard attention implementation:** Computes the full $QK^\top$ attention matrix (size $n \times n$ for sequence length $n$), applies softmax, then multiplies by $V$ — this requires **materializing** the full $n \times n$ attention matrix in GPU memory.
-- **Memory bottleneck:** GPUs have a small amount of very fast memory (**SRAM**) and a much larger amount of slower memory (**HBM** - High Bandwidth Memory). Standard attention repeatedly reads/writes the large $n \times n$ matrix to/from slow HBM, which becomes the main bottleneck — not the actual compute (FLOPs), but the **memory I/O**.
-- **Quadratic memory usage:** The $n \times n$ attention matrix grows quadratically with sequence length, making very long sequences memory-prohibitive with standard implementations.
+- **Standard attention implementation:** Computes the full $`QK^\top`$ attention matrix (size $`n \times n`$ for sequence length $`n`$), applies softmax, then multiplies by $`V`$ — this requires **materializing** the full $`n \times n`$ attention matrix in GPU memory.
+- **Memory bottleneck:** GPUs have a small amount of very fast memory (**SRAM**) and a much larger amount of slower memory (**HBM** - High Bandwidth Memory). Standard attention repeatedly reads/writes the large $`n \times n`$ matrix to/from slow HBM, which becomes the main bottleneck — not the actual compute (FLOPs), but the **memory I/O**.
+- **Quadratic memory usage:** The $`n \times n`$ attention matrix grows quadratically with sequence length, making very long sequences memory-prohibitive with standard implementations.
 
 ---
 
@@ -1381,7 +1381,7 @@ Combine outputs
 
 ##### Why It Matters (Impact)
 
-- **Memory efficiency:** Reduces memory usage from **quadratic** ($O(n^2)$) to **linear** ($O(n)$) in sequence length, enabling much longer context windows to be processed.
+- **Memory efficiency:** Reduces memory usage from **quadratic** ($`O(n^2)`$) to **linear** ($`O(n)`$) in sequence length, enabling much longer context windows to be processed.
 - **Speed:** Significantly faster than standard attention implementations in practice (2-4x+ speedups reported), since it minimizes slow HBM memory access, which was the true bottleneck (not raw compute).
 - **Enables longer context windows:** Made training and inference with much longer sequences (thousands to hundreds of thousands of tokens) practical, directly enabling the long-context capabilities seen in modern LLMs.
 
@@ -2624,7 +2624,7 @@ Transformers process sequences where **batch size and sequence length can vary**
 
 ### 17.72 What is SVD (singular value decomposition)?
 
-> **See also:** [Question 1.53 — What is Singular Value Decomposition (SVD)?](../part-1-foundations/01-mathematics-probability-and-statistics.md#153-what-is-singular-value-decomposition-svd), which covers the same question from another angle.
+> **See also:** [Question 1.44 — What is Singular Value Decomposition (SVD)?](../part-1-foundations/01-mathematics-probability-and-statistics.md#144-what-is-singular-value-decomposition-svd), which covers the same question from another angle.
 
 **Singular Value Decomposition (SVD)** is a matrix factorization technique that decomposes a matrix into **three matrices**:
 
@@ -2715,7 +2715,7 @@ KL Divergence tells us how much information is lost when we use $Q$ to represent
 
 ### 17.74 What is entropy vs. cross-entropy?
 
-> **See also:** [Question 8.38 — What is Cross-Entropy?](../part-3-machine-learning/08-machine-learning-fundamentals.md#838-what-is-cross-entropy), which covers the same question from another angle.
+> **See also:** [Question 8.12 — What are logits, softmax and cross-entropy, and how do they fit together?](../part-3-machine-learning/08-machine-learning-fundamentals.md#812-what-are-logits-softmax-and-cross-entropy-and-how-do-they-fit-together), which covers the same question from another angle.
 
 | Concept | Entropy | Cross-Entropy | KL Divergence |
 | --- | --- | --- | --- |
@@ -2813,7 +2813,7 @@ MHA→GQA→MQA
 
 ### 17.78 What is reinforcement learning?
 
-> **See also:** [Question 8.28 — What is Reinforcement Learning?](../part-3-machine-learning/08-machine-learning-fundamentals.md#828-what-is-reinforcement-learning), which covers the same question from another angle.
+> **See also:** [Question 8.14 — What is Reinforcement Learning?](../part-3-machine-learning/08-machine-learning-fundamentals.md#814-what-is-reinforcement-learning), which covers the same question from another angle.
 
 **Reinforcement Learning** is a machine learning paradigm where an **agent learns by interacting with an environment** and receiving **rewards or penalties**.
 
@@ -2866,7 +2866,7 @@ $P(a_1 \mid s) = 0.7, \quad P(a_2 \mid s) = 0.2, \quad P(a_3 \mid s) = 0.1$
 
 The policy is optimized to maximize expected return:
 
-$J(\pi_\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]$
+$`J(\pi_\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]`$
 
 **Examples:** REINFORCE, Vanilla Policy Gradient.
 
@@ -3114,7 +3114,7 @@ Despite the critique, autoregressive training is what has powered essentially th
 
 ### 17.87 What is speculative decoding, and how does it speed up inference?
 
-> **See also:** [Question 27.8 — What is speculative decoding, and how does it speed up inference?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#278-what-is-speculative-decoding-and-how-does-it-speed-up-inference), which covers the same question from another angle.
+> **See also:** [Question 27.6 — How does speculative decoding work, and when does it help in production?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#276-how-does-speculative-decoding-work-and-when-does-it-help-in-production), which covers the same question from another angle.
 
 #### Speculative Decoding
 
@@ -3164,7 +3164,7 @@ Despite the critique, autoregressive training is what has powered essentially th
 
 ### 17.88 How does continuous batching improve LLM inference throughput?
 
-> **See also:** [Question 27.7 — How does continuous batching improve LLM inference throughput?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#277-how-does-continuous-batching-improve-llm-inference-throughput), which covers the same question from another angle.
+> **See also:** [Question 27.5 — What is the difference between static, dynamic and continuous batching for LLM serving?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#275-what-is-the-difference-between-static-dynamic-and-continuous-batching-for-llm-serving), which covers the same question from another angle.
 
 #### Continuous Batching (Dynamic Batching)
 
@@ -3534,7 +3534,7 @@ $$
 P(\text{token}) = \operatorname{softmax}\left(\frac{\text{logits}}{T}\right)
 $$
 
-- Dividing logits by temperature $T$ before softmax reshapes the probability distribution
+- Dividing logits by temperature $`T`$ before softmax reshapes the probability distribution
 - **$T = 1$**: standard softmax, no change — probabilities reflect the model's raw confidence
 - **$T \lt 1$ (e.g., 0.2)**: sharpens the distribution — high-probability tokens become even more dominant, output becomes more deterministic/focused
 - **$T \gt 1$ (e.g., 1.5)**: flattens the distribution — probabilities become more uniform, output becomes more random/diverse
@@ -3793,7 +3793,7 @@ $$
 
 ### 17.106 How do you improve inference speed in production LLM deployments?
 
-> **See also:** [Question 27.1 — How do you improve inference speed in production LLM deployments?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#271-how-do-you-improve-inference-speed-in-production-llm-deployments), which covers the same question from another angle.
+> **See also:** [Question 27.1 — How do you optimise LLM inference in production for latency, throughput and cost?](../part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md#271-how-do-you-optimise-llm-inference-in-production-for-latency-throughput-and-cost), which covers the same question from another angle.
 
 ##### Improving Inference Speed in Production LLM Deployments
 
@@ -4462,7 +4462,7 @@ So **time is $O(n^2 d)$** and naïvely **memory is $O(n^2)$** to store the atten
 **What changes this:**
 
 - **FlashAttention** keeps compute at $O(n^2)$ but cuts memory to $O(n)$ by never materialising the full matrix.
-- **Sparse, sliding-window, linear and low-rank attention**, or state-space models (Mamba), reduce compute to ~$O(n)$ or $O(n \log n)$, usually with some quality tradeoff.
+- **Sparse, sliding-window, linear and low-rank attention**, or state-space models (Mamba), reduce compute to ~$`O(n)`$ or $O(n \log n)$, usually with some quality tradeoff.
 - **At inference with a KV cache**, each new token costs $O(n)$, but over the full generation it is still quadratic in total.
 
 ### 17.125 What techniques reduce Transformer attention complexity?
@@ -4744,7 +4744,7 @@ token h ─► router: softmax(W_g · h) ─► top-k experts (e.g., 2 of 8)
 Because **compute scales with the parameters a token actually touches, not with the parameters that exist**.
 
 - In a dense Transformer, every token passes through every weight: FLOPs per token $\approx 2N$.
-- In an MoE layer with $E$ experts and top-$k$ routing, each token passes through only $k$ experts. FFN FLOPs per token scale with $k$, not $E$. Total parameters grow roughly linearly with $E$, while active parameters stay about constant.
+- In an MoE layer with $E$ experts and top-$`k`$ routing, each token passes through only $k$ experts. FFN FLOPs per token scale with $k$, not $E$. Total parameters grow roughly linearly with $E$, while active parameters stay about constant.
 
 **Example — Mixtral 8×7B:** ~47B total parameters, but with top-2 routing only ~13B are **active** per token, so inference compute is roughly that of a 13B dense model while capacity is much larger. DeepSeek-V3: 671B total, ~37B active.
 
@@ -4863,7 +4863,7 @@ Loss spikes come from a few causes that feed on each other. Logits (attention or
 | Output logit divergence | Softmax normaliser drifts, loss becomes NaN in low precision | z-loss $10^{-4}\thinspace (\log Z)^2$; tied-embedding care |
 | Adam epsilon too large | Updates shrink as gradient RMS falls with scale; parameter norms grow | Lower $\epsilon$ (e.g. $10^{-15}$) |
 | Adam second-moment lag | Rare large gradients meet a stale $v_t$, producing huge updates | $\beta_2 = 0.95$, gradient clipping at 1.0 |
-| LR too high for width/depth | Spikes appear as the model is scaled up | Warmup, $\mu$P-style scaling, smaller LR for deeper models |
+| LR too high for width/depth | Spikes appear as the model is scaled up | Warmup, $`\mu`$P-style scaling, smaller LR for deeper models |
 | Bad or repeated data | Spikes at data-dependent steps | Dedup, skip batches on restart |
 | Low precision | Overflow in BF16/FP8 matmuls or reductions | FP32 for softmax, norms, master weights and loss; fine-grained scaling |
 
@@ -5119,12 +5119,12 @@ out = model.generate(ids, max_new_tokens=200)
 | --- | --- | --- | --- |
 | Sequential (longer chain of thought) | One long trace with self-checks, backtracking, revisions | RL-trained reasoning model | Overthinking easy questions, looping, "talking itself out" of a correct answer |
 | Parallel: majority vote (self-consistency) | $N$ independent samples, take the most common final answer | Extractable final answer | Plateaus once the wrong answer is the most common one |
-| Parallel: best-of-$N$ with a verifier | $N$ samples, a reward model or test suite picks the best | ORM, PRM or executable checks | Verifier exploited as $N$ grows |
+| Parallel: best-of-$`N`$ with a verifier | $N$ samples, a reward model or test suite picks the best | ORM, PRM or executable checks | Verifier exploited as $N$ grows |
 | Tree / beam search over steps | Expand promising partial solutions | Step-level verifier (PRM) | Expensive; brittle when the PRM is miscalibrated |
 
 **What the research showed**
 
-- **Compute-optimal allocation depends on difficulty.** Snell et al. (2024) found that the best strategy changes with how hard a prompt is. On easy problems, revising one answer sequentially works best, while harder problems gain more from parallel sampling or PRM-guided search. Choosing the strategy per prompt from a predicted difficulty was more than 4x as compute-efficient as plain best-of-$N$. In a FLOPs-matched comparison, a small model with well-allocated test-time compute beat a roughly 14x larger model on problems where the small model already had a reasonable success rate. On the hardest problems, extra pretraining still won.
+- **Compute-optimal allocation depends on difficulty.** Snell et al. (2024) found that the best strategy changes with how hard a prompt is. On easy problems, revising one answer sequentially works best, while harder problems gain more from parallel sampling or PRM-guided search. Choosing the strategy per prompt from a predicted difficulty was more than 4x as compute-efficient as plain best-of-$`N`$. In a FLOPs-matched comparison, a small model with well-allocated test-time compute beat a roughly 14x larger model on problems where the small model already had a reasonable success rate. On the hardest problems, extra pretraining still won.
 - **Reasoning models internalise the search.** OpenAI's o1 announcement showed accuracy rising with both RL training compute and test-time "thinking" compute. DeepSeek-R1 showed that plain RL with verifiable rewards (via GRPO), with no step-level reward model, was enough for long chains of thought, reflection and backtracking to emerge, and for response length to grow during training. Majority voting on top of R1-Zero added a further large jump on AIME.
 
 **The economics**
@@ -5138,7 +5138,7 @@ Every reasoning token costs about the same as an output token, so a reasoning mo
 
 **Limits to state in an interview**
 
-- Test-time compute cannot add knowledge the model lacks. It helps when the model can sometimes solve the problem (pass@$k$ is well above pass@1).
+- Test-time compute cannot add knowledge the model lacks. It helps when the model can sometimes solve the problem (pass@$`k`$ is well above pass@1).
 - Gains are largest in verifiable domains (maths, code, logic) and much smaller for open-ended writing.
 - Overthinking is real: very long traces can lower accuracy on easy items and increase how often the model drifts off-task.
 - Visible reasoning is not guaranteed to be faithful to the computation that produced the answer, so don't treat it as an audit log.
@@ -5158,13 +5158,13 @@ An **outcome reward model (ORM)** scores a whole solution by whether its final r
 **Evidence**
 
 - Uesato et al. (DeepMind, 2022) found that on GSM8K, outcome and process supervision gave similar *final-answer* error rates. But process-based feedback, or a reward model that imitates it, was needed to bring the *trace error rate* down: correct answers reached through wrong reasoning fell from 14.0% to a few percent.
-- Lightman et al. found that with a stronger base model and much more data, the PRM clearly beat the ORM as a best-of-$N$ verifier on MATH (about 78% of a representative test subset solved), and active learning on convincing wrong answers made labelling more efficient.
+- Lightman et al. found that with a stronger base model and much more data, the PRM clearly beat the ORM as a best-of-$`N`$ verifier on MATH (about 78% of a representative test subset solved), and active learning on convincing wrong answers made labelling more efficient.
 
 **Where each is used**
 
 | Use | ORM | PRM |
 | --- | --- | --- |
-| Best-of-$N$ reranking | Yes, simple and robust | Yes, usually better on long derivations |
+| Best-of-$`N`$ reranking | Yes, simple and robust | Yes, usually better on long derivations |
 | Step-level beam or tree search | Weak | Main use case |
 | Dense reward in RL | Sparse terminal reward only | Per-step reward, better credit assignment |
 | Filtering synthetic reasoning data | Keeps correct answers | Also removes lucky-but-wrong traces |
@@ -5218,7 +5218,7 @@ acc = (r_w > r_l).float().mean()   # report held-out pairwise accuracy
 
 - **Noise ceiling:** inter-annotator agreement is often around 65 to 75%, so held-out pairwise accuracy in the low 70s may already be close to the ceiling. Chasing 90% means overfitting to individual raters.
 - **Spurious features:** length, confident tone, markdown and refusals correlate with "chosen" in many datasets. Check RM score against length. Mitigations are length-balanced pairs, length-penalised rewards, or a separate length head.
-- **Overoptimisation:** Gao et al. replaced humans with a fixed "gold" RM and trained proxy RMs on its labels. As the policy is optimised against the proxy, proxy reward keeps rising while gold reward rises, peaks and falls, following predictable curves in the KL distance from the initial policy (different shapes for best-of-$n$ and for RL). Larger RMs and more preference data delay the peak. In practice, track KL, stop early, use ensembles, and re-collect labels on the current policy's outputs.
+- **Overoptimisation:** Gao et al. replaced humans with a fixed "gold" RM and trained proxy RMs on its labels. As the policy is optimised against the proxy, proxy reward keeps rising while gold reward rises, peaks and falls, following predictable curves in the KL distance from the initial policy (different shapes for best-of-$`n`$ and for RL). Larger RMs and more preference data delay the peak. In practice, track KL, stop early, use ensembles, and re-collect labels on the current policy's outputs.
 - **Distribution shift:** the RM was trained on SFT-model outputs. Once the policy drifts, the RM is scoring out-of-distribution text, so iterate with fresh comparisons.
 
 **Variants worth knowing**
@@ -5289,7 +5289,7 @@ The problem is **interference**. Many entries in each task vector are small, red
 
 **TIES-Merging** (Yadav et al.) fixes this in three steps per parameter:
 
-1. **Trim:** keep only the top-$k$% largest-magnitude entries of each task vector (density, often 20 to 50%) and zero the rest.
+1. **Trim:** keep only the top-$`k`$% largest-magnitude entries of each task vector (density, often 20 to 50%) and zero the rest.
 2. **Elect sign:** for each parameter, sum the trimmed values across tasks and keep the sign with the larger total mass.
 3. **Disjoint merge:** average only the values that agree with the elected sign, then add the result back to the base with a scale $\lambda$.
 

@@ -2,458 +2,514 @@
 
 _Part I — Foundations_
 
-Python language semantics, CPython internals, memory management and idiomatic code for data workloads. Senior candidates are expected to explain what the interpreter is doing and to write maintainable, testable Python.
+Python language semantics, CPython internals, memory management, concurrency (GIL, free-threading, asyncio), packaging, typing, testing and performance for data workloads. Senior candidates are expected to explain what the interpreter is doing and to write maintainable, testable, fast Python.
 
-This chapter contains **95 questions**.
+This chapter contains **77 questions**.
 
 ## Contents
 
-- **2.1** [How do you capitalize the first letter in a string in Python?](#21-how-do-you-capitalize-the-first-letter-in-a-string-in-python)
-- **2.2** [How to convert a string to all lowercase in Python?](#22-how-to-convert-a-string-to-all-lowercase-in-python)
-- **2.3** [How to delete files in Python?](#23-how-to-delete-files-in-python)
-- **2.4** [What is serialization?](#24-what-is-serialization)
-- **2.5** [What is exception handling?](#25-what-is-exception-handling)
-- **2.6** [What language is Python?](#26-what-language-is-python)
-- **2.7** [Is Python a case-sensitive language?](#27-is-python-a-case-sensitive-language)
-- **2.8** [What is PEP 8?](#28-what-is-pep-8)
-- **2.9** [What are decorators in Python?](#29-what-are-decorators-in-python)
-- **2.10** [What's the difference between .py and .pyc files?](#210-whats-the-difference-between-py-and-pyc-files)
-- **2.11** [How does Python manage memory?](#211-how-does-python-manage-memory)
-- **2.12** [What are namespaces in Python?](#212-what-are-namespaces-in-python)
-- **2.13** [What are Python packages?](#213-what-are-python-packages)
-- **2.14** [Specify the tools that help in finding bugs or performing static analysis in Python.](#214-specify-the-tools-that-help-in-finding-bugs-or-performing-static-analysis-in-python)
-- **2.15** [What are Python Modules? Name some Python modules that are most frequently used.](#215-what-are-python-modules-name-some-python-modules-that-are-most-frequently-used)
-- **2.16** [What are Python's local variables and global variables?](#216-what-are-pythons-local-variables-and-global-variables)
-- **2.17** [Is indentation necessary in Python?](#217-is-indentation-necessary-in-python)
-- **2.18** [What's the difference between Python arrays and lists?](#218-whats-the-difference-between-python-arrays-and-lists)
-- **2.19** [What is self in Python?](#219-what-is-self-in-python)
-- **2.20** [What are unpickling and pickling?](#220-what-are-unpickling-and-pickling)
-- **2.21** [How do you do data abstraction in Python?](#221-how-do-you-do-data-abstraction-in-python)
-- **2.22** [What is the usage of the help() and the dir() functionality in Python?](#222-what-is-the-usage-of-the-help-and-the-dir-functionality-in-python)
-- **2.23** [What is len() in Python?](#223-what-is-len-in-python)
-- **2.24** [Access Modifiers in Python?](#224-access-modifiers-in-python)
-- **2.25** [Is Python an interpreted and a compiled language?](#225-is-python-an-interpreted-and-a-compiled-language)
-- **2.26** [GIL in Python. Why?](#226-gil-in-python-why)
-- **2.27** [How do access modifiers work in Python?](#227-how-do-access-modifiers-work-in-python)
-- **2.28** [What's the difference between `is` and `==`? How does CPython implement identity checks?](#228-whats-the-difference-between-is-and--how-does-cpython-implement-identity-checks)
-- **2.29** [How does reference counting work in CPython? What happens when an object's refcount hits zero?](#229-how-does-reference-counting-work-in-cpython-what-happens-when-an-objects-refcount-hits-zero)
-- **2.30** [How does Python's garbage collector handle reference cycles?](#230-how-does-pythons-garbage-collector-handle-reference-cycles)
-- **2.31** [What's the difference between `__new__` and `__init__`?](#231-whats-the-difference-between-__new__-and-__init__)
-- **2.32** [Why is small integer caching (-5 to 256) used, and how does it affect `is` comparisons?](#232-why-is-small-integer-caching--5-to-256-used-and-how-does-it-affect-is-comparisons)
-- **2.33** [What's object interning, and how does it apply to strings?](#233-whats-object-interning-and-how-does-it-apply-to-strings)
-- **2.34** [How does `sys.getrefcount()` work, and why is its result often higher than expected?](#234-how-does-sysgetrefcount-work-and-why-is-its-result-often-higher-than-expected)
-- **2.35** [What's the difference between mutable and immutable objects at the C level?](#235-whats-the-difference-between-mutable-and-immutable-objects-at-the-c-level)
-- **2.36** [What is `__slots__`, and how does it change an object's memory layout?](#236-what-is-__slots__-and-how-does-it-change-an-objects-memory-layout)
-- **2.37** [How does Python implement variable scoping (LEGB rule) internally?](#237-how-does-python-implement-variable-scoping-legb-rule-internally)
-- **2.38** [What's the difference between a function's `__globals__` and `__locals__`?](#238-whats-the-difference-between-a-functions-__globals__-and-__locals__)
-- **2.39** [How do closures capture variables — by reference or by value?](#239-how-do-closures-capture-variables--by-reference-or-by-value)
-- **2.40** [What is a cell object, and how does it enable closures?](#240-what-is-a-cell-object-and-how-does-it-enable-closures)
-- **2.41** [How does the `nonlocal` keyword work under the hood?](#241-how-does-the-nonlocal-keyword-work-under-the-hood)
-- **2.42** [What is a code object (`__code__`), and what does it contain?](#242-what-is-a-code-object-__code__-and-what-does-it-contain)
-- **2.43** [How does Python compile source code into bytecode? What role does `dis` play?](#243-how-does-python-compile-source-code-into-bytecode-what-role-does-dis-play)
-- **2.44** [What's the difference between a function and a method at the descriptor level?](#244-whats-the-difference-between-a-function-and-a-method-at-the-descriptor-level)
-- **2.45** [How do decorators work internally — what's actually being replaced?](#245-how-do-decorators-work-internally--whats-actually-being-replaced)
-- **2.46** [How does the descriptor protocol (`__get__`, `__set__`, `__delete__`) work?](#246-how-does-the-descriptor-protocol-__get__-__set__-__delete__-work)
-- **2.47** [How are default mutable arguments evaluated, and why does this cause bugs?](#247-how-are-default-mutable-arguments-evaluated-and-why-does-this-cause-bugs)
-- **2.48** [What is `__call__`, and how does it make objects callable?](#248-what-is-__call__-and-how-does-it-make-objects-callable)
-- **2.49** [How does the Method Resolution Order (MRO) work, and what algorithm does it use (C3 linearization)?](#249-how-does-the-method-resolution-order-mro-work-and-what-algorithm-does-it-use-c3-linearization)
-- **2.50** [What is a metaclass, and how does `type` fit in?](#250-what-is-a-metaclass-and-how-does-type-fit-in)
-- **2.51** [How does `super()` actually resolve which method to call?](#251-how-does-super-actually-resolve-which-method-to-call)
-- **2.52** [What's stored in a class's `__dict__` vs an instance's `__dict__`?](#252-whats-stored-in-a-classs-__dict__-vs-an-instances-__dict__)
-- **2.53** [How does multiple inheritance affect attribute lookup?](#253-how-does-multiple-inheritance-affect-attribute-lookup)
-- **2.54** [What is the difference between `@staticmethod`, `@classmethod`, and instance methods internally?](#254-what-is-the-difference-between-staticmethod-classmethod-and-instance-methods-internally)
-- **2.55** [What's the difference between an iterable and an iterator at the protocol level (`__iter__`, `__next__`)?](#255-whats-the-difference-between-an-iterable-and-an-iterator-at-the-protocol-level-__iter__-__next__)
-- **2.56** [How do generators maintain state between `yield` calls?](#256-how-do-generators-maintain-state-between-yield-calls)
-- **2.57** [What happens internally when you call `.send()` on a generator?](#257-what-happens-internally-when-you-call-send-on-a-generator)
-- **2.58** [How do `async def` and `await` differ from generators under the hood?](#258-how-do-async-def-and-await-differ-from-generators-under-the-hood)
-- **2.59** [What is the event loop, and how does it schedule coroutines?](#259-what-is-the-event-loop-and-how-does-it-schedule-coroutines)
-- **2.60** [How is a Python `list` implemented internally (array vs linked list)?](#260-how-is-a-python-list-implemented-internally-array-vs-linked-list)
-- **2.61** [How does a `dict` achieve O(1) average lookup? How are hash collisions handled?](#261-how-does-a-dict-achieve-o1-average-lookup-how-are-hash-collisions-handled)
-- **2.62** [Why did dict ordering become guaranteed in Python 3.7+? What changed internally?](#262-why-did-dict-ordering-become-guaranteed-in-python-37-what-changed-internally)
-- **2.63** [How is a `set` different from a `dict` at the implementation level?](#263-how-is-a-set-different-from-a-dict-at-the-implementation-level)
-- **2.64** [How does string immutability enable optimizations like interning?](#264-how-does-string-immutability-enable-optimizations-like-interning)
-- **2.65** [What happens internally when you run `import module`?](#265-what-happens-internally-when-you-run-import-module)
-- **2.66** [What's the role of `sys.modules`and how does it prevent repeated execution on re-import?](#266-whats-the-role-of-sysmodulesand-how-does-it-prevent-repeated-execution-on-re-import)
-- **2.67** [How do `__init__.py` and packages affect the import system?](#267-how-do-__init__py-and-packages-affect-the-import-system)
-- **2.68** [What's the difference between absolute and relative imports at resolution time?](#268-whats-the-difference-between-absolute-and-relative-imports-at-resolution-time)
-- **2.69** [How does exception propagation work internally (the traceback stack)?](#269-how-does-exception-propagation-work-internally-the-traceback-stack)
-- **2.70** [What's the difference between `except Exception` and a bare `except:`?](#270-whats-the-difference-between-except-exception-and-a-bare-except)
-- **2.71** [How does `finally` interact with return statements and exceptions in bytecode?](#271-how-does-finally-interact-with-return-statements-and-exceptions-in-bytecode)
-- **2.72** [Why is CPython considered slower than compiled languages, and where's the overhead?](#272-why-is-cpython-considered-slower-than-compiled-languages-and-wheres-the-overhead)
-- **2.73** [What is the difference between CPython, PyPy, and other implementations?](#273-what-is-the-difference-between-cpython-pypy-and-other-implementations)
-- **2.74** [How does the GIL affect multithreading vs multiprocessing performance?](#274-how-does-the-gil-affect-multithreading-vs-multiprocessing-performance)
-- **2.75** [What is `sys.intern()`, and when would you use it manually?](#275-what-is-sysintern-and-when-would-you-use-it-manually)
-- **2.76** [How does the peephole optimizer or bytecode caching (`.pyc` files) improve performance?](#276-how-does-the-peephole-optimizer-or-bytecode-caching-pyc-files-improve-performance)
-- **2.77** [What are the primary differences between a list and a tuple in the context of data engineering?](#277-what-are-the-primary-differences-between-a-list-and-a-tuple-in-the-context-of-data-engineering)
-- **2.78** [How does Python handle memory management and garbage collection?](#278-how-does-python-handle-memory-management-and-garbage-collection)
-- **2.79** [Explain the difference between a shallow copy and a deep copy.](#279-explain-the-difference-between-a-shallow-copy-and-a-deep-copy)
-- **2.80** [What are decorators, and how might a data engineer use them in production?](#280-what-are-decorators-and-how-might-a-data-engineer-use-them-in-production)
-- **2.81** [What is the purpose of `*args` and `**kwargs` in function definitions?](#281-what-is-the-purpose-of-args-and-kwargs-in-function-definitions)
-- **2.82** [Explain the Global Interpreter Lock (GIL) and its impact on data processing.](#282-explain-the-global-interpreter-lock-gil-and-its-impact-on-data-processing)
-- **2.83** [What are list and dictionary comprehensions?](#283-what-are-list-and-dictionary-comprehensions)
-- **2.84** [How do you implement robust exception handling in an ETL script?](#284-how-do-you-implement-robust-exception-handling-in-an-etl-script)
-- **2.85** [What is the difference between the `/` and `//` operators?](#285-what-is-the-difference-between-the--and--operators)
-- **2.86** [What is a lambda function and when is it appropriate to use one?](#286-what-is-a-lambda-function-and-when-is-it-appropriate-to-use-one)
-- **2.87** [What are Python generators, and why are they critical for Big Data?](#287-what-are-python-generators-and-why-are-they-critical-for-big-data)
-- **2.88** [Explain the `with` statement and the concept of Context Managers.](#288-explain-the-with-statement-and-the-concept-of-context-managers)
-- **2.89** [How do you optimize Python code for processing millions of rows?](#289-how-do-you-optimize-python-code-for-processing-millions-of-rows)
-- **2.90** [Compare multiprocessing and multithreading for a data ingestion task.](#290-compare-multiprocessing-and-multithreading-for-a-data-ingestion-task)
-- **2.91** [What is "Pickling" and what are the risks associated with it?](#291-what-is-pickling-and-what-are-the-risks-associated-with-it)
-- **2.92** [How do you ensure your Python code remains maintainable in a large team?](#292-how-do-you-ensure-your-python-code-remains-maintainable-in-a-large-team)
-- **2.93** [What is Monkey Patching and why is it generally discouraged?](#293-what-is-monkey-patching-and-why-is-it-generally-discouraged)
-- **2.94** [Explain how `map()` and `filter()` work compared to comprehensions.](#294-explain-how-map-and-filter-work-compared-to-comprehensions)
-- **2.95** [What does "maintainable Python code with proper testing" look like for you in an AI/agent context, given how non-deterministic LLM outputs are?](#295-what-does-maintainable-python-code-with-proper-testing-look-like-for-you-in-an-aiagent-context-given-how-non-deterministic-llm-outputs-are)
+- **2.1** [How do you change the case of a string in Python (capitalise, lowercase, case-insensitive comparison)?](#21-how-do-you-change-the-case-of-a-string-in-python-capitalise-lowercase-case-insensitive-comparison)
+- **2.2** [How do you delete files and directories safely in Python?](#22-how-do-you-delete-files-and-directories-safely-in-python)
+- **2.3** [What is serialization, how does pickling work, and what are its risks?](#23-what-is-serialization-how-does-pickling-work-and-what-are-its-risks)
+- **2.4** [How does exception handling work in Python, and how do you make it robust in a production ETL job?](#24-how-does-exception-handling-work-in-python-and-how-do-you-make-it-robust-in-a-production-etl-job)
+- **2.5** [What kind of language is Python (typing, case sensitivity, indentation)?](#25-what-kind-of-language-is-python-typing-case-sensitivity-indentation)
+- **2.6** [What are decorators, how do they work internally, and how are they used in production?](#26-what-are-decorators-how-do-they-work-internally-and-how-are-they-used-in-production)
+- **2.7** [What are .pyc files, and how do bytecode caching and the compile-time optimiser improve performance?](#27-what-are-pyc-files-and-how-do-bytecode-caching-and-the-compile-time-optimiser-improve-performance)
+- **2.8** [How does Python manage memory, and what does that mean in practice?](#28-how-does-python-manage-memory-and-what-does-that-mean-in-practice)
+- **2.9** [What are namespaces and scopes in Python, and how does the LEGB rule work internally?](#29-what-are-namespaces-and-scopes-in-python-and-how-does-the-legb-rule-work-internally)
+- **2.10** [What are Python modules and packages, and which standard-library modules matter most?](#210-what-are-python-modules-and-packages-and-which-standard-library-modules-matter-most)
+- **2.11** [What is PEP 8, and which tools enforce code quality and find bugs through static analysis?](#211-what-is-pep-8-and-which-tools-enforce-code-quality-and-find-bugs-through-static-analysis)
+- **2.12** [What is the difference between Python lists, `array.array` and NumPy arrays?](#212-what-is-the-difference-between-python-lists-arrayarray-and-numpy-arrays)
+- **2.13** [What is self in Python?](#213-what-is-self-in-python)
+- **2.14** [How do you do data abstraction in Python?](#214-how-do-you-do-data-abstraction-in-python)
+- **2.15** [How do you introspect objects in Python with help(), dir() and related tools?](#215-how-do-you-introspect-objects-in-python-with-help-dir-and-related-tools)
+- **2.16** [What does len() do, and how does it work under the hood?](#216-what-does-len-do-and-how-does-it-work-under-the-hood)
+- **2.17** [How do access modifiers (public, protected, private) work in Python?](#217-how-do-access-modifiers-public-protected-private-work-in-python)
+- **2.18** [Is Python an interpreted and a compiled language?](#218-is-python-an-interpreted-and-a-compiled-language)
+- **2.19** [What is the GIL, why does CPython have it, and how does it affect data processing?](#219-what-is-the-gil-why-does-cpython-have-it-and-how-does-it-affect-data-processing)
+- **2.20** [What's the difference between `is` and `==`? How does CPython implement identity checks?](#220-whats-the-difference-between-is-and--how-does-cpython-implement-identity-checks)
+- **2.21** [How does reference counting work in CPython? What happens when an object's refcount hits zero?](#221-how-does-reference-counting-work-in-cpython-what-happens-when-an-objects-refcount-hits-zero)
+- **2.22** [How does Python's garbage collector handle reference cycles?](#222-how-does-pythons-garbage-collector-handle-reference-cycles)
+- **2.23** [What's the difference between `__new__` and `__init__`?](#223-whats-the-difference-between-__new__-and-__init__)
+- **2.24** [Why is small integer caching (-5 to 256) used, and how does it affect `is` comparisons?](#224-why-is-small-integer-caching--5-to-256-used-and-how-does-it-affect-is-comparisons)
+- **2.25** [What is object interning, how does string immutability enable it, and when would you use sys.intern()?](#225-what-is-object-interning-how-does-string-immutability-enable-it-and-when-would-you-use-sysintern)
+- **2.26** [How does `sys.getrefcount()` work, and why is its result often higher than expected?](#226-how-does-sysgetrefcount-work-and-why-is-its-result-often-higher-than-expected)
+- **2.27** [What's the difference between mutable and immutable objects at the C level?](#227-whats-the-difference-between-mutable-and-immutable-objects-at-the-c-level)
+- **2.28** [What is `__slots__`, and how does it change an object's memory layout?](#228-what-is-__slots__-and-how-does-it-change-an-objects-memory-layout)
+- **2.29** [What's the difference between a function's `__globals__` and `__locals__`?](#229-whats-the-difference-between-a-functions-__globals__-and-__locals__)
+- **2.30** [How do closures capture variables — by reference or by value?](#230-how-do-closures-capture-variables--by-reference-or-by-value)
+- **2.31** [What is a cell object, and how does it enable closures?](#231-what-is-a-cell-object-and-how-does-it-enable-closures)
+- **2.32** [How does the `nonlocal` keyword work under the hood?](#232-how-does-the-nonlocal-keyword-work-under-the-hood)
+- **2.33** [What is a code object (`__code__`), and what does it contain?](#233-what-is-a-code-object-__code__-and-what-does-it-contain)
+- **2.34** [How does Python compile source code into bytecode? What role does `dis` play?](#234-how-does-python-compile-source-code-into-bytecode-what-role-does-dis-play)
+- **2.35** [What's the difference between a function and a method at the descriptor level?](#235-whats-the-difference-between-a-function-and-a-method-at-the-descriptor-level)
+- **2.36** [How does the descriptor protocol (`__get__`, `__set__`, `__delete__`) work, and what is the difference between data and non-data descriptors?](#236-how-does-the-descriptor-protocol-__get__-__set__-__delete__-work-and-what-is-the-difference-between-data-and-non-data-descriptors)
+- **2.37** [How are default mutable arguments evaluated, and why does this cause bugs?](#237-how-are-default-mutable-arguments-evaluated-and-why-does-this-cause-bugs)
+- **2.38** [What is `__call__`, and how does it make objects callable?](#238-what-is-__call__-and-how-does-it-make-objects-callable)
+- **2.39** [How does the Method Resolution Order (MRO) work with multiple inheritance, and what is C3 linearisation?](#239-how-does-the-method-resolution-order-mro-work-with-multiple-inheritance-and-what-is-c3-linearisation)
+- **2.40** [What is a metaclass, and how does `type` fit in?](#240-what-is-a-metaclass-and-how-does-type-fit-in)
+- **2.41** [How does `super()` actually resolve which method to call?](#241-how-does-super-actually-resolve-which-method-to-call)
+- **2.42** [What's stored in a class's `__dict__` vs an instance's `__dict__`?](#242-whats-stored-in-a-classs-__dict__-vs-an-instances-__dict__)
+- **2.43** [What is the difference between `@staticmethod`, `@classmethod`, and instance methods internally?](#243-what-is-the-difference-between-staticmethod-classmethod-and-instance-methods-internally)
+- **2.44** [What's the difference between an iterable and an iterator at the protocol level (`__iter__`, `__next__`)?](#244-whats-the-difference-between-an-iterable-and-an-iterator-at-the-protocol-level-__iter__-__next__)
+- **2.45** [How do generators work, how do they keep state between `yield` calls, and why do they matter for large data?](#245-how-do-generators-work-how-do-they-keep-state-between-yield-calls-and-why-do-they-matter-for-large-data)
+- **2.46** [What happens internally when you call `.send()` on a generator?](#246-what-happens-internally-when-you-call-send-on-a-generator)
+- **2.47** [How do `async def` and `await` differ from generators under the hood?](#247-how-do-async-def-and-await-differ-from-generators-under-the-hood)
+- **2.48** [What is the event loop, and how does it schedule coroutines?](#248-what-is-the-event-loop-and-how-does-it-schedule-coroutines)
+- **2.49** [How is a Python `list` implemented internally (array vs linked list)?](#249-how-is-a-python-list-implemented-internally-array-vs-linked-list)
+- **2.50** [How does a `dict` achieve O(1) average lookup? How are hash collisions handled?](#250-how-does-a-dict-achieve-o1-average-lookup-how-are-hash-collisions-handled)
+- **2.51** [Why did dict ordering become guaranteed in Python 3.7+? What changed internally?](#251-why-did-dict-ordering-become-guaranteed-in-python-37-what-changed-internally)
+- **2.52** [How is a `set` different from a `dict` at the implementation level?](#252-how-is-a-set-different-from-a-dict-at-the-implementation-level)
+- **2.53** [What happens internally when you run `import module`, and what is the role of `sys.modules`?](#253-what-happens-internally-when-you-run-import-module-and-what-is-the-role-of-sysmodules)
+- **2.54** [How do `__init__.py` and packages affect the import system?](#254-how-do-__init__py-and-packages-affect-the-import-system)
+- **2.55** [What's the difference between absolute and relative imports at resolution time?](#255-whats-the-difference-between-absolute-and-relative-imports-at-resolution-time)
+- **2.56** [How does exception propagation work internally (the traceback stack)?](#256-how-does-exception-propagation-work-internally-the-traceback-stack)
+- **2.57** [What's the difference between `except Exception` and a bare `except:`?](#257-whats-the-difference-between-except-exception-and-a-bare-except)
+- **2.58** [How does `finally` interact with return statements and exceptions in bytecode?](#258-how-does-finally-interact-with-return-statements-and-exceptions-in-bytecode)
+- **2.59** [Why is CPython considered slower than compiled languages, and where's the overhead?](#259-why-is-cpython-considered-slower-than-compiled-languages-and-wheres-the-overhead)
+- **2.60** [What is the difference between CPython, PyPy, and other implementations?](#260-what-is-the-difference-between-cpython-pypy-and-other-implementations)
+- **2.61** [How does the GIL affect the choice between threads, processes and asyncio for a data workload?](#261-how-does-the-gil-affect-the-choice-between-threads-processes-and-asyncio-for-a-data-workload)
+- **2.62** [What are the differences between a list and a tuple, and when do you use each in data engineering?](#262-what-are-the-differences-between-a-list-and-a-tuple-and-when-do-you-use-each-in-data-engineering)
+- **2.63** [What is the difference between a shallow copy and a deep copy?](#263-what-is-the-difference-between-a-shallow-copy-and-a-deep-copy)
+- **2.64** [What do `*args` and `**kwargs` do in function definitions and calls?](#264-what-do-args-and-kwargs-do-in-function-definitions-and-calls)
+- **2.65** [What are comprehensions, and how do they compare with `map()`, `filter()` and lambda functions?](#265-what-are-comprehensions-and-how-do-they-compare-with-map-filter-and-lambda-functions)
+- **2.66** [What is the difference between the `/` and `//` operators, and what are the edge cases?](#266-what-is-the-difference-between-the--and--operators-and-what-are-the-edge-cases)
+- **2.67** [How does the `with` statement work, and how do you write context managers?](#267-how-does-the-with-statement-work-and-how-do-you-write-context-managers)
+- **2.68** [How do you profile and optimise Python code that processes millions of rows?](#268-how-do-you-profile-and-optimise-python-code-that-processes-millions-of-rows)
+- **2.69** [How do you keep a Python codebase maintainable in a large team?](#269-how-do-you-keep-a-python-codebase-maintainable-in-a-large-team)
+- **2.70** [What is Monkey Patching and why is it generally discouraged?](#270-what-is-monkey-patching-and-why-is-it-generally-discouraged)
+- **2.71** [What does maintainable, well-tested Python look like in an AI or agent codebase, given that LLM outputs are non-deterministic?](#271-what-does-maintainable-well-tested-python-look-like-in-an-ai-or-agent-codebase-given-that-llm-outputs-are-non-deterministic)
+- **2.72** [What is free-threaded (no-GIL) CPython, what is its status, and should you adopt it?](#272-what-is-free-threaded-no-gil-cpython-what-is-its-status-and-should-you-adopt-it)
+- **2.73** [How do you use asyncio correctly in production: tasks, TaskGroup, cancellation, timeouts and mixing sync with async code?](#273-how-do-you-use-asyncio-correctly-in-production-tasks-taskgroup-cancellation-timeouts-and-mixing-sync-with-async-code)
+- **2.74** [How do you manage Python packaging, dependencies and environments reproducibly (pyproject.toml, uv, lock files)?](#274-how-do-you-manage-python-packaging-dependencies-and-environments-reproducibly-pyprojecttoml-uv-lock-files)
+- **2.75** [How do you use type hints at scale: mypy or Pyright, Protocols, generics, TypedDict, and runtime validation with Pydantic?](#275-how-do-you-use-type-hints-at-scale-mypy-or-pyright-protocols-generics-typeddict-and-runtime-validation-with-pydantic)
+- **2.76** [How do you find and fix memory growth or leaks in a long-running Python service or worker?](#276-how-do-you-find-and-fix-memory-growth-or-leaks-in-a-long-running-python-service-or-worker)
+- **2.77** [What is your testing strategy for Python code: pytest fixtures, parametrisation, mocking and property-based testing with Hypothesis?](#277-what-is-your-testing-strategy-for-python-code-pytest-fixtures-parametrisation-mocking-and-property-based-testing-with-hypothesis)
 
 ---
 
-### 2.1 How do you capitalize the first letter in a string in Python?
+### 2.1 How do you change the case of a string in Python (capitalise, lowercase, case-insensitive comparison)?
 
-In Python, you can capitalize the first letter of a string using the **`capitalize()`** method:
+Use the built-in `str` methods: `capitalize()`, `title()`, `upper()`, `lower()` and, for case-insensitive comparison, `casefold()`. Strings are immutable, so every method returns a new string.
 
-```py
-text = "hello world"
-result = text.capitalize()
+```python
+text = "hELLO wORLD"
 
-print(result)
+text.capitalize()          # "Hello world"  - first char upper, REST lowered
+text.title()               # "Hello World"  - each word capitalised
+text.upper()               # "HELLO WORLD"
+text.lower()               # "hello world"
+text[:1].upper() + text[1:]  # "HELLO wORLD" - only the first char changed, safe on ""
 ```
 
-Output:
+**Pitfalls interviewers look for:**
 
-```bash
-Hello world
-```
+- **`capitalize()` lowers the rest.** `"iPhone".capitalize()` gives `"Iphone"`. Use slicing if you only want to touch the first character, and use `text[:1]` rather than `text[0]` so an empty string does not raise `IndexError`.
+- **`title()` is naive.** `"they're o'neil".title()` gives `"They'Re O'Neil"`. For names and headings use `string.capwords()` or a proper library.
+- **Case-insensitive comparison should use `casefold()`, not `lower()`.** `casefold()` applies full Unicode case folding, so `"Straße".casefold() == "STRASSE".casefold()` is `True`, while `lower()` leaves `"ß"` alone.
+- **Unicode normalisation.** `"é"` can be one code point or `e` plus a combining accent. For robust matching, normalise first: `unicodedata.normalize("NFKC", s).casefold()`.
+- **Locale-specific rules** (Turkish dotted and dotless i) are not handled by `str` methods; use ICU (`PyICU`) when it matters.
 
-**Note:** `capitalize()` also converts the remaining characters to lowercase.
+**In data work**, prefer the vectorised versions: `df["city"].str.lower()` in pandas or `pl.col("city").str.to_lowercase()` in Polars, rather than `.apply(lambda s: s.lower())`. Normalising case and whitespace on join keys before a merge is a classic fix for "missing" rows.
 
-If you only want to uppercase the first character while keeping the rest unchanged:
+### 2.2 How do you delete files and directories safely in Python?
 
-```py
-text = "hELLO world"
-result = text[0].upper() + text[1:]
-```
+Use `pathlib` for single files (`Path.unlink`) and `shutil.rmtree` for directory trees, and handle the "already gone" case explicitly so the code is idempotent.
 
-Output:
-
-```bash
-HELLO world
-```
-
-### 2.2 How to convert a string to all lowercase in Python?
-
-In Python, use the **`lower()`** method:
-
-```py
-text = "Hello WORLD"
-result = text.lower()
-
-print(result)
-```
-
-Output:
-
-```bash
-hello world
-```
-
-**Answer:** `string.lower()` converts all letters in a string to lowercase.
-
-### 2.3 How to delete files in Python?
-
-In Python, you can delete a file using the **`os.remove()`** function:
-
-```py
-import os
-
-os.remove("example.txt")
-```
-
-You can also use `pathlib`:
-
-```py
+```python
 from pathlib import Path
+import shutil
 
-Path("example.txt").unlink()
+Path("output/part-0001.parquet").unlink(missing_ok=True)   # file; no error if absent (3.8+)
+Path("output/empty_dir").rmdir()                         # only works if the directory is empty
+shutil.rmtree("output/tmp_run_42", ignore_errors=False)   # whole tree
+
+import os
+os.remove("example.txt")                                 # older equivalent of unlink()
 ```
 
-**In short:** `os.remove()` or `Path.unlink()` can be used to delete files in Python.
+**Production concerns:**
 
-### 2.4 What is serialization?
+- **Idempotency.** Re-runs of a pipeline step should not fail because a file was already deleted; `missing_ok=True` or catching `FileNotFoundError` gives that.
+- **Guard rails on recursive deletes.** Resolve the path and check it is inside the directory you expect before calling `rmtree`. A bug that turns `base / run_id` into `base / ""` can wipe the whole base directory.
 
-- **Serialization** is the process of converting an object or data structure into a **format that can be stored or transmitted**, such as JSON, XML, or binary data.
-- It allows complex data to be saved to a file, database, cache, or sent over a network.
-- The reverse process is called **deserialization**, which converts the serialized data back into its original object or data structure.
+```python
+base = Path("/data/scratch").resolve()
+target = (base / run_id).resolve()
+if base not in target.parents:
+    raise ValueError(f"refusing to delete {target}")
+shutil.rmtree(target)
+```
 
-**Example in Python:**
+- **Windows quirks.** Open files cannot be deleted, and read-only files make `rmtree` fail; pass an `onexc` handler (3.12+, `onerror` before) that clears the read-only bit and retries.
+- **Temporary files.** Prefer `tempfile.TemporaryDirectory()` as a context manager so cleanup happens even when an exception is raised.
+- **Atomic replacement.** To "delete and rewrite" a file, write to a temporary file in the same directory and `os.replace()` it over the target; readers never see a half-written file.
+- **Object stores.** On S3, GCS or ADLS there is no `unlink`: use the SDK (`boto3`), `fsspec` or a table format's own `DELETE`/`VACUUM`. Deleting files underneath Delta Lake or Iceberg tables directly corrupts the table metadata.
 
-```py
-import json
+### 2.3 What is serialization, how does pickling work, and what are its risks?
+
+**Serialisation** converts an in-memory object into bytes or text that can be stored or sent over a network; **deserialisation** reconstructs the object. In Python, `pickle` is the native, Python-only binary format (pickling = object to byte stream, unpickling = byte stream to object), while JSON, Avro, Protobuf, Parquet and Arrow are language-neutral alternatives.
+
+```python
+import json, pickle
 
 data = {"name": "John", "age": 25}
+text = json.dumps(data)              # '{"name": "John", "age": 25}'
+assert json.loads(text) == data
 
-serialized = json.dumps(data)
-print(serialized)
+with open("data.pkl", "wb") as f:    # pickling
+    pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
+with open("data.pkl", "rb") as f:    # unpickling - only trusted files
+    restored = pickle.load(f)
 ```
 
-Output:
+**How pickle works:** it walks the object graph and emits opcodes for a small stack machine. For custom classes it records the import path of the class and the state (`__dict__` or what `__reduce__`/`__getstate__` returns). On load it imports that class and calls whatever callable `__reduce__` named.
 
-```txt
-{"name": "John", "age": 25}
-```
+**Risks:**
 
-**In short:**
+- **Arbitrary code execution.** Because `__reduce__` can name any callable (for example `os.system`), loading an attacker's pickle runs their code. Never unpickle untrusted data. This includes model files: `torch.load` uses pickle, which is why PyTorch 2.6 made `weights_only=True` the default and why Hugging Face pushes `safetensors`.
+- **Version coupling.** A pickle stores class paths, not schemas. Renaming a module or changing a class breaks old pickles, and pickles made with a newer library version may not load in an older one.
+- **Python-only.** Other languages cannot read it, so it is a poor contract between services.
+- **Not a long-term storage format** for data; there is no schema evolution.
 
-**Serialization = object/data → transferable or storable format**
+**Choosing a format:**
 
-**Deserialization = serialized format → object/data**
+| Need | Format |
+| --- | --- |
+| Human-readable config or API payloads | JSON (with a Pydantic or JSON Schema contract) |
+| High-throughput service messages with schema evolution | Protobuf or Avro |
+| Analytical tables | Parquet (columnar, compressed, typed) |
+| Zero-copy between processes or languages | Apache Arrow IPC |
+| Model weights | `safetensors`, ONNX |
+| Short-lived Python-to-Python transfer (multiprocessing, caches you control) | pickle, `cloudpickle` for lambdas and closures |
 
-### 2.5 What is exception handling?
+**What interviewers look for:** you know pickle is how `multiprocessing`, Spark (PySpark UDFs) and Dask move Python objects between processes, you would not accept a pickled model from an unknown source, and you pick a schema'd, language-neutral format for anything that crosses a team or service boundary.
 
-- **Exception handling** is a mechanism for detecting and managing **runtime errors** so that a program can respond gracefully instead of unexpectedly terminating.
-- In Python, exception handling is mainly done using **`try`, `except`, `else`, and `finally`**.
+### 2.4 How does exception handling work in Python, and how do you make it robust in a production ETL job?
 
-```py
+Python uses `try`/`except`/`else`/`finally`: `try` holds code that may fail, `except` handles specific exception types, `else` runs only when no exception occurred, and `finally` always runs, which makes it the place for cleanup.
+
+```python
 try:
     result = 10 / 0
 except ZeroDivisionError:
-    print("Cannot divide by zero")
+    result = None
+else:
+    print("no error")          # skipped here
 finally:
-    print("Execution completed")
+    print("always runs")
 ```
 
-- **`try`** → Contains code that may raise an exception.
-- **`except`** → Handles the exception.
-- **`else`** → Executes when no exception occurs.
-- **`finally`** → Executes regardless of whether an exception occurs.
+**Production ETL pattern:**
 
-**In short:** Exception handling allows applications to **handle errors gracefully and continue or terminate in a controlled manner**.
+```python
+import logging
+logger = logging.getLogger(__name__)
 
-### 2.6 What language is Python?
+class DataQualityError(Exception):
+    """Raised when a batch fails validation; not retryable."""
 
-- **Python is a high-level, interpreted, general-purpose programming language.**
-- It is **dynamically typed**, meaning you don't need to explicitly declare variable types.
-- It supports multiple programming paradigms, including:
-  - **Object-oriented programming**
-  - **Procedural programming**
-  - **Functional programming**
-- Python is known for its **simple syntax, readability, and extensive standard library**.
-- It is widely used in **web development, data engineering, AI/ML, automation, scripting, and scientific computing**.
-
-**In short:** Python is a **high-level, interpreted, dynamically typed, general-purpose programming language**.
-
-### 2.7 Is Python a case-sensitive language?
-
-Yes, **Python is case-sensitive**.
-
-- Variable names, function names, class names, and keywords are case-sensitive.
-- `name`, `Name`, and `NAME` are treated as **different identifiers**.
-
-Example:
-
-```py
-name = "Alice"
-Name = "Bob"
-
-print(name)  # Alice
-print(Name)  # Bob
+def run_batch(batch_id: str) -> None:
+    try:
+        raw = extract(batch_id)                       # may raise transient IO errors
+        clean = transform(raw)
+        if clean.empty:
+            raise DataQualityError(f"batch {batch_id} produced no rows")
+        load(clean, batch_id)                          # idempotent: overwrite partition
+    except (ConnectionError, TimeoutError):
+        logger.warning("transient failure, will retry", extra={"batch_id": batch_id})
+        raise                                          # let the orchestrator retry
+    except DataQualityError:
+        logger.error("quarantining batch", extra={"batch_id": batch_id})
+        quarantine(batch_id)
+        raise
+    else:
+        logger.info("batch loaded", extra={"batch_id": batch_id, "rows": len(clean)})
 ```
 
-**In short:** Python treats uppercase and lowercase letters as different.
+**Principles:**
 
-### 2.8 What is PEP 8?
+- **Catch specific exceptions.** Catch what you can actually handle; let everything else propagate (see 2.57 on `except Exception` versus bare `except`).
+- **Classify errors as transient or permanent.** Retry transient ones (network, throttling) with exponential backoff and jitter (see 25.10); fail fast on permanent ones (bad schema, failed validation) and quarantine the data.
+- **Never swallow exceptions silently.** `except Exception: pass` turns a loud failure into silent data loss. If you must continue, log with `logger.exception(...)` so the traceback is kept, and emit a metric.
+- **Preserve the cause.** Use `raise PipelineError("load failed") from exc` so the traceback shows both errors.
+- **Clean up with context managers** (`with` for connections, transactions, temporary files) rather than hand-written `finally` blocks (see 2.67).
+- **Make steps idempotent** so a retry after a partial failure does not duplicate data (see 7.14).
+- **Group concurrent failures.** With `asyncio.TaskGroup` several tasks can fail at once; Python 3.11+ raises an `ExceptionGroup`, handled with `except*`.
+- **Fail the job visibly.** Exit non-zero so the orchestrator marks the task failed and alerts, instead of logging an error and returning success.
 
-**PEP 8** is the official **Python style guide** that provides conventions for writing **clean, readable, and consistent Python code**.
+### 2.5 What kind of language is Python (typing, case sensitivity, indentation)?
 
-- Defines naming conventions for variables, functions, classes, and constants.
-- Recommends indentation and spacing practices.
-- Provides guidelines for line length and code layout.
-- Encourages consistent formatting and organization.
-- Improves code readability and maintainability.
+Python is a **high-level, general-purpose, dynamically and strongly typed language** with automatic memory management, supporting procedural, object-oriented and functional styles. The reference implementation, CPython, compiles source to bytecode and interprets it (see 2.18).
 
-**In short:** PEP 8 is a set of **coding style and formatting guidelines for Python**.
+**Key characteristics:**
 
-### 2.9 What are decorators in Python?
+| Property | What it means | Example |
+| --- | --- | --- |
+| **Dynamically typed** | Types belong to objects, not variables; checked at run time | `x = 1; x = "a"` is legal |
+| **Strongly typed** | No implicit coercion between unrelated types | `"1" + 1` raises `TypeError` |
+| **Optionally statically checked** | Type hints are ignored at run time but checked by mypy or Pyright (see 2.75) | `def f(x: int) -> str: ...` |
+| **Case-sensitive** | `name`, `Name` and `NAME` are three different identifiers; keywords are lowercase (`True`, `None` are capitalised) | `True` is valid, `true` is a `NameError` |
+| **Significant indentation** | Blocks are defined by indentation, not braces; inconsistent indentation raises `IndentationError` or `TabError` | PEP 8 recommends 4 spaces |
+| **Everything is an object** | Functions, classes and modules are first-class objects | functions can be passed to other functions |
+| **Batteries included** | Large standard library plus the PyPI ecosystem | `pathlib`, `json`, `asyncio` |
 
-**Decorators in Python** are functions that **modify or extend the behavior of another function or class without changing its source code**.
+```python
+def classify(age: int) -> str:
+    if age >= 18:          # block defined by indentation
+        return "Adult"
+    return "Minor"
 
-- Use the `@decorator` syntax.
-- Commonly used for logging, authentication, caching, validation, and timing.
-- A decorator takes a function as input and returns a modified function.
+name, Name = "Alice", "Bob"   # two different variables
+```
 
-Example:
+**Why it dominates data and AI:** readable syntax, and a "glue language" design in which the heavy lifting is done by C, C++, Rust or CUDA libraries (NumPy, PyTorch, Polars, Arrow) while Python orchestrates. The trade-off is that pure-Python loops are slow (see 2.59), so senior engineers keep hot paths inside those libraries.
 
-```py
-def log_call(func):
-    def wrapper():
-        print("Function called")
-        return func()
+### 2.6 What are decorators, how do they work internally, and how are they used in production?
+
+A decorator is a callable that takes a function (or class) and returns a replacement. `@decorator` above `def f` is syntactic sugar for `f = decorator(f)`, executed once when the `def` statement runs; the name `f` is rebound to whatever the decorator returns.
+
+**What is actually replaced:** the original function object is not modified. The module namespace entry `f` now points to the wrapper, and the wrapper holds the original in a closure cell (see 2.31).
+
+```python
+import functools, logging, time
+
+def timed(func):
+    @functools.wraps(func)                 # copy __name__, __doc__, __wrapped__, ...
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        try:
+            return func(*args, **kwargs)
+        finally:
+            logging.info("%s took %.3fs", func.__qualname__, time.perf_counter() - start)
     return wrapper
 
-@log_call
-def greet():
-    print("Hello")
-
-greet()
+@timed
+def add(a, b):
+    return a + b
+# equivalent to: add = timed(add)
 ```
 
-**In short:** A decorator **adds or changes the functionality of an existing function or class without modifying its original code**.
+**Decorators with arguments** need a third level: a factory that returns the decorator.
 
-### 2.10 What's the difference between .py and .pyc files?
+```python
+def retry(max_attempts=3, exceptions=(ConnectionError, TimeoutError), base_delay=1.0):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions:
+                    if attempt == max_attempts:
+                        raise
+                    time.sleep(base_delay * 2 ** (attempt - 1))
+        return wrapper
+    return decorator
 
-- **`.py` file:** Contains the **Python source code** written by the developer. It is human-readable and editable.
-- **`.pyc` file:** Contains **compiled Python bytecode** generated from the `.py` file. It is primarily used to speed up program startup.
-- `.pyc` files are usually stored in the `__pycache__` directory.
-- Python can automatically generate `.pyc` files when modules are imported.
-
-**In short:** `.py` = source code, `.pyc` = compiled bytecode.
-
-### 2.11 How does Python manage memory?
-
-**Python manages memory automatically** using several mechanisms:
-
-- **Private heap:** Python stores objects in a private memory area called the Python heap.
-- **Reference counting:** Objects keep track of how many references point to them. When the count reaches zero, the memory can be released.
-- **Garbage collection:** Python's garbage collector detects and cleans up **reference cycles** that reference counting alone cannot handle.
-- **Memory allocation:** Python has its own memory allocator to efficiently manage memory for objects.
-- **Automatic management:** Developers generally do not need to manually allocate or free memory.
-
-**In short:** Python uses **reference counting, garbage collection, and automatic memory allocation** to manage memory.
-
-### 2.12 What are namespaces in Python?
-
-**Namespaces in Python** are containers that **map names (identifiers) to objects**. They help avoid naming conflicts and determine where Python looks for a variable, function, or class.
-
-Common types:
-
-- **Local namespace:** Names inside a function.
-- **Global namespace:** Names defined at the module/file level.
-- **Built-in namespace:** Names provided by Python, such as `print()`, `len()`, and `str`.
-- **Enclosing namespace:** Names from an outer function when nested functions are used.
-
-Python generally searches namespaces using the **LEGB rule**:
-
-**Local → Enclosing → Global → Built-in**
-
-**In short:** A namespace is a **mapping of names to objects that organizes identifiers and prevents naming conflicts**.
-
-### 2.13 What are Python packages?
-
-**Python packages** are collections of related **Python modules** organized in a directory to provide reusable functionality.
-
-- A **module** is typically a single `.py` file.
-- A **package** is a collection of modules and subpackages.
-- Packages help organize large projects and promote code reuse.
-- They can be installed using tools such as `pip`.
-- Examples: `numpy`, `pandas`, `requests`, and `scikit-learn`.
-
-**In short:** A Python package is a **structured collection of reusable Python modules and code**.
-
-### 2.14 Specify the tools that help in finding bugs or performing static analysis in Python.
-
-Common Python tools for **finding bugs and performing static analysis** include:
-
-- **Pylint** – Finds coding errors, potential bugs, and style issues.
-- **Flake8** – Checks code for style violations and common programming errors.
-- **Ruff** – Fast linter and formatter that detects many common issues.
-- **mypy** – Performs static type checking.
-- **Pyright** – Fast static type checker for Python.
-- **Bandit** – Identifies common security vulnerabilities in Python code.
-- **Black** – Automatically formats Python code consistently.
-- **isort** – Checks and organizes import statements.
-
-**In short:** Common choices are **Ruff/Pylint/Flake8 for linting, mypy/Pyright for type checking, and Bandit for security analysis**.
-
-### 2.15 What are Python Modules? Name some Python modules that are most frequently used.
-
-**Python modules** are files containing Python code—such as **functions, classes, and variables**—that can be imported and reused in other Python programs.
-
-- A module is typically a single **`.py` file**.
-- Modules help organize code and promote **reusability and maintainability**.
-- You can import a module using the `import` statement.
-
-**Commonly used Python modules:**
-
-- `os` – Operating system and file operations
-- `sys` – System-specific functionality
-- `math` – Mathematical functions
-- `datetime` – Date and time operations
-- `json` – JSON encoding and decoding
-- `re` – Regular expressions
-- `random` – Random number generation
-- `collections` – Specialized data structures
-- `pathlib` – Object-oriented filesystem paths
-- `logging` – Application logging
-
-**In short:** A Python module is a **reusable `.py` file containing related Python code**.
-
-### 2.16 What are Python's local variables and global variables?
-
-**Local variables** and **global variables** differ based on their **scope**, meaning where they can be accessed.
-
-- **Local variable:** Defined inside a function and accessible only within that function.
-- **Global variable:** Defined outside functions and generally accessible throughout the module.
-
-Example:
-
-```py
-x = 10  # Global variable
-
-def test():
-    y = 20  # Local variable
-    print(x)
-    print(y)
+@retry(max_attempts=5)
+def fetch_page(url): ...
+# equivalent to: fetch_page = retry(max_attempts=5)(fetch_page)
 ```
 
-- `x` → global variable
-- `y` → local variable
+**Stacking:** `@A` above `@B` above `def f` means `f = A(B(f))`; the decorator nearest the function is applied first, and the outermost runs first at call time. Order matters, for example a cache outside a retry caches only successes.
 
-**In short:**
+**Production uses:**
 
-**Local = accessible within a function.**
+- Logging, timing, tracing spans and metrics (OpenTelemetry instrumentation is often decorators).
+- Retry with backoff (`tenacity` is the standard library), rate limiting, circuit breaking.
+- Caching: `functools.lru_cache` and `functools.cache`.
+- Registration: Airflow `@task`, Prefect `@flow`, FastAPI `@app.get`, pytest `@pytest.fixture` register the function in a framework registry.
+- Validation and access control: `pydantic.validate_call`, auth checks on API handlers.
 
-**Global = accessible throughout the module.**
+**Pitfalls:**
 
-### 2.17 Is indentation necessary in Python?
+- **Forgetting `functools.wraps`** loses the name and docstring, breaks introspection, and confuses frameworks that read signatures (FastAPI, pytest).
+- **Retrying non-idempotent operations** (a payment, an append) duplicates side effects.
+- **Async functions** need an `async def wrapper` that awaits the call; a sync wrapper returns an un-awaited coroutine.
+- **`lru_cache` on methods** keeps `self` alive for the life of the cache, a common memory leak.
+- **Typing:** use `ParamSpec` so type checkers keep the wrapped function's signature.
+- **Import-time side effects:** decorator code runs at import, so heavy work there slows startup.
 
-Yes, **indentation is necessary in Python** because it is used to **define blocks of code** instead of curly braces `{}` like in some other languages.
+### 2.7 What are .pyc files, and how do bytecode caching and the compile-time optimiser improve performance?
 
-- Indentation is required after statements such as `if`, `for`, `while`, `def`, and `class`.
-- Incorrect indentation causes an **`IndentationError`** or **`TabError`**.
-- Python convention is **4 spaces per indentation level**.
-- Consistent indentation makes code readable and defines its structure.
+A `.py` file is source code; a `.pyc` file is the **compiled bytecode** of a module, cached in `__pycache__/module.cpython-312.pyc` (the tag names the interpreter version) so that the next import can skip parsing and compiling.
 
-Example:
+**How the cache works:**
 
-```py
-if age >= 18:
-    print("Adult")
-```
+- On `import`, CPython looks for a `.pyc` whose header matches. By default it checks the source file's modification time and size; with PEP 552 (3.7+) it can instead store a hash of the source, which is useful for reproducible builds.
+- If valid, the bytecode is loaded directly; otherwise the source is recompiled and the cache rewritten (if the directory is writable).
+- The script you run directly (`python main.py`) is compiled every time and not cached; only imported modules are.
+- `python -m compileall` precompiles a tree, which is common in Docker images so containers do not compile on first start. `PYTHONDONTWRITEBYTECODE=1` disables writing caches.
 
-**In short:** Indentation is **syntactically significant in Python and defines the structure of code blocks**.
+**Compile-time optimisation** (historically the "peephole optimiser", now mostly done on the AST and control-flow graph):
 
-### 2.18 What's the difference between Python arrays and lists?
+- Constant folding: `60 * 60 * 24` becomes `86400` in the bytecode.
+- Converting constant lists in membership tests to tuples or frozensets: `x in [1, 2, 3]` becomes a constant tuple lookup.
+- Removing unreachable code and simplifying jumps.
 
-- **Python List:** Built-in data structure that can store **different data types** and is highly flexible.
-  ```py
-  items = [1, "Python", 3.5]
-  ```
-- **Python Array:** Usually refers to the `array` module's `array` type, which stores elements of **the same data type** and can be more memory-efficient for homogeneous numeric data.
-  ```py
-  from array import array
-  numbers = array('i', [1, 2, 3])
-  ```
+**What each one does and does not speed up:**
 
-#### Key differences
-
-| Feature | List | Array |
+| Mechanism | Speeds up | Does not speed up |
 | --- | --- | --- |
-| Data types | Can be mixed | Same type |
-| Flexibility | High | More restricted |
-| Memory | Generally higher | Generally lower for homogeneous data |
-| Use case | General-purpose collections | Typed numeric data |
+| `.pyc` caching | Import and startup time | Run-time execution; the same bytecode runs either way |
+| Compile-time optimisation | Execution slightly, by removing instructions | Anything dominated by I/O or library calls |
+| Specialising adaptive interpreter (3.11+) | Hot bytecode is rewritten at run time into type-specialised instructions | Startup |
 
-**In short:** **List = flexible, general-purpose collection; Array = typed, memory-efficient collection.**
+**Pitfalls:** `.pyc` files are not protection for source code (they decompile easily) and are not portable across minor versions. Stale caches are rarely an issue because of the timestamp check, but committing `__pycache__` to git is a mistake; add it to `.gitignore`.
 
-### 2.19 What is self in Python?
+### 2.8 How does Python manage memory, and what does that mean in practice?
+
+CPython manages memory automatically with **reference counting** as the primary mechanism, a **cyclic garbage collector** for reference cycles, and its own **small-object allocator** on top of the system allocator. Developers do not free memory by hand, but they do need to understand when memory is released and why a process's memory often does not shrink.
+
+**The layers:**
+
+| Layer | What it does |
+| --- | --- |
+| **Reference counting** | Each object stores a count of references; when it reaches zero the object is freed immediately (see 2.21) |
+| **Cyclic GC** (`gc` module) | Periodically finds groups of container objects that only reference each other and frees them (see 2.22) |
+| **pymalloc** | Allocator for small objects (512 bytes or less): carves arenas into pools of fixed-size blocks, which is much faster than `malloc` for millions of tiny objects |
+| **System allocator** | Large objects and buffers (NumPy arrays, big strings) go to `malloc` directly; the free-threaded build uses `mimalloc` |
+| **Private heap** | All Python objects live in a heap managed by the interpreter, not by user code |
+
+**Practical consequences:**
+
+- **Objects are big.** An `int` is about 28 bytes and a small `dict` hundreds; a list of a million Python floats uses roughly 32 MB versus 8 MB in a NumPy `float64` array. This is why data work keeps values in columnar buffers (NumPy, Arrow, Polars) rather than Python objects.
+- **Memory is not always returned to the OS.** pymalloc can only release an arena when every block in it is free, so fragmentation keeps RSS high after a peak. Freed memory is reused by Python but the process does not shrink. Long-running workers are often recycled (`max_requests` in Gunicorn, `max_tasks_per_child` in multiprocessing and Celery) for this reason.
+- **Deterministic cleanup is a CPython detail.** Refcounting frees files and sockets promptly in CPython, but PyPy and the free-threaded build behave differently; always use `with` for resources.
+- **GC pauses** come from the cyclic collector, not refcounting. Services that build many container objects can tune `gc.set_threshold`, or call `gc.freeze()` after startup in pre-fork servers so the collector does not touch (and copy-on-write) shared pages.
+- **Measuring:** `sys.getsizeof` is shallow; use `tracemalloc`, `memray` or `pympler` for real numbers (see 2.76).
+
+**Interview answer:** CPython frees most objects the instant their reference count hits zero, uses a generational cyclic collector for cycles, and uses pymalloc for small objects. The things that matter in production are per-object overhead, fragmentation keeping RSS high, and lingering references (caches, globals, closures) that keep objects alive.
+
+### 2.9 What are namespaces and scopes in Python, and how does the LEGB rule work internally?
+
+A **namespace** is a mapping from names to objects; a **scope** is the region of code where a namespace is directly accessible. Python resolves an unqualified name using **LEGB: Local, Enclosing, Global, Built-in**, and the compiler decides at compile time which of these each name belongs to.
+
+| Scope | What lives there | Implementation |
+| --- | --- | --- |
+| **Local** | Parameters and names assigned inside the function | Fast local slots in the frame, accessed with `LOAD_FAST` by index (not a dict) |
+| **Enclosing** | Locals of outer functions used by a nested function | Cell objects, accessed with `LOAD_DEREF` (see 2.31) |
+| **Global** | Module-level names | The module's `__dict__` (`func.__globals__`), accessed with `LOAD_GLOBAL` |
+| **Built-in** | `len`, `print`, `ValueError` | `builtins` module dict, checked after globals |
+
+```python
+x = 10                    # global
+
+def outer():
+    y = 20                # local to outer, enclosing for inner
+    def inner():
+        z = 30            # local
+        return x + y + z + len([1])   # G, E, L, B
+    return inner()
+```
+
+**Key rules and gotchas:**
+
+- **Assignment makes a name local for the whole function.** The compiler sees the assignment and marks the name local, so reading it earlier raises `UnboundLocalError`:
+
+```python
+count = 0
+def increment():
+    count += 1        # UnboundLocalError: count is local here
+```
+
+- **`global` and `nonlocal`** change that decision: `global count` targets the module namespace, `nonlocal count` the nearest enclosing function (see 2.32).
+- **Class bodies are not enclosing scopes** for methods; methods reach class attributes through `self` or the class name. Comprehensions have their own scope (inlined for speed in 3.12 by PEP 709, but semantics unchanged).
+- **Local access is faster** than global or built-in lookup because it is an array index, which is why hot loops sometimes bind globals to locals.
+- **Local versus global variables:** locals exist only during the call; globals live as long as the module. Mutable global state makes code hard to test and unsafe under threads; prefer passing values explicitly or using objects.
+
+Inspecting namespaces: `globals()`, `locals()`, `vars(obj)`, `func.__code__.co_varnames` (locals), `co_freevars` (captured), `co_names` (globals and attributes); see 2.29.
+
+### 2.10 What are Python modules and packages, and which standard-library modules matter most?
+
+A **module** is a single importable unit, usually a `.py` file (or a compiled extension such as `.so`); a **package** is a directory of modules, normally with an `__init__.py`, that creates a dotted namespace such as `myapp.io.readers`. A **distribution** is what you install from PyPI (a wheel), which may contain several packages; the install name and import name can differ (`pip install scikit-learn`, `import sklearn`).
+
+```text
+myapp/
+  pyproject.toml
+  src/myapp/
+    __init__.py        # package marker and public API
+    io/
+      __init__.py
+      readers.py       # module: myapp.io.readers
+    transforms.py
+  tests/
+```
+
+**Why the distinction matters:**
+
+- Modules are executed once per process and cached in `sys.modules` (see 2.53); top-level code runs at import, so keep it cheap and side-effect free.
+- Packages define the public API: re-export stable names in `__init__.py` and treat underscore-prefixed modules as private.
+- The `src/` layout prevents tests accidentally importing the working directory instead of the installed package.
+- Namespace packages (no `__init__.py`, PEP 420) let several distributions share a top-level name; see 2.54.
+- Packaging and dependency management are covered in 2.74.
+
+**Standard-library modules a senior engineer uses constantly:**
+
+| Area | Modules |
+| --- | --- |
+| Files and OS | `pathlib`, `os`, `shutil`, `tempfile`, `subprocess` |
+| Data formats | `json`, `csv`, `pickle`, `sqlite3`, `gzip`, `zipfile` |
+| Data structures and functional tools | `collections` (`defaultdict`, `Counter`, `deque`), `itertools`, `functools`, `heapq`, `bisect`, `dataclasses`, `enum` |
+| Concurrency | `concurrent.futures`, `asyncio`, `threading`, `multiprocessing`, `queue` |
+| Typing | `typing`, `abc` |
+| Observability and debugging | `logging`, `traceback`, `cProfile`, `tracemalloc`, `pdb` |
+| Time | `datetime`, `zoneinfo`, `time` |
+| Other | `re`, `math`, `random`, `statistics`, `hashlib`, `uuid`, `contextlib`, `argparse` |
+
+### 2.11 What is PEP 8, and which tools enforce code quality and find bugs through static analysis?
+
+**PEP 8** is the official style guide for Python code: 4-space indentation, `snake_case` for functions and variables, `PascalCase` for classes, `UPPER_CASE` for constants, import ordering, whitespace rules and a recommended line length (79, though most teams configure 88 to 120). Its real value is that nobody argues about style in code review, because a formatter applies it automatically.
+
+**The modern toolchain:**
+
+| Purpose | Tools | Notes |
+| --- | --- | --- |
+| Formatting | **Ruff format**, Black | Deterministic; run on save and in CI |
+| Linting | **Ruff** (replaces Flake8, isort, pyupgrade and many Pylint rules), Pylint | Ruff is written in Rust and fast enough to run on every commit |
+| Type checking | **mypy**, **Pyright** (and Pylance in VS Code), newer Rust checkers such as Astral's ty and Meta's Pyrefly | Catch `None` errors, wrong argument types, missing attributes |
+| Security | **Bandit** (or Ruff's `S` rules), `pip-audit`, Semgrep | Hard-coded secrets, `pickle.load`, shell injection, vulnerable dependencies |
+| Dead code and complexity | `vulture`, Ruff's complexity rules, `radon` | Find unused code and over-complex functions |
+| Notebooks | `nbqa`, Ruff supports `.ipynb` | Notebooks drift fastest |
+
+**How to roll it out on a team:**
+
+1. Put all configuration in `pyproject.toml` so editors, pre-commit and CI use the same rules.
+2. Run fast checks in `pre-commit` and the full set in CI; CI is the source of truth.
+3. On a legacy codebase, adopt a baseline: enable rules gradually, use per-file ignores, and type-check new modules strictly (`strict = true` per package) rather than blocking everything at once.
+4. Treat warnings as errors in CI so the count only goes down.
+
+**What interviewers look for:** you automate style rather than review it, you know type checkers find a different class of bugs from linters, and you can introduce tooling to an existing codebase without stopping delivery.
+
+### 2.12 What is the difference between Python lists, `array.array` and NumPy arrays?
+
+A **list** is a general-purpose dynamic array of pointers to arbitrary Python objects; an **`array.array`** stores primitive values of one C type compactly; a **NumPy `ndarray`** stores typed values in a contiguous buffer and adds vectorised maths, multiple dimensions and broadcasting. For numeric data work you almost always want NumPy (or Arrow, Polars, pandas built on top of it).
+
+```python
+from array import array
+import numpy as np
+
+items = [1, "Python", 3.5]                  # list: mixed types, pointers to objects
+ints = array("i", [1, 2, 3])                # array: C ints, 4 bytes each
+vec = np.arange(1_000_000, dtype=np.float64)
+
+vec * 2.0                                   # vectorised, runs in C
+[x * 2.0 for x in vec.tolist()]             # Python loop, typically 50-100x slower
+```
+
+| Feature | `list` | `array.array` | NumPy `ndarray` |
+| --- | --- | --- | --- |
+| Element types | Any, mixed | One C numeric type | One dtype (numeric, bool, datetime, fixed-width string, object) |
+| Storage | Pointers to boxed objects | Raw values, contiguous | Raw values, contiguous, strided, N-dimensional |
+| Memory for 1M floats | about 32 MB (8-byte pointer plus 24-byte float object) | about 8 MB | about 8 MB |
+| Arithmetic | None built in (`+` concatenates) | None | Vectorised element-wise maths, broadcasting, linear algebra |
+| Resizing | Cheap amortised `append` | Cheap `append` | Fixed size; appending copies the whole array |
+| Typical use | General collections, heterogeneous records | Compact binary I/O, rare today | Numerical and ML work |
+
+**Pitfalls:** building a NumPy array by repeated `np.append` is quadratic (collect in a list, convert once); `dtype=object` arrays lose all the speed benefits; and integer overflow in fixed-width dtypes wraps silently, unlike Python's arbitrary-precision `int`.
+
+### 2.13 What is self in Python?
 
 **`self` In Python** is a reference to the **current object (instance)** of a class.
 
@@ -479,38 +535,7 @@ Here, `self.name` refers to the `name` attribute of the **current `Person` objec
 
 **In short:** `self` refers to the **current instance of a class**.
 
-### 2.20 What are unpickling and pickling?
-
-**Pickling** and **unpickling** are Python processes used to **serialize and deserialize objects**.
-
-- **Pickling:** Converts a Python object into a **byte stream** so it can be stored or transmitted.
-- **Unpickling:** Converts the byte stream back into the **original Python object**.
-- Python provides the `pickle` module for this purpose.
-- Commonly used to save Python objects such as models, dictionaries, and lists.
-
-Example:
-
-```py
-import pickle
-
-# Pickling
-with open("data.pkl", "wb") as f:
-    pickle.dump(data, f)
-
-# Unpickling
-with open("data.pkl", "rb") as f:
-    data = pickle.load(f)
-```
-
-**In short:**
-
-**Pickling = object → byte stream**
-
-**Unpickling = byte stream → object**
-
-**Security note:** Never unpickle data from an untrusted source, because loading a malicious pickle can execute arbitrary code.
-
-### 2.21 How do you do data abstraction in Python?
+### 2.14 How do you do data abstraction in Python?
 
 **Data abstraction in Python** means **hiding the internal implementation details and exposing only the essential functionality** to the user.
 
@@ -538,105 +563,94 @@ Here, the user only needs to know that `sound()` provides an animal's sound; the
 
 **In short:** Data abstraction = **hide implementation details and expose only essential functionality**.
 
-### 2.22 What is the usage of the help() and the dir() functionality in Python?
+### 2.15 How do you introspect objects in Python with help(), dir() and related tools?
 
-- **`help()`** – Provides **documentation and help** about Python objects, modules, classes, functions, or keywords.
-  ```py
-  help(str)
-  help(print)
-  ```
-- **`dir()`** – Returns a list of **attributes and methods** available for an object or module.
-  ```py
-  dir(str)
-  dir(my_object)
-  ```
+`help()` shows the documentation of an object (its docstring, signature and methods) and `dir()` lists the attribute names reachable on it. Together with `type()`, `vars()` and the `inspect` module they let you explore unfamiliar libraries and debug at a REPL.
 
-**In short:**
+```python
+import inspect, pandas as pd
 
-**`help()` = learn how something works.**
+help(pd.DataFrame.merge)          # docstring and signature, paged
+dir(pd.DataFrame)                 # all attribute names, including inherited ones
+[n for n in dir(obj) if not n.startswith("_")]   # public API only
 
-**`dir()` = see what attributes and methods it has.**
-
-### 2.23 What is len() in Python?
-
-`len()` is a **built-in Python function** used to return the **number of items or elements** in an object.
-
-- Works with strings, lists, tuples, dictionaries, sets, and other sized objects.
-- For a string, it returns the number of characters.
-- For a list, it returns the number of elements.
-
-Example:
-
-```py
-name = "Python"
-numbers = [10, 20, 30]
-
-print(len(name))     # 6
-print(len(numbers))  # 3
+type(obj), isinstance(obj, pd.DataFrame)
+vars(obj)                         # the instance __dict__ (fails with __slots__)
+inspect.signature(pd.read_csv)    # parameters and defaults
+inspect.getsource(my_function)    # source code
+inspect.getmodule(obj).__file__   # where something is defined
 ```
 
-**In short:** `len()` returns the **size or number of items in an object**.
-
-### 2.24 Access Modifiers in Python?
-
-Python doesn't have *true* private/protected/public variables enforced by the language like Java or C++ does. Instead, it relies on **naming conventions** — it's more of a social agreement than a hard rule.
-
-Here's how it works:
-
-#### Public
-
-python
-
-```py
-class Person:
-    def __init__(self):
-        self.name = "Alice"  # public
-```
-
-No underscore. Accessible from anywhere, no restrictions.
-
-#### Protected (convention only)
-
-python
-
-```py
-class Person:
-    def __init__(self):
-        self._age = 30  # protected (by convention)
-```
-
-Single underscore prefix. This is just a *hint* to other developers: "treat this as internal, don't touch it from outside the class." Python does nothing to actually stop you — you can still access `obj._age` freely.
-
-#### Private (name mangling, not true privacy)
-
-python
-
-```py
-class Person:
-    def __init__(self):
-        self.__salary = 50000  # "private"
-```
-
-Double underscore prefix triggers **name mangling** — Python internally renames it to `_ClassName__salary`. This makes accidental access harder, but it's not real privacy — you can still access it if you know the mangled name:
-
-python
-
-```py
-p = Person()
-print(p._Person__salary)  # works! prints 50000
-```
-
-#### Summary
-
-| Convention | Syntax | Enforcement |
+| Tool | Returns | Use |
 | --- | --- | --- |
-| Public | `name` | None — fully open |
-| Protected | `_name` | None — just a convention/hint |
-| Private | `__name` | Name mangling only, not true privacy |
+| `help(x)` | Formatted documentation | Learn how to call something |
+| `dir(x)` | Sorted list of attribute names (customisable with `__dir__`) | Discover what exists |
+| `vars(x)` | The object's `__dict__` | See instance state |
+| `type(x)`, `isinstance` | Class, subclass check | Debug type problems |
+| `inspect` | Signatures, source, members, frames | Tooling, frameworks, debugging |
 
-So the honest answer: **no**, Python doesn't have real access control like some other languages. It trusts developers to respect the conventions rather than locking things down with the compiler/interpreter. If you truly need to hide something, you'd need tricks (closures, `__slots__`, properties with logic) but nothing is unbreakable in Python — "we're all consenting adults here" is a common Python philosophy phrase for this.
+**Notes:** `dir()` on a module or object with `__getattr__` may not list dynamically provided attributes. In notebooks and IPython, `obj?` and `obj??` give the same information as `help` and source. Frameworks such as FastAPI and pytest rely on `inspect.signature` to wire dependencies, which is why decorators must use `functools.wraps`.
 
-### 2.25 Is Python an interpreted and a compiled language?
+### 2.16 What does len() do, and how does it work under the hood?
+
+`len(obj)` returns the number of items in a container. It works by calling the object's `__len__` method (at C level the `sq_length` or `mp_length` slot), so any class can support it.
+
+```python
+class Batch:
+    def __init__(self, rows):
+        self._rows = rows
+    def __len__(self):
+        return len(self._rows)
+
+len("Python")       # 6 characters (code points, not bytes)
+len([10, 20, 30])   # 3
+len({"a": 1})       # 1 key
+len(Batch([1, 2]))  # 2
+```
+
+**Points worth knowing:**
+
+- **O(1) for built-ins.** Lists, tuples, dicts, sets and strings store their size, so `len` does not iterate.
+- **Characters versus bytes.** `len("café")` is 4, `len("café".encode("utf-8"))` is 5. This matters for API payload limits and database column widths.
+- **Generators and iterators have no length.** `len(x for x in data)` raises `TypeError`; count with `sum(1 for _ in it)`, which consumes the iterator.
+- **Truthiness uses `__len__`.** If a class has no `__bool__`, `if obj:` is false when `len(obj) == 0`. Beware: `if df:` on a pandas DataFrame raises `ValueError` because truthiness is ambiguous; use `df.empty`.
+- **`__len__` must return a non-negative `int`**, and it is limited to `sys.maxsize`; lazy or infinite collections should not define it.
+- **Prefer `len(x) == 0` or `not x`** for emptiness; both are idiomatic.
+
+### 2.17 How do access modifiers (public, protected, private) work in Python?
+
+Python has **no enforced access modifiers**. It uses naming conventions: no prefix means public, a single underscore means internal, and a double underscore triggers **name mangling**, which avoids accidental clashes in subclasses but is not security.
+
+```python
+class Account:
+    def __init__(self):
+        self.owner = "Alice"      # public API
+        self._balance = 100       # internal: "please don't touch", not enforced
+        self.__pin = 1234         # mangled to _Account__pin
+
+a = Account()
+a._balance                       # works
+a.__pin                          # AttributeError
+a._Account__pin                  # works: mangling is only a rename
+```
+
+| Convention | Syntax | Enforcement | Intended use |
+| --- | --- | --- | --- |
+| Public | `name` | None | Stable API |
+| Internal ("protected") | `_name` | None; excluded from `from module import *`; linters warn on external access | Implementation details, may change without notice |
+| Name-mangled ("private") | `__name` (no trailing double underscore) | Compiler rewrites to `_ClassName__name` inside the class body | Avoid name collisions in inheritance hierarchies |
+| Dunder | `__name__` | None; reserved for the language | Never invent your own |
+
+**How to control access properly:**
+
+- Use `@property` to expose read-only attributes or validate on assignment.
+- Use `__slots__` or frozen dataclasses (`@dataclass(frozen=True)`) to prevent arbitrary attribute creation or mutation.
+- Define the public surface of a module with `__all__` and underscore-prefixed modules.
+- Real secrets do not belong in Python objects that untrusted code can reach; there is no sandbox inside one process.
+
+**Interview point:** the philosophy is "we are all consenting adults". Conventions communicate intent, name mangling prevents accidental overrides, and type checkers plus linters enforce the boundary in teams.
+
+### 2.18 Is Python an interpreted and a compiled language?
 
 Python is actually **both**, in a sense — it depends on how you define "compiled."
 
@@ -677,39 +691,36 @@ Interestingly, Python's model is actually very similar to Java's — both compil
 
 **Bottom line**: Python is technically a **hybrid** — compiled to bytecode, then interpreted — but it's colloquially and commonly referred to as an "interpreted language" because that's the dominant, visible behavior from a user's perspective.
 
-### 2.26 GIL in Python. Why?
+### 2.19 What is the GIL, why does CPython have it, and how does it affect data processing?
 
-- The **Global Interpreter Lock (GIL)** is a mutex (lock) in the standard CPython interpreter that **ensures only one thread executes Python bytecode at a time**.
-- Because **CPython’s memory management is not thread-safe**
+The **Global Interpreter Lock** is a mutex in CPython that allows only one thread at a time to execute Python bytecode within a process. It exists because CPython's memory management, especially reference counting, is not thread-safe: without a lock, two threads incrementing and decrementing the same object's refcount could corrupt it and free live objects.
 
-<!-- merged from duplicate question: "What is the Global Interpreter Lock (GIL), and why does CPython have one?" -->
+**Why it was kept for 30 years:**
 
-| Aspect | Explanation |
-| --- | --- |
-| **GIL** | The **Global Interpreter Lock (GIL)** is a lock in the traditional CPython execution model that allows only **one thread at a time to execute Python bytecode within a process**. |
-| **Why CPython has it** | Historically, it greatly simplified CPython's memory management, especially **reference counting**, by preventing multiple threads from modifying object reference counts simultaneously. |
-| **Threading impact** | Multiple threads can exist and run concurrently, but CPU-bound Python bytecode generally cannot execute in parallel across threads in a traditional GIL-enabled CPython process. |
-| **I/O-bound tasks** | Threads can still be very useful because CPython can release the GIL while waiting for many I/O operations, allowing another thread to run Python code. |
-| **CPU-bound tasks** | Threads generally do not provide true CPU parallelism for Python bytecode under the traditional GIL model. Multiprocessing or other approaches can provide parallelism. |
-| **C extensions** | Native C/C++ extensions can release the GIL while performing work, allowing other Python threads to execute. |
-| **Modern CPython nuance** | **Free-threaded CPython builds** became available experimentally in Python 3.13, allowing the GIL to be disabled. This is an alternative build/runtime mode rather than the historical default model. |
-| **Interview answer** | **The GIL is a CPython lock that traditionally allows only one thread to execute Python bytecode at a time per process. It simplified CPython's memory management and reference-counting implementation, while still allowing useful concurrency for I/O-bound workloads.** |
+- One global lock is simpler and faster for single-threaded code than fine-grained locks on every object.
+- It made writing C extensions easy, which is a large part of why NumPy, SciPy and the data ecosystem exist.
+- Earlier attempts to remove it (Larry Hastings' "Gilectomy") slowed single-threaded code too much.
 
-### 2.27 How do access modifiers work in Python?
+**How it behaves:**
 
-| Aspect | Access Modifier in Python |
-| --- | --- |
-| **Meaning** | Controls or indicates how class attributes and methods should be accessed. |
-| **Python approach** | Python does **not have strict access modifiers** like Java or C++ (`public`, `private`, `protected`). It mainly uses naming conventions and name mangling. |
-| **Public** | `name` — accessible from anywhere. |
-| **Protected (convention)** | `_name` — indicates “internal/protected” use; Python does not enforce it. |
-| **Private (name mangling)** | `__name` — Python transforms it roughly to `_ClassName__name`, making accidental external access harder. |
-| **Example** | `class User: __password = "..."` |
-| **Name mangling** | `user.__password` normally fails, but `user._User__password` can access it. Therefore, it is **not true security/privacy**. |
-| **Best practice** | Use `_name` for internal APIs and `__name` when you specifically want name-mangling to avoid subclass/name collisions. |
-| **Interview answer** | **Python doesn't enforce public/protected/private access modifiers. It uses naming conventions (`name`, `_name`) and name mangling (`__name`) to communicate or restrict attribute access.** |
+- A running thread releases the GIL periodically (every 5 ms by default, `sys.setswitchinterval`) so others can run.
+- **Blocking I/O releases the GIL**: socket reads, file reads, `time.sleep`, database drivers waiting on the network.
+- **C extensions can release it** around heavy computation: NumPy vectorised operations, many pandas internals, Polars, PyTorch kernels, compression libraries, `hashlib` on large inputs.
 
-### 2.28 What's the difference between `is` and `==`? How does CPython implement identity checks?
+**Impact on data workloads:**
+
+| Workload | Threads under the GIL | Better choice |
+| --- | --- | --- |
+| Downloading files, calling APIs, querying databases | Scale well (I/O releases the GIL) | Threads or `asyncio` |
+| Pure-Python row-by-row transforms | No speed-up; can be slower from contention | Vectorise, multiprocessing, or Spark |
+| NumPy, Polars, PyTorch heavy kernels | Can scale, because the libraries release the GIL | Threads are fine; Polars already parallelises internally |
+| CPU-bound Python in a web service | Blocks other requests | Offload to a process pool or worker queue |
+
+**Current status:** the GIL is still the default, but PEP 703 introduced a free-threaded build (experimental in 3.13, officially supported but opt-in since 3.14); see 2.72. Python 3.12+ also offers per-interpreter GILs, exposed in 3.14 through `concurrent.interpreters` and `InterpreterPoolExecutor`.
+
+**Common misconception:** the GIL does not make your code thread-safe. It protects the interpreter's internals, but `counter += 1` is several bytecodes and can still lose updates between threads; use locks or queues for shared state.
+
+### 2.20 What's the difference between `is` and `==`? How does CPython implement identity checks?
 
 | Aspect | `is` | `==` |
 | --- | --- | --- |
@@ -724,7 +735,7 @@ Interestingly, Python's model is actually very similar to Java's — both compil
 | **Performance** | Usually very cheap because it is essentially an identity/pointer comparison. | Can be more expensive because it may execute type-specific comparison logic. |
 | **Interview answer** | **`is` checks whether two references point to the exact same object; CPython implements this as an identity/pointer comparison.** | **`==` checks whether two objects have equal values using Python's equality protocol, potentially calling `__eq__`.** |
 
-### 2.29 How does reference counting work in CPython? What happens when an object's refcount hits zero?
+### 2.21 How does reference counting work in CPython? What happens when an object's refcount hits zero?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -739,7 +750,7 @@ Interestingly, Python's model is actually very similar to Java's — both compil
 | **Main advantage** | Objects that become unreachable without participating in cycles are generally reclaimed immediately rather than waiting for a separate GC pass. |
 | **Interview answer** | **CPython maintains a reference count for objects. References increment the count and releasing references decrements it. When the count reaches zero, CPython normally deallocates the object immediately. Cyclic garbage collection is additionally used for unreachable reference cycles that reference counting cannot detect.** |
 
-### 2.30 How does Python's garbage collector handle reference cycles?
+### 2.22 How does Python's garbage collector handle reference cycles?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -747,13 +758,13 @@ Interestingly, Python's model is actually very similar to Java's — both compil
 | **Example** | `a → b` and `b → a`. Even if no external references to `a` or `b` remain, their reference counts are not zero. |
 | **How Python handles it** | CPython uses a **cyclic garbage collector (GC)** in addition to reference counting to detect and collect unreachable reference cycles. |
 | **Detection** | The GC tracks container objects that can contain references to other objects, such as `list`, `dict`, and custom objects. It determines which groups of objects are unreachable from the program's roots. |
-| **Generational approach** | CPython's cyclic GC groups tracked objects by generations and focuses collection work on younger objects more frequently. |
+| **Generational approach** | CPython's cyclic GC groups tracked objects by generations and focuses collection work on younger objects more frequently. Python 3.14.0 briefly shipped an incremental collector to cut pause times, but 3.14.5 reverted to the generational design after reports of higher memory use. |
 | **Collection** | Once a cycle is determined to be unreachable, the GC can break the cycle and allow the objects to be deallocated. |
 | **`__del__` consideration** | Objects with finalizers (`__del__`) require special handling. Modern CPython can safely finalize many cyclic objects, but finalizers can still complicate collection. |
 | **Reference counting vs GC** | **Reference counting** handles most objects immediately when their count reaches zero; **cyclic GC** handles unreachable cycles that reference counting alone cannot reclaim. |
 | **Interview answer** | **CPython primarily uses reference counting, but reference cycles keep their counts above zero. Its cyclic garbage collector detects unreachable groups of container objects and collects those cycles, preventing them from leaking indefinitely.** |
 
-### 2.31 What's the difference between `__new__` and `__init__`?
+### 2.23 What's the difference between `__new__` and `__init__`?
 
 | Aspect | `__new__` | `__init__` |
 | --- | --- | --- |
@@ -766,8 +777,6 @@ Interestingly, Python's model is actually very similar to Java's — both compil
 | **Example** | `def __new__(cls, x): return super().__new__(cls)` | `def __init__(self, x): self.x = x` |
 | **Execution flow** | `Class(...) → __new__() → __init__()` | Runs only if `__new__()` returns a suitable instance of the class. |
 | **Key interview point** | **`__new__` creates the object.** | **`__init__` initializes the object.** |
-
-<!-- merged from duplicate question: "What is the `__init__` method and how does it differ from `__new__`?" -->
 
 - **`__new__()`** → Creates and returns a new instance of the class.
 - **`__init__()`** → Initializes the instance after it has been created.
@@ -787,7 +796,7 @@ class User:
 
 **Typical use of `__new__()`:** controlling object creation, implementing certain singleton patterns, or subclassing immutable types such as `tuple` or `str`.
 
-### 2.32 Why is small integer caching (-5 to 256) used, and how does it affect `is` comparisons?
+### 2.24 Why is small integer caching (-5 to 256) used, and how does it affect `is` comparisons?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -802,22 +811,43 @@ class User:
 | **Important nuance** | The `-5` to `256` range is a **CPython implementation detail**, not a general Python language guarantee. |
 | **Interview answer** | **CPython caches commonly used small integer objects to reduce allocation and memory overhead. As a result, two variables containing the same small integer may have the same identity, making `is` return `True`. However, `is` should never be used for numeric value comparison; use `==`.** |
 
-### 2.33 What's object interning, and how does it apply to strings?
+### 2.25 What is object interning, how does string immutability enable it, and when would you use sys.intern()?
 
-| Aspect | Explanation |
-| --- | --- |
-| **Object interning** | A technique where Python/CPython stores a single canonical object for certain immutable values and reuses that object instead of creating duplicates. |
-| **Strings** | CPython commonly interns certain strings, especially **identifier-like strings** such as variable, function, and attribute names. Some string literals may also be interned by the compiler. |
-| **Example** | `a = "hello"` and `b = "hello"` may refer to the **same string object** because `"hello"` can be interned. |
-| **`sys.intern()`** | You can explicitly request interning: `a = sys.intern("some_repeated_string")`. |
-| **Memory benefit** | Repeated identical interned strings can share one object, reducing memory usage. |
-| **Performance benefit** | When both strings are interned, identity checks can sometimes be used internally, potentially making comparisons faster. |
-| **Why strings can be interned safely** | Strings are **immutable**, so sharing one object cannot cause one part of a program to modify it for another part. |
-| **Important distinction** | **Interning is not the same as string equality.** Two equal strings do not necessarily have the same identity unless they happen to be interned/shared. |
-| **`is` vs `==`** | Use `==` for string value comparison. **Do not use `is`** to compare string contents, even if interning sometimes makes `is` appear to work. |
-| **Interview answer** | **Object interning reuses a single canonical object for identical immutable values. For strings, CPython interns many identifier-like strings and allows explicit interning with `sys.intern()`, reducing memory usage and potentially improving repeated comparisons.** |
+**Interning** means keeping one canonical object for each distinct immutable value and reusing it instead of creating duplicates. It is safe only because the objects are **immutable**: if strings could be changed in place, modifying one reference would silently change every other variable sharing it.
 
-### 2.34 How does `sys.getrefcount()` work, and why is its result often higher than expected?
+**What CPython interns automatically:**
+
+- Identifier-like strings used in code: variable, function, attribute and keyword-argument names, and dictionary keys used for attribute lookup.
+- Many short string literals that look like identifiers (letters, digits and underscores) at compile time.
+- Small integers from -5 to 256 are a related cache (see 2.24).
+- Strings built at run time (read from files, concatenated, decoded from JSON) are generally **not** interned.
+
+**Why it helps:**
+
+- **Memory:** a million rows with the same `"status"` value can share one object.
+- **Speed:** dict lookups first compare by identity, so interned keys skip the character-by-character comparison. Strings also cache their hash, another benefit of immutability.
+
+**Manual interning with `sys.intern()`:**
+
+```python
+import sys
+
+a = sys.intern("customer_id")
+b = sys.intern("".join(["customer_", "id"]))   # built at run time
+assert a is b                                    # same object
+
+# parsing millions of records with a small set of repeated keys or labels
+rows = [{sys.intern(k): v for k, v in rec.items()} for rec in records]
+```
+
+Use it when a program holds **many copies of a small vocabulary** of strings: field names in parsed JSON, tokens, categorical labels, symbol tables. Do not intern high-cardinality values (IDs, free text): you gain nothing and grow the intern table.
+
+**Rules:**
+
+- Never use `is` to compare strings; use `==`. Interning is an implementation detail and `is` results vary between versions and contexts.
+- In data work the same idea appears at a higher level and is usually the better tool: pandas `category` dtype, Polars `Categorical`, Arrow dictionary encoding and Parquet dictionary pages all store each distinct string once.
+
+### 2.26 How does `sys.getrefcount()` work, and why is its result often higher than expected?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -830,7 +860,7 @@ class User:
 | **Important caveat** | The exact count can vary depending on the Python implementation, execution context, and temporary references. `getrefcount()` is primarily useful for CPython diagnostics, not application logic. |
 | **Interview answer** | **`sys.getrefcount()` reads CPython's reference count for an object. Its result is often one higher than expected because passing the object to `getrefcount()` itself temporarily adds a reference. Other temporary or hidden references can increase it further.** |
 
-### 2.35 What's the difference between mutable and immutable objects at the C level?
+### 2.27 What's the difference between mutable and immutable objects at the C level?
 
 | Aspect | Mutable Objects | Immutable Objects |
 | --- | --- | --- |
@@ -844,7 +874,7 @@ class User:
 | **C-level key point** | **Mutability is about whether the object's C-level state can be modified in place.** | **Immutability means the object's represented value is fixed after creation; changing the value requires another object.** |
 | **Important nuance** | Immutability is a property of the Python object's semantics/type, not simply whether its C struct contains writable memory. | An immutable object can still have internal implementation details or cached data that change without changing its logical Python value. |
 
-### 2.36 What is `__slots__`, and how does it change an object's memory layout?
+### 2.28 What is `__slots__`, and how does it change an object's memory layout?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -860,19 +890,7 @@ class User:
 | **Inheritance** | `__slots__` interacts with inheritance; subclasses can define additional slots, and a subclass may still have a `__dict__` depending on its definition and base classes. |
 | **Interview answer** | **`__slots__` replaces the usual per-instance attribute dictionary with predefined storage slots. This gives objects a more fixed memory layout, reduces memory overhead, and restricts dynamically added attributes.** |
 
-### 2.37 How does Python implement variable scoping (LEGB rule) internally?
-
-| Aspect | Internal implementation |
-| --- | --- |
-| **LEGB** | Python resolves an unqualified name in the order **Local → Enclosing → Global → Built-ins**. |
-| **Local (L)** | Function-local variables are typically stored in **fast local slots** associated with the executing frame. |
-| **Enclosing (E)** | Variables captured by nested functions are stored in **cell objects**; the inner function accesses them as free variables. |
-| **Global (G)** | Global names are looked up in the function's `__globals__` dictionary, normally the module's namespace. |
-| **Built-ins (B)** | If not found globally, Python checks the built-in namespace associated with the execution environment. |
-| **Compiler's role** | Python's compiler determines whether a name is local, free, cell, or global and emits appropriate bytecode. |
-| **Runtime's role** | The interpreter executes those bytecode operations to retrieve/store the name. |
-
-### 2.38 What's the difference between a function's `__globals__` and `__locals__`?
+### 2.29 What's the difference between a function's `__globals__` and `__locals__`?
 
 | Aspect | `__globals__` | `__locals__` |
 | --- | --- | --- |
@@ -919,7 +937,7 @@ This is the **LEGB** lookup model:
 | **G** | Global → `func.__globals__` |
 | **B** | Built-ins |
 
-### 2.39 How do closures capture variables — by reference or by value?
+### 2.30 How do closures capture variables — by reference or by value?
 
 | Aspect | Closure behavior |
 | --- | --- |
@@ -986,7 +1004,7 @@ for i in range(3):
 
 Here, the default argument stores the current value separately.
 
-### 2.40 What is a cell object, and how does it enable closures?
+### 2.31 What is a cell object, and how does it enable closures?
 
 | Aspect | Cell object |
 | --- | --- |
@@ -1069,7 +1087,7 @@ def counter():
 | Variable would be tied only to the outer execution context | Variable lives as long as the closure needs it |
 | Assignment in inner function creates a local by default | `nonlocal` allows modification of the shared cell |
 
-### 2.41 How does the `nonlocal` keyword work under the hood?
+### 2.32 How does the `nonlocal` keyword work under the hood?
 
 | Aspect | `nonlocal` behavior |
 | --- | --- |
@@ -1130,7 +1148,7 @@ counter()
 | `nonlocal x` | Nearest enclosing function scope |
 | `global x` | Module/global scope |
 
-### 2.42 What is a code object (`__code__`), and what does it contain?
+### 2.33 What is a code object (`__code__`), and what does it contain?
 
 | Aspect | `__code__` / Code Object |
 | --- | --- |
@@ -1186,7 +1204,7 @@ Function object
 └── other metadata
 ```
 
-### 2.43 How does Python compile source code into bytecode? What role does `dis` play?
+### 2.34 How does Python compile source code into bytecode? What role does `dis` play?
 
 | Stage | What Python does |
 | --- | --- |
@@ -1258,7 +1276,7 @@ RETURN_VALUE
 | **`dis`** | Shows/disassembles that bytecode for humans |
 | **`.pyc`** | Persistent cached representation of compiled module bytecode |
 
-### 2.44 What's the difference between a function and a method at the descriptor level?
+### 2.35 What's the difference between a function and a method at the descriptor level?
 
 | Aspect | **Function** | **Method** |
 | --- | --- | --- |
@@ -1313,130 +1331,60 @@ class Function:
 | **Method** | A function that has been **bound to an instance or class** through descriptor behavior. |
 | **Important** | A function defined inside a class is still a **function when stored in `Class.__dict__`**. It becomes a bound method when accessed through an instance. |
 
-### 2.45 How do decorators work internally — what's actually being replaced?
+### 2.36 How does the descriptor protocol (`__get__`, `__set__`, `__delete__`) work, and what is the difference between data and non-data descriptors?
 
-| Aspect | What happens internally |
-| --- | --- |
-| **Decorator** | A callable that receives a function/class and returns a replacement object, usually another function. |
-| **`@decorator` syntax** | `@decorator` above `def f(): ...` is essentially syntactic sugar for `f = decorator(f)` after the function is created. |
-| **What's replaced?** | The **name bound to the original function** is replaced with whatever the decorator returns. |
-| **Original function** | Usually captured inside the wrapper through a closure. |
-| **Function object** | The original function isn't necessarily modified; the name `f` simply points to the decorated result. |
-| **Calling `f()` afterward** | Calls the replacement/wrapper object, which can call the original function. |
+A **descriptor** is an object stored as a **class attribute** whose type defines `__get__`, `__set__` or `__delete__`. When you access that attribute through an instance, Python calls those methods instead of returning the object itself. Descriptors are the mechanism behind methods, `property`, `classmethod`, `staticmethod`, `__slots__` and ORM fields (SQLAlchemy, Django).
 
-#### Example
+```python
+class Positive:
+    """A reusable validated attribute."""
+    def __set_name__(self, owner, name):          # 3.6+: learn the attribute name
+        self.private = "_" + name
 
-```py
-def logger(func):
-    def wrapper(*args, **kwargs):
-        print("Calling function")
-        return func(*args, **kwargs)
-    return wrapper
-
-@logger
-def add(a, b):
-    return a + b
-```
-
-Conceptually, Python transforms this into:
-
-```py
-def add(a, b):
-    return a + b
-
-add = logger(add)
-```
-
-| Before decoration | After decoration |
-| --- | --- |
-| `add` → original function | `add` → `wrapper` |
-| `add.__name__` → `"add"` | `add.__name__` → `"wrapper"` unless `functools.wraps` is used |
-| Calling `add()` → original function | Calling `add()` → `wrapper()` → original function |
-
-#### With `functools.wraps`
-
-```py
-from functools import wraps
-
-def logger(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        print("Calling function")
-        return func(*args, **kwargs)
-    return wrapper
-```
-
-| Without `wraps` | With `wraps` |
-| --- | --- |
-| Metadata can look like the wrapper | Copies important metadata from original function |
-| `__name__` may become `"wrapper"` | `__name__` remains `"add"` |
-| `__doc__` may be lost | Original docstring is preserved |
-
-#### Multiple decorators
-
-```py
-@A
-@B
-def f():
-    pass
-```
-
-is equivalent to:
-
-```py
-f = A(B(f))
-```
-
-| Order | Operation |
-| --- | --- |
-| 1 | Create original `f` |
-| 2 | Apply `B` → `f = B(f)` |
-| 3 | Apply `A` → `f = A(f)` |
-
-### 2.46 How does the descriptor protocol (`__get__`, `__set__`, `__delete__`) work?
-
-| Aspect | Explanation |
-| --- | --- |
-| **Descriptor** | An object that defines how an attribute is accessed, assigned, or deleted through `__get__`, `__set__`, and/or `__delete__`. |
-| **Where defined** | Usually placed as a **class attribute**. |
-| **`__get__()`** | Controls what happens when the attribute is **read**. |
-| **`__set__()`** | Controls what happens when the attribute is **assigned**. |
-| **`__delete__()`** | Controls what happens when the attribute is **deleted**. |
-| **Main purpose** | Customize attribute access without requiring the caller to explicitly invoke methods. |
-
-#### Basic descriptor
-
-```py
-class Descriptor:
     def __get__(self, instance, owner):
-        return "value"
+        if instance is None:                       # accessed on the class
+            return self
+        return getattr(instance, self.private)
 
     def __set__(self, instance, value):
-        print("setting:", value)
+        if value <= 0:
+            raise ValueError(f"{self.private[1:]} must be positive")
+        setattr(instance, self.private, value)
 
-    def __delete__(self, instance):
-        print("deleting")
+class Order:
+    quantity = Positive()
+    price = Positive()
+
+    def __init__(self, quantity, price):
+        self.quantity = quantity                   # calls Positive.__set__
+        self.price = price
+
+o = Order(3, 9.99)
+o.quantity                                         # Positive.__get__(o, Order)
 ```
 
-```py
-class User:
-    name = Descriptor()
+| Operation | Conceptual call |
+| --- | --- |
+| `o.quantity` | `type(o).__dict__["quantity"].__get__(o, type(o))` |
+| `o.quantity = 5` | `type(o).__dict__["quantity"].__set__(o, 5)` |
+| `del o.quantity` | `type(o).__dict__["quantity"].__delete__(o)` |
+| `Order.quantity` | `__get__(None, Order)` |
 
-u = User()
+**Data versus non-data descriptors (the key senior point):**
 
-u.name = "Alice"   # __set__
-print(u.name)      # __get__
-del u.name         # __delete__
-```
+- A **data descriptor** defines `__set__` or `__delete__` (for example `property`, slots). It **takes precedence over the instance `__dict__`**.
+- A **non-data descriptor** defines only `__get__` (for example plain functions, `classmethod`). The **instance `__dict__` wins**, which is why you can shadow a method by assigning `obj.method = something`, and why `functools.cached_property` works: the first access stores the value in the instance dict and later accesses never call `__get__` again.
 
-| Operation | Descriptor method | Conceptual call |
-| --- | --- | --- |
-| `u.name` | `__get__` | `User.__dict__["name"].__get__(u, User)` |
-| `u.name = "Alice"` | `__set__` | `User.__dict__["name"].__set__(u, "Alice")` |
-| `del u.name` | `__delete__` | `User.__dict__["name"].__delete__(u)` |
-| `User.name` | `__get__` | `descriptor.__get__(None, User)` |
+**Attribute lookup order for `obj.attr`** (implemented in `object.__getattribute__`):
 
-### 2.47 How are default mutable arguments evaluated, and why does this cause bugs?
+1. Find `attr` on the type's MRO. If it is a data descriptor, call its `__get__`.
+2. Otherwise, if `attr` is in `obj.__dict__`, return it.
+3. Otherwise, if the type attribute is a non-data descriptor, call its `__get__`; if it is a plain value, return it.
+4. Otherwise call `__getattr__` if defined, else raise `AttributeError`.
+
+**When to write your own:** reusable validation or type coercion across many attributes, lazy loading, unit conversions. For one-off cases, `@property` is clearer. Note that descriptors must live on the class; putting one in an instance dict does nothing.
+
+### 2.37 How are default mutable arguments evaluated, and why does this cause bugs?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -1502,7 +1450,7 @@ def add_item(item, items=None):
 | `items=None` | New list created when needed |
 | `items=[]` for intentional shared state | Valid, but should be deliberate |
 
-### 2.48 What is `__call__`, and how does it make objects callable?
+### 2.38 What is `__call__`, and how does it make objects callable?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -1559,18 +1507,47 @@ obj = Multiplier(2)  # creation/initialization
 obj(5)               # calls __call__()
 ```
 
-### 2.49 How does the Method Resolution Order (MRO) work, and what algorithm does it use (C3 linearization)?
+### 2.39 How does the Method Resolution Order (MRO) work with multiple inheritance, and what is C3 linearisation?
 
-| Aspect | Explanation |
-| --- | --- |
-| **MRO** | Method Resolution Order is the ordered sequence Python uses to search for attributes/methods in a class hierarchy. |
-| **Why needed** | It determines which implementation is selected when multiple inheritance creates several possible paths. |
-| **Algorithm** | Python uses **C3 linearization** to construct the MRO. |
-| **Main properties** | C3 preserves **local precedence order**, **monotonicity**, and avoids inconsistent inheritance orders. |
-| **Inspection** | Use `Class.mro()` or `Class.__mro__`. |
-| **`super()` relationship** | `super()` follows this MRO rather than simply choosing the direct parent. |
+The **MRO** is the ordered list of classes Python searches when looking up an attribute on an object. With multiple inheritance Python builds it using **C3 linearisation**, which guarantees that a class appears before its parents, that the left-to-right order of bases is respected, and that a shared ancestor in a diamond is visited only once. Inspect it with `Class.__mro__` or `Class.mro()`.
 
-### 2.50 What is a metaclass, and how does `type` fit in?
+```python
+class A:
+    def show(self): return "A"
+class B(A):
+    def show(self): return "B"
+class C(A):
+    def show(self): return "C"
+class D(B, C):
+    pass
+
+D.__mro__     # (D, B, C, A, object)
+D().show()    # "B": the first class in the MRO that defines show
+```
+
+**How C3 works:** the MRO of a class is the class itself followed by a merge of its parents' MROs and the list of parents. The merge repeatedly takes the first head of a list that does not appear in the tail of any other list.
+
+```text
+L[B] = B, A, object
+L[C] = C, A, object
+L[D] = D + merge(L[B], L[C], [B, C])
+     = D, B, C, A, object     # A is postponed until both B and C are done
+```
+
+**Properties that matter:**
+
+- **Local precedence order:** in `class D(B, C)`, `B` is always searched before `C`.
+- **Monotonicity:** a class's MRO is consistent with its parents' MROs.
+- **Inconsistent hierarchies are rejected** at class creation with `TypeError: Cannot create a consistent method resolution order`, for example `class X(A, B)` together with `class Y(B, A)` and `class Z(X, Y)`.
+
+**Attribute lookup in practice:**
+
+- `obj.attr` checks data descriptors on the MRO, then the instance `__dict__`, then the rest of the MRO (see 2.36).
+- `super()` means "the next class in the MRO of `type(self)`", not "my parent". In the diamond above, `super()` inside `B` goes to `C`, not `A` (see 2.41). This is what makes **cooperative multiple inheritance** work: every class in the chain calls `super().method(**kwargs)` and passes through arguments it does not consume.
+
+**Practical guidance:** use multiple inheritance mainly for small **mixins** (logging, serialisation) placed to the left of the main base class, keep mixins stateless, and prefer composition when classes carry their own state. Python differs from Java here, which has single class inheritance plus interfaces (see 3.8).
+
+### 2.40 What is a metaclass, and how does `type` fit in?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -1661,7 +1638,7 @@ class Person(metaclass=Meta):
 
 **Key interview answer:** A **metaclass is the class of a class**. In normal Python code, classes are instances of `type`. `type` therefore acts as Python's **default metaclass** and can also dynamically create classes. Custom metaclasses subclass `type` when you need to customize **class creation or class-level behavior**.
 
-### 2.51 How does `super()` actually resolve which method to call?
+### 2.41 How does `super()` actually resolve which method to call?
 
 | Aspect | How `super()` works |
 | --- | --- |
@@ -1724,7 +1701,7 @@ D → B → C → A → object
 
 **Key interview answer:** `super()` does not simply call the parent class. It creates a proxy that searches for the requested attribute **after the current class in the instance's MRO**. This is what makes `super()` work correctly with multiple inheritance and cooperative method calls.
 
-### 2.52 What's stored in a class's `__dict__` vs an instance's `__dict__`?
+### 2.42 What's stored in a class's `__dict__` vs an instance's `__dict__`?
 
 | Aspect | **Class `__dict__`** | **Instance `__dict__`** |
 | --- | --- | --- |
@@ -1772,75 +1749,7 @@ p = Person("Alice")
 
 **Key interview answer:** `Class.__dict__` stores attributes defined on the **class**, including methods and class variables, while `instance.__dict__` stores **per-instance state**. Instance attribute lookup checks the instance and then follows the class's lookup rules/MRO.
 
-### 2.53 How does multiple inheritance affect attribute lookup?
-
-| Aspect | Multiple inheritance behavior |
-| --- | --- |
-| **Basic mechanism** | Python searches attributes according to the class's **MRO (Method Resolution Order)**. |
-| **MRO** | A linear ordering of the class and its parent classes that determines lookup order. |
-| **Lookup start** | For `obj.attr`, Python first checks the object's class and then follows its MRO. |
-| **Multiple parents** | Python combines the parent classes into a consistent MRO using the **C3 linearization** algorithm. |
-| **First match** | The first class in the MRO containing the requested attribute generally provides it. |
-| **`super()`** | Uses the **next class in the MRO**, not simply the direct parent. |
-| **Diamond inheritance** | MRO ensures a shared ancestor is normally visited only once. |
-
-#### Example
-
-```py
-class A:
-    def show(self):
-        return "A"
-
-class B(A):
-    def show(self):
-        return "B"
-
-class C(A):
-    def show(self):
-        return "C"
-
-class D(B, C):
-    pass
-```
-
-| Expression | Result |
-| --- | --- |
-| `D.mro()` | `[D, B, C, A, object]` |
-| `D().show()` | `"B"` |
-| Why? | `D` has no `show`, then Python finds it in `B` first |
-
-#### `super()` with multiple inheritance
-
-```py
-class A:
-    def show(self):
-        print("A")
-
-class B(A):
-    def show(self):
-        print("B")
-        super().show()
-
-class C(A):
-    def show(self):
-        print("C")
-        super().show()
-
-class D(B, C):
-    def show(self):
-        print("D")
-        super().show()
-```
-
-| Call | Lookup sequence |
-| --- | --- |
-| `D().show()` | `D → B → C → A → object` |
-| `D.show()` | Finds `D.show` |
-| `super()` inside `D` | Continues at `B` |
-| `super()` inside `B` | Continues at `C`, **not directly to `A`** |
-| `super()` inside `C` | Continues at `A` |
-
-### 2.54 What is the difference between `@staticmethod`, `@classmethod`, and instance methods internally?
+### 2.43 What is the difference between `@staticmethod`, `@classmethod`, and instance methods internally?
 
 | Aspect | **Instance method** | **`@classmethod`** | **`@staticmethod`** |
 | --- | --- | --- | --- |
@@ -1855,76 +1764,108 @@ class D(B, C):
 | Typical use | Object-specific behavior | Alternative constructors / class-level behavior | Utility/helper related to the class |
 | Example | `obj.method()` | `MyClass.method()` or `obj.method()` | `MyClass.method()` or `obj.method()` |
 
-### 2.55 What's the difference between an iterable and an iterator at the protocol level (`__iter__`, `__next__`)?
+### 2.44 What's the difference between an iterable and an iterator at the protocol level (`__iter__`, `__next__`)?
 
-| Aspect | **Iterable** | **Iterator** |
+An **iterable** is any object that can give you an iterator: it implements `__iter__()` (or the legacy `__getitem__` sequence protocol). An **iterator** is the object that actually produces values: it implements `__next__()`, which returns the next item or raises `StopIteration`, and `__iter__()` returning itself.
+
+| Aspect | Iterable | Iterator |
 | --- | --- | --- |
-| **Protocol** | Implements `__iter__()` | Implements `__iter__()` **and** `__next__()` |
-| **Purpose** | Provides a way to obtain an iterator | Produces the next item |
-| **`__iter__()`** | Returns an iterator | Usually returns `self` |
-| **`__next__()`** | Not required | Required |
-| **State** | Usually represents the collection/source | Maintains the current iteration position |
-| **Can be restarted?** | Usually yes; each `iter()` can produce a new iterator | Usually no; once exhausted, it stays exhausted |
-| **Used by `for`** | `for` calls `iter(iterable)` | Then repeatedly calls `next(iterator)` |
-| **Example** | `list`, `tuple`, `str`, `dict` | `iter(list)`, generator objects |
-| **Key relationship** | `iterable → iterator` | `iterator → next item` |
+| Protocol | `__iter__()` | `__iter__()` returning `self`, and `__next__()` |
+| Holds position? | No, represents the data | Yes, remembers where it is |
+| Reusable? | Yes, each `iter()` gives a fresh iterator | No, once exhausted it stays exhausted |
+| Examples | `list`, `tuple`, `str`, `dict`, `range`, `DataFrame` | `iter(list)`, file objects, generators, `map`, `zip` |
 
-#### Protocol flow
+**What a `for` loop does:**
 
-| Operation | What Python does |
-| --- | --- |
-| `for x in obj:` | Calls `iter(obj)` |
-| `iter(obj)` | Calls `obj.__iter__()` |
-| `iterator = iter(obj)` | Gets an iterator |
-| Each loop iteration | Calls `next(iterator)` |
-| More items available | `__next__()` returns the next value |
-| No items left | `__next__()` raises `StopIteration` |
+```python
+numbers = [1, 2, 3]
+it = iter(numbers)        # calls numbers.__iter__()
+next(it)                  # 1
+next(it)                  # 2
+next(it)                  # 3
+next(it)                  # raises StopIteration, which ends a for loop
 
-#### Example
-
-```txt
-numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopIteration
+# for x in numbers: body   is roughly:
+it = iter(numbers)
+while True:
+    try:
+        x = next(it)
+    except StopIteration:
+        break
+    ...                   # body
 ```
 
-| Object | `__iter__()` | `__next__()` | Role |
-| --- | --- | --- | --- |
-| `numbers` (`list`) | Yes | No | Iterable |
-| `it` (`list_iterator`) | Yes | Yes | Iterator |
+**A custom iterable that can be iterated many times:**
 
-**Interview answer:** An **iterable** implements `__iter__()` to provide an iterator, while an **iterator** implements both `__iter__()` and `__next__()` to produce values one at a time.
+```python
+class Batches:
+    def __init__(self, rows, size):
+        self.rows, self.size = rows, size
+    def __iter__(self):                       # a generator function returns a new iterator each time
+        for i in range(0, len(self.rows), self.size):
+            yield self.rows[i:i + self.size]
+```
 
-### 2.56 How do generators maintain state between `yield` calls?
+**Pitfalls:**
 
-| Aspect | How generators maintain state |
-| --- | --- |
-| **Generator object** | Calling a generator function creates a **generator object** without executing the function body. |
-| **Execution state** | The generator stores its current execution state, including where execution should resume. |
-| **Local variables** | Local variables remain associated with the suspended generator, so their values survive across `yield` calls. |
-| **`yield`** | When `yield` executes, the generator **pauses** and returns a value to the caller. |
-| **`next()`** | Resumes execution from exactly where it previously paused. |
-| **`.send(value)`** | Resumes execution and makes the suspended `yield` expression evaluate to `value`. |
-| **Example** | `x = yield 10` → after `yield 10`, the generator pauses. `send(42)` resumes it and `x` becomes `42`. |
-| **Internal idea** | CPython preserves the generator's **execution frame/interpreter state**, including the instruction position and local-variable state. |
-| **After resumption** | Execution continues until another `yield`, `return`, or exception. |
-| **Completion** | Once the generator returns or raises an unhandled exception, its state cannot be resumed again. |
+- **Single-pass iterators.** Passing a generator or file to code that loops twice (for example computing a mean, then a variance) silently gets nothing the second time. Materialise with `list()` or pass an iterable.
+- **`map`, `filter` and `zip` return iterators** in Python 3, so they are lazy and single-use.
+- **Do not raise `StopIteration` inside a generator** to end it; since PEP 479 it becomes `RuntimeError`. Use `return`.
 
-#### Example
+### 2.45 How do generators work, how do they keep state between `yield` calls, and why do they matter for large data?
 
-| Step | Generator state |
-| --- | --- |
-| `g = gen()` | Generator created; body hasn't run |
-| `next(g)` | Runs until `yield`; state is saved |
-| `g.send(42)` | Resumes from saved point; suspended `yield` becomes `42` |
-| Next `yield` | State is saved again |
-| `next(g)` | Resumes from the new saved point |
+A **generator function** is a function containing `yield`. Calling it does not run the body; it returns a **generator object**, which is an iterator. Each `next()` runs the body until the next `yield`, hands the value out, and **suspends**, keeping its frame alive: local variables, the instruction pointer and any open `try` or `with` blocks. The next `next()` resumes from exactly that point.
 
-### 2.57 What happens internally when you call `.send()` on a generator?
+```python
+def read_records(path):
+    with open(path) as f:              # stays open while the generator is suspended
+        for line in f:
+            yield parse(line)          # one record at a time
+
+def only_valid(records):
+    for r in records:
+        if r.is_valid():
+            yield r
+
+def batched(items, n):
+    batch = []
+    for item in items:
+        batch.append(item)
+        if len(batch) == n:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+for chunk in batched(only_valid(read_records("events.jsonl")), 10_000):
+    load(chunk)                        # memory bounded by one chunk, whatever the file size
+```
+
+**Internals:** the generator object owns a frame (in CPython 3.11+ an interpreter frame embedded in the generator). `yield` saves the frame state and returns to the caller; `next()` or `.send(value)` restores it (see 2.46). When the body returns, `StopIteration` is raised, carrying the return value. `gen.close()` raises `GeneratorExit` inside the generator so its `finally` and `with` blocks run.
+
+**Why they matter for big data:**
+
+- **Constant memory:** a pipeline of generators streams one item at a time, so a 50 GB file can be processed with megabytes of memory.
+- **Laziness:** nothing is computed until a consumer pulls, and consumers can stop early (`itertools.islice`, `next(...)`).
+- **Composable pipelines:** each stage is small and testable; `itertools` (`chain`, `islice`, `groupby`, `batched` in 3.12+) provides building blocks.
+- **Generator expressions** (`sum(x.amount for x in rows)`) give the same laziness inline, without building a list.
+- **Framework support:** PyTorch `IterableDataset`, Keras data generators, chunked `pd.read_csv(..., chunksize=...)` and streaming LLM responses all use the same pattern.
+
+**Pitfalls:**
+
+- Generators are single-pass (see 2.44).
+- Exceptions surface where the generator is consumed, not where it was created, which can make tracebacks confusing.
+- A suspended generator holding a file or connection keeps it open until it is exhausted, closed or garbage-collected; close it explicitly or wrap with `contextlib.closing`.
+- Per-item Python overhead is still high; for numeric work, stream **chunks** (Arrow record batches, DataFrame chunks) and vectorise inside each chunk rather than yielding single rows.
+- `yield from sub()` delegates to a sub-generator, including `send` and `throw`.
+
+### 2.46 What happens internally when you call `.send()` on a generator?
 
 | Aspect | What happens when `generator.send(value)` is called |
 | --- | --- |
 | **Purpose** | `.send(value)` **resumes a suspended generator** and sends `value` into the generator at its current `yield` expression. |
 | **Generator state** | The generator must already be **suspended at a `yield`**. |
-| **Example** | `def gen(): x = yield "hello" yield x` |
+| **Example** | A generator whose body is `x = yield "hello"` followed by `yield x` (see the code below the table) |
 | **First call** | `g = gen()` creates the generator but does not execute it. `next(g)` starts execution and stops at `yield "hello"`. |
 | **Calling `.send()`** | `g.send(42)` resumes execution. The suspended `yield "hello"` expression evaluates to `42`. |
 | **Result** | Execution continues with `x = 42`, then reaches the next `yield`, whose value is returned by `.send()`. |
@@ -1938,7 +1879,17 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Why this is powerful** | `.send()` allows **two-way communication** between the caller and generator, rather than generators being limited to producing values. |
 | **Interview answer** | **`generator.send(value)` resumes a suspended generator and makes the current `yield` expression evaluate to `value`. The generator then continues executing until it reaches another `yield`, returns, or raises an exception. `send(None)` is essentially the programmatic equivalent of `next()`.** |
 
-### 2.58 How do `async def` and `await` differ from generators under the hood?
+```python
+def gen():
+    x = yield "hello"
+    yield x
+
+g = gen()
+next(g)        # "hello" - runs to the first yield
+g.send(42)     # 42 - the suspended yield evaluates to 42, then yield x returns it
+```
+
+### 2.47 How do `async def` and `await` differ from generators under the hood?
 
 | Aspect | Generators | `async def` / Coroutines |
 | --- | --- | --- |
@@ -1961,7 +1912,7 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Simple mental model** | `yield` → **"Give a value to my caller and pause me."** | `await` → **"Pause me until this asynchronous operation can continue."** |
 | **Interview answer** | — | **Generators suspend at `yield` and are resumed by the iterator/caller. `async def` creates coroutine objects that suspend at `await` and are resumed through the coroutine/awaitable protocol, typically by an event loop. Both preserve execution state across suspension, but generators are primarily for lazy iteration, while coroutines are designed for asynchronous control flow.** |
 
-### 2.59 What is the event loop, and how does it schedule coroutines?
+### 2.48 What is the event loop, and how does it schedule coroutines?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -1982,7 +1933,9 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Key distinction** | `asyncio` provides **concurrency**, not automatic CPU parallelism. For CPU-heavy work, processes or other appropriate mechanisms are typically needed. |
 | **Interview answer** | **The event loop is the scheduler at the heart of `asyncio`. It runs ready coroutines, and when a coroutine reaches an `await` that requires waiting—such as network I/O—it suspends that coroutine and runs another ready task. When the awaited operation completes, the event loop schedules the suspended task to resume.** |
 
-### 2.60 How is a Python `list` implemented internally (array vs linked list)?
+For production patterns (TaskGroup, timeouts, cancellation, mixing sync and async code and common bugs) see 2.73.
+
+### 2.49 How is a Python `list` implemented internally (array vs linked list)?
 
 | Aspect | Python `list` |
 | --- | --- |
@@ -2004,7 +1957,7 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Key takeaway** | **Python `list` = dynamically resizable array of object references.** |
 | **Interview answer** | **A Python `list` is implemented as a dynamic array, not a linked list. It stores contiguous references to Python objects, giving O(1) indexing and amortized O(1) append. Insertions or deletions near the beginning or middle are O(n) because elements must be shifted.** |
 
-### 2.61 How does a `dict` achieve O(1) average lookup? How are hash collisions handled?
+### 2.50 How does a `dict` achieve O(1) average lookup? How are hash collisions handled?
 
 | Aspect | How `dict` works |
 | --- | --- |
@@ -2025,7 +1978,7 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Why not O(1) guaranteed?** | Hash tables depend on a reasonably distributed hash function and controlled table occupancy; therefore O(1) is an **average-case** guarantee, not a strict worst-case guarantee. |
 | **Interview answer** | **A `dict` achieves average O(1) lookup by hashing the key and using the resulting hash to locate a candidate table slot. If multiple keys map to the same slot, CPython handles collisions using open addressing and probing. It then checks key equality to identify the exact key. Resizing keeps the table sufficiently sparse, maintaining average O(1) performance.** |
 
-### 2.62 Why did dict ordering become guaranteed in Python 3.7+? What changed internally?
+### 2.51 Why did dict ordering become guaranteed in Python 3.7+? What changed internally?
 
 | Aspect | Before Python 3.6 | Python 3.6 | Python 3.7+ |
 | --- | --- | --- | --- |
@@ -2041,7 +1994,7 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **What actually changed?** | — | **The compact dict implementation made insertion ordering a natural consequence of the data layout.** | Python 3.7 formally standardized that behavior |
 | **Interview answer** | — | — | **Python 3.6 introduced CPython's compact dict implementation, which naturally preserved insertion order while reducing memory usage. Python 3.7 then made that behavior a language guarantee. Internally, the hash table maps keys to positions in a compact entries array whose entries are maintained in insertion order.** |
 
-### 2.63 How is a `set` different from a `dict` at the implementation level?
+### 2.52 How is a `set` different from a `dict` at the implementation level?
 
 | Aspect | `set` | `dict` |
 | --- | --- | --- |
@@ -2064,63 +2017,38 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Key implementation difference** | **Hash table of unique keys/elements** | **Hash table of unique keys associated with values** |
 | **Interview answer** | **A `set` is essentially a hash table optimized for storing unique elements and performing fast membership tests. A `dict` is a hash table that stores unique keys together with associated values. Both use hashing and provide average O(1) lookup, but their storage and purpose differ.** |  |
 
-### 2.64 How does string immutability enable optimizations like interning?
+### 2.53 What happens internally when you run `import module`, and what is the role of `sys.modules`?
 
-| Aspect | Explanation |
-| --- | --- |
-| **String immutability** | Once a Python string object is created, its characters **cannot be changed in place**. |
-| **Why this enables interning** | Because an interned string can never be modified, Python can safely let multiple references point to the **same string object**. |
-| **Example** | `a = sys.intern("customer_id")b = sys.intern("customer_id")a is b` → `True` |
-| **What would happen with mutable strings?** | If strings could be modified, changing `a` could unexpectedly change `b` if both referenced the same object. Sharing would therefore be unsafe. |
-| **Memory optimization** | Many references to the same interned string can share **one object**, reducing duplicate string objects. |
-| **Comparison optimization** | Interned strings can sometimes be compared using **object identity** (`is`) after interning, avoiding character-by-character comparison. |
-| **Hashing benefit** | Strings are immutable and hashable, so their hash can be safely cached/reused, making them efficient as dictionary keys and set elements. |
-| **Dictionary example** | `{"customer_id": 123}` can efficiently use the immutable string `"customer_id"` as a key because its value and hash cannot change. |
-| **Core principle** | **Immutability makes object sharing safe.** Python can safely reuse the same string object because nobody can modify its contents. |
-| **Important distinction** | Immutability **enables** interning; it does not mean every Python string is automatically interned. CPython automatically interns some strings, while `sys.intern()` lets you request interning explicitly. |
-| **Interview answer** | **String immutability makes interning safe because a shared string object cannot be modified by one reference and unexpectedly affect another. Therefore, Python can reuse a single string object for identical values, saving memory and potentially making comparisons faster.** |
+`import module` asks the import system for a module object. It first checks the in-memory cache **`sys.modules`**; on a miss it finds, creates, caches and executes the module; finally it binds the name in the current namespace. Because of the cache, a module's top-level code normally runs **once per process**, however many times it is imported.
 
-### 2.65 What happens internally when you run `import module`?
+**Step by step:**
 
-| Step | Internal process |
-| --- | --- |
-| **1. Execute import statement** | Python's import machinery is invoked for `module`. |
-| **2. Check `sys.modules`** | Python first checks whether `"module"` already exists in the in-memory module cache. |
-| **3. If cached** | If present, Python reuses the existing module object. **The module's top-level code is not executed again.** |
-| **4. If not cached** | Python asks the import system to find the module. |
-| **5. Search** | Finders search locations such as `sys.path` for `module.py`, a package, extension module, etc. |
-| **6. Create `ModuleSpec`** | The finder returns a `ModuleSpec` describing the module and its loader. |
-| **7. Create module object** | The loader creates the module object using the specification. |
-| **8. Add to `sys.modules`** | The module is inserted into `sys.modules` **before its code executes**. This helps support circular imports. |
-| **9. Execute module** | The loader executes the module's top-level code. Function/class definitions are created, variables initialized, and nested imports processed. |
-| **10. Bytecode handling** | For a `.py` module, CPython can use an existing valid `.pyc` or compile the source to bytecode and potentially cache it in `__pycache__`. |
-| **11. Complete import** | The initialized module object remains in `sys.modules`. |
-| **12. Bind name** | With `import module`, the name `module` is bound in the current namespace to that module object. |
-| **Simplified flow** | `import module` → `sys.modules` check → find → create → cache → execute → return/bind |
-| **If import fails** | If execution raises an exception, the import machinery removes the unsuccessfully initialized module from `sys.modules` as appropriate, and the exception propagates. |
-| **Important distinction** | `sys.modules` is an **in-memory cache that prevents repeated execution**; `.pyc` is an **on-disk bytecode cache that can avoid recompilation**. |
-| **Interview answer** | **`import module` first checks `sys.modules`. If the module isn't cached, Python finds it through the import machinery, creates a module object, places it in `sys.modules`, and executes its code. Subsequent imports normally reuse that cached module without executing it again.** |
+1. **Cache lookup.** If `"module"` is a key in `sys.modules` (a plain dict of fully qualified names to module objects), return that object. Importing `a.b.c` checks and imports `a`, then `a.b`, then `a.b.c`.
+2. **Find.** Each finder in `sys.meta_path` is asked for a `ModuleSpec`. The path-based finder searches `sys.path` (script directory, `PYTHONPATH`, site-packages) for a package directory, a `.py` file, a compiled extension or a namespace package.
+3. **Create.** The spec's loader creates an empty module object and sets `__name__`, `__file__`, `__spec__`, `__package__`.
+4. **Cache before execution.** The module is inserted into `sys.modules` **before** its code runs. This is what lets circular imports terminate, and why they can see a partially initialised module.
+5. **Execute.** The loader gets bytecode (from a valid `.pyc` or by compiling source, see 2.7) and runs it in the module's namespace: defining functions and classes, running top-level statements and nested imports.
+6. **On failure**, the module is removed from `sys.modules` and the exception propagates.
+7. **Bind.** `import module` binds `module`; `from module import name` binds `name` after fetching it from the module object.
 
-### 2.66 What's the role of `sys.modules`and how does it prevent repeated execution on re-import?
+```python
+import sys, importlib
+import json
+json is sys.modules["json"]      # True: same object every time
+importlib.reload(json)           # re-executes the code into the SAME module object
+del sys.modules["mymod"]         # next import creates a fresh module object
+```
 
-| Aspect | Explanation |
-| --- | --- |
-| **What is `sys.modules`?** | A dictionary maintained by Python containing **modules that have already been imported** in the current process. |
-| **Key** | The module's fully qualified name, e.g. `"math"` or `"myapp.utils"`. |
-| **Value** | The actual module object loaded into memory. |
-| **First import** | Python finds the module → creates a module object → places it in `sys.modules` → executes the module's code. |
-| **Re-import** | Python checks `sys.modules` first. If the module is already present, it **reuses the existing module object** instead of loading and executing the source again. |
-| **Example** | `import math` → loads and executes/initializes it. A later `import math` → finds `"math"` in `sys.modules` and reuses it. |
-| **Why it matters** | Prevents expensive repeated module loading and, importantly, prevents module-level initialization code from normally running repeatedly. |
-| **Object identity** | Multiple imports of the same module normally reference the **same module object**. |
-| **Example** | `import mymoduleimport mymodulemymodule is sys.modules["mymodule"]` → `True` |
-| **Package behavior** | Importing `myapp.utils` can place entries such as `"myapp"` and `"myapp.utils"` in `sys.modules`. |
-| **Circular imports** | Python adds a module to `sys.modules` **before fully executing it**, which helps the import system handle circular-import situations, although partially initialized modules can cause problems. |
-| **Removing an entry** | `del sys.modules["mymodule"]` removes the cache entry. A subsequent `import mymodule` can load and execute it again, potentially creating a new module object. |
-| **Important distinction** | `sys.modules` is an **in-memory module cache**. `.pyc` is an **on-disk bytecode cache**. They solve different problems. |
-| **Interview answer** | **`sys.modules` is Python's in-memory module cache. On the first import, the module is loaded and stored there. On subsequent imports, Python finds the existing module in `sys.modules` and reuses it, so the module's top-level code is normally not executed again.** |
+**Production implications:**
 
-### 2.67 How do `__init__.py` and packages affect the import system?
+- **Import-time side effects** (opening database connections, reading config, loading a model) run whenever anything imports the module, including tests and tooling. Keep top-level code cheap; initialise lazily.
+- **Circular imports** show up as `ImportError: cannot import name ... (most likely due to a circular import)`. Fix by moving shared code into a third module, importing inside functions, or using `typing.TYPE_CHECKING` for type-only imports.
+- **Startup time** of CLIs and serverless functions is often dominated by imports; measure with `python -X importtime`. Heavy libraries (pandas, torch) can be imported lazily inside the functions that need them.
+- **`importlib.reload`** does not update references other modules already hold (`from mod import f` keeps the old `f`), so it is a debugging tool, not a deployment strategy.
+- **Shadowing:** a local file named `json.py` or `random.py` shadows the standard library because the script directory comes first on `sys.path`.
+- `sys.modules` is an in-memory cache that prevents re-execution; `.pyc` is an on-disk cache that prevents recompilation. They solve different problems.
+
+### 2.54 How do `__init__.py` and packages affect the import system?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -2139,7 +2067,7 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Key distinction** | `__init__.py` is **package initialization code**, while the package directory provides the namespace/hierarchy used by the import system. |
 | **Interview answer** | **`__init__.py` traditionally makes a directory a regular Python package and runs when the package is imported. It can initialize package state and expose package-level APIs. Modern Python also supports namespace packages without `__init__.py`, which allow package portions to exist across multiple directories.** |
 
-### 2.68 What's the difference between absolute and relative imports at resolution time?
+### 2.55 What's the difference between absolute and relative imports at resolution time?
 
 | Aspect | Absolute Import | Relative Import |
 | --- | --- | --- |
@@ -2156,7 +2084,7 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Key difference** | **"Find this package from the import search path."** | **"Find this module relative to my current package."** |
 | **Interview answer** | **Absolute imports resolve from the top-level import search path (`sys.path`), while relative imports resolve from the importing module's package using leading dots.** |  |
 
-### 2.69 How does exception propagation work internally (the traceback stack)?
+### 2.56 How does exception propagation work internally (the traceback stack)?
 
 | Aspect | Explanation |
 | --- | --- |
@@ -2176,7 +2104,7 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Key idea** | **An exception propagates by moving up the call stack looking for a matching handler. During this unwinding, cleanup code such as `finally` executes, while traceback information records the relevant execution frames.** |
 | **Interview answer** | **When an exception is raised, CPython checks the current frame for a matching handler. If none exists, it unwinds the frame and propagates the exception to the caller. This continues up the call stack until a handler is found or the exception reaches the top level. The traceback records the call chain and location information that shows how the exception propagated.** |
 
-### 2.70 What's the difference between `except Exception` and a bare `except:`?
+### 2.57 What's the difference between `except Exception` and a bare `except:`?
 
 | Aspect | `except Exception:` | Bare `except:` |
 | --- | --- | --- |
@@ -2187,29 +2115,43 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Catches `GeneratorExit`** | No | **Yes** |
 | **Typical usage** | **Recommended** for normal application error handling | Rare; mainly for very specific cases where you intentionally need to catch all exceptions |
 | **Risk** | Lower; allows system-control exceptions to propagate | Higher; can accidentally swallow interrupts, exits, or other important control-flow exceptions |
-| **Example** | `try: ...except Exception: handle_error()` | `try: ...except: handle_everything()` |
+| **Example** | `except Exception:` followed by `handle_error()` | `except:` followed by `handle_everything()` |
 | **Inheritance** | `Exception` is a subclass of `BaseException` | Catches the `BaseException` hierarchy |
 | **Best practice** | Prefer `except Exception:` unless you have a specific reason otherwise | Avoid in most application code |
 | **Interview answer** | **`except Exception` catches normal application exceptions, while bare `except` catches all `BaseException` subclasses, including `KeyboardInterrupt` and `SystemExit`. Therefore, `except Exception` is generally safer and preferred.** |  |
 
-### 2.71 How does `finally` interact with return statements and exceptions in bytecode?
+### 2.58 How does `finally` interact with return statements and exceptions in bytecode?
 
 | Aspect | How `finally` behaves |
 | --- | --- |
 | **Basic purpose** | `finally` contains cleanup code that runs whether the `try` block **returns normally, returns early, or raises an exception**. |
 | **`return` inside `try`** | Python does **not immediately return**. It first executes the `finally` block, then completes the return. |
-| **Example** | `def f(): try: return 10 finally: print("cleanup")`Result: prints `"cleanup"` and returns `10`. |
+| **Example** | `try: return 10` with `finally: print("cleanup")` prints `"cleanup"`, then returns `10` (see the code below the table). |
 | **Bytecode concept** | The compiler arranges control flow so that paths leaving the `try` block—such as `return`, exception, or normal completion—pass through the `finally` code. |
 | **Return value handling** | When `return 10` is encountered, the return value is preserved while `finally` executes. Afterward, the original return proceeds. |
 | **Exception in `try`** | The exception is temporarily handled so the `finally` block can execute. After `finally`, the exception continues propagating unless handled. |
 | **Exception in `finally`** | A new exception from `finally` replaces/interferes with the original exception. |
 | **`return` in `finally`** | A `return` inside `finally` **overrides** a pending return or exception from `try`. |
-| **Example** | `def f(): try: return 10 finally: return 20`Result: `20` |
+| **Example** | `try: return 10` with `finally: return 20` returns `20`. |
 | **Modern CPython** | Modern CPython (3.11+) uses specialized exception-handling bytecode and compiler-generated control flow rather than the older `SETUP_FINALLY` mechanism found in older versions. |
 | **Key bytecode idea** | `finally` effectively creates **multiple control-flow paths**: normal execution, `return`, and exception paths all ensure the cleanup code runs before control leaves the `try`. |
 | **Interview answer** | **A `finally` block is guaranteed to run when leaving a `try`, including during `return` and exception paths. In bytecode, CPython arranges these control-flow paths so they execute the `finally` code before completing the return or propagating the exception. A `return` or exception raised inside `finally` can override the original control flow.** |
 
-### 2.72 Why is CPython considered slower than compiled languages, and where's the overhead?
+```python
+def f():
+    try:
+        return 10
+    finally:
+        print("cleanup")     # runs before the return completes; f() returns 10
+
+def g():
+    try:
+        return 10
+    finally:
+        return 20            # overrides the pending return; g() returns 20 (SyntaxWarning in 3.14, PEP 765)
+```
+
+### 2.59 Why is CPython considered slower than compiled languages, and where's the overhead?
 
 | Aspect | CPython | Compiled Languages (e.g., C/C++) |
 | --- | --- | --- |
@@ -2227,13 +2169,13 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Important nuance** | CPython can be quite fast for I/O-bound applications, and native libraries such as NumPy can move heavy computation outside the Python interpreter | Raw CPU-bound loops generally favor native compiled code |
 | **Interview answer** | **CPython is slower mainly because Python code is dynamically typed and executed through a runtime that performs bytecode dispatch, object management, type checks, and dynamic lookups. Compiled languages can translate code ahead of time into optimized machine instructions, eliminating much of this runtime overhead.** |  |
 
-### 2.73 What is the difference between CPython, PyPy, and other implementations?
+### 2.60 What is the difference between CPython, PyPy, and other implementations?
 
 | Aspect | CPython | PyPy | Other Python Implementations |
 | --- | --- | --- | --- |
 | **Definition** | The **reference and most widely used Python implementation**, written mainly in C | A Python implementation with a **JIT (Just-In-Time) compiler**, largely written in RPython | Alternative implementations designed for specific platforms or goals |
 | **Implementation language** | C | RPython/Python ecosystem | Varies |
-| **Execution model** | Primarily interprets Python bytecode using the CPython interpreter, with modern runtime optimizations | Uses a **JIT compiler** to compile frequently executed code into machine code at runtime | Depends on implementation |
+| **Execution model** | Interprets bytecode with a specialising adaptive interpreter (3.11+); an experimental, opt-in JIT compiler has been included since 3.13 (PEP 744) | Uses a **JIT compiler** to compile frequently executed code into machine code at runtime | Depends on implementation |
 | **Performance** | Excellent general-purpose performance and broad compatibility | Can be faster for **long-running, repetitive pure-Python workloads** due to JIT | Varies |
 | **Startup time** | Generally good | Can have additional JIT warm-up overhead | Varies |
 | **GIL** | Traditional CPython has a GIL; newer CPython versions also have optional **free-threaded builds** | Has its own threading/runtime behavior and is not simply equivalent to CPython's GIL model | Depends on implementation |
@@ -2245,343 +2187,336 @@ numbers= [1,2,3]it=iter(numbers)next(it)# 1next(it)# 2next(it)# 3next(it)# StopI
 | **Key difference** | **CPython prioritizes compatibility and mature ecosystem support.** | **PyPy focuses heavily on JIT-based runtime performance.** | **Other implementations target different platforms, environments, or constraints.** |
 | **Interview answer** | **CPython is the standard implementation with the strongest ecosystem compatibility. PyPy uses JIT compilation to speed up suitable long-running Python code. Other implementations, such as Jython, IronPython, MicroPython, and GraalPy, target different runtimes or hardware environments.** |  |  |
 
-### 2.74 How does the GIL affect multithreading vs multiprocessing performance?
+### 2.61 How does the GIL affect the choice between threads, processes and asyncio for a data workload?
 
-| Aspect | Multithreading | Multiprocessing |
-| --- | --- | --- |
-| **GIL impact** | In standard CPython, the GIL allows only **one thread at a time to execute Python bytecode** within a process | Each process has its **own Python interpreter and GIL**, so processes can execute Python bytecode in parallel |
-| **CPU-bound tasks** | Usually **poor scaling** because threads compete for the GIL | **Good scaling** across multiple CPU cores |
-| **I/O-bound tasks** | **Very effective** because the GIL is released while waiting for I/O | Effective, but often has more overhead than threads |
-| **Parallel CPU execution** | Python bytecode generally cannot run simultaneously across threads in the same process | Can run simultaneously on multiple CPU cores |
-| **Memory** | Threads share the same process memory | Processes have separate memory spaces |
-| **Communication** | Easier and relatively cheap through shared memory | Requires IPC mechanisms such as queues, pipes, or shared memory |
-| **Overhead** | Lower; threads are lightweight | Higher; creating and communicating between processes is more expensive |
-| **Best use case** | Network requests, file I/O, database operations, API calls | CPU-intensive work such as numerical computation, image processing, and CPU-heavy data processing |
-| **Example** | Downloading 100 files concurrently | Processing 100 CPU-intensive datasets across multiple cores |
-| **Key takeaway** | **Threads are mainly useful for concurrency, especially I/O-bound work.** | **Processes are useful for true CPU parallelism in GIL-bound Python code.** |
-| **Interview answer** | **The GIL limits multiple threads from executing Python bytecode simultaneously, so multithreading generally doesn't improve CPU-bound Python workloads. Multiprocessing uses separate processes, each with its own GIL, allowing CPU-bound work to run in parallel across cores.** |  |
+Pick the concurrency model by **where the time goes**: waiting on I/O, or computing in Python. Under the standard GIL build, threads and `asyncio` overlap waiting, while only separate processes (or native code that releases the GIL) give parallel CPU execution.
 
-### 2.75 What is `sys.intern()`, and when would you use it manually?
+| Aspect | Threads (`ThreadPoolExecutor`) | Processes (`ProcessPoolExecutor`, `multiprocessing`) | `asyncio` |
+| --- | --- | --- | --- |
+| GIL | Shared; one thread runs Python bytecode at a time | One GIL per process, so true parallelism | Single thread |
+| Best for | Blocking I/O with sync libraries (boto3, requests, JDBC drivers), NumPy-heavy work that releases the GIL | CPU-bound pure-Python transforms, parsing, feature computation | Very high-concurrency network I/O with async libraries (httpx, aiohttp, asyncpg) |
+| Memory | Shared address space | Separate; data copied or shared explicitly | Shared |
+| Communication cost | Near zero | Arguments and results are pickled; large DataFrames are expensive to send | Near zero |
+| Start-up cost | Low | High (process spawn, imports), amortise with pools | Lowest per task |
+| Failure isolation | A crash in a C extension kills everything | A crashed worker can be detected and replaced | One blocking call stalls everything |
+| Typical scale | Tens to hundreds of concurrent calls | One worker per core | Thousands of concurrent connections |
 
-| Aspect | Explanation |
-| --- | --- |
-| **What is `sys.intern()`?** | `sys.intern()` manually adds a string to Python's **interned string pool** and returns the canonical version of that string. |
-| **Why use it?** | If many identical strings exist, interning allows them to **share the same string object**, potentially reducing memory usage and making equality checks faster in some cases. |
-| **Example** | `a = sys.intern("hello")b = sys.intern("hello")a is b` → `True` |
-| **Without interning** | Two dynamically created equal strings may be different objects: `a == b` can be `True` while `a is b` can be `False`. |
-| **When would you use it manually?** | Mainly when your application creates **very large numbers of repeated strings**, such as identifiers, tokens, column names, or categorical labels. |
-| **Typical use case** | A parser processing millions of records with repeated field names could intern those names so that identical names reuse the same object. |
-| **Performance benefit** | Can reduce memory consumption and sometimes make comparisons faster because interned strings can be compared by identity. |
-| **Important caution** | Don't intern strings indiscriminately. Interning many unique strings can increase memory usage because interned strings are kept available for reuse. |
-| **Import** | `import sys` |
-| **Example** | `name = sys.intern("customer_id")` |
-| **Interview answer** | **`sys.intern()` stores a string in Python's interned-string pool and returns a canonical reference to it. I would use it manually when many repeated string values are created and memory usage or string-comparison performance matters.** |
+**Ingestion example:** downloading 10,000 files from S3 and then parsing them. Use threads or async for the downloads (I/O-bound, 32 to 128 concurrent requests, bounded by a semaphore or pool size to respect rate limits), then a process pool sized to the number of cores for CPU-heavy parsing, or better, a vectorised engine such as Polars or DuckDB that parallelises internally.
 
-### 2.76 How does the peephole optimizer or bytecode caching (`.pyc` files) improve performance?
+**Production details:**
 
-| Aspect | Bytecode Caching (`.pyc`) | Peephole / AST Optimization |
-| --- | --- | --- |
-| **Main purpose** | Avoid recompiling `.py` source into bytecode | Make generated bytecode more efficient |
-| **Performance benefit** | Faster **module import/startup time** | Can improve **runtime execution speed** |
-| **When it happens** | During import, across program runs | During compilation |
-| **What it does** | Stores compiled bytecode on disk | Removes or simplifies unnecessary operations |
-| **Example** | `.py` → `.pyc` → reuse bytecode | `2 + 3` → `5` at compile time |
-| **Repeated execution** | Avoids parsing and compiling unchanged modules | Optimized bytecode executes with less work |
-| **Does it improve execution speed?** | **No**, same bytecode is executed | **Yes, slightly**, by reducing unnecessary instructions |
-| **Typical benefit** | Faster application startup/imports | Fewer instructions and computations |
-| **Modern CPython** | Uses `__pycache__/*.pyc` | Optimization is largely handled during AST/bytecode compilation rather than a separate traditional peephole pass |
-| **Key takeaway** | **Caches compilation results** | **Optimizes compilation results** |
+- **Start method.** On Linux the default was `fork` (fast, but unsafe with threads and some libraries); Python 3.14 changed the Linux default to `forkserver`, and macOS and Windows use `spawn`. With `spawn`, worker code must be importable and guarded by `if __name__ == "__main__":`.
+- **Minimise data crossing processes.** Send file paths or partition keys, not DataFrames; use `multiprocessing.shared_memory`, Arrow or memory-mapped files for large arrays.
+- **Bound concurrency** to protect downstream systems; unbounded thread or task creation is a common way to take down a database.
+- **Beyond one machine** use Spark, Dask or Ray rather than hand-rolled multiprocessing.
+- **Free-threaded Python** (3.14+, opt-in) changes this table: threads can run Python code in parallel, giving process-level parallelism with shared memory, once your dependencies support it (see 2.72).
 
-### 2.77 What are the primary differences between a list and a tuple in the context of data engineering?
+**Interview answer:** threads for blocking I/O, asyncio for massive I/O concurrency with async libraries, processes for CPU-bound Python, and native libraries that release the GIL wherever possible; and always measure, because the bottleneck is often not where you expect.
+
+### 2.62 What are the differences between a list and a tuple, and when do you use each in data engineering?
+
+A **list** is a mutable, growable sequence; a **tuple** is an immutable, fixed-size sequence. Conventionally lists hold **many items of the same kind** (a collection), while tuples hold **a fixed number of fields of different meaning** (a record).
 
 | Feature | List | Tuple |
 | --- | --- | --- |
-| **Mutability** | Mutable | Immutable |
-| **Modification** | Can add, remove, or modify elements | Cannot be modified after creation |
-| **Use case** | Dynamic data collections | Fixed records or data structures |
-| **Memory** | Generally uses more memory | Generally more memory-efficient |
-| **Dictionary key** | Cannot be used as a key | Can be used if all elements are hashable |
-| **Data engineering** | Collecting and processing changing data | Representing fixed records and ensuring data integrity |
+| Mutability | Mutable: append, remove, sort in place | Immutable after creation |
+| Hashable | No, cannot be a dict key or set member | Yes, if all elements are hashable |
+| Memory | Over-allocates spare capacity for appends | Exact size, slightly smaller; no growth buffer |
+| Creation speed | Built at run time | Constant tuples are created once at compile time and reused |
+| Semantics | Homogeneous collection | Heterogeneous record, like a row |
+| Thread safety | Shared mutation needs care | Safe to share, but contained objects may still be mutable |
 
-### 2.78 How does Python handle memory management and garbage collection?
+```python
+from typing import NamedTuple
 
-Python manages memory automatically using a **private heap**, **reference counting**, and **garbage collection**.
+partition_key = ("2024-06-01", "eu-west-1")          # tuple as composite dict key
+row_counts = {partition_key: 18_204}
 
-- **Reference Counting:** Tracks references to objects. When an object's reference count reaches zero, its memory can be released.
-- **Garbage Collector:** Detects and removes **circular references** that reference counting cannot handle.
-- **Generational GC:** Groups objects by age and focuses collection on younger objects more frequently.
-- **Memory Allocator:** Python's memory manager efficiently allocates and deallocates memory for objects.
-- **`gc` Module:** Provides control and inspection of Python's garbage collector.
+class Event(NamedTuple):                              # tuple with field names and types
+    user_id: int
+    event_type: str
+    ts: float
 
-### 2.79 Explain the difference between a shallow copy and a deep copy.
-
-| Feature | Shallow Copy | Deep Copy |
-| --- | --- | --- |
-| **Nested objects** | Shares references | Creates independent copies |
-| **Nested modification** | Can affect the original | Does not affect the original |
-| **Method** | `copy.copy()` | `copy.deepcopy()` |
-| **Performance** | Faster | Slower |
-| **Use case** | Simple/flat data structures | Complex nested data structures |
-| **Data engineering** | Useful when nested data can be shared | Useful when complete data isolation is required |
-
-### 2.80 What are decorators, and how might a data engineer use them in production?
-
-**Decorators** allow you to extend a function's behavior without modifying its original code.
-
-In production data engineering, they are commonly used for:
-
-- **Logging** — track ETL task execution.
-- **Monitoring** — measure execution time and failures.
-- **Retry logic** — automatically retry failed API/database operations.
-- **Authentication/authorization** — validate access before data operations.
-- **Error handling** — consistently handle exceptions across pipeline tasks.
-
-#### Example: Retry Decorator for an API Call
-
-```py
-import time
-
-def retry(max_retries=3):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            for attempt in range(max_retries):
-                try:
-                    return func(*args, **kwargs)
-                except Exception:
-                    if attempt == max_retries - 1:
-                        raise
-                    time.sleep(2)
-        return wrapper
-    return decorator
-
-@retry(max_retries=3)
-def fetch_data():
-    print("Fetching data from API...")
-    # API request here
+batch: list[Event] = []                               # list: a growing collection of records
+batch.append(Event(42, "click", 1717200000.0))
 ```
-
-Here, `@retry` adds **automatic retry behavior** to `fetch_data()` without changing its original function logic.
-
-### 2.81 What is the purpose of `*args` and `**kwargs` in function definitions?
-
-- **`args`** collects any number of **positional arguments** into a tuple.
-- **`*kwargs`** collects any number of **keyword arguments** into a dictionary.
-- They are useful for **flexible functions, decorators, and wrapper functions** where the number or names of arguments may vary.
-
-```py
-def process_data(*args, **kwargs):
-    print(args)
-    print(kwargs)
-
-process_data(1, 2, source="API", batch_size=100)
-```
-
-Output:
-
-```txt
-(1, 2)
-{'source': 'API', 'batch_size': 100}
-```
-
-### 2.82 Explain the Global Interpreter Lock (GIL) and its impact on data processing.
-
-The **GIL** is a lock in standard CPython that allows only one thread at a time to execute Python bytecode.
-
-- **CPU-bound tasks:** Threads cannot fully utilize multiple CPU cores because of the GIL.
-- **I/O-bound tasks:** Threading can still be effective because threads can run while waiting for I/O.
-- **Data processing:** CPU-heavy transformations can use **multiprocessing**, native libraries that release the GIL, or distributed frameworks such as **PySpark**.
-- **Purpose:** It helps protect CPython's internal memory/object management.
-
-### 2.83 What are list and dictionary comprehensions?
-
-**Comprehensions** provide a concise way to create lists or dictionaries from existing iterables, often with filtering or transformation.
-
-**List comprehension:**
-
-```py
-squares = [x * x for x in numbers if x > 0]
-```
-
-**Dictionary comprehension:**
-
-```py
-filtered = {k: v for k, v in data.items() if v > 0}
-```
-
-They can be more concise and often faster than equivalent explicit `for` loops for simple operations.
-
-### 2.84 How do you implement robust exception handling in an ETL script?
-
-Use `try`, `except`, `else`, and `finally` to handle failures safely.
-
-```py
-try:
-    data = extract_data()
-    transform(data)
-    load_data(data)
-
-except DatabaseError as e:
-    logger.error(f"Database error: {e}")
-    raise
-
-except FileNotFoundError as e:
-    logger.error(f"File missing: {e}")
-    raise
-
-else:
-    logger.info("ETL completed successfully")
-
-finally:
-    close_connections()
-```
-
-- **`try`** → ETL operations
-- **`except`** → Handle specific errors
-- **`else`** → Runs when no exception occurs
-- **`finally`** → Always executes; useful for cleanup
-- **Best practice:** Catch specific exceptions and log failures rather than using only generic `Exception`.
-
-### 2.85 What is the difference between the `/` and `//` operators?
-
-| Operator | Meaning | Example | Result |
-| --- | --- | --- | --- |
-| `/` | True division | `10 / 4` | `2.5` |
-| `//` | Floor division | `10 // 4` | `2` |
-
-### 2.86 What is a lambda function and when is it appropriate to use one?
-
-A **lambda function** is a small, anonymous, one-line function used for simple operations.
-
-```py
-square = lambda x: x ** 2
-print(square(5))  # 25
-```
-
-**Common uses:**
-
-- `map()` — transform data
-- `filter()` — filter data
-- Pandas `.apply()` — apply simple transformations
-
-### 2.87 What are Python generators, and why are they critical for Big Data?
-
-A **generator** produces values **one at a time** using `yield` instead of storing the entire sequence in memory.
-
-```py
-def read_records(records):
-    for record in records:
-        yield record
-```
-
-**Why important for Big Data:**
-
-- **Memory efficient:** Processes data incrementally.
-- **Lazy evaluation:** Generates values only when needed.
-- **Suitable for large datasets:** Useful for processing large files, logs, and data streams.
-- Helps reduce the risk of **Out-of-Memory (OOM)** errors.
-
-### 2.88 Explain the `with` statement and the concept of Context Managers.
-
-A **context manager** manages the setup and cleanup of resources automatically. The `with` statement is used to work with context managers.
-
-```py
-with open("data.csv") as f:
-    data = f.read()
-```
-
-Here, Python automatically **closes the file** after the block, even if an exception occurs.
 
 **Data engineering uses:**
 
-- File handling
-- Database connections and transactions
-- Locks
-- Temporary resources
-- Cloud/resource management
+- Tuples as **composite keys** (partition, date, customer) in dicts and sets, for deduplication and grouping.
+- **DB-API rows** come back as tuples from `cursor.fetchall()`; `executemany` takes a list of tuples.
+- `NamedTuple` or frozen dataclasses for small, immutable records passed between pipeline stages.
+- Lists for buffers and batches that grow before a bulk write.
 
-Custom context managers can be created using `__enter__()` and `__exit__()`.
+**Pitfall:** immutability is shallow. `t = ([1, 2], 3)` cannot be rebound, but `t[0].append(9)` works, and such a tuple is not hashable. And a single-element tuple needs a trailing comma: `(5,)`.
 
-Eg:
+### 2.63 What is the difference between a shallow copy and a deep copy?
 
-```py
-class DatabaseConnection:
+Assignment copies nothing; it creates another reference to the same object. A **shallow copy** creates a new outer container but fills it with references to the **same inner objects**. A **deep copy** recursively copies the container and everything it contains, so the result shares no mutable state with the original.
+
+```python
+import copy
+
+config = {"source": "s3", "columns": ["id", "amount"]}
+
+alias = config                     # same object
+shallow = copy.copy(config)        # also: dict(config), config.copy(), lst[:]
+deep = copy.deepcopy(config)
+
+shallow["source"] = "gcs"          # only affects shallow (top-level rebinding)
+shallow["columns"].append("ts")    # ALSO changes config["columns"]: shared inner list
+deep["columns"].append("region")   # original untouched
+```
+
+| Feature | Assignment | Shallow copy | Deep copy |
+| --- | --- | --- | --- |
+| New outer object | No | Yes | Yes |
+| Nested objects | Shared | Shared | Copied recursively |
+| Cost | Free | Proportional to top-level size | Proportional to the whole object graph; can be very slow |
+| How | `b = a` | `copy.copy`, `.copy()`, slicing, constructors | `copy.deepcopy` |
+
+**Details worth knowing:**
+
+- `deepcopy` keeps a memo dictionary, so shared references and cycles are preserved rather than copied twice or looping forever.
+- Classes can customise copying with `__copy__` and `__deepcopy__`; objects such as locks, sockets and open files cannot be meaningfully deep-copied.
+- **pandas:** `df.copy()` is deep by default for the data (`deep=True`), but Python objects inside `object` columns are not recursively copied. Slicing a DataFrame historically could return a view or a copy, causing `SettingWithCopyWarning`; pandas 3.0 makes Copy-on-Write the default, so derived DataFrames behave like copies and are copied lazily only when modified.
+- **NumPy:** basic slicing returns a **view** sharing memory; use `.copy()` when you need independence.
+
+**When to use which:** a classic bug is a mutable default config shared between pipeline runs or tests; deep-copy the template per run, or better, use immutable structures (frozen dataclasses, tuples) so copying is unnecessary. Avoid `deepcopy` in hot paths; it is often the hidden cost in slow code.
+
+### 2.64 What do `*args` and `**kwargs` do in function definitions and calls?
+
+In a definition, `*args` collects extra **positional** arguments into a tuple and `**kwargs` collects extra **keyword** arguments into a dict. In a call, `*` and `**` do the reverse: they **unpack** a sequence or a mapping into arguments. The names are convention; the stars are what matter.
+
+```python
+def process_data(source, *args, batch_size=100, **kwargs):
+    print(source, args, batch_size, kwargs)
+
+process_data("api", 1, 2, batch_size=500, retries=3)
+# api (1, 2) 500 {'retries': 3}
+
+params = {"batch_size": 1000, "retries": 5}
+process_data("s3", *[7, 8], **params)       # unpacking at the call site
+```
+
+**The full parameter grammar** (worth knowing for API design):
+
+```python
+def f(pos_only, /, normal, *, kw_only, **rest): ...
+```
+
+- Parameters before `/` are positional-only (3.8+), so you can rename them without breaking callers.
+- Parameters after `*` (or after `*args`) are keyword-only, which forces readable calls such as `load(df, overwrite=True)` instead of `load(df, True)`.
+
+**Where they are used:**
+
+- **Decorators and wrappers** that forward any signature: `return func(*args, **kwargs)` (see 2.6).
+- **Cooperative inheritance:** `super().__init__(**kwargs)` passes through arguments a class does not consume.
+- Forwarding options to an underlying library, for example `def read(path, **read_csv_kwargs): return pd.read_csv(path, **read_csv_kwargs)`.
+
+**Pitfalls and good practice:**
+
+- Over-using `**kwargs` hides the real interface: no autocompletion, no type checking, typos silently ignored. Prefer explicit keyword-only parameters in public APIs.
+- To type them, annotate the element type (`*args: int`, `**kwargs: str`), use `Unpack[TypedDict]` for structured kwargs (3.12+), and `ParamSpec` for decorators that preserve signatures.
+- Dict merging uses the same idea: `{**defaults, **overrides}` or `defaults | overrides` (3.9+).
+
+### 2.65 What are comprehensions, and how do they compare with `map()`, `filter()` and lambda functions?
+
+**Comprehensions** build lists, dicts, sets or lazy generators from an iterable with an optional filter in one expression. **`map()`** applies a function to every item and **`filter()`** keeps items for which a function returns true; both return lazy iterators in Python 3. A **lambda** is an anonymous single-expression function, often passed to them.
+
+```python
+numbers = [1, -2, 3, 4]
+
+squares = [x * x for x in numbers if x > 0]            # list comprehension
+lookup = {u.id: u for u in users}                      # dict comprehension
+domains = {e.split("@")[1] for e in emails}            # set comprehension
+total = sum(x * x for x in numbers)                    # generator expression: lazy, no list
+
+squares_m = list(map(lambda x: x * x, filter(lambda x: x > 0, numbers)))
+names = list(map(str.upper, raw_names))                # map with an existing function reads well
+
+rows.sort(key=lambda r: (r.country, -r.revenue))      # lambda as a short key function
+```
+
+**Choosing between them:**
+
+| Situation | Prefer |
+| --- | --- |
+| Transform and filter in one go | Comprehension: more readable than nested `map`/`filter`/`lambda` |
+| Applying an existing named function | `map(func, items)` is fine and slightly faster than a lambda |
+| Large or unbounded input | Generator expression or `map` (lazy) instead of a list |
+| Sort keys, `max(key=...)`, small callbacks | Lambda or `operator.itemgetter` / `attrgetter` |
+| Logic with statements, several steps or reuse | A named `def` with a docstring and tests |
+
+**Performance:** comprehensions avoid repeated `append` lookups and are usually faster than an equivalent `for` loop; since 3.12 they are inlined (PEP 709). But they are still Python-level loops. On a DataFrame, a vectorised expression (`df["amount"] * 1.2`) beats both a comprehension and `df.apply(lambda ...)` by one to two orders of magnitude.
+
+**Lambda limitations:** a single expression, no statements or annotations, an unhelpful `<lambda>` name in tracebacks, and they cannot be pickled by standard `pickle` (a problem for `multiprocessing`). PEP 8 says not to assign a lambda to a name; use `def`. Beware late binding in loops (see 2.30).
+
+**Readability rule:** if a comprehension needs more than one `for` and one `if`, or does not fit on two lines, write a loop or a helper function.
+
+### 2.66 What is the difference between the `/` and `//` operators, and what are the edge cases?
+
+`/` is **true division** and always returns a `float` (for `int` operands); `//` is **floor division**, rounding towards negative infinity, and returns an `int` for integers. `%` is the matching remainder, so `a == (a // b) * b + a % b` always holds.
+
+```python
+10 / 4      # 2.5
+10 // 4     # 2
+10 % 4      # 2
+divmod(10, 4)   # (2, 2)
+
+-7 // 2     # -4  (floors, does NOT truncate towards zero)
+-7 % 2      # 1   (result takes the sign of the divisor)
+int(-7 / 2) # -3  (truncation, as in C, Java and SQL)
+
+7.5 // 2    # 3.0 (float in, float out)
+10 / 5      # 2.0 (always float, even when exact)
+```
+
+**Edge cases that cause real bugs:**
+
+- **Negative numbers.** Python floors while C, Java, Spark SQL and most databases truncate, so the same bucketing logic gives different results in Python and SQL for negative values.
+- **Large integers.** `/` converts to float, losing precision above 2 to the power 53: `(10**20 + 1) / 1` is not exact. Use `//` for integer arithmetic, and `decimal.Decimal` for money.
+- **Division by zero** raises `ZeroDivisionError` for both; NumPy and pandas return `inf` or `NaN` with a warning instead.
+- **Python 2 legacy:** in Python 2, `/` on two ints floored; old code ported carelessly can change results.
+- **Floor division on floats** can surprise: `1 // 0.1` is `9.0` because 0.1 is slightly more than one tenth in binary.
+
+**Typical uses of `//` and `%`:** pagination and batch numbering (`page = offset // page_size`), hash bucketing (`hash(key) % n_partitions`), and time bucketing (`epoch_seconds // 3600 * 3600`).
+
+### 2.67 How does the `with` statement work, and how do you write context managers?
+
+The `with` statement guarantees that setup and teardown code run around a block, even if the block raises. It works with any **context manager**: an object with `__enter__` (called on entry, its return value is bound by `as`) and `__exit__(exc_type, exc, tb)` (always called on exit; returning `True` suppresses the exception).
+
+```python
+with open("data.csv") as f:          # file closed even if parsing fails
+    data = f.read()
+
+# roughly what the interpreter does:
+mgr = open("data.csv")
+f = mgr.__enter__()
+try:
+    data = f.read()
+except BaseException as e:
+    if not mgr.__exit__(type(e), e, e.__traceback__):
+        raise
+else:
+    mgr.__exit__(None, None, None)
+```
+
+**Writing one as a class** (when there is state or reuse):
+
+```python
+class Transaction:
+    def __init__(self, conn):
+        self.conn = conn
     def __enter__(self):
-        print("Opening connection")
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        print("Closing connection")
-
-with DatabaseConnection() as db:
-    print("Using database")
+        return self.conn.cursor()
+    def __exit__(self, exc_type, exc, tb):
+        if exc_type is None:
+            self.conn.commit()
+        else:
+            self.conn.rollback()
+        return False                     # do not swallow the exception
 ```
 
-#### How it works
+**Writing one with `contextlib`** (usually simpler):
 
-- `__enter__()` → runs when entering the `with` block.
-- `__exit__()` → runs automatically when leaving the block, even if an exception occurs.
-- `return self` → makes the context manager available through `as db`.
+```python
+from contextlib import contextmanager
+import time, logging
 
-### 2.89 How do you optimize Python code for processing millions of rows?
+@contextmanager
+def timed(step: str):
+    start = time.perf_counter()
+    try:
+        yield                            # the body of the with block runs here
+    finally:
+        logging.info("%s took %.2fs", step, time.perf_counter() - start)
 
-Optimization focuses on **reducing Python-level loops and memory usage** while identifying bottlenecks.
-
-- **Vectorization:** Use NumPy/Pandas vectorized operations instead of row-by-row loops.
-- **Chunk processing:** Process large datasets in batches to avoid excessive memory usage.
-- **Generators:** Use lazy evaluation for streaming or sequential processing.
-- **Built-in functions:** Prefer optimized Python built-ins over custom loops where possible.
-- **Efficient data types:** Use appropriate Pandas dtypes to reduce memory consumption.
-- **`__slots__`:** Use `__slots__` for large numbers of class instances when appropriate.
-- **Profiling:** Use `cProfile`, `line_profiler`, or similar tools to identify bottlenecks.
-- **Parallel/distributed processing:** For very large datasets, use multiprocessing, PySpark, or other distributed frameworks.
-
-**Example:** Instead of applying a Python function to every row, use Pandas vectorized operations or process the data in chunks.
-
-### 2.90 Compare multiprocessing and multithreading for a data ingestion task.
-
-| Aspect | Multithreading | Multiprocessing |
-| --- | --- | --- |
-| Best for | **I/O-bound** tasks | **CPU-bound** tasks |
-| Example | API calls, S3 downloads, database reads | Complex transformations, encryption, CPU-heavy processing |
-| Execution | Multiple threads within one process | Separate processes |
-| GIL | Limited for Python CPU-bound code | Bypasses GIL |
-| Memory | Shared memory | Separate memory spaces |
-| Data ingestion use | Parallel file/API downloads | Parallel CPU-intensive transformations |
-
-### 2.91 What is "Pickling" and what are the risks associated with it?
-
-**Pickling** is the process of **serializing a Python object into a byte stream** so it can be stored or transmitted and later reconstructed.
-
-- **Use cases:** Saving Python objects, ML model states, configurations, and cached data.
-- **Main risk:** Never unpickle data from an **untrusted source**, because malicious pickle data can execute arbitrary code during deserialization.
-- **Data exchange:** Prefer **JSON, Parquet, or other language-independent formats** when interoperability and security are important.
-
-```py
-import pickle
-
-# Serialize
-with open("data.pkl", "wb") as f:
-    pickle.dump(data, f)
-
-# Deserialize — only use trusted files
-with open("data.pkl", "rb") as f:
-    data = pickle.load(f)
+with timed("load"):
+    load_partition()
 ```
 
-### 2.92 How do you ensure your Python code remains maintainable in a large team?
+**Useful `contextlib` tools:** `ExitStack` for a dynamic number of resources (open N files, roll all back on failure), `suppress(FileNotFoundError)`, `closing()` for objects with only `close()`, `nullcontext()` for optional managers, `chdir()` (3.11+), and `asynccontextmanager` for `async with`.
 
-Maintainability comes from **consistent standards, clear code, automated testing, and good collaboration practices**.
+**Data engineering uses:** database connections and transactions, file and object-store handles, locks, temporary directories, Spark sessions, tracing spans, temporarily changing settings (`pd.option_context`, `torch.no_grad()`, `np.errstate`).
 
-- **PEP 8:** Follow consistent Python coding conventions.
-- **Type hints:** Improve readability and make interfaces explicit.
-- **Automated testing:** Use `pytest` for unit and integration tests.
-- **Linting:** Use tools like `flake8` or Ruff to detect code issues.
-- **Formatting:** Use **Black** for consistent code formatting.
-- **Code reviews:** Review changes before merging to maintain quality.
-- **Documentation:** Document complex logic, APIs, and important design decisions.
-- **CI/CD:** Run tests, linting, and formatting checks automatically in the pipeline.
+**Pitfalls:** a `@contextmanager` generator without `try`/`finally` around `yield` skips cleanup on exceptions; returning `True` from `__exit__` accidentally swallows errors; and a context manager on a connection object may commit a transaction without closing the connection (sqlite3 and psycopg2 behave this way), so read the library's semantics.
 
-### 2.93 What is Monkey Patching and why is it generally discouraged?
+### 2.68 How do you profile and optimise Python code that processes millions of rows?
+
+Measure first, then remove Python-level per-row work. Almost every speed-up in data code comes from moving the inner loop out of the interpreter into vectorised or compiled code, and from reading less data; micro-optimising Python syntax rarely matters.
+
+**1. Profile to find the real bottleneck:**
+
+| Tool | Use |
+| --- | --- |
+| `cProfile` plus `snakeviz` | Deterministic function-level profile of a script or test |
+| `py-spy` | Sampling profiler; attach to a running production process with no code change and produce flame graphs |
+| `scalene` | CPU, memory and GPU split between Python and native code per line |
+| `line_profiler` | Line-by-line timing of one hot function |
+| `memray`, `tracemalloc` | Memory allocations and peak usage |
+| `timeit`, `pytest-benchmark` | Micro-benchmarks and regression tests for speed |
+
+**2. Apply the optimisation ladder, cheapest first:**
+
+1. **Do less I/O.** Read only needed columns and partitions (Parquet column pruning, predicate pushdown), filter early, and avoid CSV for large data.
+2. **Better algorithms and data structures.** Replace list membership tests with sets, nested loops with joins or dict lookups.
+3. **Vectorise.** NumPy and pandas operations run in C over whole columns. Replace `df.apply(f, axis=1)` and `iterrows()` with column expressions, `np.where`, `np.select`, `merge` and `groupby`.
+4. **Use a faster engine.** **Polars** (Rust, multi-threaded, lazy query optimiser) or **DuckDB** are often 5 to 50 times faster than pandas for joins and group-bys and use less memory.
+5. **Efficient dtypes.** `category` for low-cardinality strings, downcast numerics, Arrow-backed strings in pandas.
+6. **Compile the remaining loop.** **Numba** (`@njit`) JIT-compiles numeric NumPy loops; **Cython** compiles typed Python-like code to C; **Rust via PyO3 and maturin** for custom logic with safe parallelism (this is how Polars, Pydantic v2 and tokenizers are built).
+7. **Parallelise.** Process pools for CPU-bound Python, or Spark, Dask and Ray when data exceeds one machine (see 2.61).
+8. **Stream in chunks** to bound memory (`pl.scan_parquet`, `pd.read_csv(chunksize=...)`, Arrow record batches); see 2.45.
+
+```python
+import numpy as np, pandas as pd, polars as pl
+
+# slow: Python function called once per row
+df["band"] = df.apply(lambda r: "high" if r["amount"] > 1000 else "low", axis=1)
+
+# fast: vectorised
+df["band"] = np.where(df["amount"] > 1000, "high", "low")
+
+# Polars lazy query: optimiser pushes filters and projections into the scan
+out = (pl.scan_parquet("events/*.parquet")
+         .filter(pl.col("country") == "GB")
+         .group_by("user_id")
+         .agg(pl.col("amount").sum())
+         .collect())
+```
+
+**Pitfalls:** optimising without a profile; benchmarking on tiny samples; Python UDFs in Spark or Polars that silently fall back to row-at-a-time execution (prefer built-in expressions, or vectorised pandas UDFs with Arrow); and over-engineering, since a two-times speed-up on a job that runs nightly in ten minutes is rarely worth extra complexity. State the target (latency, cost, memory) before optimising.
+
+### 2.69 How do you keep a Python codebase maintainable in a large team?
+
+Maintainability comes from **clear boundaries, enforced conventions and fast feedback**, so that many people can change the code safely. Style is the easy part and should be automated; the hard parts are module structure, interfaces and tests.
+
+**Structure and design:**
+
+- Package by domain (`ingestion`, `features`, `serving`), not by technical layer, with a small public API per package and private internals.
+- Keep I/O at the edges: pure transformation functions in the middle are easy to test and reuse; readers and writers are thin adapters (ports and adapters).
+- Make dependencies explicit (constructor arguments, dependency injection) rather than globals and import-time singletons.
+- Use typed data contracts between components: dataclasses or Pydantic models instead of loose dicts, and schemas (Pandera, Pydantic) for DataFrames and events.
+- Keep notebooks for exploration; move anything reused into the package with tests.
+
+**Automated guard rails** (see 2.11):
+
+- Ruff for formatting and linting, mypy or Pyright for types (strict on new code), Bandit and `pip-audit` for security, all configured in `pyproject.toml` and run in pre-commit and CI.
+- Reproducible environments with a lock file (see 2.74).
+- A test pyramid with fast unit tests on every commit (see 2.77).
+- Import-boundary rules (for example `import-linter`) so layers do not become a tangle.
+
+**Team practices:**
+
+- Small pull requests, code review focused on design and correctness rather than style, and code owners for critical areas.
+- Architecture decision records for choices such as "Polars over pandas" so newcomers know why.
+- Docstrings on public functions, a README per package, and runnable examples.
+- Deprecation policy for shared libraries: warn, keep the old API for a release, then remove; semantic versioning for internal packages.
+- Track signals: CI duration, flaky tests, type coverage, time to first commit for new joiners.
+
+**What interviewers look for at senior level:** you can describe how you introduced these practices to an existing messy codebase incrementally (baselines, ratchets, "boy scout rule"), and how you balanced them against delivery pressure rather than imposing everything at once.
+
+### 2.70 What is Monkey Patching and why is it generally discouraged?
 
 **Monkey patching** is the practice of **modifying or replacing classes, functions, or methods at runtime**, often in third-party libraries.
 
@@ -2606,33 +2541,410 @@ Service.process = new_process
 
 **Use case:** It can be appropriate for controlled testing or as a temporary workaround for a third-party bug, but explicit extension, dependency injection, or configuration is generally preferable.
 
-### 2.94 Explain how `map()` and `filter()` work compared to comprehensions.
+### 2.71 What does maintainable, well-tested Python look like in an AI or agent codebase, given that LLM outputs are non-deterministic?
 
-- **`map()`** applies a function to every item in an iterable.
-- **`filter()`** keeps only items for which the function returns `True`.
-- Both return **iterators** in Python 3, so they are lazy and memory-efficient.
-- **Comprehensions** are often more readable and Pythonic for simple transformations and filtering.
-- `map()` can be efficient when using **built-in functions**, such as `str.upper` or `abs`.
+The answer is to **separate what is deterministic from what is not** and test each appropriately: ordinary unit tests for the code around the model, and statistical evaluation suites for the model's behaviour. Normal engineering discipline (types, linting, CI, reviews, versioning) still applies, plus versioning of prompts, models and evaluation datasets.
 
-```py
-numbers = [1, 2, 3, 4, 5]
+**Layered testing:**
 
-# map()
-squares = map(lambda x: x ** 2, numbers)
+| Layer | What it covers | How |
+| --- | --- | --- |
+| Unit tests | Prompt templating, output parsers, tool argument validation, retrieval filters, retries, routing logic | pytest with the LLM client mocked or faked; fully deterministic and fast |
+| Contract tests | Structured outputs match schemas; tools receive valid arguments | Pydantic models, JSON Schema; test parsers against recorded real responses including malformed ones |
+| Recorded integration tests | The full chain against real responses | Record and replay HTTP (VCR-style cassettes) so CI is cheap and stable |
+| Evaluation suite | Quality: correctness, faithfulness, tool-choice accuracy, safety | Curated dataset, metrics with thresholds, LLM-as-judge with calibrated rubrics, run on prompt or model changes |
+| Production monitoring | Drift and regressions in real traffic | Tracing, sampled online evaluation, user feedback (see Chapter 24) |
 
-# filter()
-even = filter(lambda x: x % 2 == 0, numbers)
+```python
+from pydantic import BaseModel
 
-# Comprehensions
-squares = [x ** 2 for x in numbers]
-even = [x for x in numbers if x % 2 == 0]
+class Extraction(BaseModel):
+    invoice_id: str
+    total: float
+
+class FakeLLM:
+    def __init__(self, reply: str):
+        self.reply = reply
+    def complete(self, prompt: str) -> str:
+        return self.reply
+
+def test_extractor_ignores_text_around_json():
+    llm = FakeLLM('Sure! Here it is: {"invoice_id": "A1", "total": 12.5} Hope that helps.')
+    result = extract_invoice(llm, "...")
+    assert result == Extraction(invoice_id="A1", total=12.5)
 ```
 
-**In practice:** Use comprehensions for readability; use `map()`/`filter()` when they make the transformation clearer, especially with existing functions.
+**Code practices that make this possible:**
 
-### 2.95 What does "maintainable Python code with proper testing" look like for you in an AI/agent context, given how non-deterministic LLM outputs are?
+- Inject the model client behind a small interface (a `Protocol`), so tests pass a fake and you can switch providers.
+- Keep prompts as versioned artefacts, not strings scattered through code; log the prompt version, model name and parameters with every call.
+- Validate every model output at the boundary (Pydantic) and handle failures explicitly: retry with the validation error, fall back, or escalate.
+- Set temperature low and fix seeds where the provider supports it, but do not rely on determinism; assert on properties (valid JSON, cites a retrieved document, correct tool chosen) rather than exact strings.
+- Treat evaluation results like test results: thresholds in CI, tracked over time, with a regression blocking a release.
 
-Standard practices (type hints, docstrings, linting, CI, version control with meaningful PR/commit history) still apply, plus AI-specific testing: unit tests for deterministic components (parsing, validation, retrieval logic) and separate evaluation suites (not pass/fail unit tests) for the non-deterministic LLM-generation parts — using metrics/thresholds and regression tracking rather than exact-match assertions. Mocking LLM/tool calls in unit tests to keep them fast and deterministic, reserving live-model tests for a smaller, slower integration/eval suite.
+**Pitfalls:** exact-match assertions on generated text (flaky), calling live models in unit tests (slow, costly, flaky), and evaluation sets that are too small to detect a regression or that leak into few-shot examples. See Chapter 24 for evaluation methodology and Chapter 21 for agent testing.
+
+### 2.72 What is free-threaded (no-GIL) CPython, what is its status, and should you adopt it?
+
+Free-threaded CPython is a separate build of the interpreter, introduced by **PEP 703**, in which the GIL is removed so that threads can execute Python bytecode **in parallel on multiple cores**. It shipped as **experimental in Python 3.13** (October 2024), became **officially supported but opt-in in Python 3.14** (PEP 779, "phase II"), and Python 3.15 continues that path with a stable ABI for free-threaded extensions. Whether it becomes the default build ("phase III") has not been decided; the standard build with the GIL remains the default.
+
+**How it works without the GIL:**
+
+- **Biased reference counting:** the owning thread updates an object's refcount cheaply without atomics; other threads use a separate atomic shared count.
+- **Immortal objects** (PEP 683): `None`, small ints and other common objects never have their refcounts changed, avoiding contention on hot objects.
+- **Per-object locks** on built-in containers (`list`, `dict`) so concurrent operations do not corrupt them.
+- **`mimalloc`** replaces pymalloc as the thread-safe allocator, and the cyclic GC stops the world briefly while it runs.
+- The specialising adaptive interpreter was made thread-safe in 3.14, which is a large part of why single-threaded overhead fell.
+
+**Using it:**
+
+```python
+# installed as a separate executable, e.g. python3.14t (uv: uv python install 3.14t)
+import sys, sysconfig
+from concurrent.futures import ThreadPoolExecutor
+
+print(sysconfig.get_config_var("Py_GIL_DISABLED"))   # 1 on a free-threaded build
+print(sys._is_gil_enabled())                          # False if running without the GIL
+
+def score(chunk):                                     # pure-Python CPU work
+    return sum(expensive_feature(x) for x in chunk)
+
+with ThreadPoolExecutor(max_workers=8) as pool:       # now scales across cores
+    results = list(pool.map(score, chunks))
+```
+
+- Importing a C extension that has not declared itself free-thread-safe **re-enables the GIL** for the process, with a warning; `PYTHON_GIL=0` or `-X gil=0` forces it off.
+- Wheels for free-threaded builds carry a separate ABI tag (`cp314t`).
+
+**Trade-offs:**
+
+| Benefit | Cost |
+| --- | --- |
+| Parallel CPU-bound Python with threads, without pickling data between processes | Single-threaded code is slower than the standard build (the 3.14 docs put it at roughly 5 to 10 percent) and memory use is higher |
+| Shared memory: one copy of a model, cache or lookup table instead of one per process | Ecosystem support is still uneven; every C extension in your stack must be audited and rebuilt |
+| Simpler than multiprocessing for many workloads | **Latent race conditions** in Python code that relied on the GIL's accidental serialisation now surface |
+
+**Who benefits:** CPU-bound pure-Python work that is hard to vectorise (tokenisation, feature engineering on nested records, simulation), data loaders feeding GPUs (PyTorch has been experimenting with thread-based workers), and inference servers wanting several threads sharing one model in memory. Workloads already dominated by NumPy, Polars or PyTorch kernels gain little, because those already release the GIL.
+
+**Adoption guidance for a team:**
+
+1. Check dependencies against the community compatibility trackers and test suites on a `3.14t` CI job.
+2. Benchmark your real workload on both builds; do not assume a speed-up.
+3. Audit shared mutable state: module-level caches, lazily initialised singletons, and check-then-act patterns need locks. The GIL never made `counter += 1` atomic, but it hid many races in practice.
+4. Pilot on an internal batch job before latency-sensitive services, and keep the standard build as the fallback.
+
+**What interviewers look for:** you know the GIL's removal is real but opt-in, you can explain the technical changes (biased refcounting, immortal objects, per-object locks), and you treat adoption as a dependency-and-correctness migration rather than a free performance win. Subinterpreters (`concurrent.interpreters`, 3.14) are the other route to parallelism, with isolation instead of shared objects.
+
+### 2.73 How do you use asyncio correctly in production: tasks, TaskGroup, cancellation, timeouts and mixing sync with async code?
+
+`asyncio` gives **single-threaded concurrency for I/O-bound work**: coroutines suspend at `await`, and the event loop runs other ready tasks meanwhile (see 2.48). Using it well in production means **structured concurrency** (every task has an owner that waits for it and sees its errors), explicit **timeouts and cancellation**, **bounded concurrency**, and never **blocking the event loop**. Framework-specific advice for FastAPI is in 25.33.
+
+**Structured concurrency with `TaskGroup` (3.11+):**
+
+```python
+import asyncio, httpx
+
+async def fetch(client: httpx.AsyncClient, sem: asyncio.Semaphore, url: str) -> bytes:
+    async with sem:                                    # bound concurrency
+        async with asyncio.timeout(10):                # per-request deadline (3.11+)
+            resp = await client.get(url)
+            resp.raise_for_status()
+            return resp.content
+
+async def fetch_all(urls: list[str]) -> list[bytes]:
+    sem = asyncio.Semaphore(50)
+    async with httpx.AsyncClient() as client:
+        async with asyncio.TaskGroup() as tg:          # waits for all; cancels siblings on failure
+            tasks = [tg.create_task(fetch(client, sem, u)) for u in urls]
+    return [t.result() for t in tasks]
+
+asyncio.run(fetch_all(urls))
+```
+
+- If any task fails, `TaskGroup` **cancels the others** and raises an `ExceptionGroup`, handled with `except*`.
+- `asyncio.gather` is the older API: by default the first exception propagates but the **other tasks keep running**, which leaks work; `return_exceptions=True` collects errors instead. Prefer `TaskGroup` for new code.
+
+**Mixing sync and async:**
+
+| Situation | Tool |
+| --- | --- |
+| Calling a blocking library (boto3, requests, a DB-API driver, file I/O) from async code | `await asyncio.to_thread(func, *args)` or `loop.run_in_executor(pool, func)` |
+| CPU-heavy work from async code | `run_in_executor` with a `ProcessPoolExecutor` |
+| Calling async code from sync code at the top level | `asyncio.run(main())` once per program |
+| Calling async code from another thread while a loop is running | `asyncio.run_coroutine_threadsafe(coro, loop)` |
+| Running async code in Jupyter (a loop is already running) | `await coro` directly in the cell, not `asyncio.run` |
+
+**Common bugs:**
+
+1. **Blocking the loop:** `time.sleep`, `requests.get`, a heavy pandas transform or synchronous DB call inside `async def` stalls every other task. Detect with `asyncio.run(main(), debug=True)` (logs slow callbacks) or `PYTHONASYNCIODEBUG=1`.
+2. **Forgetting `await`:** calling `fetch()` without `await` creates a coroutine that never runs ("coroutine was never awaited" warning).
+3. **Fire-and-forget tasks disappearing:** the loop holds only weak references to tasks, so a task from `create_task` with no stored reference can be garbage-collected mid-flight; keep references or use a `TaskGroup`.
+4. **Swallowing cancellation:** catching `asyncio.CancelledError` (or a broad `except BaseException`) without re-raising breaks timeouts and shutdown.
+5. **Unbounded fan-out:** creating 100,000 tasks at once overwhelms the target API and file descriptors; use a semaphore or a fixed pool of worker tasks reading from an `asyncio.Queue`.
+6. **Sharing clients incorrectly:** create one `AsyncClient` or connection pool per process and reuse it; creating one per request is slow, and using one across event loops fails.
+7. **Mixing loops and threads:** asyncio objects are not thread-safe; use `call_soon_threadsafe` to talk to a loop from another thread.
+
+**Graceful shutdown:** on SIGTERM, stop accepting new work, cancel or drain in-flight tasks with a deadline, then close clients. `asyncio.Runner` and signal handlers via `loop.add_signal_handler` help. Python 3.14 adds `python -m asyncio ps PID` and `pstree` to inspect the tasks of a running process, useful for debugging hangs.
+
+**When not to use asyncio:** CPU-bound work, codebases built on sync libraries with no async equivalent, or modest concurrency where a `ThreadPoolExecutor` is simpler. Async is viral: once the core is async, callers must be too.
+
+### 2.74 How do you manage Python packaging, dependencies and environments reproducibly (pyproject.toml, uv, lock files)?
+
+A reproducible Python project declares its metadata and **direct dependencies with ranges** in `pyproject.toml`, pins the **full resolved dependency tree with hashes** in a lock file, and builds environments and container images only from that lock file. In 2026 the common toolchain is **uv** (from Astral, written in Rust) for Python versions, virtual environments, resolution, locking and running, with Poetry, PDM, Hatch and pip-tools as alternatives, and conda or Pixi where non-Python native dependencies dominate.
+
+**The pieces:**
+
+| Piece | Role |
+| --- | --- |
+| `pyproject.toml` (PEP 518, 621) | Single file for project metadata, dependencies, optional extras, dependency groups (PEP 735) and tool configuration (Ruff, mypy, pytest) |
+| Build backend (hatchling, setuptools, uv_build, maturin for Rust) | Turns source into a **wheel**; declared in `[build-system]` |
+| Lock file (`uv.lock`, `poetry.lock`, or the standard `pylock.toml` from PEP 751) | Exact versions and hashes of every transitive dependency for every platform |
+| Virtual environment (`.venv`) | Isolated interpreter and site-packages per project |
+| Python version pin (`.python-version`, `requires-python`) | Same interpreter everywhere |
+
+```text
+[project]
+name = "feature-pipeline"
+version = "1.4.0"
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=1.20,<2",
+    "pydantic>=2.7,<3",
+    "boto3>=1.34",
+]
+
+[project.optional-dependencies]
+gpu = ["torch>=2.5"]
+
+[dependency-groups]
+dev = ["pytest>=8", "hypothesis>=6", "ruff", "mypy"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+```
+
+```bash
+uv init && uv add polars pydantic      # edit pyproject and update uv.lock
+uv sync --locked                       # CI: install exactly the lock; fail if it is stale
+uv run pytest                          # run inside the project environment
+uv lock --upgrade-package boto3        # controlled upgrade of one dependency
+```
+
+**Libraries versus applications:**
+
+- A **library** published for others declares **broad version ranges** and never pins exact versions, or it will conflict with other packages in the user's environment.
+- An **application or pipeline** (a service, a DAG image, a model server) **locks everything** and deploys from the lock.
+
+**Reproducible builds and deployments:**
+
+- Install with hashes (`uv sync --locked`, `pip install --require-hashes`) so a compromised or re-uploaded package cannot slip in.
+- Build Docker images in two stages: install locked dependencies in a layer cached on the lock file, then copy the source; use a slim base image and pin the base image digest.
+- Pin the Python version and, for GPU stacks, the CUDA and driver versions alongside PyTorch wheels (the PyTorch index URL encodes the CUDA version).
+- Publish internal packages to a private index (Artifactory, CodeArtifact) and configure the index explicitly to avoid **dependency confusion** attacks.
+- Automate upgrades with Renovate or Dependabot and scan with `pip-audit`; an untouched lock file slowly accumulates vulnerabilities.
+
+**Pitfalls:** `pip freeze > requirements.txt` captures one machine's environment, misses platform differences and mixes direct with transitive dependencies; installing into the system or base conda environment; notebooks with `!pip install` cells; and lock files that are generated on macOS but deployed to Linux without cross-platform resolution (uv and Poetry resolve universally to avoid this).
+
+**What interviewers look for:** you can explain why "works on my machine" happens, the difference between declaring and locking dependencies, and how you would move a team from ad hoc `requirements.txt` files to locked, hash-verified builds without disrupting delivery.
+
+### 2.75 How do you use type hints at scale: mypy or Pyright, Protocols, generics, TypedDict, and runtime validation with Pydantic?
+
+Type hints are **ignored by the interpreter at run time** but checked statically by **mypy** or **Pyright**, catching whole classes of bugs (`None` handling, wrong argument types, misspelt attributes) before code runs and making large codebases navigable. Static types do not validate external data, so at system boundaries you add **runtime validation**, typically with **Pydantic**.
+
+**Core tools beyond basic annotations:**
+
+```python
+from typing import Protocol, TypedDict, NotRequired, Literal, Callable
+from dataclasses import dataclass
+
+class Reader(Protocol):                       # structural typing: anything with read() fits
+    def read(self, path: str) -> bytes: ...
+
+class EventDict(TypedDict):                   # typed shape for dicts, e.g. parsed JSON
+    user_id: int
+    kind: Literal["click", "view"]
+    referrer: NotRequired[str]
+
+def first[T](items: list[T]) -> T | None:     # generic function, PEP 695 syntax (3.12+)
+    return items[0] if items else None
+
+@dataclass(frozen=True, slots=True)
+class Partition:
+    table: str
+    date: str
+
+def run(reader: Reader, on_done: Callable[[Partition], None]) -> None: ...
+```
+
+| Feature | Use |
+| --- | --- |
+| `X \| None` and narrowing | Forces handling of missing values; the checker narrows after `if x is None: return` |
+| `Protocol` | Interfaces without inheritance; ideal for dependency injection and test fakes |
+| Generics (`TypeVar`, `class Repo[T]`) | Reusable containers and functions that keep element types |
+| `TypedDict` | Dict-shaped data (JSON, kwargs) when you cannot use a class |
+| `Literal`, `Enum` | Restrict values to a fixed set |
+| `ParamSpec`, `Concatenate` | Decorators that preserve signatures (see 2.6) |
+| `@overload` | Functions whose return type depends on arguments |
+| `Final`, `@final`, `ReadOnly` | Prevent reassignment and overriding |
+
+**mypy versus Pyright:** mypy is the reference checker with a plugin system (Pydantic and Django plugins). Pyright is faster, powers VS Code's Pylance, and infers more aggressively. Newer Rust-based checkers (Astral's ty, Meta's Pyrefly) aim at very large monorepos. Pick one for CI and match the editor to it.
+
+**Runtime validation at boundaries:**
+
+```python
+from typing import Literal
+from pydantic import BaseModel, Field, ValidationError
+
+class Event(BaseModel):
+    user_id: int
+    amount: float = Field(ge=0)
+    kind: Literal["click", "view"]
+
+try:
+    event = Event.model_validate_json(raw_message)   # parses, coerces, validates
+except ValidationError as e:
+    send_to_dead_letter(raw_message, str(e))
+```
+
+Use Pydantic (or `msgspec`, `attrs` with validators) for API payloads, config (`pydantic-settings`), messages from queues and LLM structured outputs; use **plain dataclasses** internally where data is already trusted, because validation has a cost. For DataFrames, schema libraries such as **Pandera** validate columns and dtypes.
+
+**Rolling it out on a large codebase:**
+
+1. Start with `mypy --strict` (or Pyright strict) on new packages only; set a lenient global baseline.
+2. Annotate public function signatures first; inference fills in much of the rest.
+3. Use stub packages (`types-requests`, `pandas-stubs`) and `py.typed` markers for internal libraries.
+4. Ratchet: forbid new `Any` and `type: ignore` without a reason code, and track type coverage.
+5. Avoid over-engineering: precise types for core domain objects, `Any` at messy edges is acceptable if contained.
+
+**Pitfalls:** believing hints validate data at run time (they do not); `Any` spreading silently through a codebase; typing pandas DataFrames, where static checkers know little about columns; and circular imports created by type-only imports (use `from __future__ import annotations` or `if TYPE_CHECKING:`).
+
+### 2.76 How do you find and fix memory growth or leaks in a long-running Python service or worker?
+
+In Python a "leak" is almost always **objects that are still referenced** (unbounded caches, growing globals, references held by closures, tasks or exception tracebacks), **memory held by native libraries**, or **allocator fragmentation** that keeps the process's resident memory (RSS) high even after objects are freed. The approach is to confirm the growth pattern, find which allocations grow, then decide whether it is a true leak or a high-water mark.
+
+**1. Characterise the growth:**
+
+- Plot RSS over time and against request count. Unbounded linear growth suggests a leak; growth that plateaus after warm-up suggests caches or fragmentation.
+- Compare `tracemalloc` totals (Python allocations) with RSS. If Python allocations are flat while RSS grows, the problem is native (NumPy, PyTorch, Arrow, C extensions) or fragmentation.
+
+**2. Find what is growing:**
+
+```python
+import tracemalloc, gc
+from collections import Counter
+
+tracemalloc.start(25)                        # keep 25 frames per allocation
+before = tracemalloc.take_snapshot()
+handle_many_requests()
+after = tracemalloc.take_snapshot()
+for stat in after.compare_to(before, "traceback")[:10]:
+    print(stat)                               # allocation sites that grew most
+
+gc.collect()
+print(Counter(type(o).__name__ for o in gc.get_objects()).most_common(15))
+```
+
+| Tool | Strength |
+| --- | --- |
+| `tracemalloc` | Standard library; diff snapshots to find growing allocation sites |
+| **memray** | Tracks Python and native allocations, flame graphs, can attach to a live process |
+| `objgraph`, `gc.get_referrers` | Show what is keeping a leaked object alive |
+| `pympler` | Object size summaries over time |
+| `py-spy dump` | See what a stuck or bloated process is doing right now |
+
+**3. Common causes and fixes:**
+
+| Cause | Fix |
+| --- | --- |
+| Unbounded module-level dict or list used as a cache | `functools.lru_cache(maxsize=...)`, `cachetools.TTLCache`, or an external cache (Redis) |
+| `lru_cache` on instance methods keeps every `self` alive | Cache on a module-level function keyed by IDs, or use `weakref` |
+| Event handlers or callbacks registered and never removed | Unregister, or hold listeners with `weakref.WeakSet` / `WeakMethod` |
+| Stored exceptions keep tracebacks, which keep every frame's locals (including large DataFrames) alive | Log and drop the exception; store `str(e)` not the object |
+| asyncio tasks or queues that grow faster than they drain | Bound queues, apply backpressure, cancel abandoned tasks |
+| ML frameworks: tensors kept in a list for logging hold GPU memory and the autograd graph | Log `loss.item()`, not `loss`; use `torch.no_grad()` for inference |
+| pandas: chained intermediate DataFrames referenced in a long-lived scope | Restructure into functions so intermediates go out of scope; `del` large objects |
+| Reference cycles with finalisers or large objects waiting for the cyclic GC | Break cycles, use `weakref`, or `gc.collect()` after large batch completions |
+| Fragmentation after a peak (many small objects freed in a scattered pattern) | Process data in bounded chunks, use columnar buffers, or recycle the worker |
+
+**4. Operational safeguards:**
+
+- **Recycle workers** after N requests or tasks (`gunicorn --max-requests` with jitter, Celery `worker_max_tasks_per_child`, `maxtasksperchild` in multiprocessing); this caps the damage of slow leaks and fragmentation.
+- Set container memory limits with alerts well below the OOM kill threshold, and export RSS and GC metrics.
+- For pre-fork servers, call `gc.freeze()` after loading models in the parent so child processes do not touch shared pages and trigger copy-on-write duplication.
+- Tune the allocator for native-heavy services (for example `jemalloc` via `LD_PRELOAD`, or `MALLOC_ARENA_MAX` for glibc with many threads).
+
+**Version note:** Python 3.14.0 shipped an incremental cyclic garbage collector to reduce pause times, but it was reverted to the generational collector in 3.14.5 after reports of higher memory use in production. GC behaviour does change between versions, so load-test memory after interpreter upgrades.
+
+**What interviewers look for:** a methodical approach (measure, diff, find referrers), knowing that RSS not shrinking is not necessarily a leak, and pragmatic mitigations while the root cause is found.
+
+### 2.77 What is your testing strategy for Python code: pytest fixtures, parametrisation, mocking and property-based testing with Hypothesis?
+
+A good strategy is a **pyramid**: many fast, deterministic unit tests on pure logic, fewer integration tests against real dependencies (databases, object stores in containers), and a handful of end-to-end tests, all run automatically in CI. **pytest** is the standard framework; **Hypothesis** adds property-based tests that find edge cases you did not think of. Data-pipeline specifics (data quality tests, dbt tests, CI/CD for DAGs) are covered in 7.22.
+
+**Fixtures** provide setup with explicit dependencies and scopes:
+
+```python
+import pytest, polars as pl
+
+@pytest.fixture
+def orders() -> pl.DataFrame:                       # fresh for each test
+    return pl.DataFrame({"id": [1, 2, 3], "amount": [10.0, -5.0, 0.0]})
+
+@pytest.fixture(scope="session")
+def warehouse():                                    # expensive: once per test run
+    with start_postgres_container() as db:          # e.g. testcontainers
+        yield db                                    # teardown after the yield
+
+def test_drops_negative_amounts(orders):
+    assert clean(orders)["amount"].min() >= 0
+```
+
+- Built-in fixtures: `tmp_path` for files, `monkeypatch` for environment variables and attributes, `caplog` for logs, `capsys` for output.
+- Put shared fixtures in `conftest.py`; keep them small and composable rather than one giant setup.
+
+**Parametrisation** covers many cases without copy-paste:
+
+```python
+@pytest.mark.parametrize("raw, expected", [
+    ("2024-06-01", date(2024, 6, 1)),
+    ("01/06/2024", date(2024, 6, 1)),
+    ("", None),
+])
+def test_parse_date(raw, expected):
+    assert parse_date(raw) == expected
+```
+
+**Property-based testing with Hypothesis** generates hundreds of inputs, including nasty ones (empty strings, NaN, Unicode, extreme numbers), and **shrinks** any failure to a minimal example:
+
+```python
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.dictionaries(st.sampled_from(["id", "v"]), st.integers())))
+def test_dedupe_is_idempotent(records):
+    once = dedupe(records)
+    assert dedupe(once) == once              # property: applying twice changes nothing
+    assert len(once) <= len(records)         # property: never adds rows
+```
+
+Good properties for data code: round-trips (`decode(encode(x)) == x`), idempotence, invariants (row counts, sums preserved by a reshuffle), and comparison against a slow but obviously correct reference implementation. `hypothesis.extra.pandas` generates DataFrames.
+
+**Mocking guidelines:**
+
+- Mock at **system boundaries** (HTTP APIs, cloud SDKs, LLM clients, clocks), not your own internal functions; over-mocking tests the implementation, not the behaviour.
+- Prefer **fakes** (an in-memory repository implementing the same `Protocol`) and dependency injection to `mock.patch` on import paths.
+- Use `moto` for AWS, `respx` or `responses` for HTTP, `freezegun` or `time-machine` for time, and real databases in containers for SQL behaviour, since SQLite is not Postgres.
+- Use `autospec=True` so mocks fail when the real signature changes.
+
+**Keeping the suite healthy:**
+
+- Fast feedback: unit tests in seconds, `pytest-xdist` for parallelism, markers (`@pytest.mark.integration`) to split CI stages.
+- Coverage as a signal, not a target; mutation testing (`mutmut`) on critical code reveals weak assertions.
+- Quarantine and fix flaky tests quickly; a flaky suite gets ignored.
+- Golden-file or snapshot tests (`syrupy`) for complex outputs, reviewed on change.
+- For ML code, test the deterministic parts (feature functions, shapes, no leakage between train and test splits, a tiny model can overfit a small batch) and evaluate model quality separately (see 2.71 and Chapter 24).
+
+**What interviewers look for:** you test behaviour rather than implementation, know where mocks help and hurt, can explain what property-based testing finds that example tests miss, and treat test speed and reliability as part of developer productivity.
 
 ---
 

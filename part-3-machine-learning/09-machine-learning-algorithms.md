@@ -2,105 +2,120 @@
 
 _Part III — Machine Learning_
 
-Linear models, trees and ensembles, SVMs, Bayesian methods, clustering, dimensionality reduction and recommender systems: how each works, when to use it and how it fails.
+Linear models, trees and ensembles (random forests and gradient boosting internals), SVMs, Bayesian methods, clustering, dimensionality reduction, anomaly detection and recommender basics: how each works, when to use it, how to interpret it and how it fails.
 
-This chapter contains **81 questions**.
+This chapter contains **57 questions**.
 
 ## Contents
 
-- **9.1** [What is the KNN (K-Nearest Neighbors) classifier?](#91-what-is-the-knn-k-nearest-neighbors-classifier)
-- **9.2** [Is KNN prone to overfitting or underfitting?](#92-is-knn-prone-to-overfitting-or-underfitting)
-- **9.3** [What is the difference between k-NN and k-means?](#93-what-is-the-difference-between-k-nn-and-k-means)
-- **9.4** [How does a Decision Tree algorithm work?](#94-how-does-a-decision-tree-algorithm-work)
-- **9.5** [Explain how Decision Trees make splits and handle categorical features.](#95-explain-how-decision-trees-make-splits-and-handle-categorical-features)
-- **9.6** [How does the Random Forest algorithm work? How does it improve over Decision Trees? How does it reduce variance?](#96-how-does-the-random-forest-algorithm-work-how-does-it-improve-over-decision-trees-how-does-it-reduce-variance)
-- **9.7** [Explain Ensemble Methods. Why are they powerful?](#97-explain-ensemble-methods-why-are-they-powerful)
-- **9.8** [What is the difference between bagging and boosting?](#98-what-is-the-difference-between-bagging-and-boosting)
-- **9.9** [What is Gradient Boosting? How does XGBoost work?](#99-what-is-gradient-boosting-how-does-xgboost-work)
-- **9.10** [What are the key hyperparameters for XGBoost?](#910-what-are-the-key-hyperparameters-for-xgboost)
-- **9.11** [Explain Gradient Boosting and its advantages over Random Forests.](#911-explain-gradient-boosting-and-its-advantages-over-random-forests)
-- **9.12** [Explain how Logistic Regression differs from Linear Regression.](#912-explain-how-logistic-regression-differs-from-linear-regression)
-- **9.13** [How does logistic regression work?](#913-how-does-logistic-regression-work)
-- **9.14** [Explain R-squared and adjusted R-squared.](#914-explain-r-squared-and-adjusted-r-squared)
-- **9.15** [How do you check for multicollinearity in regression models?](#915-how-do-you-check-for-multicollinearity-in-regression-models)
-- **9.16** [How does K-Nearest Neighbors (KNN) work?](#916-how-does-k-nearest-neighbors-knn-work)
-- **9.17** [Explain K-Means Clustering. How does it work? Limitations?](#917-explain-k-means-clustering-how-does-it-work-limitations)
-- **9.18** [Explain Support Vector Machines (SVM). What is the kernel trick?](#918-explain-support-vector-machines-svm-what-is-the-kernel-trick)
-- **9.19** [What is the decision boundary in classifiers?](#919-what-is-the-decision-boundary-in-classifiers)
-- **9.20** [Explain Naive Bayes.](#920-explain-naive-bayes)
-- **9.21** [What is Dimensionality Reduction?](#921-what-is-dimensionality-reduction)
-- **9.22** [Explain PCA (Principal Component Analysis). How does it work? When would you use it?](#922-explain-pca-principal-component-analysis-how-does-it-work-when-would-you-use-it)
-- **9.23** [Explain Gradient Descent and its variants.](#923-explain-gradient-descent-and-its-variants)
-- **9.24** [What is the ROC-AUC curve, and how is it interpreted?](#924-what-is-the-roc-auc-curve-and-how-is-it-interpreted)
-- **9.25** [Explain Decision Tree Classification.](#925-explain-decision-tree-classification)
-- **9.26** [To start Linear Regression, you would need to make some assumptions. What are those assumptions?](#926-to-start-linear-regression-you-would-need-to-make-some-assumptions-what-are-those-assumptions)
-- **9.27** [What is multicollinearity and how will you handle it in your regression model?](#927-what-is-multicollinearity-and-how-will-you-handle-it-in-your-regression-model)
-- **9.28** [Explain why the performance of XGBoost is better than that of SVM?](#928-explain-why-the-performance-of-xgboost-is-better-than-that-of-svm)
-- **9.29** [What are five popular algorithms used in Machine Learning?](#929-what-are-five-popular-algorithms-used-in-machine-learning)
-- **9.30** [List the differences between KNN and k-means clustering.](#930-list-the-differences-between-knn-and-k-means-clustering)
-- **9.31** [What is a PCA?](#931-what-is-a-pca)
-- **9.32** [What are support vectors in SVM (Support Vector Machine)?](#932-what-are-support-vectors-in-svm-support-vector-machine)
-- **9.33** [What techniques are used to find resemblance in the recommendation system?](#933-what-techniques-are-used-to-find-resemblance-in-the-recommendation-system)
-- **9.34** [What is another name for a Bayesian Network?](#934-what-is-another-name-for-a-bayesian-network)
-- **9.35** [What is ensemble learning?](#935-what-is-ensemble-learning)
-- **9.36** [What is clustering?](#936-what-is-clustering)
-- **9.37** [What is the Bayesian Network?](#937-what-is-the-bayesian-network)
-- **9.38** [What is dimension reduction in ML?](#938-what-is-dimension-reduction-in-ml)
-- **9.39** [Why is the Naive Bayes Method ‘Naive’?](#939-why-is-the-naive-bayes-method-naive)
-- **9.40** [State the Bayes’ theorem for Naive Bayes Method.](#940-state-the-bayes-theorem-for-naive-bayes-method)
-- **9.41** [Explain Kernel SVM.](#941-explain-kernel-svm)
-- **9.42** [What are some types of clustering?](#942-what-are-some-types-of-clustering)
-- **9.43** [What is content-based filtering and collaborative filtering?](#943-what-is-content-based-filtering-and-collaborative-filtering)
-- **9.44** [What are the two components of Bayesian logic?](#944-what-are-the-two-components-of-bayesian-logic)
-- **9.45** [How would you describe a Recommender system?](#945-how-would-you-describe-a-recommender-system)
-- **9.46** [Do you consider decision trees to have any advantages or disadvantages? If yes, what are they?](#946-do-you-consider-decision-trees-to-have-any-advantages-or-disadvantages-if-yes-what-are-they)
-- **9.47** [What is a random forest, and how does it work?](#947-what-is-a-random-forest-and-how-does-it-work)
-- **9.48** [What ensemble techniques can be used to aggregate multiple models?](#948-what-ensemble-techniques-can-be-used-to-aggregate-multiple-models)
-- **9.49** [Do you think logistic regression can be used for more than two classes?](#949-do-you-think-logistic-regression-can-be-used-for-more-than-two-classes)
-- **9.50** [Explain Genetic programming as it relates to Evolutionary algorithm.](#950-explain-genetic-programming-as-it-relates-to-evolutionary-algorithm)
-- **9.51** [What are some classification methods that SVM can handle?](#951-what-are-some-classification-methods-that-svm-can-handle)
-- **9.52** [Why do you think instance-based learning algorithm is sometimes referred to as Lazy learning algorithm?](#952-why-do-you-think-instance-based-learning-algorithm-is-sometimes-referred-to-as-lazy-learning-algorithm)
-- **9.53** [Explain the reason for pruning of a decision tree.](#953-explain-the-reason-for-pruning-of-a-decision-tree)
-- **9.54** [What differentiates Gradient boosting and Random forest?](#954-what-differentiates-gradient-boosting-and-random-forest)
-- **9.55** [When recommendations like “....people who did this also bought this” comes up on a website. What sort of algorithm propels that?](#955-when-recommendations-like-people-who-did-this-also-bought-this-comes-up-on-a-website-what-sort-of-algorithm-propels-that)
-- **9.56** [What is an OOB error, and how is it useful?](#956-what-is-an-oob-error-and-how-is-it-useful)
-- **9.57** [In what scenario should a decision tree be preferred over random forest?](#957-in-what-scenario-should-a-decision-tree-be-preferred-over-random-forest)
-- **9.58** [Why is Logistic Regression called regression?](#958-why-is-logistic-regression-called-regression)
-- **9.59** [What are the main points of difference between Bagging and Boosting?](#959-what-are-the-main-points-of-difference-between-bagging-and-boosting)
-- **9.60** [What is Matrix Factorization, and where is it used in Machine Learning?](#960-what-is-matrix-factorization-and-where-is-it-used-in-machine-learning)
-- **9.61** [Explain Pruning in Decision Trees and how it is done](#961-explain-pruning-in-decision-trees-and-how-it-is-done)
-- **9.62** [What are kernels in SVM? Can you list some popular SVM kernels?](#962-what-are-kernels-in-svm-can-you-list-some-popular-svm-kernels)
-- **9.63** [What is the difference between Gini Impurity and Entropy? Which one is better and why?](#963-what-is-the-difference-between-gini-impurity-and-entropy-which-one-is-better-and-why)
-- **9.64** [Can PCA be used to reduce the dimensionality of a highly nonlinear dataset?](#964-can-pca-be-used-to-reduce-the-dimensionality-of-a-highly-nonlinear-dataset)
-- **9.65** [Once a dataset’s dimensionality has been reduced, is it possible to reverse the operation? If so, how? If not, why?](#965-once-a-datasets-dimensionality-has-been-reduced-is-it-possible-to-reverse-the-operation-if-so-how-if-not-why)
-- **9.66** [Why do we always need the intercept term in a regression model?](#966-why-do-we-always-need-the-intercept-term-in-a-regression-model)
-- **9.67** [Why is Ridge Regression called Ridge?](#967-why-is-ridge-regression-called-ridge)
-- **9.68** [Does it make any sense to chain two different dimensionality reduction algorithms?](#968-does-it-make-any-sense-to-chain-two-different-dimensionality-reduction-algorithms)
-- **9.69** [Is it possible to speed up training of a bagging ensemble by distributing it across multiple servers?](#969-is-it-possible-to-speed-up-training-of-a-bagging-ensemble-by-distributing-it-across-multiple-servers)
-- **9.70** [If a Decision Tree is underfitting the training set, is it a good idea to try scaling the input features?](#970-if-a-decision-tree-is-underfitting-the-training-set-is-it-a-good-idea-to-try-scaling-the-input-features)
-- **9.71** [Say you trained an SVM classifier with an RBF kernel. It seems to underfit the training set: should you increase or decrease γ (gamma)? What about C?](#971-say-you-trained-an-svm-classifier-with-an-rbf-kernel-it-seems-to-underfit-the-training-set-should-you-increase-or-decrease-γ-gamma-what-about-c)
-- **9.72** [How do we interpret weights in linear models?](#972-how-do-we-interpret-weights-in-linear-models)
-- **9.73** [Why is it important to scale the inputs when using SVMs?](#973-why-is-it-important-to-scale-the-inputs-when-using-svms)
-- **9.74** [What is OvR and OvO for multiclass classification, and which machine learning algorithm supports this](#974-what-is-ovr-and-ovo-for-multiclass-classification-and-which-machine-learning-algorithm-supports-this)
-- **9.75** [What are some advantages and Disadvantages of regression models and tree-based models?](#975-what-are-some-advantages-and-disadvantages-of-regression-models-and-tree-based-models)
-- **9.76** [What are some important hyperparameters for XGBOOST](#976-what-are-some-important-hyperparameters-for-xgboost)
-- **9.77** [List some of the drawbacks of a Linear model](#977-list-some-of-the-drawbacks-of-a-linear-model)
-- **9.78** [Explain the kernel trick in SVM](#978-explain-the-kernel-trick-in-svm)
-- **9.79** [What is the difference between a Gaussian Mixture Model and the K-Means Algorithm?](#979-what-is-the-difference-between-a-gaussian-mixture-model-and-the-k-means-algorithm)
-- **9.80** [How to select K for K-means?](#980-how-to-select-k-for-k-means)
-- **9.81** [List all types of popular recommendation systems?](#981-list-all-types-of-popular-recommendation-systems)
+- **9.1** [How does K-Nearest Neighbours (KNN) work, how does k affect overfitting, and why is it called a lazy learner?](#91-how-does-k-nearest-neighbours-knn-work-how-does-k-affect-overfitting-and-why-is-it-called-a-lazy-learner)
+- **9.2** [What is the difference between k-NN and k-means?](#92-what-is-the-difference-between-k-nn-and-k-means)
+- **9.3** [How does a decision tree work, and what are its advantages and disadvantages?](#93-how-does-a-decision-tree-work-and-what-are-its-advantages-and-disadvantages)
+- **9.4** [Explain how Decision Trees make splits and handle categorical features.](#94-explain-how-decision-trees-make-splits-and-handle-categorical-features)
+- **9.5** [How does the random forest algorithm work, and how does it improve on a single decision tree?](#95-how-does-the-random-forest-algorithm-work-and-how-does-it-improve-on-a-single-decision-tree)
+- **9.6** [What are ensemble methods, which techniques can combine multiple models, and why do they work?](#96-what-are-ensemble-methods-which-techniques-can-combine-multiple-models-and-why-do-they-work)
+- **9.7** [What is the difference between bagging and boosting?](#97-what-is-the-difference-between-bagging-and-boosting)
+- **9.8** [What is gradient boosting, and how does XGBoost work?](#98-what-is-gradient-boosting-and-how-does-xgboost-work)
+- **9.9** [What are the key hyperparameters for XGBoost, and how do you tune them?](#99-what-are-the-key-hyperparameters-for-xgboost-and-how-do-you-tune-them)
+- **9.10** [How does gradient boosting differ from random forest, and what are its advantages?](#910-how-does-gradient-boosting-differ-from-random-forest-and-what-are-its-advantages)
+- **9.11** [How does logistic regression work, how does it differ from linear regression, and can it handle more than two classes?](#911-how-does-logistic-regression-work-how-does-it-differ-from-linear-regression-and-can-it-handle-more-than-two-classes)
+- **9.12** [Explain R-squared and adjusted R-squared.](#912-explain-r-squared-and-adjusted-r-squared)
+- **9.13** [What is multicollinearity, how do you detect it, and how do you handle it in a regression model?](#913-what-is-multicollinearity-how-do-you-detect-it-and-how-do-you-handle-it-in-a-regression-model)
+- **9.14** [Explain K-Means Clustering. How does it work? Limitations?](#914-explain-k-means-clustering-how-does-it-work-limitations)
+- **9.15** [How do support vector machines work, and what are support vectors?](#915-how-do-support-vector-machines-work-and-what-are-support-vectors)
+- **9.16** [What is the decision boundary in classifiers?](#916-what-is-the-decision-boundary-in-classifiers)
+- **9.17** [How does Naive Bayes work, why is it called naive, and what is Bayes' theorem in this context?](#917-how-does-naive-bayes-work-why-is-it-called-naive-and-what-is-bayes-theorem-in-this-context)
+- **9.18** [What is Dimensionality Reduction?](#918-what-is-dimensionality-reduction)
+- **9.19** [How does PCA work, and when would you use it?](#919-how-does-pca-work-and-when-would-you-use-it)
+- **9.20** [Explain Gradient Descent and its variants.](#920-explain-gradient-descent-and-its-variants)
+- **9.21** [What is the ROC curve and AUC, and how are they interpreted?](#921-what-is-the-roc-curve-and-auc-and-how-are-they-interpreted)
+- **9.22** [What assumptions does linear regression make, and what happens when they are violated?](#922-what-assumptions-does-linear-regression-make-and-what-happens-when-they-are-violated)
+- **9.23** [Explain why the performance of XGBoost is better than that of SVM?](#923-explain-why-the-performance-of-xgboost-is-better-than-that-of-svm)
+- **9.24** [What are the most widely used machine learning algorithms, and when is each the right default?](#924-what-are-the-most-widely-used-machine-learning-algorithms-and-when-is-each-the-right-default)
+- **9.25** [Which similarity measures are used in recommender systems?](#925-which-similarity-measures-are-used-in-recommender-systems)
+- **9.26** [What is a Bayesian network, and what is it also called?](#926-what-is-a-bayesian-network-and-what-is-it-also-called)
+- **9.27** [What is clustering, and how do the main clustering algorithms compare?](#927-what-is-clustering-and-how-do-the-main-clustering-algorithms-compare)
+- **9.28** [What is a kernel SVM, what is the kernel trick, and which kernels are common?](#928-what-is-a-kernel-svm-what-is-the-kernel-trick-and-which-kernels-are-common)
+- **9.29** [What are content-based and collaborative filtering, and what powers "people who bought this also bought"?](#929-what-are-content-based-and-collaborative-filtering-and-what-powers-people-who-bought-this-also-bought)
+- **9.30** [What are the two components of Bayesian logic, and how do they combine?](#930-what-are-the-two-components-of-bayesian-logic-and-how-do-they-combine)
+- **9.31** [What is a recommender system, and what are the main types?](#931-what-is-a-recommender-system-and-what-are-the-main-types)
+- **9.32** [Explain Genetic programming as it relates to Evolutionary algorithm.](#932-explain-genetic-programming-as-it-relates-to-evolutionary-algorithm)
+- **9.33** [What is an OOB error, and how is it useful?](#933-what-is-an-oob-error-and-how-is-it-useful)
+- **9.34** [In what scenario should a decision tree be preferred over random forest?](#934-in-what-scenario-should-a-decision-tree-be-preferred-over-random-forest)
+- **9.35** [Why is Logistic Regression called regression?](#935-why-is-logistic-regression-called-regression)
+- **9.36** [What is Matrix Factorization, and where is it used in Machine Learning?](#936-what-is-matrix-factorization-and-where-is-it-used-in-machine-learning)
+- **9.37** [Explain Pruning in Decision Trees and how it is done](#937-explain-pruning-in-decision-trees-and-how-it-is-done)
+- **9.38** [What is the difference between Gini Impurity and Entropy? Which one is better and why?](#938-what-is-the-difference-between-gini-impurity-and-entropy-which-one-is-better-and-why)
+- **9.39** [Can PCA be used to reduce the dimensionality of a highly nonlinear dataset?](#939-can-pca-be-used-to-reduce-the-dimensionality-of-a-highly-nonlinear-dataset)
+- **9.40** [Once a dataset’s dimensionality has been reduced, is it possible to reverse the operation? If so, how? If not, why?](#940-once-a-datasets-dimensionality-has-been-reduced-is-it-possible-to-reverse-the-operation-if-so-how-if-not-why)
+- **9.41** [Why do we always need the intercept term in a regression model?](#941-why-do-we-always-need-the-intercept-term-in-a-regression-model)
+- **9.42** [Why is Ridge Regression called Ridge?](#942-why-is-ridge-regression-called-ridge)
+- **9.43** [Does it make any sense to chain two different dimensionality reduction algorithms?](#943-does-it-make-any-sense-to-chain-two-different-dimensionality-reduction-algorithms)
+- **9.44** [Is it possible to speed up training of a bagging ensemble by distributing it across multiple servers?](#944-is-it-possible-to-speed-up-training-of-a-bagging-ensemble-by-distributing-it-across-multiple-servers)
+- **9.45** [If a Decision Tree is underfitting the training set, is it a good idea to try scaling the input features?](#945-if-a-decision-tree-is-underfitting-the-training-set-is-it-a-good-idea-to-try-scaling-the-input-features)
+- **9.46** [Say you trained an SVM classifier with an RBF kernel. It seems to underfit the training set: should you increase or decrease γ (gamma)? What about C?](#946-say-you-trained-an-svm-classifier-with-an-rbf-kernel-it-seems-to-underfit-the-training-set-should-you-increase-or-decrease-γ-gamma-what-about-c)
+- **9.47** [How do we interpret weights in linear models?](#947-how-do-we-interpret-weights-in-linear-models)
+- **9.48** [Why is it important to scale the inputs when using SVMs?](#948-why-is-it-important-to-scale-the-inputs-when-using-svms)
+- **9.49** [What is OvR and OvO for multiclass classification, and which machine learning algorithms use them?](#949-what-is-ovr-and-ovo-for-multiclass-classification-and-which-machine-learning-algorithms-use-them)
+- **9.50** [What are some advantages and Disadvantages of regression models and tree-based models?](#950-what-are-some-advantages-and-disadvantages-of-regression-models-and-tree-based-models)
+- **9.51** [List some of the drawbacks of a Linear model](#951-list-some-of-the-drawbacks-of-a-linear-model)
+- **9.52** [What is the difference between a Gaussian Mixture Model and the K-Means Algorithm?](#952-what-is-the-difference-between-a-gaussian-mixture-model-and-the-k-means-algorithm)
+- **9.53** [How to select K for K-means?](#953-how-to-select-k-for-k-means)
+- **9.54** [How do XGBoost, LightGBM and CatBoost differ internally, and how do you choose between them?](#954-how-do-xgboost-lightgbm-and-catboost-differ-internally-and-how-do-you-choose-between-them)
+- **9.55** [How do you interpret tree ensembles with feature importance and SHAP, and what are the pitfalls?](#955-how-do-you-interpret-tree-ensembles-with-feature-importance-and-shap-and-what-are-the-pitfalls)
+- **9.56** [Which anomaly detection algorithms are there, how do they compare, and how do you choose one?](#956-which-anomaly-detection-algorithms-are-there-how-do-they-compare-and-how-do-you-choose-one)
+- **9.57** [How do you approach a new tabular prediction problem in practice, and when is gradient boosting not the right choice?](#957-how-do-you-approach-a-new-tabular-prediction-problem-in-practice-and-when-is-gradient-boosting-not-the-right-choice)
 
 ---
 
-### 9.1 What is the KNN (K-Nearest Neighbors) classifier?
+### 9.1 How does K-Nearest Neighbours (KNN) work, how does k affect overfitting, and why is it called a lazy learner?
 
-A simple, non-parametric learning algorithm that classifies a new data point based on the majority class among its "k" closest training examples in feature space. It doesn't build an explicit general rule during training (it's "lazy learning") — instead, it stores the training data and makes decisions at prediction time by comparing distances to neighbors.
+KNN is a non-parametric, instance-based algorithm: it stores the training set and, for a new point, predicts from the $k$ closest training examples (majority vote for classification, mean or distance-weighted mean for regression). There is no model fitting step, which is why it is called a **lazy learner**.
 
-### 9.2 Is KNN prone to overfitting or underfitting?
+**How a prediction is made**
 
-It depends on k. A small k (e.g., k=1) closely follows individual training points and is prone to overfitting (sensitive to noise). A large k smooths the decision boundary more, which can lead to underfitting if k is too large relative to the dataset.
+1. Compute the distance from the query to every training point (Euclidean, Manhattan, Minkowski, cosine for text or embeddings).
+2. Take the $k$ nearest.
+3. Classification: majority vote, optionally weighted by $1/d$. Regression: average of their targets.
 
-### 9.3 What is the difference between k-NN and k-means?
+**Effect of k (bias and variance)**
+
+| k | Behaviour | Risk |
+| --- | --- | --- |
+| Small (k = 1) | Very jagged boundary that follows individual points, training error is zero | Overfits, sensitive to noise and mislabelled points |
+| Large | Smooth boundary, averages over a wide area | Underfits; at $k = n$ it always predicts the majority class |
+
+Choose $k$ by cross-validation; odd values avoid ties in binary problems, and $\sqrt{n}$ is only a rough starting point.
+
+**Why "lazy" (instance-based) learning**
+
+- Training is just storing the data, so it is instant, but all the work happens at prediction time.
+- Eager learners (logistic regression, trees, neural networks) compress the data into parameters up front and predict cheaply.
+- Consequence: naive prediction costs $O(nd)$ per query and memory grows with the dataset.
+
+**Practical issues**
+
+- **Scaling is mandatory:** distances are dominated by large-range features, so standardise first (see 10.5).
+- **Curse of dimensionality:** in high dimensions all points are roughly equidistant and "nearest" loses meaning (see 8.27). Reduce dimensions or use learned embeddings.
+- **Speed at scale:** KD-trees and ball trees help in low dimensions; for millions of high-dimensional vectors use approximate nearest neighbour indexes (HNSW, IVF, FAISS). This is exactly how embedding retrieval in RAG and recommender candidate generation works.
+- **Imbalanced classes:** the majority class wins votes; use distance weighting or class weights.
+- **Categorical features:** need a suitable distance (Hamming, Gower) or encoding.
+
+```python
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV
+
+pipe = make_pipeline(StandardScaler(), KNeighborsClassifier())
+grid = GridSearchCV(pipe, {"kneighborsclassifier__n_neighbors": [3, 5, 11, 21, 41],
+                           "kneighborsclassifier__weights": ["uniform", "distance"]}, cv=5)
+grid.fit(X_train, y_train)
+```
+
+**Where it is still used:** small tabular problems as a baseline, imputation (`KNNImputer`), anomaly scores (distance to the k-th neighbour), and anywhere similarity search over embeddings is the real task.
+
+### 9.2 What is the difference between k-NN and k-means?
 
 #### Core difference
 
@@ -139,17 +154,54 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 - k-**NN**: k = how many neighbors *vote* on a label you don't know
 - k-**means**: k = how many *groups* you're trying to discover
 
-### 9.4 How does a Decision Tree algorithm work?
+### 9.3 How does a decision tree work, and what are its advantages and disadvantages?
 
-- Tree-structured model that splits data based on feature values to make predictions
-- Starts at root node, recursively splits data using feature thresholds that best separate classes/values
-- **Split criteria**: Gini Impurity, Entropy/Information Gain (classification), Variance Reduction (regression)
-- Each internal node = decision/test on a feature; each leaf node = final prediction
-- Splitting continues until stopping condition (max depth, min samples, pure node)
-- **Pros**: Easy to interpret, no feature scaling needed
-- **Cons**: Prone to overfitting (addressed via pruning, max depth, ensemble methods like Random Forest)
+A decision tree predicts by asking a sequence of yes/no questions about the features. Training greedily chooses, at each node, the split that most reduces impurity, and recursively repeats on each child until a stopping rule is hit; each leaf stores a prediction (the majority class or class proportions, or the mean target for regression).
 
-### 9.5 Explain how Decision Trees make splits and handle categorical features.
+**Structure**
+
+- **Root node:** the first split, chosen over the whole training set.
+- **Internal nodes:** a test such as "income > 50k?".
+- **Leaves:** the final prediction for every sample that reaches them.
+
+```text
+                income > 50k?
+               /            \
+            yes              no
+         age > 30?         reject
+        /        \
+   approve      review
+```
+
+**Training (CART, the scikit-learn algorithm)**
+
+1. For every feature and every candidate threshold, compute the impurity of the two child nodes.
+2. Pick the split with the largest weighted impurity decrease: Gini or entropy for classification (see 9.38), variance (MSE) reduction for regression.
+3. Recurse on each child.
+4. Stop at `max_depth`, `min_samples_leaf`, `min_impurity_decrease`, or when a node is pure; optionally post-prune (see 9.37).
+
+The greedy search is not globally optimal; finding the optimal tree is NP-hard.
+
+**Advantages**
+
+- Readable rules that can be shown to business users or regulators when the tree is shallow.
+- Handles numeric and categorical features, non-linear effects and interactions without feature engineering.
+- No scaling needed; invariant to monotonic transforms of features (see 9.45).
+- Fast to predict; works for classification and regression.
+- Building block for random forests and gradient boosting, which fix most of its weaknesses.
+
+**Disadvantages**
+
+- **High variance:** a small change in the data can produce a very different tree.
+- **Overfits** when grown deep; a fully grown tree memorises the training set.
+- **Axis-aligned splits:** a diagonal boundary such as $x_1 \gt x_2$ needs a staircase of many splits.
+- **Cannot extrapolate:** predictions are piecewise constant, bounded by the training targets.
+- **Biased impurity-based importance** towards high-cardinality features.
+- Probability estimates are coarse (a leaf with 3 samples gives 0, 0.33, 0.67 or 1).
+
+**What interviewers look for:** that you know a single tree is rarely the final model, why ensembles help (variance reduction in random forests, bias reduction in boosting), and when a single tree is still the right choice (see 9.34).
+
+### 9.4 Explain how Decision Trees make splits and handle categorical features.
 
 **How Decision Trees Make Splits**
 
@@ -171,168 +223,264 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
   - Target/mean encoding sometimes used to convert categories to numeric based on target statistic
 - Tree evaluates each possible category split/grouping and picks the one minimizing impurity
 
-### 9.6 How does the Random Forest algorithm work? How does it improve over Decision Trees? How does it reduce variance?
+### 9.5 How does the random forest algorithm work, and how does it improve on a single decision tree?
 
-**Random Forest**
+A random forest trains many deep decision trees on bootstrap samples of the data, with a random subset of features considered at each split, and averages their predictions (majority vote or averaged probabilities for classification, mean for regression). Averaging many low-bias, high-variance and weakly correlated trees cuts variance sharply while keeping bias roughly the same.
 
-- Ensemble method that builds multiple decision trees and combines their predictions
-- **Prediction**: Classification → majority vote; Regression → average of tree outputs
+**Algorithm**
 
-**How it works**
+1. For $b = 1 \ldots B$: draw a bootstrap sample of $n$ rows with replacement (about 63 percent unique rows).
+2. Grow a deep tree on it; at every split consider only `max_features` randomly chosen features (by default $\sqrt{p}$ for classification in scikit-learn, all features for regression).
+3. Predict by averaging the $B$ trees.
 
-1. **Bagging (Bootstrap Aggregating)**: Each tree trained on random sample (with replacement) of training data
-2. **Feature randomness**: At each split, only a random subset of features considered (not all features)
-3. Trees grown deep, largely uncorrelated with each other
-4. Final output aggregates all trees' predictions
+**Why it reduces variance**
 
-**Improvement over single Decision Trees**
+For $B$ trees each with variance $\sigma^2$ and pairwise correlation $\rho$, the variance of the average is
 
-- Single trees overfit easily (high variance, low bias)
-- Random Forest reduces overfitting by averaging many diverse trees
-- More robust, generalizes better to unseen data
+$$
+\operatorname{Var}(\bar f) = \rho \sigma^2 + \frac{1 - \rho}{B}\sigma^2
+$$
 
-**How it reduces variance**
+- More trees shrink the second term, so adding trees never causes overfitting in the usual sense; it just stops helping.
+- The first term only falls if the trees are **decorrelated**, which is why feature subsampling matters. Bagging alone (all features) gives trees that all split on the same strong feature first.
 
-- Averaging predictions from many decorrelated trees cancels out individual trees' errors/noise
-- Bootstrap sampling + feature randomness ensures trees are diverse (not identical)
-- Variance of average of $N$ independent-ish estimators $\approx \text{Variance}(\text{single tree}) / N$ (reduced further since trees aren't fully independent, but still significant reduction)
-- Bias stays roughly similar to individual trees, but variance drops sharply → better generalization
+**Key hyperparameters**
 
-### 9.7 Explain Ensemble Methods. Why are they powerful?
+| Parameter | Effect |
+| --- | --- |
+| `n_estimators` | More is better until the out-of-bag error flattens (often 300 to 1,000) |
+| `max_features` | Main lever on tree correlation; lower means more diverse, more biased trees |
+| `min_samples_leaf`, `max_depth` | Smooth leaves; helps with noisy targets and calibration |
+| `class_weight` | Imbalanced classes |
 
-**Ensemble Methods**
+**Strengths:** strong default with little tuning, robust to noise and outliers, parallel training, a free validation estimate from out-of-bag samples (see 9.33).
 
-- Combine multiple models (weak/base learners) to produce a stronger, more accurate model
-- Based on idea that aggregating diverse models reduces error better than any single model
+**Weaknesses and pitfalls**
 
-**Main types**
+- Usually a few points behind tuned gradient boosting on tabular data (see 9.10).
+- Large models (hundreds of deep trees) mean memory and latency cost.
+- Cannot extrapolate beyond the training target range.
+- Impurity-based `feature_importances_` are biased towards continuous and high-cardinality features and are computed on training data; prefer permutation importance on a held-out set or SHAP (see 9.55).
+- Probabilities are pulled away from 0 and 1; calibrate if you need them.
 
-- **Bagging (Bootstrap Aggregating)**: Train models in parallel on random data subsets, aggregate (vote/average) → reduces variance. Ex: Random Forest
-- **Boosting**: Train models sequentially, each correcting errors of previous → reduces bias. Ex: AdaBoost, Gradient Boosting, XGBoost
-- **Stacking**: Train multiple different models, use a meta-model to combine their outputs
-- **Voting**: Combine predictions via majority vote (classification) or averaging (regression)
+**Variant:** Extra Trees also randomise the split thresholds, which decorrelates trees further and trains faster.
 
-**Why powerful**
+### 9.6 What are ensemble methods, which techniques can combine multiple models, and why do they work?
 
-- Reduces variance (bagging) and/or bias (boosting)
-- Individual model errors cancel out when aggregated
-- More robust to noise and overfitting than single models
-- Captures diverse patterns different models learn
+An ensemble combines several models so that their individual errors partly cancel. It works when the members are individually reasonable and their errors are not perfectly correlated; the main families are bagging, boosting, stacking and voting or averaging.
 
-### 9.8 What is the difference between bagging and boosting?
+**Techniques**
 
-**Bagging vs Boosting**
+| Technique | How models are trained | Combined by | Mainly reduces | Examples |
+| --- | --- | --- | --- | --- |
+| Bagging | Independently, in parallel, on bootstrap samples | Average or majority vote | Variance | Random forest, Extra Trees |
+| Boosting | Sequentially, each fixing the previous errors | Weighted sum | Bias (and variance with shrinkage) | AdaBoost, XGBoost, LightGBM, CatBoost |
+| Stacking | Different model types on the same data | A meta-model trained on their out-of-fold predictions | Both, by learning which model to trust where | Logistic regression on top of GBM, kNN and a neural net |
+| Voting or averaging | Independently | Hard vote, soft vote (average probabilities) or weighted average | Variance | Blends in competitions |
 
-| Aspect | Bagging | Boosting |
+**Why ensembles work**
+
+- For $B$ models with errors of variance $\sigma^2$ and correlation $\rho$, the averaged error variance is $\rho\sigma^2 + (1-\rho)\sigma^2/B$. Diversity (low $\rho$) is what makes the gain.
+- Boosting builds an additive model stage by stage, so it can represent functions no single shallow tree can.
+- Different algorithms make different mistakes: a GBM and a linear model fail on different inputs.
+
+**Stacking done correctly**
+
+1. Produce **out-of-fold** predictions for each base model with K-fold cross-validation; never fit the meta-model on in-sample predictions or it learns to trust the most overfitted model.
+2. Train a simple meta-model (regularised logistic or linear regression) on those predictions.
+3. Refit the base models on all training data for inference.
+
+```python
+from sklearn.ensemble import StackingClassifier, RandomForestClassifier, HistGradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+
+stack = StackingClassifier(
+    estimators=[("rf", RandomForestClassifier(n_estimators=500)),
+                ("gbm", HistGradientBoostingClassifier())],
+    final_estimator=LogisticRegression(), cv=5, stack_method="predict_proba")
+```
+
+**Production trade-offs**
+
+- Each member adds training cost, inference latency, monitoring and retraining work. A 0.2 percent AUC gain from a five-model stack is often not worth it outside competitions.
+- Soft voting needs comparable, calibrated probabilities.
+- Ensembles are harder to explain; SHAP still works but per model.
+
+**Rule of thumb:** a single well-tuned gradient boosting model is the usual production choice on tabular data; bag it with a few seeds if you need stability, and only stack when the measured gain pays for the complexity.
+
+### 9.7 What is the difference between bagging and boosting?
+
+Both combine many base learners, but bagging trains them independently on resampled data and averages them to cut **variance**, while boosting trains them sequentially, each one focused on what the current ensemble gets wrong, to cut **bias**.
+
+| | Bagging (bootstrap aggregating) | Boosting |
 | --- | --- | --- |
-| Training | Parallel — models trained independently | Sequential — each model corrects previous one's errors |
-| Data sampling | Random bootstrap samples (with replacement) | Reweighted data — misclassified samples get more weight |
-| Goal | Reduce variance | Reduce bias (and variance) |
-| Model weighting | Equal weight to all models | Weighted based on model performance |
-| Overfitting | Less prone to overfitting | More prone to overfitting (if not tuned) |
-| Examples | Random Forest | AdaBoost, Gradient Boosting, XGBoost |
-| Combination | Averaging/majority vote | Weighted sum of predictions |
+| Training | **Parallel**, independent models | **Sequential**, each model depends on the previous ones |
+| Data | Each model sees a bootstrap sample (with replacement) | All data, but **reweighted** (AdaBoost) or fitted to **residuals or gradients** (gradient boosting) |
+| Goal | Reduce variance | Reduce bias (and variance via shrinkage and subsampling) |
+| Base learners | Strong, low-bias, high-variance models (deep trees) | Weak learners (shallow trees or stumps) |
+| Combination | Simple average or majority vote | Weighted sum of learners |
+| Overfitting | Robust; more trees rarely hurt | Can overfit with too many rounds; needs learning rate, early stopping, regularisation |
+| Noise and outliers | Robust | Sensitive, because it keeps focusing on hard and possibly mislabelled points |
+| Speed | Easily parallelised across models (see 9.44) | Sequential across rounds; parallel within a tree in XGBoost and LightGBM |
+| Examples | Random forest, Extra Trees, bagged models | AdaBoost, GBM, XGBoost, LightGBM, CatBoost |
 
-### 9.9 What is Gradient Boosting? How does XGBoost work?
+**When to use which**
 
-**Gradient Boosting**
+- **Bagging or random forest:** strong low-tuning baseline, noisy labels, when you want stability and out-of-bag error estimates.
+- **Boosting:** usually the best accuracy on tabular data when tuned carefully (learning rate, depth, number of rounds with early stopping, subsampling).
 
-- Ensemble technique that builds models sequentially, each new model trained to correct residual errors of previous models
-- Uses gradient descent to minimize loss function — each new tree fits the negative gradient (residuals) of the loss
-- Combines weak learners (typically shallow trees) into a strong learner
-- Final prediction = weighted sum of all trees' outputs
+**One-liner:** bagging is many independent experts voting so their noise cancels; boosting is a team where each new member fixes the previous members' mistakes.
 
-**XGBoost (Extreme Gradient Boosting)**
+### 9.8 What is gradient boosting, and how does XGBoost work?
 
-- Optimized, regularized implementation of gradient boosting
-- **Key improvements over vanilla GBM**:
-  - **Regularization** (L1 & L2) built into objective function → reduces overfitting
-  - **Second-order gradients** (uses both gradient and Hessian) → faster, more accurate convergence
-  - **Parallel processing** for tree construction → faster training
-  - **Handles missing values** automatically (learns default split direction)
-  - **Tree pruning**: uses max\_depth then prunes back (unlike greedy pure gain-based growth)
-  - **Built-in cross-validation** support
-- Widely used for structured/tabular data competitions (Kaggle) due to speed + performance
+Gradient boosting builds an additive model of shallow trees one at a time, where each new tree is fitted to the **negative gradient of the loss** with respect to the current predictions. For squared error that gradient is just the residual, so each tree literally predicts "what the model still gets wrong"; for other losses (log loss, quantile, ranking) it is the generalised residual.
 
-### 9.10 What are the key hyperparameters for XGBoost?
+**The algorithm**
 
-**Key XGBoost Hyperparameters**
+1. Start with a constant prediction $F_0$ (the mean, or the log-odds of the base rate).
+2. For $m = 1 \ldots M$: compute pseudo-residuals $r_i = -\partial L(y_i, F(x_i)) / \partial F(x_i)$.
+3. Fit a small regression tree $h_m$ to the $r_i$.
+4. Update $F_m(x) = F_{m-1}(x) + \eta \thinspace h_m(x)$, with learning rate $\eta$ (shrinkage, typically 0.01 to 0.1).
+5. Stop when validation loss stops improving (early stopping).
 
-**Tree structure**
+This is gradient descent in function space: each tree is a step in the direction that most reduces the loss.
 
-- `max_depth` — max depth of each tree (controls complexity/overfitting)
-- `min_child_weight` — min sum of instance weight needed in a child node
-- `gamma` — min loss reduction required to make a split (higher = more conservative)
+**What XGBoost adds**
+
+**Second-order objective.** XGBoost uses both the gradient $g_i$ and the Hessian $h_i$ of the loss (a Newton step) and adds a penalty on tree complexity:
+
+$$
+\text{Obj} = \sum_i \left[g_i f(x_i) + \tfrac{1}{2} h_i f(x_i)^2\right] + \gamma T + \tfrac{1}{2}\lambda \sum_j w_j^2
+$$
+
+Here $T$ is the number of leaves and $w_j$ the leaf weights. This gives a closed-form optimal leaf weight $w_j = -G_j / (H_j + \lambda)$, where $G_j$ and $H_j$ sum the gradients and Hessians in leaf $j$, and an exact gain formula for scoring each split.
+
+**Other additions**
+
+- **Regularisation:** L2 (`lambda`) and L1 (`alpha`) on leaf weights, and `gamma` as the minimum gain to keep a split; splits with gain below `gamma` are pruned after growing to `max_depth`.
+- **Sparsity-aware splits:** missing values are sent down a learned default direction at each split.
+- **Speed:** column blocks, parallel split finding within a tree, the `hist` method (binned features), GPU training, out-of-core data.
+- **Row and column subsampling** (stochastic gradient boosting) for variance reduction.
+
+**Why it is the tabular default:** it handles mixed features, missing values, non-linearities and interactions with little preprocessing, and with early stopping it is hard to beat (see 13.90). The differences between XGBoost, LightGBM and CatBoost are covered in 9.54.
+
+**Pitfalls:** overfits with deep trees and a high learning rate; needs a proper validation set for early stopping (time-based for temporal data); cannot extrapolate beyond the training range; raw probabilities may need calibration.
+
+### 9.9 What are the key hyperparameters for XGBoost, and how do you tune them?
+
+Group them by what they control:
 
 **Boosting process**
 
-- `n_estimators` — number of trees/boosting rounds
-- `learning_rate` (eta) — shrinks contribution of each tree (lower = more robust, needs more trees)
+- `n_estimators` (number of rounds) and `learning_rate` / `eta` (0.01 to 0.3). They trade off: a lower learning rate needs more trees but generalises better. Use **early stopping** (`early_stopping_rounds`) on a validation set instead of fixing the tree count.
 
-**Regularization**
+**Tree complexity (the main overfitting controls)**
 
-- `lambda` (reg\_lambda) — L2 regularization on weights
-- `alpha` (reg\_alpha) — L1 regularization on weights
+- `max_depth` (typically 3 to 10): depth of each tree, i.e. the order of interactions.
+- `min_child_weight`: minimum sum of instance weights (Hessian) in a leaf. Higher is more conservative.
+- `gamma` / `min_split_loss`: minimum loss reduction needed to keep a split.
+- `max_leaves`, `grow_policy` (`depthwise` or `lossguide`, the latter is LightGBM-style leaf-wise growth).
 
-**Sampling**
+**Randomness (variance reduction)**
 
-- `subsample` — fraction of rows sampled per tree (prevents overfitting)
-- `colsample_bytree` — fraction of features sampled per tree
+- `subsample` (row sampling per tree, 0.5 to 1.0).
+- `colsample_bytree`, `colsample_bylevel`, `colsample_bynode` (feature sampling).
 
-**Other**
+**Regularisation**
 
-- `objective` — loss function (e.g., binary:logistic, reg:squarederror)
-- `eval_metric` — evaluation metric (e.g., auc, rmse, logloss)
-- `early_stopping_rounds` — stop training if validation score doesn't improve
+- `reg_lambda` (L2 on leaf weights, default 1) and `reg_alpha` (L1 on leaf weights).
 
-### 9.11 Explain Gradient Boosting and its advantages over Random Forests.
+**Problem-specific**
 
-**Gradient Boosting vs Random Forest**
+- `objective` (e.g. `binary:logistic`, `reg:squarederror`, `rank:ndcg`) and `eval_metric`.
+- `scale_pos_weight` for class imbalance (roughly negatives divided by positives); note it distorts probabilities, so recalibrate if you need them.
+- `max_delta_step`: helps logistic objectives with extreme imbalance.
+- `monotone_constraints`, `interaction_constraints` for domain knowledge or regulation.
 
-**Gradient Boosting recap**
+**System**
 
-- Sequential ensemble — each tree corrects errors (residuals) of previous trees
-- Uses gradient descent to minimize loss function
-- Combines many weak learners (shallow trees) into strong learner
+- `tree_method="hist"` (fast, and `device="cuda"` for GPU), `max_bin`, `n_jobs`.
 
-**Advantages over Random Forest**
+**Tuning recipe**
 
-| Aspect | Gradient Boosting | Random Forest |
+1. Fix a moderately high learning rate (0.1) with early stopping.
+2. Tune `max_depth` and `min_child_weight`, then `gamma`.
+3. Tune `subsample` and the `colsample` parameters, then the regularisation.
+4. Lower the learning rate (e.g. 0.02) and let early stopping raise the number of rounds.
+
+Use Optuna or another Bayesian search with cross-validation (see 11.5), and keep the validation split faithful to production (time-based for temporal data), or the tuned settings will not transfer.
+
+### 9.10 How does gradient boosting differ from random forest, and what are its advantages?
+
+Both are ensembles of decision trees, but a random forest averages many **deep, independent** trees to reduce variance, while gradient boosting adds many **shallow, sequential** trees, each correcting the current ensemble, to reduce bias.
+
+| Aspect | Random forest | Gradient boosting |
 | --- | --- | --- |
-| Bias | Lower (actively reduces bias) | Higher (relies on averaging) |
-| Accuracy | Often higher with proper tuning | Slightly lower typically |
-| Learning | Sequential, learns from mistakes | Parallel, independent trees |
-| Flexibility | Supports custom loss functions | Limited to standard splits |
-| Handles imbalanced data | Better (via loss weighting) | Weaker by default |
+| Tree building | Parallel, independent | Sequential, each fits the gradient of the loss |
+| Trees | Deep, low bias, high variance | Shallow (depth 3 to 8), high bias individually |
+| Main effect | Reduces variance | Reduces bias |
+| Loss function | Implicit (impurity) | Explicit and pluggable: log loss, quantile, Poisson, Tweedie, ranking, custom |
+| Accuracy on tabular data | Very good | Usually best when tuned |
+| Tuning | Easy, robust defaults | Sensitive: learning rate, depth, rounds, regularisation |
+| Overfitting with more trees | Effectively no | Yes, needs early stopping |
+| Noisy labels | Robust | More sensitive |
+| Training | Embarrassingly parallel | Sequential across rounds (parallel within a tree) |
+| Validation estimate | Free out-of-bag error | Needs a validation set |
 
-- Gradient Boosting typically achieves better predictive performance since it directly optimizes the loss function
-- More flexible — can plug in different loss functions for different problems (regression, ranking, classification)
-- Trade-off: more prone to overfitting, sensitive to hyperparameters, slower to train (sequential), less parallelizable than Random Forest
+**Advantages of gradient boosting**
 
-### 9.12 Explain how Logistic Regression differs from Linear Regression.
+- Directly optimises the loss you care about, including ranking and custom business losses.
+- Typically a few points better than random forest on structured data.
+- Supports monotonic and interaction constraints, native missing values and categorical handling (LightGBM, CatBoost).
+- Smaller models at equal accuracy (hundreds of shallow trees rather than hundreds of deep ones), so often faster inference.
 
-**Logistic Regression vs Linear Regression**
+**When random forest is the better pick**
 
-| Aspect | Linear Regression | Logistic Regression |
+- You need a strong model with almost no tuning or no clean validation set.
+- Labels are very noisy.
+- You want a quick baseline or a stable feature-screening model.
+
+**In practice:** start with a random forest or default LightGBM as a baseline, then tune a gradient boosting model with early stopping; the gap tells you how much tuning is worth.
+
+### 9.11 How does logistic regression work, how does it differ from linear regression, and can it handle more than two classes?
+
+Logistic regression models the probability of the positive class by passing a linear score through the sigmoid: $z = w^\top x + b$ and $p = \sigma(z) = 1/(1 + e^{-z})$. It is trained by maximum likelihood (minimising log loss), and a threshold on $p$ turns it into a classifier.
+
+**How it works**
+
+1. Linear score $z$, which is the **log-odds**: $\log \frac{p}{1-p} = w^\top x + b$.
+2. Sigmoid squashes it into $(0, 1)$.
+3. Loss is binary cross-entropy, $-[y \log p + (1-y)\log(1-p)]$, which is convex, so gradient methods (L-BFGS, SGD) find the global optimum.
+4. Decision: predict 1 if $p \gt t$, where $t$ is 0.5 by default but should be set from business costs (see 12.21).
+5. The decision boundary $w^\top x + b = 0$ is linear in the features.
+
+**Compared with linear regression**
+
+| Aspect | Linear regression | Logistic regression |
 | --- | --- | --- |
-| Output | Continuous numeric value | Probability (0 to 1) → class label |
-| Use case | Regression problems | Classification problems |
-| Function | Linear: $y = wx + b$ | Sigmoid applied to linear combo: $\frac{1}{1 + e^{-(wx + b)}}$ |
-| Loss function | MSE (Mean Squared Error) | Cross-Entropy / Log Loss |
-| Output range | $-\infty$ to $+\infty$ | 0 to 1 |
-| Decision boundary | Not applicable | Linear boundary separating classes |
+| Target | Continuous | Binary (or categorical) |
+| Output | Any real number | Probability between 0 and 1 |
+| Model | $y = w^\top x + b$ | $\log\frac{p}{1-p} = w^\top x + b$ |
+| Loss | Squared error (least squares) | Log loss (maximum likelihood) |
+| Coefficient meaning | Change in $y$ per unit of $x$ | Change in log-odds; $e^{w_j}$ is an odds ratio |
+| GLM view | Gaussian outcome, identity link | Bernoulli outcome, logit link |
 
-### 9.13 How does logistic regression work?
+Using linear regression for a 0/1 target gives predictions outside $[0, 1]$ and is pulled by extreme points, which is why the logit link is used.
 
-- Classification algorithm that predicts probability of an input belonging to a class
-- Computes linear combination: $z = w \cdot x + b$
-- Applies **sigmoid function** to squash output between 0 and 1: $p = \frac{1}{1 + e^{-z}}$
-- Predicts class based on threshold (typically 0.5): $p \ge 0.5$ → class 1, else class 0
-- **Training**: minimizes **cross-entropy (log) loss** using gradient descent to find optimal weights
-- Decision boundary is linear (in feature space)
-- Extends to multi-class via **Softmax** (Softmax Regression / Multinomial Logistic Regression)
+**More than two classes**
 
-### 9.14 Explain R-squared and adjusted R-squared.
+- **Multinomial (softmax) regression:** one weight vector per class, $p_k = e^{z_k} / \sum_j e^{z_j}$, trained with categorical cross-entropy. This is scikit-learn's default for multiclass.
+- **One-vs-rest:** $K$ binary models, pick the highest score (see 9.49).
+- **Ordinal logistic regression** when classes are ordered (ratings, severity).
+
+**Practical points**
+
+- Regularise (L2 by default, L1 for sparsity) and scale features so the penalty is fair.
+- Perfect separation makes unregularised weights diverge.
+- Add interactions or splines for non-linear effects, or move to trees.
+- It gives reasonably calibrated probabilities, which is why it remains the default for credit scoring and as a calibration layer (see 9.35).
+
+### 9.12 Explain R-squared and adjusted R-squared.
 
 **R-squared vs Adjusted R-squared**
 
@@ -351,52 +499,43 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 - Increases only if new feature improves model more than expected by chance
 - Better for comparing models with different numbers of features
 
-### 9.15 How do you check for multicollinearity in regression models?
+### 9.13 What is multicollinearity, how do you detect it, and how do you handle it in a regression model?
 
-**Checking for Multicollinearity**
+Multicollinearity means two or more predictors are highly correlated, so the model cannot separate their individual effects. Predictions can still be fine, but coefficients become unstable (large standard errors, signs that flip between samples) and their interpretation breaks down.
 
-- Multicollinearity: high correlation between independent variables, making it hard to isolate individual effects
+**Why it hurts:** with collinear columns $X^\top X$ is near-singular, so small changes in the data produce large swings in $\hat\beta = (X^\top X)^{-1} X^\top y$.
 
-**Methods to detect**
+**How to detect it**
 
-- **Correlation matrix**: Check pairwise correlation coefficients between features (>0.7–0.8 suggests issue)
-- **VIF (Variance Inflation Factor)**:
-  - Formula: $\text{VIF}_i = \frac{1}{1 - R_i^2}$, where $R_i^2$ is from regressing feature $i$ on all other features
-  - VIF > 5 or 10 → high multicollinearity
-- **Tolerance**: $1/\text{VIF}$ — low tolerance indicates multicollinearity
-- **Eigenvalues/Condition number**: Small eigenvalues of correlation matrix indicate multicollinearity; condition number > 30 is concerning
-- **Correlation heatmap**: Visual inspection via seaborn/matplotlib
+- **Correlation matrix or heatmap:** pairwise correlations above about 0.8. Misses relationships involving three or more variables.
+- **Variance inflation factor:** $\text{VIF}_j = 1/(1 - R_j^2)$, where $R_j^2$ comes from regressing feature $j$ on all others. VIF above 5 is a warning, above 10 is serious. Tolerance is $1/\text{VIF}$.
+- **Condition number** of the (scaled) design matrix: above about 30 indicates a problem; small eigenvalues show which combination is degenerate.
+- **Symptoms:** coefficients with implausible signs, large standard errors while the overall F-test is significant, big coefficient changes when one feature is added or removed.
 
-**How to fix**
+```python
+import pandas as pd
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from statsmodels.tools import add_constant
 
-- Remove/combine highly correlated features
-- Use PCA to decorrelate features
-- Apply L2 regularization (Ridge) — handles multicollinearity well
-- Increase sample size
+Xc = add_constant(X)
+vif = pd.Series([variance_inflation_factor(Xc.values, i) for i in range(Xc.shape[1])], index=Xc.columns)
+```
 
-### 9.16 How does K-Nearest Neighbors (KNN) work?
+**How to handle it**
 
-**K-Nearest Neighbors (KNN)**
+| Method | When |
+| --- | --- |
+| Drop one of the correlated features | Redundant measures of the same thing |
+| Combine them (ratio, average, index) | They represent one concept |
+| Ridge (L2) regularisation | You care about prediction and stable coefficients; spreads weight across correlated features |
+| Lasso or elastic net | You want sparsity; lasso picks one arbitrarily, elastic net keeps groups |
+| PCA or PLS | Many correlated features; costs interpretability |
+| Centre variables | Collinearity created by polynomial or interaction terms |
+| More data | Reduces standard errors, not the correlation itself |
 
-- Instance-based, non-parametric algorithm used for classification and regression
-- No explicit training phase — stores entire training dataset ("lazy learner")
+**When it does not matter:** if you only need predictions and the correlation structure is stable in production, multicollinearity is largely harmless; tree ensembles are unaffected for accuracy, though their importance scores split between correlated features. It matters when you interpret coefficients, make causal claims or the correlation might change. See 10.36 for the feature-engineering view.
 
-**How it works**
-
-1. For a new data point, compute the distance (Euclidean, Manhattan, etc.) to all training points
-2. Select K nearest neighbors
-3. **Classification**: Assign majority class among K neighbors
-4. **Regression**: Average the values of K neighbors
-
-**Key considerations**
-
-- Choice of **K**: small K → sensitive to noise (overfitting); large K → smoother but may underfit
-- **Distance metric** matters: Euclidean (default), Manhattan, Minkowski, Cosine
-- Requires **feature scaling** (normalization/standardization) since distance-based
-- Sensitive to curse of dimensionality (high dimensions reduce meaningfulness of distance)
-- Computationally expensive at prediction time (must compare to all points)
-
-### 9.17 Explain K-Means Clustering. How does it work? Limitations?
+### 9.14 Explain K-Means Clustering. How does it work? Limitations?
 
 **K-Means Clustering**
 
@@ -425,28 +564,41 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 - Struggles with clusters of varying density/size
 - Only works well with numeric data
 
-### 9.18 Explain Support Vector Machines (SVM). What is the kernel trick?
+### 9.15 How do support vector machines work, and what are support vectors?
 
-**Support Vector Machines (SVM)**
+A support vector machine finds the hyperplane that separates the classes with the **largest margin**, the widest gap between the boundary and the nearest points of each class. Those nearest points are the **support vectors**: they alone define the boundary, and every other training point could be removed without changing the model.
 
-- Supervised algorithm for classification (and regression) that finds optimal hyperplane separating classes
-- **Hyperplane**: decision boundary that maximizes the margin (distance) between classes
-- **Support vectors**: data points closest to hyperplane that define the margin
-- Objective: maximize margin while minimizing classification error
-- **Soft margin (C parameter)**: allows some misclassification for better generalization — controls trade-off between margin width and errors
+**Hard margin:** for labels $y_i \in \lbrace -1, 1\rbrace$, solve
 
-**Kernel Trick**
+$$
+\min_{w,b} \tfrac{1}{2}\lVert w\rVert^2 \quad \text{subject to} \quad y_i (w^\top x_i + b) \ge 1
+$$
 
-- Technique to handle non-linearly separable data without explicitly transforming to higher dimensions
-- Uses a **kernel function** to compute similarity (dot product) between points as if they were in higher-dimensional space, without actually computing the transformation (computationally efficient)
-- **Common kernels**:
-  - Linear: for linearly separable data
-  - Polynomial: captures polynomial relationships
-  - RBF (Radial Basis Function/Gaussian): most common, handles complex non-linear boundaries
-  - Sigmoid
-- Allows SVM to draw non-linear decision boundaries in original feature space
+The margin width is $2/\lVert w\rVert$, so minimising $\lVert w\rVert$ maximises it.
 
-### 9.19 What is the decision boundary in classifiers?
+**Soft margin (real data overlaps):** add slack variables $\xi_i$ and a penalty $C$:
+
+$$
+\min_{w,b,\xi} \tfrac{1}{2}\lVert w\rVert^2 + C\sum_i \xi_i \quad \text{subject to} \quad y_i (w^\top x_i + b) \ge 1 - \xi_i\quad \xi_i \ge 0
+$$
+
+Equivalently, minimise hinge loss $\max(0, 1 - y_i f(x_i))$ plus L2 regularisation. Small $C$ means a wide margin that tolerates errors (more regularisation); large $C$ means a narrow margin that fits training data closely.
+
+**Support vectors in detail**
+
+- Points on the margin or inside it (and misclassified points) have non-zero dual coefficients $\alpha_i$; all others have $\alpha_i = 0$.
+- The decision function is $f(x) = \sum_i \alpha_i y_i K(x_i, x) + b$ over support vectors only, so prediction cost scales with their number.
+- Many support vectors relative to $n$ suggests heavy class overlap or too small a $C$ or $\gamma$.
+
+**Non-linear boundaries:** the dual depends on data only through dot products, so a kernel can replace them (see 9.28 for kernels and the kernel trick).
+
+**Strengths:** effective in high dimensions (text), robust margin-based generalisation, convex optimisation with a unique solution, memory-light at inference when support vectors are few.
+
+**Weaknesses:** kernel SVMs scale roughly $O(n^2)$ to $O(n^3)$, so they are impractical beyond about $10^5$ rows; need feature scaling (see 9.48); outputs are scores, not probabilities (Platt scaling is needed); sensitive to $C$ and $\gamma$ (see 9.46). On large tabular data gradient boosting usually wins (see 9.23).
+
+**Variants:** SVR (epsilon-insensitive regression), one-class SVM (novelty detection), `LinearSVC` and SGD with hinge loss for large sparse data.
+
+### 9.16 What is the decision boundary in classifiers?
 
 - The surface/line that separates different predicted classes in feature space
 - Points on one side classified as one class, other side as another class
@@ -455,32 +607,53 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 - Determined by model parameters learned during training
 - Simpler boundaries → more generalizable but may underfit; complex boundaries → fit training data closely but may overfit
 
-### 9.20 Explain Naive Bayes.
+### 9.17 How does Naive Bayes work, why is it called naive, and what is Bayes' theorem in this context?
 
-**Naive Bayes**
+Naive Bayes is a probabilistic classifier that applies Bayes' theorem and assumes the features are **conditionally independent given the class**. That assumption is "naive" because it is almost never true (words in an email are correlated), yet the classifier often ranks classes well anyway.
 
-- Probabilistic classifier based on Bayes' Theorem, assuming feature independence ("naive" assumption)
-- **Bayes' Theorem**: $P(y \mid X) = \frac{P(X \mid y) \cdot P(y)}{P(X)}$
-- Predicts class with highest posterior probability given features
-- **"Naive" assumption**: all features are conditionally independent given the class (rarely true in practice, but works well anyway)
+**Bayes' theorem**
 
-**Common variants**
+$$
+P(C \mid X) = \frac{P(X \mid C)\thinspace P(C)}{P(X)}
+$$
 
-- **Gaussian NB**: assumes continuous features follow normal distribution
-- **Multinomial NB**: for discrete counts (e.g., word counts in text classification)
-- **Bernoulli NB**: for binary/boolean features
+- $P(C)$: prior, the class frequency before seeing features.
+- $P(X \mid C)$: likelihood of the features given the class.
+- $P(X)$: evidence, the same for every class, so it can be ignored when picking the argmax.
+- $P(C \mid X)$: posterior.
 
-**Pros**
+**The naive step:** with features $x_1 \ldots x_d$,
 
-- Fast, simple, works well with high-dimensional data (e.g., text classification, spam filtering)
-- Requires small amount of training data
+$$
+P(C \mid x_1, \ldots, x_d) \propto P(C)\prod_{j=1}^{d} P(x_j \mid C)
+$$
 
-**Cons**
+so instead of estimating a joint distribution over all features (impossible with limited data) you estimate $d$ one-dimensional distributions per class. In practice you sum log-probabilities to avoid numerical underflow.
 
-- Independence assumption rarely holds in real data
-- Can be outperformed by more sophisticated models when feature correlations matter
+**Variants**
 
-### 9.21 What is Dimensionality Reduction?
+| Variant | Feature model | Typical use |
+| --- | --- | --- |
+| Multinomial | Counts (word frequencies) | Text classification, spam |
+| Bernoulli | Binary presence or absence | Short texts, binary features |
+| Gaussian | Continuous, normal per class | Simple numeric baselines |
+| Complement | Multinomial variant for imbalanced text | Imbalanced document classes |
+| Categorical | Discrete categories | Categorical tabular features |
+
+**Laplace (additive) smoothing:** a word never seen with a class would give $P = 0$ and wipe out the whole product. Adding $\alpha$ (often 1) to every count fixes this.
+
+**Example:** an email contains "free" and "prize". With $P(\text{spam}) = 0.3$, $P(\text{free} \mid \text{spam}) = 0.4$, $P(\text{prize} \mid \text{spam}) = 0.2$, and for ham $0.7$, $0.05$, $0.01$: spam scores $0.3 \times 0.4 \times 0.2 = 0.024$, ham scores $0.7 \times 0.05 \times 0.01 = 0.00035$, so it is classified as spam.
+
+**Strengths:** trains in one pass over the data, handles very high dimensions and small data, supports incremental updates (`partial_fit`), a strong and cheap text baseline.
+
+**Weaknesses**
+
+- Correlated features are double-counted, so probabilities are pushed towards 0 and 1 and are poorly calibrated; use them for ranking or calibrate them.
+- Cannot learn interactions between features.
+- Gaussian NB fails on skewed or multi-modal numeric features.
+- Usually beaten by logistic regression once there is enough data.
+
+### 9.18 What is Dimensionality Reduction?
 
 **Dimensionality Reduction**
 
@@ -507,42 +680,49 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 - Helps visualization (2D/3D)
 - Mitigates overfitting
 
-### 9.22 Explain PCA (Principal Component Analysis). How does it work? When would you use it?
+### 9.19 How does PCA work, and when would you use it?
 
-**PCA (Principal Component Analysis)**
-
-- Unsupervised linear technique for dimensionality reduction
-- Transforms correlated features into a smaller set of uncorrelated variables called **principal components**
-- Principal components are ordered by variance explained (PC1 captures most variance, PC2 next, etc.)
+Principal component analysis finds orthogonal directions (principal components) along which the data varies most, and projects the data onto the first $k$ of them. It turns many correlated features into a few uncorrelated ones while keeping as much variance as possible.
 
 **How it works**
 
-1. Standardize the data (mean = 0, variance = 1)
-2. Compute covariance matrix of features
-3. Calculate eigenvectors and eigenvalues of covariance matrix
-4. Eigenvectors = principal components (directions); eigenvalues = variance explained by each
-5. Select top K components (based on explained variance) and project data onto them
+1. Centre the data (and standardise if features are on different scales, otherwise large-unit features dominate).
+2. Compute the covariance matrix $\Sigma = \frac{1}{n-1}X^\top X$.
+3. Find its eigenvectors (directions) and eigenvalues (variance along each direction).
+4. Sort by eigenvalue and keep the top $k$ eigenvectors $W_k$.
+5. Project: $Z = X W_k$.
 
-**Key concepts**
+In practice libraries compute the SVD $X = U\Sigma V^\top$ directly, which is more numerically stable; the right singular vectors are the components and the squared singular values divided by $n-1$ are the variances. Randomised SVD scales to large data.
 
-- **Explained variance ratio**: how much variance each PC captures
-- Components are orthogonal (uncorrelated) to each other
+**Choosing k:** keep enough components to explain a target share of variance (say 90 to 95 percent), look for an elbow in the scree plot, or choose $k$ by the downstream model's cross-validated score.
 
-**When to use**
+```python
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
-- High-dimensional data with correlated features
-- Need to speed up training / reduce storage
-- Data visualization (reduce to 2D/3D)
-- Noise reduction
-- Before applying distance-based algorithms (KNN, K-Means) to reduce curse of dimensionality
+pca = make_pipeline(StandardScaler(), PCA(n_components=0.95))  # keep 95 percent of variance
+Z = pca.fit_transform(X_train)
+print(pca[-1].n_components_, pca[-1].explained_variance_ratio_.cumsum()[-1])
+```
 
-**Limitations**
+**When to use it**
 
-- Assumes linear relationships
-- Components can be hard to interpret
-- Sensitive to feature scaling (must standardize first)
+- Many correlated numeric features (sensor channels, spectra, financial factors): compress and remove multicollinearity before a linear model.
+- Before distance-based methods (KNN, k-means) to reduce noise and the curse of dimensionality.
+- Visualisation in 2-D or 3-D, and as a first step before t-SNE or UMAP (see 9.43).
+- Denoising and compression, and anomaly detection via reconstruction error (see 9.40).
 
-### 9.23 Explain Gradient Descent and its variants.
+**Limitations and pitfalls**
+
+- Linear only; curved structure needs kernel PCA, UMAP or autoencoders (see 9.39).
+- Maximum variance is not maximum predictive power: a low-variance direction can carry the signal. PCA is unsupervised; LDA or PLS use the target.
+- Components are mixtures of features and hard to explain to stakeholders.
+- Sensitive to scaling and outliers (robust PCA exists).
+- Fit on training data only and reuse the fitted transform at inference, or you leak information.
+- Rarely helps tree ensembles, which handle many features well.
+
+### 9.20 Explain Gradient Descent and its variants.
 
 **Gradient Descent**
 
@@ -573,93 +753,50 @@ It depends on k. A small k (e.g., k=1) closely follows individual training point
 - **RMSProp**: adapts learning rate per parameter using moving average of squared gradients
 - **Adam**: combines Momentum + RMSProp — adaptive learning rates, most widely used in deep learning
 
-### 9.24 What is the ROC-AUC curve, and how is it interpreted?
+### 9.21 What is the ROC curve and AUC, and how are they interpreted?
 
-**ROC-AUC Curve**
+The ROC curve plots the **true positive rate** against the **false positive rate** as the classification threshold moves from 1 to 0; AUC is the area under it, a single threshold-free number for how well the model ranks positives above negatives.
 
-- **ROC (Receiver Operating Characteristic) curve**: plots True Positive Rate (Recall) vs False Positive Rate at various classification thresholds
-  - Recall (Sensitivity), $\text{TPR} = \frac{\text{TP}}{\text{TP} + \text{FN}}$
-  - Specificity, $\text{FPR} = \frac{\text{FP}}{\text{FP} + \text{TN}}$
-- **AUC (Area Under Curve)**: single value summarizing overall model performance across all thresholds
-  - Range: 0 to 1
-  - AUC = 0.5 → random guessing (no better than chance)
-  - AUC = 1.0 → perfect classifier
-  - AUC closer to 1 → better model at distinguishing classes
+- $\text{TPR} = \text{TP}/(\text{TP} + \text{FN})$, also called recall or sensitivity.
+- $\text{FPR} = \text{FP}/(\text{FP} + \text{TN})$, which equals 1 minus specificity (specificity is $`\text{TN}/(\text{TN} + \text{FP})`$).
 
 **Interpretation**
 
-- Measures the model's ability to rank positive instances higher than negative ones, regardless of threshold
-- Useful for comparing models independent of chosen classification threshold
-- Good for imbalanced datasets (better than accuracy alone), but can be misleading with extreme imbalance — PR-AUC sometimes preferred
+- AUC equals the probability that a randomly chosen positive gets a higher score than a randomly chosen negative.
+- 0.5 is random ranking, 1.0 is perfect, below 0.5 means the scores are inverted.
+- It is threshold-independent and insensitive to monotonic rescaling of scores, so it says nothing about calibration.
 
-### 9.25 Explain Decision Tree Classification.
+**Limitations**
 
-#### Decision Tree Classification
+- With heavy class imbalance, a large number of true negatives keeps FPR small, so ROC-AUC can look excellent while precision is poor. Use PR-AUC when the positive class is rare and false positives are costly (see 12.26).
+- It averages over thresholds you would never use; for an operating point, report precision and recall at that threshold.
 
-- A **supervised learning algorithm** used to classify observations into predefined categories.
-- It recursively splits the dataset based on **feature values** to create decision rules.
-- **Root node:** Represents the first and most important decision.
-- **Internal nodes:** Represent feature-based decision conditions.
-- **Branches:** Represent the outcomes of those conditions.
-- **Leaf nodes:** Represent the final predicted class.
-- Common splitting criteria include **Gini Impurity** and **Entropy/Information Gain**.
-- **Example:** Classifying a customer as *Buy* or *Not Buy* based on age, income, and purchase history.
+See 12.9 and 12.26 for the full treatment of ROC-AUC and its limitations.
 
-#### Decision Tree in Machine Learning
+### 9.22 What assumptions does linear regression make, and what happens when they are violated?
 
-- A **Decision Tree** is a **supervised machine learning algorithm** used for **classification and regression**.
-- It makes predictions by asking a series of **questions or conditions** about the input features.
-- It has three main components:
-  - **Root node:** The starting point where the first decision is made.
-  - **Decision/internal nodes:** Conditions used to split the data.
-  - **Leaf nodes:** Final predictions or outcomes.
-- The tree selects features and split points that best separate the data, commonly using measures such as **Gini impurity, entropy, or information gain**.
-- Decision Trees are easy to understand and interpret because their decisions can be followed step by step.
-- They can easily **overfit**, especially when the tree becomes very deep.
-- Overfitting can be reduced using **maximum depth, minimum samples per split/leaf, pruning**, etc.
-- Example:
-  - **Income > 50K?**
-  - Yes → **Age > 30?**
-  - Yes → Approve loan
-  - No → Reject loan
+Ordinary least squares needs very few assumptions to produce a best-fit line, but its **coefficient estimates, standard errors and p-values** are only trustworthy if the following hold. Knowing the consequence of each violation, and the fix, is what interviewers look for.
 
-### 9.26 To start Linear Regression, you would need to make some assumptions. What are those assumptions?
+| Assumption | What it means | If violated | Diagnose | Fix |
+| --- | --- | --- | --- | --- |
+| Linearity | $E[y \mid x]$ is linear in the parameters | Biased predictions and coefficients | Residuals versus fitted plot shows a curve | Transform features, add polynomial or spline terms, use trees |
+| Independence of errors | Residuals are not correlated with each other | Standard errors too small, false significance | Durbin-Watson, autocorrelation plot (time series), clustered data | Time-series models, clustered or HAC standard errors, mixed models |
+| Homoscedasticity | Constant error variance | Coefficients still unbiased but standard errors wrong | Funnel shape in residual plot, Breusch-Pagan test | Log-transform target, weighted least squares, robust (HC) standard errors |
+| Normality of errors | Residuals roughly normal | Matters for small-sample inference only; large samples rely on the central limit theorem | Q-Q plot | Transform target, bootstrap confidence intervals |
+| No perfect multicollinearity | No predictor is an exact linear combination of others | Coefficients undefined or unstable | VIF, condition number (see 9.13) | Drop or combine features, ridge |
+| Exogeneity | Errors uncorrelated with predictors (no omitted confounders) | Biased coefficients, wrong causal conclusions | Domain reasoning | Add confounders, instruments (see Chapter 32) |
 
-#### Assumptions of Linear Regression
+Also check for **influential outliers** (Cook's distance, leverage): a few points can tilt the whole line.
 
-| **Assumption** | **Explanation** |
-| --- | --- |
-| **Linearity** | The relationship between independent and dependent variables is linear. |
-| **Independence** | Observations/errors are independent of each other. |
-| **Homoscedasticity** | The variance of residuals remains constant across predicted values. |
-| **Normality of Residuals** | Residuals are approximately normally distributed. |
-| **No Multicollinearity** | Independent variables should not be highly correlated with each other. |
-| **No Significant Outliers** | Extreme observations should not disproportionately influence the regression model. |
+**Residual definition:**
 
 $$
-\text{Residual} = \text{Actual} - \text{Predicted}
+e_i = y_i - \hat{y}_i
 $$
 
-### 9.27 What is multicollinearity and how will you handle it in your regression model?
+**Practical view:** if the goal is prediction, violations mainly show up as worse validation error and you can switch models. If the goal is explanation or inference (pricing elasticity, effect of a policy), the assumptions are essential, and exogeneity is the one most often broken in business data.
 
-#### Multicollinearity
-
-- **Multicollinearity** occurs when two or more independent variables in a regression model are **highly correlated with each other**.
-- It makes it difficult to determine the **individual effect** of each feature on the dependent variable.
-- It can lead to **unstable coefficients, large standard errors, and unreliable interpretations**.
-
-#### How to Handle It
-
-| Method | Explanation |
-| --- | --- |
-| **Correlation Matrix** | Identify highly correlated independent variables. |
-| **VIF (Variance Inflation Factor)** | Quantify multicollinearity. A high VIF indicates a problem. |
-| **Remove Features** | Remove one of the highly correlated variables if it is not essential. |
-| **Combine Features** | Create a single feature from correlated variables when appropriate. |
-| **Regularization** | Use **Ridge (L2)** or **Lasso (L1)** regression to reduce the impact of correlated features. |
-| **Dimensionality Reduction** | Use techniques such as **PCA** when many correlated features exist. |
-
-### 9.28 Explain why the performance of XGBoost is better than that of SVM?
+### 9.23 Explain why the performance of XGBoost is better than that of SVM?
 
 #### Why XGBoost Can Outperform SVM
 
@@ -675,426 +812,235 @@ There is **no universal rule** that XGBoost is better than SVM; performance depe
 | **Feature interactions** | Captures automatically | Depends on kernel |
 | **Training** | Highly optimized and parallelizable | Can be expensive for large datasets |
 
-### 9.29 What are five popular algorithms used in Machine Learning?
+### 9.24 What are the most widely used machine learning algorithms, and when is each the right default?
 
-Five popular Machine Learning algorithms are:
+A handful of algorithm families covers most real work. The useful answer is not a list but when each is the sensible first choice.
 
-1. **Linear Regression** – Predicts continuous numerical values.
-2. **Logistic Regression** – Used mainly for binary classification.
-3. **Decision Trees** – Used for both classification and regression.
-4. **Random Forest** – An ensemble of multiple decision trees; works for classification and regression.
-5. **Support Vector Machines (SVM)** – Mainly used for classification, but also supports regression (SVR).
+| Algorithm | Typical use | Why choose it | Watch out for |
+| --- | --- | --- | --- |
+| Linear and logistic regression | Baselines, scoring, pricing, inference | Fast, interpretable, calibrated probabilities, works on sparse text | Needs feature engineering for non-linearity |
+| Decision tree | Rules for humans, quick exploration | Readable if shallow | High variance |
+| Random forest | Robust tabular baseline | Little tuning, out-of-bag validation | Large models, cannot extrapolate |
+| Gradient boosting (XGBoost, LightGBM, CatBoost) | Most tabular prediction | Best accuracy on structured data | Needs tuning and early stopping |
+| KNN | Similarity search, small baselines, imputation | No training | Slow at scale, needs scaling |
+| SVM | Medium-size high-dimensional data, text | Strong margins | Does not scale to millions of rows |
+| Naive Bayes | Text baseline | Very fast, works on little data | Poor probabilities |
+| k-means, DBSCAN, GMM | Segmentation, clustering | Unsupervised structure | Choosing k, scaling |
+| PCA, UMAP | Compression, visualisation | Reduce noise and dimensions | Interpretability |
+| Neural networks | Images, text, audio, very large data | Learn representations | Data, compute and tuning cost |
 
-**Easy way to remember:**
+**Typical progression for a new problem:** a simple baseline (majority class or linear model), then gradient boosting for tabular data or a pretrained neural network for unstructured data, and only then more complex options. See 8.47 for choosing an algorithm and 13.90 for trees versus deep learning on tabular data.
 
-**Linear Regression → Logistic Regression → Decision Tree → Random Forest → SVM**.
+### 9.25 Which similarity measures are used in recommender systems?
 
-### 9.30 List the differences between KNN and k-means clustering.
+Neighbourhood-based and content-based recommenders need a way to say "these two users" or "these two items" are alike. The choice of measure depends on whether the data are ratings, binary interactions or dense embeddings.
 
-#### KNN vs K-Means Clustering
+| Measure | Formula idea | Best for | Notes |
+| --- | --- | --- | --- |
+| Cosine similarity | $\frac{a \cdot b}{\lVert a\rVert \lVert b\rVert}$ | Sparse interaction vectors, TF-IDF, embeddings | Ignores magnitude; the default for embeddings |
+| Adjusted cosine or Pearson correlation | Cosine after subtracting each user's mean rating | Explicit ratings | Removes "generous rater" bias |
+| Jaccard | $\lvert A \cap B\rvert / \lvert A \cup B\rvert$ | Binary data (bought or not) | Simple, works on sets |
+| Dot product | $a \cdot b$ | Learned embeddings (matrix factorisation, two-tower) | Rewards popular items with large norms |
+| Euclidean or Manhattan distance | Distance in feature space | Dense item features | Needs scaling; less common for sparse data |
 
-| Aspect | **KNN (K-Nearest Neighbors)** | **K-Means Clustering** |
-| --- | --- | --- |
-| **Type** | Supervised learning | Unsupervised learning |
-| **Purpose** | Classification or regression | Clustering |
-| **Training data** | Requires labeled data | Does not require labels |
-| **Meaning of K** | Number of nearest neighbors considered | Number of clusters to create |
-| **How it works** | Predicts based on the closest training examples | Assigns data points to the nearest cluster centroid |
-| **Output** | Class label or numerical value | Cluster assignment |
-| **Training** | Almost no explicit training; computation happens during prediction | Iteratively learns cluster centroids |
-| **Example** | Classify an email as spam/not spam | Group customers into different segments |
-| **Common metric** | Euclidean distance, Manhattan distance, etc. | Usually Euclidean distance |
-| **Main challenge** | Choosing an appropriate K and handling high-dimensional data | Choosing the number of clusters K |
+**Practical issues**
 
-#### Easy way to remember
+- **Popularity bias:** raw co-occurrence makes best-sellers similar to everything; normalise (cosine, lift, or PMI) or penalise popular items.
+- **Sparsity:** two users with one shared item can look perfectly similar; apply significance weighting or shrinkage when overlap is small.
+- **Scale:** all-pairs similarity is $O(n^2)$; compute item-item similarities offline in batch, or use approximate nearest neighbour search over embeddings.
 
-- **KNN:** *“Which labeled points are closest to this new point?”*
-- **K-Means:** *“Which cluster does this point belong to?”*
+Collaborative and content-based approaches that use these measures are described in 9.29; modern learned-embedding recommenders are covered in Chapter 32.
 
-**Key difference:** KNN uses **labeled data to make predictions**, while K-Means uses **unlabeled data to discover groups**.
+### 9.26 What is a Bayesian network, and what is it also called?
 
-### 9.31 What is a PCA?
+A Bayesian network (also called a **Bayes network, Bayes net, belief network** or **Bayesian belief network**; when edges are given a causal reading, a **causal Bayesian network**) is a probabilistic graphical model that represents a set of variables and their conditional dependencies as a **directed acyclic graph (DAG)**.
 
-#### PCA (Principal Component Analysis)
+**Components**
 
-**Principal Component Analysis (PCA)** is a dimensionality reduction technique that transforms a dataset with many correlated features into a smaller set of **uncorrelated variables called principal components**, while preserving as much of the data's variance as possible.
+- **Nodes:** random variables (disease, symptom, test result).
+- **Directed edges:** direct dependencies; a node is conditionally independent of its non-descendants given its parents.
+- **Conditional probability tables or distributions:** $P(X_i \mid \text{parents}(X_i))$ for each node.
 
-#### How PCA works
+The joint distribution factorises as
 
-1. **Standardize the data** if features have different scales.
-2. Calculate the **covariance matrix**.
-3. Compute its **eigenvectors and eigenvalues**.
-4. Rank the eigenvectors by their eigenvalues.
-5. Select the top k eigenvectors as the **principal components**.
-6. Project the original data onto these components.
+$$
+P(X_1, \ldots, X_n) = \prod_{i=1}^{n} P(X_i \mid \text{parents}(X_i))
+$$
 
-The first principal component captures the **maximum variance**, the second captures the maximum remaining variance while being orthogonal to the first, and so on.
-
-#### Example
-
-Suppose a dataset has **100 features**. PCA might reduce it to **10 principal components** while retaining, for example, 95% of the original variance.
-
-#### Why use PCA?
-
-- Reduce dimensionality
-- Remove redundant information
-- Reduce computational cost
-- Help visualize high-dimensional data
-- Reduce the effect of multicollinearity
-- Sometimes improve model performance
-
-#### Key point
-
-> **PCA converts many potentially correlated features into fewer uncorrelated principal components that retain most of the important information (variance) in the original data.**
-
-### 9.32 What are support vectors in SVM (Support Vector Machine)?
-
-- **Support vectors** are the data points closest to the decision boundary in an SVM.
-- They determine the **position and orientation of the optimal decision boundary**.
-- They define the **margin** between the classes.
-- They are the most important training points for the SVM classifier.
-
-### 9.33 What techniques are used to find resemblance in the recommendation system?
-
-- Recommendation systems use **similarity techniques** to find how similar users, items, or their features are.
-
-Common techniques include:
-
-- **Cosine Similarity** — Measures similarity between item or user vectors based on their angle.
-- **Pearson Correlation** — Measures how similarly two users or items behave or are rated.
-- **Jaccard Similarity** — Measures similarity between sets, such as products two users have purchased.
-- **Euclidean Distance** — Measures the distance between feature vectors; smaller distance means more similar.
-- **Manhattan Distance** — Measures similarity based on the sum of absolute differences between features.
-- **Collaborative Filtering** — Finds similar users or items from their interaction history.
-- **Content-Based Filtering** — Finds items similar based on their attributes, such as category, description, or genre.
-- **Embedding Similarity** — Uses vector embeddings from models such as neural networks to find semantically similar items.
-
-### 9.34 What is another name for a Bayesian Network?
-
-- A **Bayesian Network** is also called a **Bayes Network**, **Bayesian Belief Network (BBN)**, Casual network, Bayes net, Belief Propagation Network or **Belief Network**.
-- It is a **probabilistic graphical model** that represents relationships and conditional dependencies between variables.
-
-### 9.35 What is ensemble learning?
-
-- **Ensemble learning** is a machine learning technique that **combines multiple models** to make better and more reliable predictions.
-- Instead of relying on a single model, it combines the predictions of several models to improve **accuracy, stability, and generalization**.
-- Common ensemble methods include:
-  - **Bagging** → Trains multiple models **independently** on different samples of the data and combines their predictions. It mainly helps **reduce variance**.
-    - Example: **Random Forest**, which combines many decision trees.
-  - **Boosting** → Trains models **sequentially**, where each new model focuses on correcting the errors of previous models. It mainly helps **reduce bias** and improve predictive performance.
-    - Examples: **XGBoost, AdaBoost, Gradient Boosting**.
-  - **Stacking** → Combines predictions from **different types of models** and uses another model, called a **meta-model**, to learn how to combine their predictions effectively.
-    - Example: **Random Forest + SVM + XGBoost → Meta-model → Final prediction**.
-- **In simple terms:**
-  - **Bagging** → Models work **independently**.
-  - **Boosting** → Models work **sequentially to correct errors**.
-  - **Stacking** → **Different models are combined using a meta-model**.
-
-### 9.36 What is clustering?
-
-- **Clustering** is an **unsupervised machine learning technique** that groups similar data points into **clusters**.
-- The goal is to make:
-  - Data points **within the same cluster** as similar as possible.
-  - Data points **from different clusters** as different as possible.
-- Clustering does **not require labeled data**. The algorithm discovers the groups automatically.
-- Common clustering algorithms include:
-  - **K-Means** → Divides data into a predefined number of clusters.
-  - **Hierarchical Clustering** → Creates a hierarchy of clusters.
-  - **DBSCAN** → Groups closely packed points and identifies noise/outliers.
-  - **Gaussian Mixture Model (GMM)** → Groups data based on probability distributions.
-- Common applications include:
-  - **Customer segmentation**
-  - **Document/news grouping**
-  - **Image segmentation**
-  - **Anomaly detection**
-  - **Recommendation systems**
-
-### 9.37 What is the Bayesian Network?
-
-- A **Bayesian Network** is a **probabilistic graphical model** that represents relationships and dependencies between variables using a **directed acyclic graph (DAG)**.
-- It consists of:
-  - **Nodes** → Represent variables or events.
-  - **Directed edges** → Represent probabilistic dependencies between variables.
-  - **Conditional probability distributions (CPDs)** → Describe how each variable depends on its parent variables.
-- Bayesian Networks are used to **reason under uncertainty** and calculate the probability of events based on available evidence.
-- **Example:**`Rain → Wet Grass`<br>If we know that it is raining, the probability that the grass is wet increases.
-- Common applications include:
-  - Medical diagnosis
-  - Risk assessment
-  - Fraud detection
-  - Fault diagnosis
-  - Decision support systems
-
-### 9.38 What is dimension reduction in ML?
-
-- **Dimension reduction** is the process of **reducing the number of features (dimensions) in a dataset** while preserving as much useful information as possible.
-- It is useful when a dataset has **many features**, some of which may be redundant or irrelevant.
-- Main benefits include:
-  - Reduces **computational complexity**
-  - Removes **redundant or noisy features**
-  - Helps reduce **overfitting**
-  - Makes data easier to **visualize**
-  - Can improve model training speed
-- Common dimension reduction techniques include:
-  - **PCA (Principal Component Analysis)** → Creates new features called principal components that capture the most variance in the data.
-  - **LDA (Linear Discriminant Analysis)** → Reduces dimensions while trying to preserve class separability.
-  - **t-SNE** → Mainly used to visualize high-dimensional data in 2D or 3D.
-  - **UMAP** → Used for dimensionality reduction and visualization while preserving important data structure.
-
-**Example:** If a dataset has **100 features**, dimension reduction might transform it into **10 important components** while retaining most of the useful information.
-
-### 9.39 Why is the Naive Bayes Method ‘Naive’?
-
-#### Why is Naive Bayes called “Naive”?
-
-- Naive Bayes is called **“naive”** because it makes a **strong assumption that all features are independent of each other**, given the class.
-- In real-world data, features are often **related or correlated**.
-- Despite this unrealistic assumption, Naive Bayes can still perform very well, especially in **text classification, spam detection, and sentiment analysis**.
+which needs far fewer parameters than the full joint table.
 
 **Example:**
 
-For email spam detection, suppose the features are:
+```text
+   Rain      Sprinkler
+      \        /
+       WetGrass
+```
 
-- Contains “free”
-- Contains “offer”
-- Contains “prize”
+Observing wet grass raises the probability of both rain and sprinkler; then learning it rained lowers the probability of the sprinkler ("explaining away"), even though rain and sprinkler are independent a priori.
 
-Naive Bayes assumes these features are **independent of each other** when determining whether the email is spam.
+**What you do with it**
 
-### 9.40 State the Bayes’ theorem for Naive Bayes Method.
+- **Inference:** compute posteriors given evidence, exactly (variable elimination, junction tree) or approximately (sampling, belief propagation) for large graphs.
+- **Parameter learning:** estimate the tables from data (maximum likelihood or Bayesian with priors).
+- **Structure learning:** search for the DAG from data (score-based or constraint-based); hard and data-hungry, so expert-defined structure is common.
 
-#### Bayes’ Theorem for Naive Bayes
+**Uses:** medical diagnosis, fault diagnosis, risk modelling, decision support, and as the foundation for causal graphs (see 32.1 and 32.2).
 
-Bayes’ theorem is:
+**Limitations:** structure learning is difficult, exact inference is NP-hard in general, and continuous variables need parametric assumptions or discretisation. Naive Bayes (see 9.17) is the simplest Bayesian network: a class node with every feature as an independent child.
+
+### 9.27 What is clustering, and how do the main clustering algorithms compare?
+
+Clustering is unsupervised learning that groups points so that members of a cluster are more similar to each other than to points in other clusters. There are no labels, so the definition of "similar" (features, scaling, distance) and the choice of algorithm determine the result.
+
+**Families and algorithms**
+
+| Family | Algorithm | Cluster shape | Need k? | Handles noise | Scales to |
+| --- | --- | --- | --- | --- | --- |
+| Partitioning | k-means, mini-batch k-means | Convex, similar size | Yes | No (outliers pull centroids) | Millions |
+| Partitioning | k-medoids, k-prototypes | Convex; any distance, mixed types | Yes | Better | Thousands to millions |
+| Hierarchical | Agglomerative (Ward, average, single linkage) | Depends on linkage | Cut the dendrogram | No | About $10^4$ to $10^5$ ($O(n^2)$ memory) |
+| Density-based | DBSCAN, HDBSCAN, OPTICS | Arbitrary | No | Yes, labels noise | Large with indexing |
+| Model-based | Gaussian mixture | Elliptical, soft assignments | Yes (BIC helps) | No | Medium |
+| Graph-based | Spectral clustering | Arbitrary, connectivity-based | Yes | No | Small to medium |
+| Grid-based | STING, CLIQUE | Dense grid cells | No | Yes | Large, low dimensions |
+
+**Choosing in practice**
+
+- Large data, roughly round clusters, need speed: **k-means** (see 9.14, 9.53).
+- Unknown number of clusters, irregular shapes, noise to discard: **HDBSCAN**.
+- Need probabilities or overlapping segments: **Gaussian mixtures** (see 9.52).
+- Need a hierarchy or a small data set to explore: **agglomerative** with a dendrogram.
+- Text or embeddings: normalise vectors and use cosine distance; reduce dimensions first (UMAP then HDBSCAN is a common pattern).
+
+**Pitfalls**
+
+- Clustering always returns clusters, even on random data; check stability across seeds and bootstrap samples.
+- Scaling and feature choice matter more than the algorithm.
+- Evaluate with silhouette or Davies-Bouldin, but above all with whether segments are actionable and stable over time (see 12.16).
+
+**Applications:** customer segmentation, document and topic grouping, image segmentation, anomaly detection (points far from any cluster), and cold-start grouping in recommenders.
+
+### 9.28 What is a kernel SVM, what is the kernel trick, and which kernels are common?
+
+A kernel SVM is an SVM whose dot products are replaced by a **kernel function** $K(x, x') = \langle \phi(x), \phi(x')\rangle$, which computes an inner product in a higher (possibly infinite) dimensional feature space without ever building $\phi(x)$. A linear max-margin classifier in that space becomes a non-linear boundary in the original space. This substitution is the **kernel trick**.
+
+**Why it works:** the SVM dual problem and its decision function use the data only through dot products:
 
 $$
-P(C \mid X) = \frac{P(X \mid C) \cdot P(C)}{P(X)}
+f(x) = \operatorname{sign}\left(\sum_i \alpha_i y_i K(x_i, x) + b\right)
 $$
 
-Where:
+so any valid kernel can be plugged in. A kernel is valid if it is symmetric and positive semi-definite (Mercer's condition).
 
-- $P(C \mid X)$ → Probability of class **C** given the features **X** (posterior probability)
-- $P(X \mid C)$ → Probability of observing features **X** given class **C** (likelihood)
-- $P(C)$ → Probability of class **C** before seeing the features (prior probability)
-- $P(X)$ → Probability of observing the features **X** (evidence)
+**Example:** for $x \in \mathbb{R}^2$, the kernel $K(x,z) = (x \cdot z)^2$ equals the dot product of the explicit features $(x_1^2, \sqrt{2}\thinspace x_1 x_2, x_2^2)$. The RBF kernel corresponds to an infinite-dimensional feature space, which could never be computed explicitly.
 
-In **Naive Bayes**, the feature probability is further simplified by assuming that the features are **conditionally independent given the class**.
+**Common kernels**
 
-**In simple terms:** Bayes’ theorem calculates **how likely a class is after seeing the input features**.
-
-### 9.41 Explain Kernel SVM.
-
-#### Kernel SVM
-
-- **Kernel SVM (Support Vector Machine)** is an extension of SVM that can classify data that is **not linearly separable**.
-- A normal SVM tries to find the **best separating hyperplane** between classes.
-- When data cannot be separated by a straight line or flat plane, Kernel SVM uses the **kernel trick**.
-- The **kernel function** effectively maps the original data into a **higher-dimensional feature space**, where the data may become linearly separable.
-- Common kernel functions include:
-  - **Linear Kernel**
-  - **Polynomial Kernel**
-  - **RBF (Gaussian) Kernel**
-  - **Sigmoid Kernel**
-- Kernel SVM mainly depends on **support vectors**, which are the data points closest to the decision boundary.
-- It is useful for **nonlinear classification problems**.
-
-### 9.42 What are some types of clustering?
-
-#### Types of Clustering
-
-Common types of clustering in machine learning include:
-
-- **Partitioning Clustering:** Divides data into a fixed number of clusters.
-  - Example: **K-Means**
-- **Hierarchical Clustering:** Creates a hierarchy of clusters, either by merging smaller clusters or splitting larger ones.
-  - Example: **Agglomerative Clustering**
-- **Density-Based Clustering:** Forms clusters based on areas of high data density and identifies sparse points as noise or outliers.
-  - Examples: **DBSCAN, OPTICS**
-- **Model-Based Clustering:** Assumes the data comes from a mixture of underlying probability distributions.
-  - Example: **Gaussian Mixture Model (GMM)**
-- **Grid-Based Clustering:** Divides the data space into grid cells and forms clusters based on dense cells.
-  - Example: **STING**
-
-### 9.43 What is content-based filtering and collaborative filtering?
-
-#### Content-Based Filtering vs Collaborative Filtering
-
-##### 1. Content-Based Filtering
-
-- Recommends items based on the **features or characteristics of items the user has liked before**.
-- It focuses on the **user's own preferences and item attributes**.
-- Example: If you frequently watch **action movies**, the system recommends more action movies.
-- It does not require information about other users.
-
-**In simple terms:** **“You liked this item, so I recommend similar items.”**
-
-##### 2. Collaborative Filtering
-
-- Recommends items based on the **behavior and preferences of multiple users**.
-- It finds users with **similar preferences** and recommends items they liked.
-- Example: If users who liked the same movies as you also liked another movie, that movie may be recommended to you.
-- It can be based on **user-user** or **item-item** similarity.
-
-**In simple terms:** **“Users similar to you liked this item, so I recommend it to you.”**
-
-##### Key Difference
-
-| Content-Based | Collaborative |
-| --- | --- |
-| Uses **item features** | Uses **user-item interactions** |
-| Focuses on the **same user's history** | Learns from **multiple users' behavior** |
-| Recommends similar items | Recommends items based on similar users/items |
-| Less affected by new users | Can struggle with new users/items (**cold start**) |
-
-### 9.44 What are the two components of Bayesian logic?
-
-#### Two Components of Bayesian Logic
-
-The two main components of Bayesian logic are:
-
-1. **Prior Probability**
-   - Represents what we **already know or believe** about an event before seeing new evidence.
-   - Example: The probability that a person has a particular disease before a medical test.
-2. **Likelihood**
-   - Represents how **likely the observed evidence is**, assuming a particular hypothesis or event is true.
-   - Example: How likely a positive test result is if the person actually has the disease.
-
-**In simple terms:**
-
-**Prior = what we know before the evidence**
-
-**Likelihood = how well the evidence supports the hypothesis**
-
-### 9.45 How would you describe a Recommender system?
-
-#### Recommender System
-
-- A **Recommender System** is a machine learning system that **suggests relevant items to users based on their preferences, behavior, or interests**.
-- It analyzes information such as:
-  - User interactions and history
-  - Item features
-  - Ratings, clicks, views, or purchases
-  - Preferences of similar users
-- Common approaches include:
-  - **Content-Based Filtering:** Recommends items similar to what the user previously liked.
-  - **Collaborative Filtering:** Recommends items based on the behavior of similar users or items.
-  - **Hybrid Recommendation:** Combines multiple recommendation approaches.
-- Examples include recommending **movies, products, songs, news, or videos**.
-
-### 9.46 Do you consider decision trees to have any advantages or disadvantages? If yes, what are they?
-
-#### Advantages and Disadvantages of Decision Trees
-
-##### Advantages
-
-- **Easy to understand and interpret:** Decisions can be followed step by step.
-- **Works for classification and regression:** Can predict both categories and numerical values.
-- **Requires little data preprocessing:** Usually does not require feature scaling or normalization.
-- **Handles numerical and categorical features:** Can work with different types of input variables.
-- **Captures nonlinear relationships:** Can model complex relationships between features and the target.
-- **Feature selection:** Automatically selects important features when creating splits.
-
-##### Disadvantages
-
-- **Prone to overfitting:** Deep trees can memorize the training data.
-- **High variance:** Small changes in training data can produce a very different tree.
-- **Can become complex:** Large trees can be difficult to interpret.
-- **Greedy splitting:** Decisions made at each split may not lead to the globally optimal tree.
-- **Sensitive to noisy data:** Noise can lead to unnecessary or poor splits.
-- **Less stable than ensemble methods:** A single decision tree may perform worse than methods such as Random Forest or Gradient Boosting.
-
-### 9.47 What is a random forest, and how does it work?
-
-#### Random Forest
-
-- **Random Forest** is an **ensemble learning algorithm** that combines multiple **Decision Trees** to make more accurate and robust predictions.
-- It can be used for both **classification and regression**.
-- Random Forest is a **bagging** (Bootstrap Aggregating) algorithm.
-
-##### How Random Forest Works
-
-1. It creates **multiple decision trees** using different random samples of the training data.
-2. At each split, each tree considers a **random subset of features** rather than all features.
-3. Each tree makes its own prediction.
-4. The Random Forest combines the predictions:
-   - **Classification:** Uses **majority voting**.
-   - **Regression:** Uses the **average prediction**.
-5. Combining many trees helps **reduce overfitting and variance** compared with using a single decision tree.
-
-##### Key Advantages
-
-- Reduces overfitting compared with a single Decision Tree.
-- Handles nonlinear relationships well.
-- Works with many features.
-- Generally robust to noise and outliers.
-- Provides estimates of **feature importance**.
-
-### 9.48 What ensemble techniques can be used to aggregate multiple models?
-
-#### Ensemble Techniques
-
-The core ensemble techniques used to combine multiple machine learning models are **Bagging, Boosting, Stacking, and Voting/Averaging**.
-
-##### 1. Bagging — Bootstrap Aggregating
-
-- Trains multiple models **independently and in parallel** on different bootstrap samples of the training data.
-- Each sample is created by **sampling with replacement**.
-- Predictions are combined using:
-  - **Majority voting** for classification.
-  - **Averaging** for regression.
-- **Main goal:** Reduce **variance** and overfitting.
-- **Example:** Random Forest.
-
-##### 2. Boosting
-
-- Trains models **sequentially**, where each new model focuses on correcting errors made by previous models.
-- The models are combined to form a stronger learner.
-- **Main goal:** Reduce **bias** and improve predictive performance.
-- **Examples:** AdaBoost, Gradient Boosting, XGBoost, LightGBM.
-
-##### 3. Stacking
-
-- Combines predictions from **different types of base models**.
-- The predictions of the base models are used as inputs to another model called a **meta-learner**.
-- The meta-learner produces the final prediction.
-- **Main goal:** Combine the strengths of different algorithms to improve predictive performance.
-- **Example:** SVM + Random Forest + Neural Network → Meta-learner → Final prediction.
-
-##### 4. Voting and Averaging
-
-- Combines predictions from multiple models directly.
-- **Hard Voting:** The class receiving the most votes is selected.
-- **Soft Voting:** Class probabilities from models are combined, usually by averaging them.
-- **Averaging:** Predictions are averaged for regression.
-- **Weighted Averaging:** Better-performing models can be given higher weights.
-
-##### Quick Comparison
-
-| Technique | How Models Work | Main Purpose |
+| Kernel | Formula | When to use |
 | --- | --- | --- |
-| **Bagging** | Independent / Parallel | Reduce **variance** |
-| **Boosting** | Sequential / Dependent | Reduce **bias** |
-| **Stacking** | Base models + Meta-model | Combine different model strengths |
-| **Voting/Averaging** | Combine predictions directly | Improve overall performance |
+| Linear | $x^\top x'$ | High-dimensional sparse data (text), many features; fastest |
+| Polynomial | $(\gamma x^\top x' + r)^d$ | Feature interactions of degree $d$; unstable for large $d$ |
+| RBF (Gaussian) | $\exp(-\gamma \lVert x-x'\rVert^2)$ | Default for non-linear problems; $\gamma$ controls locality |
+| Sigmoid | $\tanh(\gamma x^\top x' + r)$ | Neural-network-like; not always PSD, rarely best |
+| Others | Laplacian, chi-squared, string and graph kernels | Histograms, sequences, graphs |
 
-**In simple terms:**
+**Trade-offs**
 
-- **Bagging:** Build models independently and combine them.
-- **Boosting:** Build models sequentially, correcting previous errors.
-- **Stacking:** Use different models and let another model combine their predictions.
-- **Voting/Averaging:** Combine model predictions directly.
+- Training needs the $n \times n$ kernel matrix: $O(n^2)$ memory and $O(n^2)$ to $O(n^3)$ time, so kernel SVMs are impractical past about $10^5$ samples. At scale use a linear SVM, approximate the kernel with random Fourier features or Nystroem and a linear model, or switch to gradient boosting or neural networks.
+- $C$ and $\gamma$ interact and must be tuned together on a log grid, after scaling the features (see 9.46 and 9.48).
+- Kernels are not SVM-only: kernel PCA, kernel ridge regression and Gaussian processes use the same trick.
 
-### 9.49 Do you think logistic regression can be used for more than two classes?
+```python
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+clf = make_pipeline(StandardScaler(), SVC(kernel="rbf", C=10, gamma="scale"))
+```
 
-Yes. **Logistic Regression can be extended to handle multiclass classification.**
+### 9.29 What are content-based and collaborative filtering, and what powers "people who bought this also bought"?
 
-- **Binary Logistic Regression:** Used for **2 classes**, such as Yes/No.
-- **Multinomial Logistic Regression:** Used when there are **3 or more classes** with no natural ordering.
-  - Example: Classifying an image as **Cat, Dog, or Horse**.
-- **One-vs-Rest (OvR):** Builds one binary logistic regression model for each class and selects the class with the highest probability.
-- **Multinomial/Softmax:** Directly calculates probabilities for all classes and selects the class with the highest probability.
+Both are classic recommender approaches. **Content-based filtering** recommends items whose attributes resemble what the user already liked; **collaborative filtering** ignores item attributes and recommends from patterns in many users' interactions.
 
-### 9.50 Explain Genetic programming as it relates to Evolutionary algorithm.
+**Content-based filtering**
+
+- Build an item representation from attributes (genre, brand, text, image embeddings) and a user profile from the items they engaged with.
+- Score candidate items by similarity to the profile (see 9.25).
+- Works for new items with no interactions, and recommendations are explainable ("because you watched...").
+- Over-specialises (filter bubble), needs good item features, and cannot capture quality or taste that features miss.
+
+**Collaborative filtering**
+
+- **User-user:** find users with similar histories and recommend what they liked.
+- **Item-item:** find items co-consumed by the same users. More stable than user-user because item relationships change slowly, and similarities can be precomputed.
+- **Model-based:** learn latent user and item vectors with matrix factorisation (see 9.36) or neural models.
+- Finds non-obvious relationships, but suffers from cold start for new users and items, sparsity, and popularity bias.
+
+| | Content-based | Collaborative |
+| --- | --- | --- |
+| Data | Item features plus the user's own history | User-item interaction matrix |
+| New item | Works | Cold start |
+| New user | Needs some history | Cold start |
+| Serendipity | Low | Higher |
+| Explainability | High | Medium ("people like you...") |
+
+**"People who bought this also bought"** is **item-to-item collaborative filtering**, popularised by Amazon: for each item, find the items most often bought by the same customers, normalised so that best-sellers do not dominate (cosine, lift or conditional probability), precompute the top neighbours offline, and look them up at request time. A related method is association rule mining (support, confidence, lift) on baskets, which is used for "frequently bought together".
+
+**In practice** most systems are hybrids: collaborative signals for users with history, content features for cold start, combined in a learned ranking model. Cold start and modern hybrids are covered in 32.18 and 32.14.
+
+### 9.30 What are the two components of Bayesian logic, and how do they combine?
+
+Bayesian reasoning combines a **prior** (what you believed before the evidence) with a **likelihood** (how probable the evidence is under each hypothesis) to produce a **posterior** (the updated belief):
+
+$$
+P(H \mid E) = \frac{P(E \mid H)\thinspace P(H)}{P(E)}
+$$
+
+- **Prior $P(H)$:** base rates, past data or expert judgement.
+- **Likelihood $P(E \mid H)$:** a model of how the data arise if $H$ is true.
+- **Evidence $P(E)$:** a normalising constant, the total probability of the data across all hypotheses.
+
+**Worked example (base-rate neglect).** A disease affects 1 in 1,000 people. A test detects it 99 percent of the time and gives false positives 5 percent of the time. After a positive result:
+
+$$
+P(D \mid +) = \frac{0.99 \times 0.001}{0.99 \times 0.001 + 0.05 \times 0.999} \approx 0.019
+$$
+
+Only about 2 percent of positives are real, because the prior is so small. The same logic explains why fraud and anomaly alerts on rare events are mostly false alarms unless the false positive rate is tiny.
+
+**Where it appears in ML:** Naive Bayes (see 9.17), Bayesian networks (see 9.26), regularisation as a prior (ridge is a Gaussian prior on weights), Bayesian optimisation for hyperparameters, and Bayesian A/B testing. Chapter 1 covers Bayes' theorem and Bayesian inference in more depth.
+
+### 9.31 What is a recommender system, and what are the main types?
+
+A recommender system ranks items (products, videos, articles, jobs) for a user in a context, using past behaviour, item attributes and context, so that the most relevant items appear first. This question gives the map; Chapter 32 covers the modern techniques in depth (32.13 to 32.24).
+
+**Main families**
+
+1. **Popularity and rules:** trending or best-selling items. A strong baseline and the fallback for cold start, but not personalised.
+2. **Content-based filtering:** items similar to what the user liked, using item features (see 9.29).
+3. **Collaborative filtering:** neighbourhood methods (user-user, item-item) and matrix factorisation (see 9.36, 32.13).
+4. **Hybrid:** combine content and collaborative signals, by weighting, switching or as features in one model.
+5. **Deep learning:** two-tower retrieval models and deep ranking models (32.14, 32.17).
+6. **Sequential and session-based:** model the order of interactions with RNNs or Transformers (32.16).
+7. **Knowledge- or constraint-based:** explicit requirements for rare, high-value purchases (houses, cars, financial products).
+8. **Graph-based:** graph neural networks over user-item graphs.
+9. **Context-aware and bandit-based:** use time, device and location; contextual bandits balance exploration and exploitation.
+10. **LLM-based and conversational:** generate or re-rank from natural-language preferences (32.23).
+
+**Typical production architecture**
+
+```text
+millions of items
+   -> candidate generation (ANN over embeddings, item-item CF, popularity)   ~1,000 items
+   -> ranking (gradient boosting or deep model on rich features)             ~100 items
+   -> re-ranking (diversity, freshness, business rules, fairness)            ~10 shown
+```
+
+**Evaluation:** offline with recall@k, NDCG and MAP on time-based splits, then online A/B tests on click-through, conversion and retention (see 12.17 and 32.21).
+
+**Common problems:** cold start (32.18), popularity and position bias (32.19), feedback loops, and optimising short-term clicks at the expense of long-term value (32.24).
+
+### 9.32 Explain Genetic programming as it relates to Evolutionary algorithm.
 
 #### Genetic Programming in Evolutionary Algorithms
 
@@ -1123,85 +1069,7 @@ GP might start with random expressions such as:
 
 It evaluates them and evolves better expressions over generations.
 
-### 9.51 What are some classification methods that SVM can handle?
-
-#### Classification Methods SVM Can Handle
-
-- **Binary Classification:** Classifies data into **two classes**.
-  - Example: Spam vs Not Spam.
-- **Multiclass Classification:** Classifies data into **more than two classes**, using methods such as **One-vs-One (OvO)** or **One-vs-Rest (OvR)**.
-  - Example: Cat vs Dog vs Horse.
-- **Multilabel Classification:** Assigns **multiple labels to the same data point** using multiple binary SVM classifiers.
-  - Example: An image can have labels such as **Animal, Outdoor, and Dog**.
-
-### 9.52 Why do you think instance-based learning algorithm is sometimes referred to as Lazy learning algorithm?
-
-#### Why Is Instance-Based Learning Called Lazy Learning?
-
-- **Instance-based learning** stores the training data instead of building a general model during training.
-- It performs most of the **computation when making a prediction**, rather than during training.
-- Therefore, the **training phase is fast**, but the **prediction phase can be slower**.
-- This is why it is called **Lazy Learning** — the algorithm “waits” until a prediction is needed before doing most of the work.
-- Example: **K-Nearest Neighbors (KNN)**.
-
-### 9.53 Explain the reason for pruning of a decision tree.
-
-- **Pruning** means removing unnecessary branches or nodes from a decision tree.
-- It is mainly done to **reduce overfitting**.
-- A very deep tree may learn **noise and small details** from the training data.
-- Pruning makes the tree **simpler and easier to interpret**.
-- It can improve the model's **performance on unseen data**.
-- It can also reduce **computational complexity**.
-
-### 9.54 What differentiates Gradient boosting and Random forest?
-
-#### Gradient Boosting vs Random Forest
-
-Both are **ensemble learning methods based on decision trees**, but they work differently.
-
-- **Random Forest:**
-  - Builds many decision trees **independently and in parallel**.
-  - Each tree is trained on a different random sample of data/features.
-  - Combines the predictions of all trees.
-  - Mainly helps **reduce variance and overfitting**.
-  - Generally easier to tune and less sensitive to hyperparameters.
-- **Gradient Boosting:**
-  - Builds trees **sequentially**, one after another.
-  - Each new tree focuses on **correcting the errors of previous trees**.
-  - Combines the trees to make the final prediction.
-  - Mainly helps **reduce bias and improve predictive accuracy**.
-  - Usually requires more careful tuning.
-
-| Feature | Random Forest | Gradient Boosting |
-| --- | --- | --- |
-| Tree building | Parallel/independent | Sequential |
-| Main focus | Reduce variance | Reduce bias |
-| Error correction | No | Yes |
-| Overfitting | More resistant | Can overfit if not tuned |
-| Tuning | Easier | More sensitive |
-
-**Simple terms:**
-
-**Random Forest = many independent trees working together.**
-
-**Gradient Boosting = trees built one after another, each correcting previous errors.**
-
-### 9.55 When recommendations like “....people who did this also bought this” comes up on a website. What sort of algorithm propels that?
-
-#### Algorithm Behind “People Who Did This Also Bought This”
-
-- This type of recommendation is mainly powered by **Collaborative Filtering**.
-- More specifically, it is often called **Item-to-Item Collaborative Filtering**.
-- The system analyzes the behavior of many users, such as:
-  - Products they bought
-  - Products they viewed
-  - Products they added to carts
-- It identifies products that are **frequently associated with each other**.
-- For example:
-  - Many users who bought **Product A** also bought **Product B**.
-  - The system recommends **Product B** to someone who buys **Product A**.
-
-### 9.56 What is an OOB error, and how is it useful?
+### 9.33 What is an OOB error, and how is it useful?
 
 **OOB (out-of-bag) error** is a built-in validation estimate for bagging ensembles such as **Random Forests**.
 
@@ -1224,7 +1092,7 @@ print(rf.oob_score_)   # accuracy on out-of-bag samples
 
 **Caveats:** it assumes i.i.d. rows — it is optimistic for time-series or grouped data (use time-based/grouped CV instead); it can be slightly pessimistic with few trees; and it does not replace a final untouched test set for reporting.
 
-### 9.57 In what scenario should a decision tree be preferred over random forest?
+### 9.34 In what scenario should a decision tree be preferred over random forest?
 
 A single decision tree is preferable to a random forest when **interpretability, simplicity or speed** matter more than the last few points of accuracy:
 
@@ -1239,7 +1107,7 @@ A single decision tree is preferable to a random forest when **interpretability,
 
 **Middle ground:** train a forest or GBM for accuracy, then **distill** it into a surrogate tree for explanation, or use a shallow tree when its validated performance is within your tolerance of the ensemble's.
 
-### 9.58 Why is Logistic Regression called regression?
+### 9.35 Why is Logistic Regression called regression?
 
 Because at its core it **is a regression model — a linear regression on the log-odds** — and only becomes a classifier when you put a threshold on its output.
 
@@ -1254,29 +1122,7 @@ $$
 
 **Why this matters in practice:** because it outputs (reasonably calibrated) probabilities, logistic regression is used for risk scoring, ranking and expected-value decisions — not just hard labels. It is trained with maximum likelihood (log loss), not least squares.
 
-### 9.59 What are the main points of difference between Bagging and Boosting?
-
-Both are ensemble methods that combine many weak/base learners, but they attack different errors.
-
-| | Bagging (Bootstrap Aggregating) | Boosting |
-| --- | --- | --- |
-| Training | **Parallel**, independent models | **Sequential**, each model depends on the previous ones |
-| Data | Each model sees a bootstrap sample (with replacement) | All data, but **reweighted** (AdaBoost) or fit to **residuals/gradients** (Gradient Boosting) |
-| Goal | Reduce **variance** | Reduce **bias** (and variance) |
-| Base learners | Strong, low-bias, high-variance models (deep trees) | Weak learners (shallow trees/stumps) |
-| Combination | Simple average / majority vote | Weighted sum of learners |
-| Overfitting | Robust; more trees rarely hurt | Can overfit with too many rounds; needs learning rate, early stopping, regularization |
-| Noise/outliers | Robust | Sensitive (it keeps focusing on hard/mislabeled points) |
-| Speed | Easily parallelized | Sequential across rounds (parallel within a tree in XGBoost/LightGBM) |
-| Examples | Random Forest, Extra Trees, bagged models | AdaBoost, GBM, XGBoost, LightGBM, CatBoost |
-
-**When to use which**
-- **Bagging/Random Forest:** strong, low-tuning baseline; noisy data; when you want stability and OOB error estimates.
-- **Boosting:** usually the top accuracy on tabular data when tuned carefully (learning rate, depth, n_estimators with early stopping, subsampling).
-
-**One-liner:** bagging = many independent experts voting to cancel out noise; boosting = a team where each new member fixes the previous members' mistakes.
-
-### 9.60 What is Matrix Factorization, and where is it used in Machine Learning?
+### 9.36 What is Matrix Factorization, and where is it used in Machine Learning?
 
 **Matrix factorization** decomposes a matrix $R$ ($m \times n$) into a product of lower-rank matrices, typically $R \approx U V^T$ with $U \in \mathbb{R}^{m\times k}$, $V \in \mathbb{R}^{n\times k}$ and $k \ll m,n$. Each row of $U$ and $V$ is a latent vector, and their dot product reconstructs an entry.
 
@@ -1289,7 +1135,7 @@ Both are ensemble methods that combine many weak/base learners, but they attack 
 
 **Tradeoffs:** it is fast, scalable and gives reusable embeddings, but has a **cold-start problem** (new users/items have no vector), is linear (dot-product interactions only), and implicit feedback (clicks) needs weighted variants (e.g. implicit ALS). In production, hybrid models (factorization machines, two-tower networks) add side features to solve cold start.
 
-### 9.61 Explain Pruning in Decision Trees and how it is done
+### 9.37 Explain Pruning in Decision Trees and how it is done
 
 **Pruning** reduces the size of a decision tree to stop it from memorizing noise. Fully grown trees have low bias and very high variance.
 
@@ -1313,24 +1159,7 @@ clf = DecisionTreeClassifier(ccp_alpha=best_alpha).fit(X_tr, y_tr)
 
 **Practical note:** inside ensembles, random forests usually use unpruned trees (bagging handles the variance), while gradient boosting uses shallow, pre-pruned trees. Pruning matters most when you need a single interpretable tree.
 
-### 9.62 What are kernels in SVM? Can you list some popular SVM kernels?
-
-A **kernel** is a function $K(x, x') = \langle \phi(x), \phi(x') \rangle$ that computes an inner product in a (possibly infinite-dimensional) feature space without computing $\phi$ explicitly. Because the SVM dual depends on the data only through dot products, swapping in a kernel lets a linear max-margin classifier learn **non-linear decision boundaries**. This is the kernel trick. A valid kernel must be positive semi-definite (Mercer's condition).
-
-**Popular kernels:**
-| Kernel | Formula | When to use |
-| --- | --- | --- |
-| Linear | $x^T x'$ | High-dimensional sparse data (text), many features; fastest |
-| Polynomial | $(\gamma x^T x' + r)^d$ | Feature interactions of degree $d$; can be numerically unstable for large $d$ |
-| RBF / Gaussian | $\exp(-\gamma \lVert x-x'\rVert^2)$ | Default for non-linear problems; $\gamma$ controls locality |
-| Sigmoid | $\tanh(\gamma x^T x' + r)$ | Neural-net-like; not always PSD, rarely best |
-| Others | Laplacian, chi-squared (histograms), string/graph kernels | Domain-specific data |
-
-**Practical tradeoffs:**
-- Kernel SVMs need $O(n^2)$ memory and $O(n^2)$–$O(n^3)$ training time, so they don't scale past roughly $10^5$ samples. For big data use a linear SVM, or approximate the kernel with random Fourier features or Nyström and then a linear model.
-- Tune $C$ and $\gamma$ jointly with grid search on a log scale, and **scale the features** first.
-
-### 9.63 What is the difference between Gini Impurity and Entropy? Which one is better and why?
+### 9.38 What is the difference between Gini Impurity and Entropy? Which one is better and why?
 
 Both measure node impurity for choosing splits in decision trees.
 
@@ -1348,7 +1177,7 @@ Both measure node impurity for choosing splits in decision trees.
 DecisionTreeClassifier(criterion="gini")      # or "entropy" / "log_loss"
 ```
 
-### 9.64 Can PCA be used to reduce the dimensionality of a highly nonlinear dataset?
+### 9.39 Can PCA be used to reduce the dimensionality of a highly nonlinear dataset?
 
 **Standard PCA will usually do poorly** on a highly non-linear dataset. PCA finds orthogonal *linear* directions of maximum variance. If the data lies on a curved manifold (a Swiss roll, concentric circles), the important structure isn't aligned with any linear subspace. PCA will either need many components or squash distinct regions on top of each other.
 
@@ -1364,7 +1193,7 @@ from sklearn.decomposition import KernelPCA
 X_k = KernelPCA(n_components=2, kernel="rbf", gamma=15).fit_transform(X)
 ```
 
-### 9.65 Once a dataset’s dimensionality has been reduced, is it possible to reverse the operation? If so, how? If not, why?
+### 9.40 Once a dataset’s dimensionality has been reduced, is it possible to reverse the operation? If so, how? If not, why?
 
 **Generally only approximately, and for some methods not at all.** Reducing dimensions throws information away, so an exact inverse is impossible unless the dropped components carried zero variance.
 
@@ -1382,7 +1211,7 @@ X_rec = pca.inverse_transform(pca.transform(X))
 err = ((X - X_rec) ** 2).mean(axis=1)
 ```
 
-### 9.66 Why do we always need the intercept term in a regression model?
+### 9.41 Why do we always need the intercept term in a regression model?
 
 The intercept $\beta_0$ is the predicted value when all features are 0. Without it, the regression line or hyperplane is **forced through the origin**, which is almost never justified.
 
@@ -1400,7 +1229,7 @@ The intercept $\beta_0$ is the predicted value when all features are 0. Without 
 
 Interpretation caveat: the intercept itself often has no practical meaning (age = 0, house size = 0). Centering features makes it the "average case" prediction.
 
-### 9.67 Why is Ridge Regression called Ridge?
+### 9.42 Why is Ridge Regression called Ridge?
 
 There are two complementary explanations.
 
@@ -1416,7 +1245,7 @@ Adding $\lambda I$ puts a constant "ridge" along the diagonal of $X^TX$. This li
 
 **Why it matters:** ridge trades a little bias for a large reduction in variance, keeps all features (no sparsity, unlike Lasso), and is the go-to when predictors are highly correlated. Equivalent views: L2 regularization, a Gaussian prior on the weights (MAP), and weight decay in neural networks.
 
-### 9.68 Does it make any sense to chain two different dimensionality reduction algorithms?
+### 9.43 Does it make any sense to chain two different dimensionality reduction algorithms?
 
 **Yes, and it is common practice.** The typical pattern is a **cheap linear method first, then an expensive non-linear one**:
 
@@ -1439,7 +1268,7 @@ import umap
 reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 ```
 
-### 9.69 Is it possible to speed up training of a bagging ensemble by distributing it across multiple servers?
+### 9.44 Is it possible to speed up training of a bagging ensemble by distributing it across multiple servers?
 
 **Yes. Bagging is embarrassingly parallel.** Each base model is trained independently on its own bootstrap sample, so there are no dependencies between estimators during training.
 
@@ -1456,7 +1285,7 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 - If workers sample from different data partitions, bootstrap samples are no longer drawn from the full dataset. That is usually fine with i.i.d. shuffled partitions.
 - Out-of-bag (OOB) evaluation requires tracking which rows each tree saw.
 
-### 9.70 If a Decision Tree is underfitting the training set, is it a good idea to try scaling the input features?
+### 9.45 If a Decision Tree is underfitting the training set, is it a good idea to try scaling the input features?
 
 **No.** Decision trees are **invariant to monotonic feature scaling**. A split asks "is $x_j \le t$?", and scaling $x_j$ (standardization, min-max, even a log transform) just moves the threshold $t$. The ordering of samples, and therefore the partitions and impurity reductions, stays exactly the same. Scaling won't change the tree at all, apart from floating-point ties.
 
@@ -1468,7 +1297,7 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 
 **When scaling does matter:** distance- or gradient-based models such as KNN, SVM, linear and logistic regression with regularization, neural networks, PCA and k-means. In a mixed pipeline (e.g. trees stacked with logistic regression) you scale for the other models, not for the tree.
 
-### 9.71 Say you trained an SVM classifier with an RBF kernel. It seems to underfit the training set: should you increase or decrease γ (gamma)? What about C?
+### 9.46 Say you trained an SVM classifier with an RBF kernel. It seems to underfit the training set: should you increase or decrease γ (gamma)? What about C?
 
 **Increase $\gamma$ and increase $C$.** Both reduce regularization and make the model more complex.
 
@@ -1491,7 +1320,7 @@ grid = GridSearchCV(make_pipeline(StandardScaler(), SVC(kernel="rbf")),
                     {"svc__C": [0.1, 1, 10, 100], "svc__gamma": [1e-3, 1e-2, 0.1, 1]}, cv=5)
 ```
 
-### 9.72 How do we interpret weights in linear models?
+### 9.47 How do we interpret weights in linear models?
 
 In a linear model $\hat y = \beta_0 + \sum_j \beta_j x_j$, the weight $\beta_j$ is **the expected change in the prediction for a one-unit increase in $x_j$, holding all other features constant**.
 
@@ -1511,7 +1340,7 @@ In a linear model $\hat y = \beta_0 + \sum_j \beta_j x_j$, the weight $\beta_j$ 
 
 For complex models, SHAP or partial dependence give comparable per-feature effect interpretations.
 
-### 9.73 Why is it important to scale the inputs when using SVMs?
+### 9.48 Why is it important to scale the inputs when using SVMs?
 
 SVMs maximize the **geometric margin**, which is measured with Euclidean distances in feature space. If one feature ranges from 0 to 100,000 (income) and another from 0 to 1 (a ratio), the large-scale feature dominates the distances and the margin. The SVM effectively ignores the small-scale features and finds a poor boundary.
 
@@ -1535,11 +1364,11 @@ clf = make_pipeline(StandardScaler(), SVC(kernel="rbf", C=1, gamma="scale"))
 
 Tree-based models, by contrast, don't need scaling.
 
-### 9.74 What is OvR and OvO for multiclass classification, and which machine learning algorithm supports this
+### 9.49 What is OvR and OvO for multiclass classification, and which machine learning algorithms use them?
 
 These are two strategies for turning **binary classifiers into multiclass classifiers**.
 
-**One-vs-Rest (OvR, a.k.a. One-vs-All):**
+**One-vs-Rest (OvR, also called One-vs-All):**
 - Train $K$ binary classifiers, each separating one class from all others.
 - Predict the class whose classifier gives the highest score or probability.
 - **Pros:** only $K$ models, simple. **Cons:** each model trains on the full dataset, it creates artificial class imbalance (1 vs $K-1$), and the scores from different models may not be calibrated against each other.
@@ -1547,7 +1376,7 @@ These are two strategies for turning **binary classifiers into multiclass classi
 **One-vs-One (OvO):**
 - Train a classifier for every pair of classes: $K(K-1)/2$ models.
 - Predict by majority voting (ties broken by confidence).
-- **Pros:** each model trains only on two classes' data (small and balanced), which suits algorithms that scale badly with $n$. **Cons:** the number of models grows quadratically (100 classes → 4,950 models).
+- **Pros:** each model trains only on two classes' data (small and balanced), which suits algorithms that scale badly with $n$. **Cons:** the number of models grows quadratically (100 classes give 4,950 models).
 
 **Which algorithms use which:**
 - **SVMs** are inherently binary. scikit-learn's `SVC` uses **OvO** internally (kernel SVMs scale superlinearly in $n$, so small pairwise problems are cheaper). `LinearSVC` uses **OvR**.
@@ -1555,13 +1384,15 @@ These are two strategies for turning **binary classifiers into multiclass classi
 - **Perceptron, SGDClassifier:** OvR.
 - **Natively multiclass, no wrapper needed:** decision trees, random forests, gradient boosting (one tree per class per round, softmax), KNN, Naive Bayes, neural networks (softmax output).
 
+**Multilabel is different:** when one sample can have several labels at once (an image tagged "dog", "outdoor" and "beach"), train one independent binary classifier per label (binary relevance, `MultiOutputClassifier`) or a classifier chain that feeds earlier label predictions into later ones. OvR picks one winner; multilabel thresholds each label separately.
+
 ```python
 from sklearn.multiclass import OneVsRestClassifier, OneVsOneClassifier
 OneVsRestClassifier(LogisticRegression()).fit(X, y)
 OneVsOneClassifier(SVC()).fit(X, y)
 ```
 
-### 9.75 What are some advantages and Disadvantages of regression models and tree-based models?
+### 9.50 What are some advantages and Disadvantages of regression models and tree-based models?
 
 **Regression (linear/logistic) models**
 
@@ -1595,38 +1426,7 @@ OneVsOneClassifier(SVC()).fit(X, y)
 
 **Rule of thumb:** start with a regularized linear baseline for interpretability and sanity, move to GBMs for maximum tabular accuracy, and use a hybrid (linear model plus tree-engineered features, or GBM with monotonic constraints) when you need both.
 
-### 9.76 What are some important hyperparameters for XGBOOST
-
-Group them by what they control:
-
-**Boosting process**
-- `n_estimators` (number of rounds) and `learning_rate` / `eta` (0.01–0.3). They trade off: a lower learning rate needs more trees but generalizes better. Use **early stopping** (`early_stopping_rounds`) on a validation set instead of fixing the tree count.
-
-**Tree complexity (main overfitting controls)**
-- `max_depth` (typically 3–10): depth of each tree, i.e. the order of interactions.
-- `min_child_weight`: minimum sum of instance weights (hessian) in a leaf. Higher is more conservative.
-- `gamma` / `min_split_loss`: minimum loss reduction needed to make a split.
-- `max_leaves`, `grow_policy` (depthwise vs lossguide).
-
-**Randomness (variance reduction)**
-- `subsample` (row sampling per tree, 0.5–1.0).
-- `colsample_bytree`, `colsample_bylevel`, `colsample_bynode` (feature sampling).
-
-**Regularization**
-- `reg_lambda` (L2 on leaf weights, default 1) and `reg_alpha` (L1 on leaf weights).
-
-**Problem-specific**
-- `objective` (e.g. `binary:logistic`, `reg:squarederror`, `rank:ndcg`) and `eval_metric`.
-- `scale_pos_weight` for class imbalance ($\approx \text{negatives} / \text{positives}$).
-- `max_delta_step`: helps logistic regression with extreme imbalance.
-- `monotone_constraints`, `interaction_constraints` for domain knowledge or regulation.
-
-**System**
-- `tree_method="hist"` (fast, and `device="cuda"` for GPU), `max_bin`, `n_jobs`.
-
-**Tuning recipe:** fix a moderately high learning rate (0.1) with early stopping, then tune `max_depth` and `min_child_weight`, then `gamma`, then the subsample and colsample parameters, then the regularization, and finally lower the learning rate and raise the rounds. Use Optuna or Bayesian search with CV.
-
-### 9.77 List some of the drawbacks of a Linear model
+### 9.51 List some of the drawbacks of a Linear model
 
 **Drawbacks of linear models (linear/logistic regression):**
 
@@ -1641,27 +1441,7 @@ Group them by what they control:
 
 **Why they're still used:** fast, cheap, highly interpretable, robust with little data, easy to regularize (Ridge/Lasso) and to deploy. In production they're often a strong baseline, a calibrated scoring layer, or the model of choice in regulated domains (credit scoring) where explainability outweighs a few points of accuracy.
 
-### 9.78 Explain the kernel trick in SVM
-
-An SVM's dual formulation and decision function only use **dot products** between data points:
-
-$$
-f(x) = \operatorname{sign}\left(\sum_i \alpha_i y_i \langle x_i, x\rangle + b\right)
-$$
-
-If the data isn't linearly separable, we could map it to a higher-dimensional space $\phi(x)$ where it is, and then compute $\langle \phi(x_i), \phi(x)\rangle$. The **kernel trick** replaces that dot product with a kernel function $K(x_i, x) = \langle \phi(x_i), \phi(x)\rangle$ computed directly in the original space, so we **never construct $\phi(x)$ explicitly**.
-
-**Example:** for $x \in \mathbb{R}^2$, the polynomial kernel $K(x,z) = (x \cdot z)^2$ equals the dot product of the explicit features $(x_1^2, \sqrt{2}\thinspace x_1 x_2, x_2^2)$. The RBF kernel $K(x,z)=\exp(-\gamma\lVert x-z\rVert^2)$ corresponds to an **infinite-dimensional** feature space, which would be impossible to compute explicitly.
-
-**Requirements:** $K$ must be a valid (positive semi-definite, Mercer) kernel.
-
-**Tradeoffs:**
-
-- Lets a linear algorithm learn nonlinear boundaries cheaply.
-- Training needs the $n \times n$ kernel matrix, so cost is roughly $O(n^2)$ to $O(n^3)$; kernel SVMs don't scale well past ~100k samples. In practice, use linear SVMs, random Fourier features / Nystrom approximations, or gradient boosting / neural nets at scale.
-- Kernel choice and hyperparameters ($\gamma$, $C$) need tuning.
-
-### 9.79 What is the difference between a Gaussian Mixture Model and the K-Means Algorithm?
+### 9.52 What is the difference between a Gaussian Mixture Model and the K-Means Algorithm?
 
 Both cluster data into $k$ groups, but GMM is a probabilistic generalization of k-means.
 
@@ -1688,7 +1468,7 @@ gmm = GaussianMixture(n_components=4, covariance_type="full").fit(X)
 probs = gmm.predict_proba(X)
 ```
 
-### 9.80 How to select K for K-means?
+### 9.53 How to select K for K-means?
 
 $k$ is a hyperparameter, so you combine quantitative criteria with domain sense:
 
@@ -1710,25 +1490,177 @@ best_k = max(scores, key=scores.get)
 
 **Caveats:** scale features first; k-means assumes roughly spherical clusters, so if no $k$ looks good, the issue may be the algorithm (try DBSCAN/HDBSCAN or GMM) rather than $k$.
 
-### 9.81 List all types of popular recommendation systems?
+### 9.54 How do XGBoost, LightGBM and CatBoost differ internally, and how do you choose between them?
 
-**Main families of recommendation systems:**
+All three implement gradient-boosted decision trees with second-order (gradient and Hessian) leaf estimates and similar regularisation, so on most problems their tuned accuracy is close. They differ in **how trees are grown, how splits are found and how categorical features are handled**, which drives speed, memory and behaviour on small or categorical-heavy data.
 
-1. **Popularity / rule-based:** trending or best-selling items. Simple, strong baseline, solves cold start, but not personalized.
-2. **Content-based filtering:** recommend items similar to what the user liked, using item features (genre, text, embeddings). Works for new items; tends to over-specialize (filter bubble).
-3. **Collaborative filtering (CF):** uses user-item interactions only.
-   - **Memory-based:** user-user or item-item similarity (Amazon's "people who bought this also bought").
-   - **Model-based:** matrix factorization (SVD, ALS), factorization machines.
-   - Suffers from cold start and sparsity.
-4. **Hybrid systems:** combine content and CF (weighted, switching, or feature-level), e.g. Netflix.
-5. **Deep learning recommenders:** two-tower models (user/item embeddings for retrieval), Wide & Deep, DLRM, neural CF, autoencoders.
-6. **Sequential / session-based:** model the order of interactions with RNNs or Transformers (GRU4Rec, SASRec, BERT4Rec); good for anonymous sessions and next-item prediction.
-7. **Knowledge-based / constraint-based:** use explicit requirements and domain rules (real estate, cars, financial products) where interactions are rare.
-8. **Graph-based:** GNNs over user-item graphs (PinSage, LightGCN).
-9. **Context-aware and RL/bandit-based:** use time, device, location; contextual bandits balance exploration vs. exploitation.
-10. **LLM-based / conversational recommenders:** generate or rerank recommendations from natural-language preferences.
+**Side-by-side**
 
-**Production architecture:** multi-stage: **candidate generation** (two-tower ANN retrieval, CF, popularity) → **ranking** (gradient boosting or deep model on rich features) → **re-ranking** for diversity, freshness, business rules. Evaluate offline with precision@k, recall@k, NDCG, MAP and online with A/B tests on CTR, conversion, retention.
+| Aspect | XGBoost | LightGBM | CatBoost |
+| --- | --- | --- | --- |
+| Tree growth | Level-wise (depth-wise) by default; `lossguide` optional | **Leaf-wise** (best-first): always split the leaf with the largest gain | **Symmetric (oblivious) trees**: the same split condition across a whole level |
+| Split finding | Exact greedy or **histogram** (`hist`, the modern default) | Histogram-based, plus GOSS and EFB | Histogram-based on quantised features |
+| Categorical features | Native support with `hist` (newer versions); otherwise encode | Native: sorts categories by gradient statistics to find a good partition | **Ordered target statistics**: target encoding computed on a random permutation using only "earlier" rows |
+| Leakage control | Standard | Standard | **Ordered boosting** to avoid prediction shift |
+| Missing values | Learned default direction | Learned default direction | Treated as min or max by default |
+| Speed | Fast, strong GPU support | Usually fastest on CPU for large data | Slower to train on CPU, fast GPU, very fast inference |
+| Defaults | Need some tuning | Need care with `num_leaves` on small data | Strong out of the box |
+
+**Key mechanisms explained**
+
+- **Histogram splits:** each feature is bucketed into up to `max_bin` bins (255 by default) once. Split search then scans bins instead of sorted values, cutting cost from roughly $O(n)$ to $O(\text{bins})$ per feature and node, and the histogram of one child can be obtained by subtracting the sibling's from the parent's.
+- **Leaf-wise growth:** reaches lower training loss with the same number of leaves, but grows deep, unbalanced trees that overfit small data sets. Control it with `num_leaves` (keep it well below $2^{\text{max depth}}$), `min_data_in_leaf` and `max_depth`.
+- **GOSS (gradient-based one-side sampling):** keep all rows with large gradients, randomly sample the rows with small gradients and up-weight them, so the split statistics stay roughly unbiased while using fewer rows.
+- **EFB (exclusive feature bundling):** sparse features that are rarely non-zero together (for example one-hot columns) are bundled into one feature, reducing the effective feature count.
+- **Ordered boosting:** in standard boosting, the gradient for a row is computed by a model that was trained on that same row, so residuals on training data are biased compared with unseen data. CatBoost maintains models trained on prefixes of a random permutation and computes each row's residual from a model that has not seen it. The same idea, applied to target encoding, prevents the leakage that naive mean encoding causes (see 10.6).
+- **Oblivious trees:** every node at a given depth uses the same feature and threshold, so a tree is a lookup table indexed by $d$ binary tests. This acts as regularisation and makes inference very fast and branch-free.
+
+**How to choose**
+
+- **Many high-cardinality categorical features, small to medium data, little tuning time:** CatBoost.
+- **Very large data (tens of millions of rows), training speed and memory matter:** LightGBM.
+- **Mature ecosystem, distributed training (Spark, Dask), GPU, broad deployment tooling:** XGBoost.
+- **Inside scikit-learn without extra dependencies:** `HistGradientBoostingClassifier`, which follows the LightGBM design.
+
+**Practical guidance**
+
+- Benchmark two of them with the same validation split and early stopping; differences are often within noise, so pick on operational grounds (serving format, latency, team familiarity).
+- Leaf-wise growth plus a high `num_leaves` on 10,000 rows is a common cause of overfitting in LightGBM.
+- Native categorical handling can overfit rare categories; set minimum counts or smoothing.
+- Check inference format: all three export to ONNX or have native C APIs, and Treelite can compile XGBoost and LightGBM models for low-latency serving.
+
+**What interviewers look for:** that you know the libraries are close in accuracy, can explain histogram splits, leaf-wise growth and ordered boosting in a sentence each, and choose based on data shape and operations rather than habit.
+
+### 9.55 How do you interpret tree ensembles with feature importance and SHAP, and what are the pitfalls?
+
+Tree ensembles offer several importance measures, and they answer different questions. Impurity-based importance is cheap but biased, permutation importance measures dependence of the score on a feature, and SHAP gives additive per-prediction attributions. All of them explain **the model**, not the real world, and all of them struggle with correlated features.
+
+**The main tools**
+
+| Method | What it measures | Scope | Main weakness |
+| --- | --- | --- | --- |
+| Impurity (gain) importance | Total loss reduction from splits on the feature | Global | Biased towards continuous and high-cardinality features; computed on training data, so it rewards overfitting |
+| Split count | How often a feature is used | Global | Ignores how useful each split is |
+| Permutation importance | Drop in validation score when the feature is shuffled | Global | Shuffling correlated features creates unrealistic rows; correlated features share and hide importance |
+| SHAP (TreeSHAP) | Shapley-value contribution of each feature to one prediction relative to a baseline | Local and global | Credit splitting under correlation; depends on baseline and output scale |
+| Partial dependence and ICE | Average and per-row prediction as one feature varies | Global and local | Misleading when features are correlated |
+| ALE plots | Local effect within realistic ranges | Global | Harder to explain to stakeholders |
+
+**How SHAP works for trees**
+
+- Shapley values from cooperative game theory distribute the difference between a prediction and the average prediction among the features, satisfying additivity: $f(x) = \phi_0 + \sum_j \phi_j$.
+- TreeSHAP computes them exactly for tree ensembles in polynomial time rather than over all $2^d$ feature subsets.
+- Global importance is the mean absolute SHAP value; beeswarm plots show direction and spread; SHAP interaction values separate pairwise effects.
+
+```python
+import shap
+explainer = shap.TreeExplainer(model)            # exact for tree models
+sv = explainer(X_valid)                          # explain held-out data, not training data
+shap.plots.beeswarm(sv)                          # global view with direction
+shap.plots.waterfall(sv[0])                      # reason codes for one prediction
+```
+
+**Pitfalls**
+
+1. **Correlated features:** with two near-duplicate features the model may use either, and credit is split arbitrarily between them. Neither looks important on its own, and dropping one changes the other's importance. Group correlated features before interpreting, or compute grouped permutation importance.
+2. **Path-dependent versus interventional SHAP:** the default tree path method respects the data's correlations as seen in the trees; the interventional method (with a background data set) breaks them. They can give different answers; choose deliberately and state which you used.
+3. **Output scale:** for classifiers SHAP values are usually in log-odds, not probability; translating them to "percentage points" in a business deck is wrong.
+4. **Not causal:** a high SHAP value for "number of support calls" in a churn model does not mean reducing calls reduces churn. For intervention questions use causal methods (see Chapter 32).
+5. **Leakage shows up as importance:** a feature with suspiciously dominant importance is often a leak (see 12.33).
+6. **Instability:** importances can change a lot between retrains or seeds; look at rankings across bootstraps before acting.
+7. **Training versus held-out data:** compute importance on validation data; training-set importance reflects memorisation.
+8. **Explanations can be gamed or misleading** for adversarial or out-of-distribution inputs; they are approximations, not proofs.
+
+**When explanations must be reliable** (credit, insurance, healthcare), prefer models that are interpretable by construction or constrained: monotonic constraints in gradient boosting, explainable boosting machines or GAMs, or a scorecard. Use SHAP for reason codes, but validate that they agree with domain knowledge (see 30.44).
+
+**What interviewers look for:** knowing why default `feature_importances_` can mislead, what SHAP does and does not tell you, and how you would explain a decision to a regulator.
+
+### 9.56 Which anomaly detection algorithms are there, how do they compare, and how do you choose one?
+
+Anomaly detection finds observations that do not fit the normal pattern. Because labelled anomalies are rare, most methods are unsupervised or semi-supervised: they model "normal" and score how far each point is from it. The right algorithm depends on the data type (tabular, time series, high-dimensional), whether any labels exist and whether you need explanations. See 8.23 for the basic definition.
+
+**Algorithm families**
+
+| Method | Idea | Strengths | Weaknesses |
+| --- | --- | --- | --- |
+| Robust statistics (z-score, median absolute deviation, IQR) | Distance from a robust centre per feature | Simple, explainable, fast | Univariate; misses unusual combinations |
+| Isolation Forest | Random splits isolate anomalies in fewer steps; score is average path length | Fast, scales, handles many features, little tuning | Struggles with local anomalies in dense regions; axis-aligned splits |
+| Local Outlier Factor (LOF) | Compares a point's local density with its neighbours' | Finds local anomalies between clusters of different density | $O(n^2)$ without indexing; sensitive to k and scaling |
+| k-NN distance | Distance to the k-th nearest neighbour | Simple, strong baseline | Slow on large data; curse of dimensionality |
+| One-class SVM | Learns a boundary around normal data | Works with kernels on medium data | Hard to tune, does not scale, sensitive to scaling |
+| Gaussian mixture or density models | Low likelihood under a fitted density | Probabilistic score | Assumes a distributional shape |
+| PCA or autoencoder reconstruction | Points the model cannot reconstruct are unusual | Handles correlated, high-dimensional data, images, sensors | Can learn to reconstruct anomalies too; threshold needs care |
+| Forecast residuals (time series) | Large deviation from a seasonal forecast | Handles trend and seasonality | Needs a good forecaster; level shifts confuse it |
+| Supervised classifier | Trained on labelled fraud or failures | Most accurate when labels exist | Labels are scarce, delayed and biased; misses new patterns |
+
+**How to choose**
+
+- **Tabular data, no labels, need a fast first model:** Isolation Forest, compared with a robust-statistics baseline.
+- **Clusters of different density:** LOF or k-NN distance.
+- **High-dimensional sensors, images or logs:** autoencoder or PCA reconstruction error.
+- **Time series:** decompose or forecast, then score residuals (see 32.34).
+- **Some labels available:** use them to choose and threshold the unsupervised score, then move to a supervised or semi-supervised model as labels accumulate; combine both, since supervised models catch known patterns and unsupervised ones catch new ones.
+
+**Evaluation and thresholds**
+
+- With few labels, use precision at k (the top alerts analysts can review) and PR-AUC, not accuracy or ROC-AUC.
+- The threshold is a capacity decision: if analysts can review 200 alerts a day, set the threshold to produce about 200. The `contamination` parameter in scikit-learn only sets this cut-off, it does not improve the model.
+- Base rates make most alerts false positives even for good models (see 9.30), so measure alert precision explicitly.
+
+```python
+import numpy as np
+from sklearn.ensemble import IsolationForest
+iso = IsolationForest(n_estimators=300, contamination="auto", random_state=0).fit(X_train)
+scores = -iso.score_samples(X_new)               # higher means more anomalous
+alerts = X_new[scores >= np.quantile(scores, 0.995)]   # top 0.5 percent for review
+```
+
+**Production pitfalls**
+
+- "Normal" drifts (seasonality, product launches), so retrain or use rolling baselines.
+- Unscaled features dominate distance-based methods.
+- An anomaly score without an explanation is hard to act on; attach the top contributing features.
+- Feedback from analysts is the most valuable label source; capture it.
+
+System-level designs are in 28.20, 28.23 and 29.40.
+
+### 9.57 How do you approach a new tabular prediction problem in practice, and when is gradient boosting not the right choice?
+
+For most structured, tabular problems the winning recipe is a careful validation design, a simple baseline, then a tuned gradient boosting model with good features. Most of the real gains come from the validation split, leakage control and features, not from the algorithm choice. This question is the hands-on workflow; see 8.47 for general algorithm selection and 13.90 for trees versus deep learning.
+
+**Workflow**
+
+1. **Frame the decision:** what action the prediction drives, the cost of each error type, and the metric that reflects it (see 12.11).
+2. **Design validation to mirror production:** time-based splits when the future is predicted from the past, grouped splits when the same customer or patient appears many times. A random split on such data gives optimistic results that disappear in production.
+3. **Check for leakage:** features that are only known after the prediction time, IDs that encode the label, aggregates computed over the whole data set (see 8.39 and 10.30).
+4. **Baselines:** majority class or last value, then a regularised linear model. If gradient boosting cannot beat it clearly, the problem is the data.
+5. **Gradient boosting with defaults** (LightGBM, XGBoost or CatBoost) and early stopping.
+6. **Feature engineering:** aggregates over time windows, ratios, recency and frequency, domain features. This usually beats hyperparameter tuning.
+7. **Tune** a few key parameters with Bayesian search (see 9.9), keeping the same validation design.
+8. **Calibrate** if decisions use probabilities, choose thresholds from business costs, check performance on important segments.
+9. **Explain and constrain:** SHAP reason codes, monotonic constraints where the domain requires them.
+10. **Productionise:** same feature code for training and serving (see 10.34), monitoring for drift and performance.
+
+**When something other than gradient boosting is better**
+
+| Situation | Better choice | Why |
+| --- | --- | --- |
+| Very small data (hundreds of rows) | Regularised linear model, or a tabular foundation model such as TabPFN | Trees overfit; strong priors help |
+| Need to extrapolate beyond the training range (trends, prices) | Linear model, or linear trend plus boosting on residuals | Trees predict a constant outside the seen range |
+| Very wide sparse data (text, millions of one-hot columns) | Linear model or factorisation machine | Trees split on one sparse feature at a time |
+| Regulation demands a transparent model | Scorecard, GAM or explainable boosting machine | Inspectable by construction |
+| Rows also contain text, images or long sequences | Neural network, or embeddings fed into boosting | Representation learning |
+| Very large data with many categorical IDs and online updates | Deep models with embeddings (as in recommenders) | Scale and continual training |
+| Strict latency on tiny devices | Small tree or linear model | Hundreds of trees cost memory and time |
+
+**Common mistakes**
+
+- Tuning heavily on a validation split that does not match production.
+- Treating a 0.002 AUC gain as real without checking variance across folds (see 12.34).
+- Ignoring calibration and thresholds, so a better AUC gives no business gain.
+- Skipping the linear baseline, which hides that the signal is weak.
+
+**What interviewers look for:** a validation-first mindset, a default you can justify (gradient boosting), and the judgement to recognise when the default is wrong.
 
 ---
 
