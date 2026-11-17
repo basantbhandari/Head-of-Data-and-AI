@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,835 interview questions with worked answers, in 32 chapters across 7 parts._
+_1,840 interview questions with worked answers, in 32 chapters across 7 parts._
 
 Last updated 2026-11-17.
 
@@ -96,9 +96,9 @@ _Taking data and AI systems to production: services, operations, infrastructure,
 | 26. [MLOps and LLMOps](part-5-production-systems/26-mlops-and-llmops.md) | 88 |
 | 27. [AI Infrastructure and Inference Optimization](part-5-production-systems/27-ai-infrastructure-and-inference-optimization.md) | 62 |
 | 28. [Machine Learning System Design](part-5-production-systems/28-machine-learning-system-design.md) | 37 |
-| 29. [Generative AI System Design](part-5-production-systems/29-generative-ai-system-design.md) | 49 |
+| 29. [Generative AI System Design](part-5-production-systems/29-generative-ai-system-design.md) | 54 |
 | 30. [AI Safety, Security and Responsible AI](part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) | 56 |
-| **Part total** | **329** |
+| **Part total** | **334** |
 
 ### Part VI — Professional Practice
 
@@ -118,4 +118,4 @@ _Causal inference, recommender systems and forecasting: the applied methods behi
 | 32. [Causal Inference, Recommender Systems and Forecasting](part-7-applied-data-science/32-causal-inference-recommender-systems-and-forecasting.md) | 36 |
 | **Part total** | **36** |
 
-**Total: 1,835 questions.**
+**Total: 1,840 questions.**

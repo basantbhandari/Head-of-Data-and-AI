@@ -1187,6 +1187,8 @@ A ViT encoder works at a fixed input size. At 336 × 336 pixels with 14-pixel pa
 
 ### 23.33 How would you design a real-time voice agent?
 
+**See also:** 29.44 designs an AI voice assistant architecture end to end.
+
 **Clarify:** for example, a phone or app voice assistant for customer service. Requirements: natural conversation, handling interruptions, tool use (look up orders, book appointments), and **low voice-to-voice latency**. Humans expect responses within a few hundred milliseconds of finishing a turn; above roughly one second the conversation feels slow.
 
 **Two architectures**
@@ -1329,6 +1331,8 @@ Multimodal models read instructions not only from text but also from **images, d
 **Evaluation:** intersection over union (IoU) against ground-truth boxes, accuracy at an IoU threshold (for example 0.5), and for agents, click success rate on real interfaces.
 
 ### 23.38 Design a meeting transcription and summarisation system.
+
+**See also:** 29.38 designs an AI meeting summariser that runs at the scale of thousands of meetings a day.
 
 **Clarify:** recorded or live meetings (video calls, phone calls, in-room audio), several speakers, multiple languages possible. Outputs: transcript with speaker labels and timestamps, summary, decisions and action items with owners, searchable archive. Privacy and consent are central.
 

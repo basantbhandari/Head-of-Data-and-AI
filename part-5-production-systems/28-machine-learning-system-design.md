@@ -148,6 +148,8 @@ Inventory (friends' posts + recommended pool via two-tower retrieval)
 
 ### 28.5 Design a Machine Learning System for Harmful Content Detection.
 
+**See also:** 29.16 designs LLM-based content moderation.
+
 **Clarify:** posts with text, images and video. Harm classes include violence, hate, nudity, self-harm, spam and misinformation. Some classes need proactive detection before anyone sees the post. Billions of posts a day. Actions are remove, demote, or send to human review.
 
 **Framing:** multi-label classification, with a calibrated probability per harm class. Policies set the thresholds: high precision for automatic removal, and a lower threshold to route posts to human review. Labels come from human moderators, user reports (noisy) and appeals outcomes.
@@ -320,6 +322,8 @@ online: fetch precomputed candidates ─► refresh real-time features ─► ra
 
 ### 28.13 Design a Machine Learning Product Recommendation System for an e-commerce platform.
 
+**See also:** 29.17 designs a real-time AI recommendation system, and Chapter 32 covers recommender techniques.
+
 **Clarify:** surfaces are the homepage, product page ("similar"/"bought together") and cart. Catalogue of 10M+ SKUs, 100M users. The goals are GMV and conversion, with guardrails on returns.
 
 **Framing:** retrieval plus ranking. Labels: purchase (strong), add-to-cart, click and view, weighted by value. Multi-task heads for P(click), P(add to cart) and P(purchase), because purchases are sparse.
@@ -343,6 +347,8 @@ online: fetch precomputed candidates ─► refresh real-time features ─► ra
 **Pitfalls:** popularity bias and long-tail coverage (reserve exploration traffic, for example with bandits), cold-start items and users (content embeddings, popularity by segment, onboarding preferences), seasonality, and the feedback loop with promotions. Offline metrics only shortlist models; the decision comes from online A/B tests on conversion, GMV and retention.
 
 ### 28.14 How would you build a system to detect fraudulent transactions?
+
+**See also:** 29.20 covers where LLMs add value in fraud detection.
 
 **Clarify:** card or payment transactions scored in real time (under 50 ms) before authorisation. Decisions: approve, decline, or step-up (3DS/OTP). Fraud base rate is about 0.1%. The costs are asymmetric: fraud loss versus declining a good customer.
 
@@ -668,6 +674,8 @@ event pipeline (Kafka ─► lakehouse) ─► metric definitions (semantic laye
 
 ### 28.28 Design a dynamic pricing system.
 
+**See also:** 29.42 designs an AI dynamic pricing engine from the generative AI angle.
+
 **Clarify:** for example, nightly prices for a hotel or short-term rental marketplace, or prices for a retailer's catalogue. The objective is usually revenue or margin, subject to constraints: price bounds, fairness and legal limits, competitor parity, and brand perception. Hosts or merchants may accept or override suggestions.
 
 **Framing:** two parts.
@@ -765,6 +773,8 @@ history + features ─► global GBDT (LightGBM) with lag, rolling and calendar 
 **Pitfalls:** long label delay (12 months), so monitor early delinquency proxies; economic cycles shifting default rates; proxy discrimination through features like postcode; and features that applicants can easily manipulate.
 
 ### 28.32 Design a notification and push ranking system.
+
+**See also:** 29.39 designs LLM-based notification prioritisation.
 
 **Clarify:** an app with many notification types (social activity, recommendations, reminders, promotions). The goal is long-term engagement and retention, not opens today. Too many notifications cause users to disable notifications or uninstall the app, which is a permanent loss.
 
