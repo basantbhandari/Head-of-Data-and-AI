@@ -1360,7 +1360,7 @@ Choosing a classifier is a mix of constraints and experiments:
 
 ### 8.87 How would you differentiate between multi-label and multi-class classification?
 
-**Multi-class:** each sample belongs to **exactly one** of $K > 2$ mutually exclusive classes.
+**Multi-class:** each sample belongs to **exactly one** of $K \gt 2$ mutually exclusive classes.
 Example: classifying a digit as 0–9, or a ticket as Billing / Technical / Sales.
 
 - Output layer: $K$ units with **softmax** (probabilities sum to 1); predict the argmax.
@@ -1783,13 +1783,13 @@ A generative model tries to understand **how the data is generated**.
 For classification, it can learn:
 
 $$
-P(X \mid Y)\,P(Y)
+P(X \mid Y)\thinspace P(Y)
 $$
 
 and then use Bayes' rule:
 
 $$
-P(Y \mid X) = \frac{P(X \mid Y)\,P(Y)}{P(X)}
+P(Y \mid X) = \frac{P(X \mid Y)\thinspace P(Y)}{P(X)}
 $$
 
 **Example:** Naive Bayes learns what spam and non-spam emails look like, then estimates whether a new email is spam.

@@ -771,7 +771,7 @@ $$
 $$
 
 $$
-\operatorname{MultiHead}(X) = \operatorname{Concat}(\text{head}_1, \ldots, \text{head}_h)\,W_O
+\operatorname{MultiHead}(X) = \operatorname{Concat}(\text{head}_1, \ldots, \text{head}_h)\thinspace W_O
 $$
 
 ##### Why Multiple Heads?
@@ -827,7 +827,7 @@ In practice, multi-head attention tends to produce more stable and higher-qualit
 
 - **Feed-Forward Network (FFN)** is the **non-linear transformation layer** inside each Transformer block.
 - It processes each token **independently** after self-attention.
-- Typical structure: $\text{FFN}(x) = W_2\,\sigma(W_1 x + b_1) + b_2$
+- Typical structure: $\text{FFN}(x) = W_2\thinspace \sigma(W_1 x + b_1) + b_2$
 - It usually **expands → activates → compresses** the hidden representation.
 - **Attention:** mixes information **between tokens**.
 - **FFN:** transforms and enriches **each token's representation**.
@@ -1481,7 +1481,7 @@ GQA sits between two extremes:
 
 1. **Multi-Head Attention (MHA)**: $h$ query heads, $h$ key heads, $h$ value heads. Maximum expressiveness, maximum KV cache size.
 2. **Multi-Query Attention (MQA)**: $h$ query heads, but only **1** shared key head and **1** shared value head. Minimal KV cache, but can lose some quality since all query heads are forced to share the same keys/values.
-3. **Grouped-Query Attention (GQA)**: $h$ query heads are split into $g$ groups, and each group shares a single set of key/value heads. So instead of $h$ KV heads (MHA) or 1 KV head (MQA), you have $g$ KV heads, where $1 < g < h$.
+3. **Grouped-Query Attention (GQA)**: $h$ query heads are split into $g$ groups, and each group shares a single set of key/value heads. So instead of $h$ KV heads (MHA) or 1 KV head (MQA), you have $g$ KV heads, where $1 \lt g \lt h$.
 
 Concretely, if you have 32 query heads and set $g = 8$ groups, then every 4 query heads share one K/V head — reducing the KV cache size by 4x compared to full MHA, while still giving more diversity than MQA's single shared K/V.
 
@@ -1568,7 +1568,7 @@ Position-dependent rotation
 
 **3. No added parameters**
 
-- Learned positional embeddings add a full trainable embedding table ($\text{max\_seq\_len} \times d_{\text{model}}$ parameters)
+- Learned positional embeddings add a full trainable embedding table ($\text{max seq len} \times d_{\text{model}}$ parameters)
 - RoPE requires no extra learned parameters — it's a fixed mathematical transformation applied at attention time
 
 **4. Compatible with efficient attention mechanisms**
@@ -2836,13 +2836,13 @@ $S_t \rightarrow A_t \rightarrow R_{t+1}, S_{t+1}$
 
 For Q-learning:
 
-$Q^*(s,a)$
+$Q^{\ast}(s,a)$
 
 represents the **maximum expected cumulative future reward** starting from state $s$, taking action $a$, and then behaving optimally.
 
 The action is selected using:
 
-$a^* = \arg\max_a Q^*(s,a)$
+$a^{\ast} = \arg\max_a Q^{\ast}(s,a)$
 
 **Examples:** Q-Learning, DQN.
 
@@ -3536,8 +3536,8 @@ $$
 
 - Dividing logits by temperature $T$ before softmax reshapes the probability distribution
 - **$T = 1$**: standard softmax, no change — probabilities reflect the model's raw confidence
-- **$T < 1$ (e.g., 0.2)**: sharpens the distribution — high-probability tokens become even more dominant, output becomes more deterministic/focused
-- **$T > 1$ (e.g., 1.5)**: flattens the distribution — probabilities become more uniform, output becomes more random/diverse
+- **$T \lt 1$ (e.g., 0.2)**: sharpens the distribution — high-probability tokens become even more dominant, output becomes more deterministic/focused
+- **$T \gt 1$ (e.g., 1.5)**: flattens the distribution — probabilities become more uniform, output becomes more random/diverse
 - **$T \to 0$**: approaches greedy decoding (always picks the single highest-probability token)
 
 **Practical effect:**
@@ -4383,7 +4383,7 @@ Instead of performing one attention operation, Transformers use multiple heads:
 
 $\text{head}_i = \operatorname{Attention}(XW_Q^i, XW_K^i, XW_V^i)$
 
-Then concatenate them: $\operatorname{MHA}(X) = \operatorname{Concat}(\text{head}_1, \ldots, \text{head}_h)\,W_O$
+Then concatenate them: $\operatorname{MHA}(X) = \operatorname{Concat}(\text{head}_1, \ldots, \text{head}_h)\thinspace W_O$
 
 Different heads can learn different relationships, such as syntax, semantic relationships, or long-range dependencies.
 
@@ -4498,7 +4498,7 @@ Instead of one attention over the full model width $d_{\text{model}}$, run $h$ a
 
 $$\text{head}_i = \operatorname{softmax}\left(\frac{(XW_i^Q)(XW_i^K)^\top}{\sqrt{d_k}}\right)XW_i^V$$
 
-$$\operatorname{MHA}(X) = \operatorname{Concat}(\text{head}_1, \dots, \text{head}_h)\,W^O$$
+$$\operatorname{MHA}(X) = \operatorname{Concat}(\text{head}_1, \dots, \text{head}_h)\thinspace W^O$$
 
 **Steps:**
 
@@ -4860,7 +4860,7 @@ Loss spikes come from a few causes that feed on each other. Logits (attention or
 | Cause | Symptom | Mitigation |
 | --- | --- | --- |
 | Attention logit growth | Attention entropy collapses to near one-hot, then divergence | QK-norm (LayerNorm/RMSNorm on Q and K before the dot product); logit soft-capping |
-| Output logit divergence | Softmax normaliser drifts, loss becomes NaN in low precision | z-loss $10^{-4}\,(\log Z)^2$; tied-embedding care |
+| Output logit divergence | Softmax normaliser drifts, loss becomes NaN in low precision | z-loss $10^{-4}\thinspace (\log Z)^2$; tied-embedding care |
 | Adam epsilon too large | Updates shrink as gradient RMS falls with scale; parameter norms grow | Lower $\epsilon$ (e.g. $10^{-15}$) |
 | Adam second-moment lag | Rare large gradients meet a stale $v_t$, producing huge updates | $\beta_2 = 0.95$, gradient clipping at 1.0 |
 | LR too high for width/depth | Spikes appear as the model is scaled up | Warmup, $\mu$P-style scaling, smaller LR for deeper models |
@@ -4932,7 +4932,7 @@ attn = (q @ k.transpose(-1, -2)) / d_head  # 1/d, not 1/sqrt(d)
 All three methods change how RoPE maps positions to rotation angles. After the change, a longer sequence produces angles the model has already seen in training. A short fine-tune (hundreds to a few thousand steps on long documents) then adapts the model. They differ in which RoPE frequencies they compress.
 
 **The underlying problem**
-RoPE rotates each dimension pair $i$ by angle $m\,\theta_i$, with $\theta_i = b^{-2i/d}$ and base $b$ (often 10,000). Past the training length $L$, the low-frequency dimensions reach angles never seen in training. Attention scores then become erratic, and perplexity explodes almost immediately.
+RoPE rotates each dimension pair $i$ by angle $m\thinspace \theta_i$, with $\theta_i = b^{-2i/d}$ and base $b$ (often 10,000). Past the training length $L$, the low-frequency dimensions reach angles never seen in training. Attention scores then become erratic, and perplexity explodes almost immediately.
 
 **1. Position Interpolation (Chen et al.)**
 - Map position $m$ to $m \cdot L/L'$, so a sequence of $L'$ tokens is squeezed into the trained range. The scale factor is $s = L'/L$.
@@ -5298,7 +5298,7 @@ The problem is **interference**. Many entries in each task vector are small, red
 **SLERP** (spherical linear interpolation) merges exactly two models by interpolating along the arc between their weight vectors rather than the straight line:
 
 $$
-\text{slerp}(\theta_0, \theta_1; t) = \frac{\sin((1-t)\Omega)}{\sin \Omega}\,\theta_0 + \frac{\sin(t\Omega)}{\sin \Omega}\,\theta_1
+\text{slerp}(\theta_0, \theta_1; t) = \frac{\sin((1-t)\Omega)}{\sin \Omega}\thinspace \theta_0 + \frac{\sin(t\Omega)}{\sin \Omega}\thinspace \theta_1
 $$
 
 Here $\Omega$ is the angle between the two weight vectors. Linear averaging of two nearly orthogonal high-dimensional vectors shrinks the norm, while SLERP preserves it. Tools apply it tensor by tensor and often vary $t$ across layers (for example, more of model A in attention, more of model B in MLPs). It falls back to linear interpolation when the vectors are nearly parallel.

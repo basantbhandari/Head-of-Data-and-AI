@@ -123,7 +123,7 @@ Without randomisation, causal estimates rest on assumptions that cannot be fully
 
 **2. Positivity (overlap)**
 
-- Every unit has a non-zero probability of receiving each treatment level: $0 < P(T = 1 \mid X) < 1$.
+- Every unit has a non-zero probability of receiving each treatment level: $0 \lt P(T = 1 \mid X) \lt 1$.
 - If some customer segments never receive the promotion, there is no data to estimate the effect for them.
 - Check by plotting propensity score distributions for treated and control groups; trim or restrict the population where overlap is poor.
 
@@ -662,7 +662,7 @@ The ranking stage scores a few hundred candidates with rich features. Two design
 | Model | Idea |
 | --- | --- |
 | Logistic regression with crosses | Hand-crafted feature crosses; strong, fast baseline |
-| Factorisation machines (FM) | Every pair of features interacts through the dot product of learned embeddings: $\sum_{i<j} \langle v_i, v_j \rangle x_i x_j$; handles sparse data well |
+| Factorisation machines (FM) | Every pair of features interacts through the dot product of learned embeddings: $\sum_{i\lt j} \langle v_i, v_j \rangle x_i x_j$; handles sparse data well |
 | Wide & Deep | A linear "wide" part for memorising crosses plus a deep MLP for generalisation |
 | DeepFM | An FM component and a deep component sharing embeddings, no manual crosses |
 | DCN-v2 | Explicit cross layers, $x_{l+1} = x_0 \odot (W x_l + b) + x_l$, learn bounded-degree interactions efficiently, alongside an MLP |
@@ -1019,7 +1019,7 @@ mean, interval = forecast.predicted_mean, forecast.conf_int(alpha=0.2)   # 80% p
 **The family**
 
 - **Simple exponential smoothing** (level only): $\ell_t = \alpha y_t + (1 - \alpha) \ell_{t-1}$, forecast $\hat{y}_{t+h} = \ell_t$. The smoothing parameter $\alpha$ sets how fast the level adapts.
-- **Holt's linear trend:** adds a trend component $b_t$, updated with its own smoothing parameter $\beta$. A **damped trend** (parameter $\phi < 1$) flattens the trend over long horizons and is usually more accurate than an undamped trend, which extrapolates too aggressively.
+- **Holt's linear trend:** adds a trend component $b_t$, updated with its own smoothing parameter $\beta$. A **damped trend** (parameter $\phi \lt 1$) flattens the trend over long horizons and is usually more accurate than an undamped trend, which extrapolates too aggressively.
 - **Holt-Winters:** adds a seasonal component with parameter $\gamma$, either **additive** (seasonal swings of constant size) or **multiplicative** (swings proportional to the level).
 
 **The ETS framework (Error, Trend, Seasonal)**

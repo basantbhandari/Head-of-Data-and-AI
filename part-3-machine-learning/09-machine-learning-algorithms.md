@@ -1206,7 +1206,7 @@ Both are **ensemble learning methods based on decision trees**, but they work di
 **OOB (out-of-bag) error** is a built-in validation estimate for bagging ensembles such as **Random Forests**.
 
 **How it works**
-- Each tree is trained on a **bootstrap sample** (drawn with replacement) of the training set. About $1 - (1-1/n)^n \approx 63.2\%$ of the rows appear in each sample; the remaining **~36.8% are "out-of-bag"** for that tree.
+- Each tree is trained on a **bootstrap sample** (drawn with replacement) of the training set. About $1 - (1-1/n)^n \approx 0.632$ (63.2%) of the rows appear in each sample; the remaining **~36.8% are "out-of-bag"** for that tree.
 - For each training row, aggregate predictions **only from the trees that did not see it**, and compare with the true label.
 - The OOB error is the error rate (or MSE) over all rows computed this way.
 
@@ -1250,7 +1250,7 @@ $$
 - It models a **continuous quantity**: the probability $p$ (equivalently, the log-odds, which ranges over all reals) as a linear function of the features.
 - It belongs to the family of **Generalized Linear Models (GLMs)**, alongside linear regression (identity link) and Poisson regression (log link); logistic regression uses the **logit link** with a Bernoulli outcome. Statisticians call all of these "regression".
 - Coefficients are interpreted like regression coefficients: a one-unit increase in $x_j$ multiplies the odds by $e^{\beta_j}$.
-- Classification is a separate **decision step**: predict class 1 if $p > t$ (e.g., 0.5, or a threshold tuned to business cost).
+- Classification is a separate **decision step**: predict class 1 if $p \gt t$ (e.g., 0.5, or a threshold tuned to business cost).
 
 **Why this matters in practice:** because it outputs (reasonably calibrated) probabilities, logistic regression is used for risk scoring, ranking and expected-value decisions — not just hard labels. It is trained with maximum likelihood (log loss), not least squares.
 
@@ -1482,7 +1482,7 @@ reducer = make_pipeline(PCA(n_components=50), umap.UMAP(n_components=2))
 - **Large C:** penalizes errors heavily, narrower margin, fits the training data more closely.
 - Underfitting → **increase C**.
 
-**In practice:** tune them jointly on a log grid (e.g. $C \in \{0.1, 1, 10, 100\}$, $\gamma \in \{10^{-3}, \dots, 10\}$) with cross-validation, because they interact. Also make sure the features are **scaled**: unscaled features make $\gamma$ meaningless and a common "underfit" cause. If the model still underfits after that, the features may lack signal.
+**In practice:** tune them jointly on a log grid (e.g. $C \in \lbrace 0.1, 1, 10, 100\rbrace$, $\gamma \in \lbrace 10^{-3}, \dots, 10\rbrace$) with cross-validation, because they interact. Also make sure the features are **scaled**: unscaled features make $\gamma$ meaningless and a common "underfit" cause. If the model still underfits after that, the features may lack signal.
 
 ```python
 from sklearn.model_selection import GridSearchCV
@@ -1497,8 +1497,8 @@ In a linear model $\hat y = \beta_0 + \sum_j \beta_j x_j$, the weight $\beta_j$ 
 
 **Variants:**
 - **Logistic regression:** $\beta_j$ is the change in **log-odds**. $e^{\beta_j}$ is the **odds ratio**: e.g. $\beta = 0.7$ means each unit multiplies the odds by about 2.
-- **Log-transformed target** ($\log y$): a unit change in $x_j$ changes $y$ by about $100\cdot\beta_j\%$ (exactly $e^{\beta_j} - 1$).
-- **Log-log:** $\beta_j$ is an **elasticity**: a 1% change in $x_j$ gives a $\beta_j\%$ change in $y$.
+- **Log-transformed target** ($\log y$): a unit change in $x_j$ changes $y$ by about $100\cdot\beta_j$ percent (exactly $100(e^{\beta_j} - 1)$ percent).
+- **Log-log:** $\beta_j$ is an **elasticity**: a 1% change in $x_j$ gives a $\beta_j$ percent change in $y$.
 - **Dummy variable:** the difference from the baseline category.
 - **Interaction terms:** the effect of $x_j$ depends on the value of the interacting feature.
 
@@ -1651,7 +1651,7 @@ $$
 
 If the data isn't linearly separable, we could map it to a higher-dimensional space $\phi(x)$ where it is, and then compute $\langle \phi(x_i), \phi(x)\rangle$. The **kernel trick** replaces that dot product with a kernel function $K(x_i, x) = \langle \phi(x_i), \phi(x)\rangle$ computed directly in the original space, so we **never construct $\phi(x)$ explicitly**.
 
-**Example:** for $x \in \mathbb{R}^2$, the polynomial kernel $K(x,z) = (x \cdot z)^2$ equals the dot product of the explicit features $(x_1^2, \sqrt{2}\, x_1 x_2, x_2^2)$. The RBF kernel $K(x,z)=\exp(-\gamma\lVert x-z\rVert^2)$ corresponds to an **infinite-dimensional** feature space, which would be impossible to compute explicitly.
+**Example:** for $x \in \mathbb{R}^2$, the polynomial kernel $K(x,z) = (x \cdot z)^2$ equals the dot product of the explicit features $(x_1^2, \sqrt{2}\thinspace x_1 x_2, x_2^2)$. The RBF kernel $K(x,z)=\exp(-\gamma\lVert x-z\rVert^2)$ corresponds to an **infinite-dimensional** feature space, which would be impossible to compute explicitly.
 
 **Requirements:** $K$ must be a valid (positive semi-definite, Mercer) kernel.
 

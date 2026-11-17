@@ -249,7 +249,7 @@ If a six-sided die is rolled 20 times, the multinomial distribution can model ho
 
 The **lognormal distribution** is a continuous probability distribution for a positive-valued variable whose **natural logarithm follows a normal distribution**.
 
-- The variable can only take **positive values** ($X > 0$).
+- The variable can only take **positive values** ($X \gt 0$).
 - It is typically **right-skewed**, with a long tail toward larger values.
 - It is useful when values grow through **multiplicative effects** rather than additive effects.
 - If $X$ is lognormally distributed, then $\ln(X)$ follows a normal distribution.
@@ -298,7 +298,7 @@ The **logistic distribution** is a continuous probability distribution that is *
 
 The **gamma distribution** is a continuous probability distribution used to model **positive-valued quantities**, especially **waiting time until multiple events occur**.
 
-- It only takes **positive values** ($X > 0$).
+- It only takes **positive values** ($X \gt 0$).
 - It is generally **right-skewed**, although its shape can vary.
 - It is defined by two parameters:
   - **Shape ($\alpha$):** controls the shape of the distribution.
@@ -554,10 +554,10 @@ Suppose data shows that **ice cream sales increase when the number of sunburn ca
 
 A result is **statistically significant** when the p-value is smaller than the chosen significance level $\alpha$.
 
-- **p-value $< 0.05$ → Statistically significant → Reject $H_0$, Accept $H_1$**
+- **p-value $\lt 0.05$ → Statistically significant → Reject $H_0$, Accept $H_1$**
 - **p-value $\geq 0.05$ → Not statistically significant → Fail to reject $H_0$, Reject $H_1$**
 
-**p-value $< \alpha$ → evidence against $H_0$ → statistically significant.**
+**p-value $\lt \alpha$ → evidence against $H_0$ → statistically significant.**
 
 ### 1.21 Explain p-values and their limitations.
 
@@ -567,7 +567,7 @@ A result is **statistically significant** when the p-value is smaller than the c
 - **Small p-value:** Data provides stronger evidence against $H_0$.
 - **Large p-value:** Data does not provide sufficient evidence to reject $H_0$.
 - Common significance level: **$\alpha = 0.05$**.
-  - **$p < 0.05$ → statistically significant**
+  - **$p \lt 0.05$ → statistically significant**
   - **$p \geq 0.05$ → not statistically significant**
 
 ##### Limitations of P-values
@@ -593,7 +593,7 @@ A result is **statistically significant** when the p-value is smaller than the c
   - **Null hypothesis ($H_0$):** No significant effect or difference exists.
   - **Alternative hypothesis ($H_1$):** A significant effect or difference exists.
 - A statistical test produces a **p-value**, which is compared with a significance level such as **$\alpha = 0.05$**.
-- If **$p < \alpha$**, reject $H_0$.
+- If **$p \lt \alpha$**, reject $H_0$.
 - If **$p \geq \alpha$**, fail to reject $H_0$.
 
 ##### When is it used in ML?
@@ -634,7 +634,7 @@ It depends on **what you are comparing** and the type of predictions.
 
 - **Fit a statistical model**, such as linear or logistic regression, including the feature.
 - Examine the feature's **coefficient** and its **p-value**.
-- **p-value $< \alpha$** (commonly 0.05) → feature is statistically significant.
+- **p-value $\lt \alpha$** (commonly 0.05) → feature is statistically significant.
 - **p-value $\geq \alpha$** → insufficient evidence that the feature has a statistically significant effect, given the model and assumptions.
 - Use a **confidence interval** for the coefficient:
   - If the interval **does not include 0**, the coefficient is statistically significant at the corresponding confidence level.
@@ -1055,7 +1055,7 @@ Suppose we test whether a new medicine works:
 - A **small p-value** indicates stronger evidence against $H_0$.
 - Common significance level: **$\alpha = 0.05$**
 
-  - **p-value $< 0.05$:** Reject $H_0$
+  - **p-value $\lt 0.05$:** Reject $H_0$
   - **p-value $\geq 0.05$:** Fail to reject $H_0$
 - A p-value **does not** represent the probability that the null hypothesis is true.
 - It is **not** the probability that your test result is a random fluke.
@@ -1215,7 +1215,7 @@ The two schools differ in **what probability means**.
 - **Frequentist pros:** simpler, scalable, objective procedures, well-established tests.
 - **Frequentist cons:** confidence intervals and p-values are easy to misinterpret; no direct probability statements about parameters.
 
-**Production example:** Bayesian A/B testing gives "$P(\text{variant B is better}) = 94\%$", which is often easier for stakeholders than a p-value.
+**Production example:** Bayesian A/B testing gives "$P(\text{variant B is better}) = 0.94$" (a 94% chance), which is often easier for stakeholders than a p-value.
 
 ### 1.48 Describe the differences between and use cases for box plots and histograms
 
@@ -1247,7 +1247,7 @@ $$
 
 Interpretation: the expected extra bits (nats) needed to encode samples from $P$ using a code optimized for $Q$.
 
-**Properties:** always $\ge 0$, zero only if $P = Q$; **not symmetric** ($D_{\text{KL}}(P \parallel Q) \neq D_{\text{KL}}(Q \parallel P)$), so it's not a true distance; infinite if $Q(x) = 0$ where $P(x) > 0$. Forward KL is "mean-seeking" (covers all modes); reverse KL is "mode-seeking".
+**Properties:** always $\ge 0$, zero only if $P = Q$; **not symmetric** ($D_{\text{KL}}(P \parallel Q) \neq D_{\text{KL}}(Q \parallel P)$), so it's not a true distance; infinite if $Q(x) = 0$ where $P(x) \gt 0$. Forward KL is "mean-seeking" (covers all modes); reverse KL is "mode-seeking".
 
 **Use cases in ML:**
 
@@ -1362,26 +1362,30 @@ Think of SVD as finding the **most important directions/features in a matrix**.
 
 The singular values tell you how important each direction is. Large singular values represent more significant information, while very small ones can often be discarded.
 
-Let's do a **complete SVD calculation** from start to finish using: $A= \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix}$
+Let's do a **complete SVD calculation** from start to finish using:
+
+$$
+A= \begin{bmatrix} 3&2\cr 1&4 \end{bmatrix}
+$$
 
 We want: $\boxed{A=U\Sigma V^T}$
 
 ##### 1. Calculate $A^T$
 
 $$
-A^T= \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix}
+A^T= \begin{bmatrix} 3&1\cr 2&4 \end{bmatrix}
 $$
 
 ##### 2. Calculate $AA^T$
 
 $$
-AA^T= \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix} = \begin{bmatrix} 13&11\\ 11&17 \end{bmatrix}
+AA^T= \begin{bmatrix} 3&2\cr 1&4 \end{bmatrix} \begin{bmatrix} 3&1\cr 2&4 \end{bmatrix} = \begin{bmatrix} 13&11\cr 11&17 \end{bmatrix}
 $$
 
 Find its eigenvalues:
 
 $$
-\det \begin{bmatrix} 13-\lambda&11\\ 11&17-\lambda \end{bmatrix}=0
+\det \begin{bmatrix} 13-\lambda&11\cr 11&17-\lambda \end{bmatrix}=0
 $$
 
 $$
@@ -1418,7 +1422,11 @@ $$
 \sigma_2=\sqrt{3.820}\approx1.955
 $$
 
-So: $\boxed{ \Sigma= \begin{bmatrix} 5.117&0\\ 0&1.955 \end{bmatrix}}$
+So:
+
+$$
+\boxed{ \Sigma= \begin{bmatrix} 5.117&0\cr 0&1.955 \end{bmatrix}}
+$$
 
 ---
 
@@ -1426,21 +1434,41 @@ So: $\boxed{ \Sigma= \begin{bmatrix} 5.117&0\\ 0&1.955 \end{bmatrix}}$
 
 The columns of $U$ are the **normalized eigenvectors of $AA^T$**.
 
-For $\lambda_1$: $\begin{bmatrix} 13-26.180&11\\ 11&17-26.180 \end{bmatrix} \begin{bmatrix} x\\y \end{bmatrix}=0$
+For $\lambda_1$:
+
+$$
+\begin{bmatrix} 13-26.180&11\cr 11&17-26.180 \end{bmatrix} \begin{bmatrix} x\cr y \end{bmatrix}=0
+$$
 
 This gives approximately: $y=1.198x$
 
-After normalization: $u_1= \begin{bmatrix} 0.641\\ 0.768 \end{bmatrix}$
+After normalization:
 
-For $\lambda_2$: $u_2= \begin{bmatrix} 0.768\\ -0.641 \end{bmatrix}$
+$$
+u_1= \begin{bmatrix} 0.641\cr 0.768 \end{bmatrix}
+$$
 
-Therefore: $\boxed{ U= \begin{bmatrix} 0.641&0.768\\ 0.768&-0.641 \end{bmatrix}}$
+For $\lambda_2$:
+
+$$
+u_2= \begin{bmatrix} 0.768\cr -0.641 \end{bmatrix}
+$$
+
+Therefore:
+
+$$
+\boxed{ U= \begin{bmatrix} 0.641&0.768\cr 0.768&-0.641 \end{bmatrix}}
+$$
 
 ---
 
 ##### 5. Find $V$
 
-Now calculate: $A^TA= \begin{bmatrix} 3&1\\ 2&4 \end{bmatrix} \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} = \begin{bmatrix} 10&10\\ 10&20 \end{bmatrix}$
+Now calculate:
+
+$$
+A^TA= \begin{bmatrix} 3&1\cr 2&4 \end{bmatrix} \begin{bmatrix} 3&2\cr 1&4 \end{bmatrix} = \begin{bmatrix} 10&10\cr 10&20 \end{bmatrix}
+$$
 
 The eigenvalues are the same: $26.180,\quad3.820$
 
@@ -1454,13 +1482,29 @@ $$
 y=1.618x
 $$
 
-After normalization: $v_1= \begin{bmatrix} 0.526\\ 0.851 \end{bmatrix}$
+After normalization:
 
-For $\lambda_2=3.820$: $v_2= \begin{bmatrix} 0.851\\ -0.526 \end{bmatrix}$
+$$
+v_1= \begin{bmatrix} 0.526\cr 0.851 \end{bmatrix}
+$$
 
-Thus: $\boxed{ V= \begin{bmatrix} 0.526&0.851\\ 0.851&-0.526 \end{bmatrix}}$
+For $\lambda_2=3.820$:
 
-Therefore: $\boxed{ V^T= \begin{bmatrix} 0.526&0.851\\ 0.851&-0.526 \end{bmatrix}}$
+$$
+v_2= \begin{bmatrix} 0.851\cr -0.526 \end{bmatrix}
+$$
+
+Thus:
+
+$$
+\boxed{ V= \begin{bmatrix} 0.526&0.851\cr 0.851&-0.526 \end{bmatrix}}
+$$
+
+Therefore:
+
+$$
+\boxed{ V^T= \begin{bmatrix} 0.526&0.851\cr 0.851&-0.526 \end{bmatrix}}
+$$
 
 ---
 
@@ -1469,10 +1513,14 @@ Therefore: $\boxed{ V^T= \begin{bmatrix} 0.526&0.851\\ 0.851&-0.526 \end{bmatrix
 Putting everything together: $\boxed{ A=U\Sigma V^T }$
 
 $$
-\boxed{ \begin{bmatrix} 3&2\\ 1&4 \end{bmatrix} \approx \begin{bmatrix} 0.641&0.768\\ 0.768&-0.641 \end{bmatrix} \begin{bmatrix} 5.117&0\\ 0&1.955 \end{bmatrix} \begin{bmatrix} 0.526&0.851\\ 0.851&-0.526 \end{bmatrix} }
+\boxed{ \begin{bmatrix} 3&2\cr 1&4 \end{bmatrix} \approx \begin{bmatrix} 0.641&0.768\cr 0.768&-0.641 \end{bmatrix} \begin{bmatrix} 5.117&0\cr 0&1.955 \end{bmatrix} \begin{bmatrix} 0.526&0.851\cr 0.851&-0.526 \end{bmatrix} }
 $$
 
-If you multiply these three matrices, you recover approximately: $\begin{bmatrix} 3&2\\ 1&4 \end{bmatrix}$
+If you multiply these three matrices, you recover approximately:
+
+$$
+\begin{bmatrix} 3&2\cr 1&4 \end{bmatrix}
+$$
 
 ##### The whole process to memorize
 

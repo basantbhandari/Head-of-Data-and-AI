@@ -152,7 +152,7 @@ $$
 G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots
 $$
 
-where **$\gamma$** is the **discount factor**, with $0 \leq \gamma < 1$, which determines how much future rewards are valued relative to immediate rewards.
+where **$\gamma$** is the **discount factor**, with $0 \leq \gamma \lt 1$, which determines how much future rewards are valued relative to immediate rewards.
 
 ### 16.3 Can you explain the concept of the Markov Decision Process (MDP) in reinforcement learning?
 
@@ -177,7 +177,7 @@ The key idea is that the **current state contains all relevant information neede
    - It can depend on the current state, action, and next state: $R(s,a,s')$
 5. **Discount Factor ($\gamma$)**
    - Determines how much future rewards are valued compared with immediate rewards.
-   - Usually: $0 \leq \gamma < 1$
+   - Usually: $0 \leq \gamma \lt 1$
    - A value closer to `1` gives greater importance to future rewards.
    - A value closer to `0` emphasizes immediate rewards.
 
@@ -210,7 +210,7 @@ $$
 The **optimal state-value function** represents the maximum expected return achievable from state $s$:
 
 $$
-V^*(s) = \max_{\pi}\mathbb{E}_{\pi}\left[\sum_{t=0}^{\infty}\gamma^t R_{t+1} \mid S_0 = s\right]
+V^{\ast}(s) = \max_{\pi}\mathbb{E}_{\pi}\left[\sum_{t=0}^{\infty}\gamma^t R_{t+1} \mid S_0 = s\right]
 $$
 
 The corresponding **optimal policy** is the policy that achieves this maximum expected return.
@@ -239,7 +239,7 @@ It is commonly denoted by **$\pi$** and defines the agent's behavior in the envi
 - Maps the agent's **states to actions**.
 - Determines how the agent behaves and makes decisions.
 - Can be learned or optimized through interaction with the environment.
-- The objective is to find an **optimal policy $\pi^*$** that maximizes the expected cumulative reward.
+- The objective is to find an **optimal policy $\pi^{\ast}$** that maximizes the expected cumulative reward.
 
 #### Types of Policies
 
@@ -269,8 +269,8 @@ A stochastic policy might be:
 
 $$
 \begin{aligned}
-\pi(a_1 \mid s_1) &= 0.2 \\
-\pi(a_2 \mid s_1) &= 0.7 \\
+\pi(a_1 \mid s_1) &= 0.2 \cr
+\pi(a_2 \mid s_1) &= 0.7 \cr
 \pi(a_3 \mid s_1) &= 0.1
 \end{aligned}
 $$
@@ -424,7 +424,7 @@ $$
 ##### **Bellman Optimality Equation**
 
 $$
-V^*(s) = \max_a \sum_{s',r} p(s',r \mid s,a) \left[r + \gamma V^*(s')\right]
+V^{\ast}(s) = \max_a \sum_{s',r} p(s',r \mid s,a) \left[r + \gamma V^{\ast}(s')\right]
 $$
 
 #### **Code Example**
@@ -759,7 +759,7 @@ DQN introduced two key mechanisms that make neural-network-based Q-learning much
 Q-learning learns the optimal action-value function:
 
 $$
-Q^*(s,a)
+Q^{\ast}(s,a)
 $$
 
 The classical Q-learning update is:
@@ -1155,7 +1155,7 @@ in the replay buffer.
 Randomly sample $B$ transitions:
 
 $$
-\{(s_i,a_i,r_i,s'_i,d_i)\}_{i=1}^{B}
+\lbrace (s_i,a_i,r_i,s'_i,d_i)\rbrace _{i=1}^{B}
 $$
 
 ###### Step 4: Calculate TD Targets
@@ -3393,7 +3393,7 @@ This is **off-policy evaluation (OPE)**: estimate how a target policy $\pi$ woul
 - **Inverse propensity scoring (IPS):** reweight each logged reward by how much more (or less) likely the new policy was to take that action.
 
 $$
-\hat{V}_{\text{IPS}} = \frac{1}{n}\sum_{i=1}^{n} \frac{\pi(a_i \mid x_i)}{\mu(a_i \mid x_i)}\, r_i
+\hat{V}_{\text{IPS}} = \frac{1}{n}\sum_{i=1}^{n} \frac{\pi(a_i \mid x_i)}{\mu(a_i \mid x_i)}\thinspace r_i
 $$
 
   Unbiased if propensities are correct, but variance explodes when weights are large.
@@ -3435,7 +3435,7 @@ $$
 - **Conservative value estimates (CQL):** Conservative Q-Learning (Kumar et al.) adds a regulariser that pushes Q-values down across all actions (a log-sum-exp, which acts as a soft maximum) and pushes them up on actions present in the dataset:
 
 $$
-\alpha\, \mathbb{E}_{s \sim D}\left[\log \sum_a \exp Q(s,a) - \mathbb{E}_{a \sim D}\, Q(s,a)\right] + \text{TD error}
+\alpha\thinspace \mathbb{E}_{s \sim D}\left[\log \sum_a \exp Q(s,a) - \mathbb{E}_{a \sim D}\thinspace Q(s,a)\right] + \text{TD error}
 $$
 
   The learned values become a lower bound on the policy's true value, so unseen actions look unattractive. The weight $\alpha$ sets how conservative it is: too high and you get behaviour cloning, too low and you get overestimation again.
@@ -3461,7 +3461,7 @@ All three are **off-policy actor-critic** methods for continuous action spaces (
 
 **DDPG (Deep Deterministic Policy Gradient, Lillicrap et al.):**
 - A deterministic actor $\mu_\theta(s)$ and a critic $Q_\phi(s,a)$.
-- Critic target: $y = r + \gamma\, Q_{\phi'}(s', \mu_{\theta'}(s'))$, using slowly updated (Polyak-averaged) target networks.
+- Critic target: $y = r + \gamma\thinspace Q_{\phi'}(s', \mu_{\theta'}(s'))$, using slowly updated (Polyak-averaged) target networks.
 - Actor update: gradient ascent on $Q_\phi(s, \mu_\theta(s))$, backpropagating through the critic into the actor.
 - Exploration by adding noise (Ornstein-Uhlenbeck in the paper, Gaussian in practice) to actions.
 - Problem: the actor exploits any error peak in the critic, so Q-values are overestimated and training is brittle and seed-sensitive.
@@ -3478,7 +3478,7 @@ $$
 **SAC (Soft Actor-Critic, Haarnoja et al.)** changes the objective itself. It maximises reward plus policy entropy:
 
 $$
-J(\pi) = \mathbb{E}\left[\sum_t r_t + \alpha\, \mathcal{H}\big(\pi(\cdot \mid s_t)\big)\right]
+J(\pi) = \mathbb{E}\left[\sum_t r_t + \alpha\thinspace \mathcal{H}\big(\pi(\cdot \mid s_t)\big)\right]
 $$
 
 - The actor is **stochastic**: a Gaussian whose sample is squashed by tanh into the action bounds, trained with the reparameterisation trick.
@@ -3507,7 +3507,7 @@ $$
 
 **Generalized Advantage Estimation (GAE)**, from Schulman et al., is a way of estimating the advantage $A(s_t, a_t)$ used in policy-gradient and actor-critic methods. It takes an exponentially weighted average of $n$-step advantage estimates, controlled by a parameter $\lambda \in [0, 1]$, which lets you slide smoothly between a low-variance but biased one-step TD estimate and an unbiased but high-variance Monte Carlo estimate. It is the default advantage estimator in PPO and in most RLHF implementations that use a value model.
 
-**Why the advantage matters:** the policy gradient is $\mathbb{E}[\nabla \log \pi(a_t \mid s_t)\, \hat{A}_t]$. A noisy $\hat{A}_t$ means noisy gradients and many samples; a biased one means the policy improves in the wrong direction.
+**Why the advantage matters:** the policy gradient is $\mathbb{E}[\nabla \log \pi(a_t \mid s_t)\thinspace \hat{A}_t]$. A noisy $\hat{A}_t$ means noisy gradients and many samples; a biased one means the policy improves in the wrong direction.
 
 **The construction:** start from the one-step TD error, using the critic $V$:
 
@@ -3518,7 +3518,7 @@ $$
 The $k$-step advantage sums $k$ discounted TD errors. GAE averages all of them with weights $(1-\lambda)\lambda^{k-1}$, which simplifies to
 
 $$
-\hat{A}_t^{\text{GAE}(\gamma,\lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l\, \delta_{t+l}
+\hat{A}_t^{\text{GAE}(\gamma,\lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l\thinspace \delta_{t+l}
 $$
 
 **The two extremes:**
@@ -3625,14 +3625,14 @@ Both are dynamic programming (DP) methods that compute an optimal policy for an 
 
 **Policy iteration**
 
-1. **Evaluate:** solve $V^{\pi}(s) = \sum_{s'} P(s' \mid s, \pi(s))\,[R + \gamma V^{\pi}(s')]$. This is a linear system, solved exactly at $O(|S|^3)$ cost or by iterative sweeps.
-2. **Improve:** $\pi'(s) = \arg\max_a \sum_{s'} P(s' \mid s, a)\,[R + \gamma V^{\pi}(s')]$.
+1. **Evaluate:** solve $V^{\pi}(s) = \sum_{s'} P(s' \mid s, \pi(s))\thinspace [R + \gamma V^{\pi}(s')]$. This is a linear system, solved exactly at $O(|S|^3)$ cost or by iterative sweeps.
+2. **Improve:** $\pi'(s) = \arg\max_a \sum_{s'} P(s' \mid s, a)\thinspace [R + \gamma V^{\pi}(s')]$.
 3. Stop when the policy no longer changes. The policy improvement theorem guarantees each new policy is at least as good as the last. Because there are only finitely many deterministic policies, the loop terminates, often after a handful of iterations even for large state spaces.
 
 **Value iteration**
 
 $$
-V_{k+1}(s) = \max_a \sum_{s'} P(s' \mid s, a)\,\big[R(s, a, s') + \gamma V_k(s')\big]
+V_{k+1}(s) = \max_a \sum_{s'} P(s' \mid s, a)\thinspace \big[R(s, a, s') + \gamma V_k(s')\big]
 $$
 
 The backup is a $\gamma$-contraction in the max norm, so the error shrinks by a factor of $\gamma$ every sweep. Each sweep costs $O(|S|^2 |A|)$. With $\gamma = 0.99$, you need hundreds of sweeps for tight convergence. Stop when the largest change falls below $\theta$, then extract the greedy policy. The greedy policy often becomes optimal long before the values converge.
@@ -3666,7 +3666,7 @@ Both use a neural network to make tree search tractable, and both use tree searc
 **Search.** Each simulation descends the tree by picking the action that maximises a PUCT score:
 
 $$
-a^* = \arg\max_a \left[ Q(s, a) + c\, P(s, a) \frac{\sqrt{N(s)}}{1 + N(s, a)} \right]
+a^{\ast} = \arg\max_a \left[ Q(s, a) + c\thinspace P(s, a) \frac{\sqrt{N(s)}}{1 + N(s, a)} \right]
 $$
 
 On reaching a leaf, the network evaluates it once, with no rollout, and the value $v$ is backed up along the path. Training used 800 simulations per move.
@@ -3754,7 +3754,7 @@ Dreamer learns the model in a compact latent space and trains the policy almost 
 
 ### 16.84 How do agents explore when rewards are sparse, using intrinsic motivation such as curiosity and random network distillation?
 
-When the extrinsic reward is almost always zero, dithering strategies such as $\epsilon$-greedy or entropy bonuses almost never stumble on it. Intrinsic motivation adds a self-generated bonus $r^i_t$ that pays the agent for reaching **novel or surprising** states, and the agent optimises $r_t = r^e_t + \beta\, r^i_t$. Novelty is learnable, so the agent moves systematically into unvisited territory instead of wandering randomly.
+When the extrinsic reward is almost always zero, dithering strategies such as $\epsilon$-greedy or entropy bonuses almost never stumble on it. Intrinsic motivation adds a self-generated bonus $r^i_t$ that pays the agent for reaching **novel or surprising** states, and the agent optimises $r_t = r^e_t + \beta\thinspace r^i_t$. Novelty is learnable, so the agent moves systematically into unvisited territory instead of wandering randomly.
 
 **Main families**
 

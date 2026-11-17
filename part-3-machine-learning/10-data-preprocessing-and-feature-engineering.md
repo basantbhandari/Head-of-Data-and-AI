@@ -127,7 +127,7 @@ An **outlier** is an observation that differs markedly from the rest of the data
 
 **Detection**
 
-- **Statistical**: Z-score ($\lvert z \rvert > 3$ std dev), IQR method (below $Q_1 - 1.5 \times \text{IQR}$ or above $Q_3 + 1.5 \times \text{IQR}$)
+- **Statistical**: Z-score ($\lvert z \rvert \gt 3$ std dev), IQR method (below $Q_1 - 1.5 \times \text{IQR}$ or above $Q_3 + 1.5 \times \text{IQR}$)
 - **Visualization**: Box plots, scatter plots, histograms
 - **Model-based**: Isolation Forest, DBSCAN, LOF (Local Outlier Factor), One-Class SVM
 
@@ -550,7 +550,7 @@ selected = X.columns[pipe[1].get_support()]
 - **Correlated features:** Lasso tends to pick one arbitrarily and drop the others, and the selection is unstable across samples. Use **Elastic Net**, or **stability selection** (Lasso on bootstraps, keeping features selected in, say, more than 70% of runs).
 - It captures only linear (or log-odds-linear) relationships, so non-linear signal can be dropped.
 - Do selection **inside the CV loop**. Selecting on the full dataset and then cross-validating leaks information and inflates the scores.
-- When $p > n$, Lasso selects at most $n$ features.
+- When $p \gt n$, Lasso selects at most $n$ features.
 
 ### 10.21 What is the difference between standard scaler and minmax scaler? What will you do if there is a categorical variable?
 

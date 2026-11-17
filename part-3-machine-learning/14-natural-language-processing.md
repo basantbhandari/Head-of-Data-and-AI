@@ -969,7 +969,7 @@ Both assign a label sequence $y = (y_1, \ldots, y_n)$ to an input sequence $x$ (
 An HMM assumes the hidden tags form a Markov chain and each word is generated only by its own tag:
 
 $$
-P(x, y) = \prod_{t=1}^{n} P(y_t \mid y_{t-1}) \, P(x_t \mid y_t)
+P(x, y) = \prod_{t=1}^{n} P(y_t \mid y_{t-1}) \thinspace P(x_t \mid y_t)
 $$
 
 - **Parameters:** transition probabilities $P(y_t \mid y_{t-1})$ and emission probabilities $P(x_t \mid y_t)$, estimated by counting on labelled data (with smoothing), or with Baum-Welch (EM) when tags are unobserved.
@@ -1198,7 +1198,7 @@ The context vector $c_t$ is then combined with the decoder state to predict the 
 **The algorithm**
 
 1. Start with one hypothesis: the start token, score 0.
-2. For each of the $B$ hypotheses, compute next-token log-probabilities and form candidates with score $\sum_{t} \log P(y_t \mid y_{<t}, x)$.
+2. For each of the $B$ hypotheses, compute next-token log-probabilities and form candidates with score $\sum_{t} \log P(y_t \mid y_{\lt t}, x)$.
 3. Keep the top $B$ candidates overall. Move any hypothesis that emits the end token into a finished list.
 4. Stop when $B$ hypotheses have finished or no unfinished one can beat the best finished score. Return the best finished hypothesis.
 

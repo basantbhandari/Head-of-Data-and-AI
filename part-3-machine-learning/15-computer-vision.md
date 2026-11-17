@@ -556,7 +556,7 @@ $$
 **Receptive field** (recursive):
 
 $$
-r_l = r_{l-1} + (K_l - 1)\,D_l \prod_{i<l} S_i
+r_l = r_{l-1} + (K_l - 1)\thinspace D_l \prod_{i<l} S_i
 $$
 
 **Example:** three stacked 3×3 convs (stride 1) have a 7×7 receptive field with fewer parameters and more nonlinearity than one 7×7 conv, which is the VGG insight.
@@ -823,7 +823,7 @@ A $224 \times 224$ image with $P = 16$ gives $N = 196$ tokens; with $P = 14$ it 
 **2. Class token and position embeddings.** A learnable `[CLS]` token is prepended, and learned position embeddings are added so the model knows where each patch came from:
 
 $$
-z_0 = [\,x_{\text{cls}};\ x_p^1 E;\ x_p^2 E;\ \dots;\ x_p^N E\,] + E_{\text{pos}}, \qquad E_{\text{pos}} \in \mathbb{R}^{(N+1) \times D}
+z_0 = [\thinspace x_{\text{cls}};\ x_p^1 E;\ x_p^2 E;\ \dots;\ x_p^N E\thinspace ] + E_{\text{pos}}, \qquad E_{\text{pos}} \in \mathbb{R}^{(N+1) \times D}
 $$
 
 **3. Encoder.** $L$ pre-norm Transformer blocks, each with multi-head self-attention and an MLP, both wrapped in residual connections. The final `[CLS]` state (or the mean of the patch tokens) goes to a linear classification head. ViT-B/16 has 12 layers, $D = 768$ and about 86M parameters.
@@ -1245,7 +1245,7 @@ Classical detectors find points that can be located precisely and found again in
 **Harris corner detector.** A corner is a point where shifting a small window in *any* direction changes the intensity a lot. Harris summarises local gradients in a $2 \times 2$ structure tensor and scores each pixel:
 
 $$
-M = \sum_{\text{window}} w(x,y) \begin{bmatrix} I_x^2 & I_x I_y \\ I_x I_y & I_y^2 \end{bmatrix}, \qquad R = \det(M) - k\,(\operatorname{tr} M)^2
+M = \sum_{\text{window}} w(x,y) \begin{bmatrix} I_x^2 & I_x I_y \cr I_x I_y & I_y^2 \end{bmatrix}, \qquad R = \det(M) - k\thinspace (\operatorname{tr} M)^2
 $$
 
 Two large eigenvalues mean a corner, one large eigenvalue means an edge, and two small ones mean a flat region. Harris is rotation invariant but **not scale invariant**: a corner at one zoom level becomes a curve at another. Shi-Tomasi ("good features to track") uses the smaller eigenvalue instead and feeds the KLT tracker.

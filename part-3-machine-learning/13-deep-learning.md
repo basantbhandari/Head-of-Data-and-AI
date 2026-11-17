@@ -4,7 +4,7 @@ _Part III — Machine Learning_
 
 Backpropagation, activations, normalization, residual networks, sequence models, generative models and the practicalities of training deep networks.
 
-This chapter contains **97 questions**.
+This chapter contains **100 questions**.
 
 ## Contents
 
@@ -105,6 +105,9 @@ This chapter contains **97 questions**.
 - **13.95** [What are state space models such as S4 and Mamba, and how do they compare with Transformers?](#1395-what-are-state-space-models-such-as-s4-and-mamba-and-how-do-they-compare-with-transformers)
 - **13.96** [What is mechanistic interpretability, and how are superposition and sparse autoencoders used to understand neural networks?](#1396-what-is-mechanistic-interpretability-and-how-are-superposition-and-sparse-autoencoders-used-to-understand-neural-networks)
 - **13.97** [What are Kolmogorov-Arnold Networks, and how do they differ from multilayer perceptrons?](#1397-what-are-kolmogorov-arnold-networks-and-how-do-they-differ-from-multilayer-perceptrons)
+- **13.98** [What are physics-informed neural networks (PINNs), and how do they work?](#1398-what-are-physics-informed-neural-networks-pinns-and-how-do-they-work)
+- **13.99** [Why are PINNs hard to train, and how do you improve them?](#1399-why-are-pinns-hard-to-train-and-how-do-you-improve-them)
+- **13.100** [How do PINNs compare with classical numerical solvers and neural operators, and when should you use each?](#13100-how-do-pinns-compare-with-classical-numerical-solvers-and-neural-operators-and-when-should-you-use-each)
 
 ---
 
@@ -277,12 +280,12 @@ This chapter contains **97 questions**.
 **ReLU (Rectified Linear Unit)**
 
 - Formula: $\max(0, x)$, output range: 0 to $\infty$
-- Pros: Computationally efficient, avoids vanishing gradient for $x > 0$, sparse activation (efficiency)
+- Pros: Computationally efficient, avoids vanishing gradient for $x \gt 0$, sparse activation (efficiency)
 - Cons: **Dying ReLU** problem — neurons stuck outputting 0 if input always negative (gradient = 0)
 
 **Leaky ReLU**
 
-- Formula: $x$ if $x > 0$, else $\alpha x$ (small $\alpha$ like 0.01)
+- Formula: $x$ if $x \gt 0$, else $\alpha x$ (small $\alpha$ like 0.01)
 - Pros: Fixes dying ReLU — allows small gradient for negative inputs
 - Cons: Results can be inconsistent; $\alpha$ is a hyperparameter to tune
 
@@ -491,7 +494,7 @@ This chapter contains **97 questions**.
 | Typically | More flexible, can handle missing data | Better performance on classification tasks (with enough data) |
 | Examples | Naive Bayes, GANs, VAEs, GPT | Logistic Regression, SVM, standard classifiers |
 
-- Generative models can be used for classification too (via Bayes' rule: $P(Y \mid X) \propto P(X \mid Y)\,P(Y)$) but typically less accurate than discriminative for pure classification when data is abundant
+- Generative models can be used for classification too (via Bayes' rule: $P(Y \mid X) \propto P(X \mid Y)\thinspace P(Y)$) but typically less accurate than discriminative for pure classification when data is abundant
 
 ### 13.18 Can you explain how a generative model works?
 
@@ -2082,7 +2085,7 @@ Modern deep networks commonly use **ReLU and its variants** such as GELU, SiLU, 
 | Activation | Formula | Output Range | Main Advantage | Main Limitation | Common Use |
 | --- | --- | --- | --- | --- | --- |
 | **ReLU** | $f(x)=\max(0,x)$ | $[0,\infty)$ | Simple and fast | **Dying ReLU** for negative inputs | CNNs, MLPs |
-| **Leaky ReLU** | $f(x)=\max(\alpha x,x)$ | $(-\infty,\infty)$ | Keeps a small gradient for $x<0$ | Requires choosing $\alpha$ | CNNs, MLPs |
+| **Leaky ReLU** | $f(x)=\max(\alpha x,x)$ | $(-\infty,\infty)$ | Keeps a small gradient for $x\lt 0$ | Requires choosing $\alpha$ | CNNs, MLPs |
 | **GELU** | $f(x)=x\Phi(x)$ | $(-\infty,\infty)$ | Smooth, probabilistic gating | More computationally expensive than ReLU | **Transformers, BERT** |
 | **SiLU / Swish** | $f(x)=x\sigma(x)$ | $(-\infty,\infty)$ | Smooth and non-monotonic | More expensive than ReLU | **Modern deep learning, LLMs** |
 | **Sigmoid** | $f(x)=\frac{1}{1+e^{-x}}$ | $(0,1)$ | Interpretable as probability | Vanishing gradients when saturated | Binary classification output |
@@ -2094,7 +2097,7 @@ Modern deep networks commonly use **ReLU and its variants** such as GELU, SiLU, 
 - Negative values → 0.
 - Positive values → unchanged.
 - Very cheap computationally.
-- Can cause **dying neurons** because the gradient is 0 for $x<0$.
+- Can cause **dying neurons** because the gradient is 0 for $x\lt 0$.
 
 **2. Leaky ReLU**
 
@@ -2635,7 +2638,7 @@ where:
 
 - $p$ = dropout probability
 - $1-p$ = probability that a neuron is kept
-- $m_i \in \{0,1\}$
+- $m_i \in \lbrace 0,1\rbrace$
 
 The mask is applied to the activations.
 
@@ -3133,7 +3136,7 @@ Updated node embedding
 A simplified formulation is:
 
 $$
-h_v^{(l+1)} = \operatorname{UPDATE} \left( h_v^{(l)}, \operatorname{AGGREGATE}\left(\{h_u^{(l)}:u\in \mathcal{N}(v)\}\right) \right)
+h_v^{(l+1)} = \operatorname{UPDATE} \left( h_v^{(l)}, \operatorname{AGGREGATE}\left(\lbrace h_u^{(l)}:u\in \mathcal{N}(v)\rbrace \right) \right)
 $$
 
 #### Common GNN architectures
@@ -3216,7 +3219,7 @@ m_{ij} = \phi_e\left(h_i, h_j, \lVert x_i - x_j \rVert^2, a_{ij}\right)
 $$
 
 $$
-x_i' = x_i + C \sum_{j \neq i} (x_i - x_j)\, \phi_x(m_{ij}), \qquad h_i' = \phi_h\left(h_i, \sum_{j} m_{ij}\right)
+x_i' = x_i + C \sum_{j \neq i} (x_i - x_j)\thinspace \phi_x(m_{ij}), \qquad h_i' = \phi_h\left(h_i, \sum_{j} m_{ij}\right)
 $$
 
   Because $x_i - x_j$ rotates with the input and the weights $\phi_x(m_{ij})$ are invariant, the update is equivariant without any spherical harmonics. It is cheap and works in any dimension $n$.
@@ -3248,7 +3251,7 @@ A **Graph Attention Network (GAT, Veličković et al. 2018)** is a message-passi
 **GCN aggregation (fixed weights)**
 
 $$
-h_i' = \sigma\left( \sum_{j \in \mathcal{N}(i) \cup \{i\}} \frac{1}{\sqrt{d_i d_j}}\, W h_j \right)
+h_i' = \sigma\left( \sum_{j \in \mathcal{N}(i) \cup \lbrace i\rbrace } \frac{1}{\sqrt{d_i d_j}}\thinspace W h_j \right)
 $$
 
 The weight of neighbour $j$ depends only on node degrees, so every neighbour of equal degree contributes equally, whatever its features.
@@ -3258,7 +3261,7 @@ The weight of neighbour $j$ depends only on node degrees, so every neighbour of 
 For each edge, score the pair, then normalise with a softmax over the neighbourhood:
 
 $$
-e_{ij} = \operatorname{LeakyReLU}\left( a^\top \left[ W h_i \,\Vert\, W h_j \right] \right)
+e_{ij} = \operatorname{LeakyReLU}\left( a^\top \left[ W h_i \thinspace \Vert\thinspace W h_j \right] \right)
 $$
 
 $$
@@ -3280,7 +3283,7 @@ $$
 Brody et al. showed that because $a^\top[W h_i \Vert W h_j]$ splits into $a_1^\top W h_i + a_2^\top W h_j$ and LeakyReLU is monotonic, the **ranking of neighbours is the same for every query node**. That is *static* attention: one globally "best" neighbour type wins everywhere. GATv2 moves the nonlinearity inside:
 
 $$
-e_{ij} = a^\top \operatorname{LeakyReLU}\left( W \left[ h_i \,\Vert\, h_j \right] \right)
+e_{ij} = a^\top \operatorname{LeakyReLU}\left( W \left[ h_i \thinspace \Vert\thinspace h_j \right] \right)
 $$
 
 Now the score is a genuine function of the pair, giving **dynamic** attention, at the same parameter cost. GATv2 is the safer default and is available in PyG and DGL as `GATv2Conv`.
@@ -3320,7 +3323,7 @@ Both suffer from it: repeated neighbourhood averaging drives node embeddings tow
 Store $N$ patterns as columns of $X \in \mathbb{R}^{d \times N}$, with state $\xi \in \mathbb{R}^d$ and inverse temperature $\beta$:
 
 $$
-E(\xi) = -\frac{1}{\beta} \log \sum_{\mu=1}^{N} \exp\left(\beta\, x_\mu^\top \xi\right) + \frac{1}{2} \xi^\top \xi + \text{const}
+E(\xi) = -\frac{1}{\beta} \log \sum_{\mu=1}^{N} \exp\left(\beta\thinspace x_\mu^\top \xi\right) + \frac{1}{2} \xi^\top \xi + \text{const}
 $$
 
 Minimising it with the concave-convex procedure gives the update:
@@ -3344,7 +3347,7 @@ Q = R W_Q, \quad K = Y W_K, \quad V = K W_V
 $$
 
 $$
-Z = \operatorname{softmax}\left( \beta\, Q K^\top \right) V
+Z = \operatorname{softmax}\left( \beta\thinspace Q K^\top \right) V
 $$
 
 With $\beta = 1/\sqrt{d_k}$ this is exactly Transformer self-/cross-attention. So **one attention head performs one step of associative memory retrieval**: the query is a noisy cue and the output is the recalled (or blended) memory.
@@ -3377,7 +3380,7 @@ $$
 Summing out the hidden units analytically gives the **free energy**:
 
 $$
-F(v) = -a^\top v - \sum_{j} \log\left(1 + e^{\,b_j + v^\top W_{:,j}}\right), \qquad p(v) = \frac{e^{-F(v)}}{Z}
+F(v) = -a^\top v - \sum_{j} \log\left(1 + e^{\thinspace b_j + v^\top W_{:,j}}\right), \qquad p(v) = \frac{e^{-F(v)}}{Z}
 $$
 
 The partition function $Z$ sums over all $2^{n_v + n_h}$ configurations, so likelihood cannot be computed directly.
@@ -3866,17 +3869,17 @@ A diffusion model fixes a **forward process** that gradually turns data into Gau
 With a variance schedule $\beta_1, \dots, \beta_T$, $\alpha_t = 1 - \beta_t$ and $\bar\alpha_t = \prod_{s \le t} \alpha_s$:
 
 $$
-q(x_t \mid x_{t-1}) = \mathcal{N}\left(\sqrt{\alpha_t}\, x_{t-1}, \beta_t I\right), \qquad q(x_t \mid x_0) = \mathcal{N}\left(\sqrt{\bar\alpha_t}\, x_0, (1 - \bar\alpha_t) I\right)
+q(x_t \mid x_{t-1}) = \mathcal{N}\left(\sqrt{\alpha_t}\thinspace x_{t-1}, \beta_t I\right), \qquad q(x_t \mid x_0) = \mathcal{N}\left(\sqrt{\bar\alpha_t}\thinspace x_0, (1 - \bar\alpha_t) I\right)
 $$
 
-The closed form lets you jump to any $t$ in one step: $x_t = \sqrt{\bar\alpha_t}\, x_0 + \sqrt{1 - \bar\alpha_t}\, \epsilon$ with $\epsilon \sim \mathcal{N}(0, I)$. The **signal-to-noise ratio** $\bar\alpha_t / (1 - \bar\alpha_t)$ falls monotonically, and the schedule (linear, cosine, or one designed directly in log-SNR) decides how training effort is spread across noise levels.
+The closed form lets you jump to any $t$ in one step: $x_t = \sqrt{\bar\alpha_t}\thinspace x_0 + \sqrt{1 - \bar\alpha_t}\thinspace \epsilon$ with $\epsilon \sim \mathcal{N}(0, I)$. The **signal-to-noise ratio** $\bar\alpha_t / (1 - \bar\alpha_t)$ falls monotonically, and the schedule (linear, cosine, or one designed directly in log-SNR) decides how training effort is spread across noise levels.
 
 **2. The variational objective and its simplification**
 
 The model is a latent-variable model trained with an ELBO. Because the posterior $q(x_{t-1} \mid x_t, x_0)$ is Gaussian in closed form, every KL term compares two Gaussians. Parameterising the reverse mean through a noise predictor $\epsilon_\theta(x_t, t)$ turns each term into a weighted squared error, and Ho et al. found that **dropping the weights** works better for sample quality:
 
 $$
-\mathcal{L}_{\text{simple}} = \mathbb{E}_{x_0, \epsilon, t} \left[ \left\lVert \epsilon - \epsilon_\theta\left(\sqrt{\bar\alpha_t}\, x_0 + \sqrt{1 - \bar\alpha_t}\, \epsilon,\ t\right) \right\rVert^2 \right]
+\mathcal{L}_{\text{simple}} = \mathbb{E}_{x_0, \epsilon, t} \left[ \left\lVert \epsilon - \epsilon_\theta\left(\sqrt{\bar\alpha_t}\thinspace x_0 + \sqrt{1 - \bar\alpha_t}\thinspace \epsilon,\ t\right) \right\rVert^2 \right]
 $$
 
 The weighting matters: the unweighted loss favours perceptual quality, while the true ELBO weighting favours likelihood (improved DDPM learns the variances to get both).
@@ -3889,14 +3892,14 @@ $$
 s_\theta(x_t, t) \approx \nabla_{x_t} \log p_t(x_t) = -\frac{\epsilon_\theta(x_t, t)}{\sqrt{1 - \bar\alpha_t}}
 $$
 
-Predicting the noise, predicting the clean image and predicting the score are the same model under different parameterisations. **Tweedie's formula** gives the denoised estimate $\hat x_0 = \left(x_t - \sqrt{1 - \bar\alpha_t}\, \epsilon_\theta\right) / \sqrt{\bar\alpha_t}$. Practical parameterisations: $\epsilon$-prediction (DDPM), $x_0$-prediction, and **$v$-prediction** $v = \sqrt{\bar\alpha_t}\,\epsilon - \sqrt{1 - \bar\alpha_t}\, x_0$, which stays well-conditioned at both ends of the schedule and is needed for distillation and high-resolution models.
+Predicting the noise, predicting the clean image and predicting the score are the same model under different parameterisations. **Tweedie's formula** gives the denoised estimate $\hat x_0 = \left(x_t - \sqrt{1 - \bar\alpha_t}\thinspace \epsilon_\theta\right) / \sqrt{\bar\alpha_t}$. Practical parameterisations: $\epsilon$-prediction (DDPM), $x_0$-prediction, and **$v$-prediction** $v = \sqrt{\bar\alpha_t}\thinspace \epsilon - \sqrt{1 - \bar\alpha_t}\thinspace x_0$, which stays well-conditioned at both ends of the schedule and is needed for distillation and high-resolution models.
 
 **4. The continuous-time picture (Song et al., score SDE)**
 
-As $T \to \infty$, the forward chain becomes an SDE $dx = f(x, t)\,dt + g(t)\,dw$ (DDPM is the "variance preserving" SDE; NCSN is the "variance exploding" one). Anderson's theorem gives the **reverse-time SDE**, which only needs the score:
+As $T \to \infty$, the forward chain becomes an SDE $dx = f(x, t)\thinspace dt + g(t)\thinspace dw$ (DDPM is the "variance preserving" SDE; NCSN is the "variance exploding" one). Anderson's theorem gives the **reverse-time SDE**, which only needs the score:
 
 $$
-dx = \left[ f(x, t) - g(t)^2 \nabla_x \log p_t(x) \right] dt + g(t)\, d\bar w
+dx = \left[ f(x, t) - g(t)^2 \nabla_x \log p_t(x) \right] dt + g(t)\thinspace d\bar w
 $$
 
 There is also a deterministic **probability flow ODE** with the same marginals at every $t$:
@@ -3912,7 +3915,7 @@ Consequences: you can use any ODE solver (Heun, DPM-Solver, UniPC) with 10 to 30
 DDIM defines a family of **non-Markovian** forward processes with the same marginals $q(x_t \mid x_0)$, so the **same trained network** works unchanged. Its update is:
 
 $$
-x_{t-1} = \sqrt{\bar\alpha_{t-1}}\, \hat x_0 + \sqrt{1 - \bar\alpha_{t-1} - \sigma_t^2}\ \epsilon_\theta(x_t, t) + \sigma_t z
+x_{t-1} = \sqrt{\bar\alpha_{t-1}}\thinspace \hat x_0 + \sqrt{1 - \bar\alpha_{t-1} - \sigma_t^2}\ \epsilon_\theta(x_t, t) + \sigma_t z
 $$
 
 With $\sigma_t = 0$ it is deterministic, equivalent to an Euler discretisation of the probability flow ODE, and allows skipping steps (50 instead of 1,000). With the DDPM value of $\sigma_t$ it recovers ancestral sampling.
@@ -3925,7 +3928,7 @@ $$
 \tilde\epsilon_\theta(x_t, c) = \epsilon_\theta(x_t, \varnothing) + w \left( \epsilon_\theta(x_t, c) - \epsilon_\theta(x_t, \varnothing) \right)
 $$
 
-With $w > 1$ this samples from a sharpened distribution proportional to $p(x)\,p(c \mid x)^{w}$ (approximately, since the guided score is not the score of any single diffused distribution). It trades **diversity for fidelity and prompt adherence**.
+With $w \gt 1$ this samples from a sharpened distribution proportional to $p(x)\thinspace p(c \mid x)^{w}$ (approximately, since the guided score is not the score of any single diffused distribution). It trades **diversity for fidelity and prompt adherence**.
 
 ```python
 eps_u, eps_c = model(x_t, t, null_emb), model(x_t, t, text_emb)
@@ -3955,7 +3958,7 @@ Continuous normalizing flows such as FFJORD were trained by maximum likelihood, 
 - Pick a **conditional path** for each data point. The simplest is linear interpolation:
 
 $$
-x_t = (1 - t)\, x_0 + t\, x_1, \qquad x_0 \sim \mathcal{N}(0, I), \quad x_1 \sim p_{\text{data}}
+x_t = (1 - t)\thinspace x_0 + t\thinspace x_1, \qquad x_0 \sim \mathcal{N}(0, I), \quad x_1 \sim p_{\text{data}}
 $$
 
 - Its velocity is constant: $u_t = x_1 - x_0$. (Lipman et al. keep a tiny noise floor $\sigma_{\min}$ at the data end; it barely changes anything.)
@@ -4032,7 +4035,7 @@ $$
 h_k = \bar A h_{k-1} + \bar B u_k, \qquad y_k = C h_k
 $$
 
-If $\bar A, \bar B, C$ do not depend on the input, unrolling gives a **convolution** $y = \bar K * u$ with kernel $\bar K = (C\bar B, C\bar A\bar B, \dots, C\bar A^{L-1}\bar B)$. That is the **duality** S4 exploits: train as a long convolution (FFT, $O(L \log L)$), infer as a recurrence ($O(1)$ per token).
+If $\bar A, \bar B, C$ do not depend on the input, unrolling gives a **convolution** $y = \bar K \ast u$ with kernel $\bar K = (C\bar B, C\bar A\bar B, \dots, C\bar A^{L-1}\bar B)$. That is the **duality** S4 exploits: train as a long convolution (FFT, $O(L \log L)$), infer as a recurrence ($O(1)$ per token).
 
 **S4 (Gu, Goel and Ré, 2021)**
 
@@ -4159,7 +4162,7 @@ The catch, and why it was long considered useless for learning: the inner functi
 Each edge from input $i$ to output $j$ has its own learnable function, and nodes add:
 
 $$
-x_{l+1, j} = \sum_{i=1}^{n_l} \phi_{l, j, i}(x_{l, i}), \qquad \phi(x) = w_b\, \operatorname{silu}(x) + w_s \sum_{k} c_k B_k(x)
+x_{l+1, j} = \sum_{i=1}^{n_l} \phi_{l, j, i}(x_{l, i}), \qquad \phi(x) = w_b\thinspace \operatorname{silu}(x) + w_s \sum_{k} c_k B_k(x)
 $$
 
 where $B_k$ are B-spline basis functions on a grid of $G$ intervals of order $k$ (usually cubic). An MLP layer is $\sigma(Wx + b)$: one shared nonlinearity after a linear map. A KAN layer has $O(n_{\text{in}} n_{\text{out}} (G + k))$ parameters, so a KAN needs far fewer **nodes** but has more parameters per edge.
@@ -4197,6 +4200,194 @@ where $B_k$ are B-spline basis functions on a grid of $G$ intervals of order $k$
 - **Poor fit:** high-dimensional perception, language, or any large-scale production model where throughput, mature tooling and well-understood optimisation matter. A tuned MLP, gradient-boosted trees for tabular data, or classic symbolic regression (PySR) are strong baselines to beat first.
 
 **Interview one-liner:** a KAN puts learnable spline functions on edges and plain sums on nodes, inspired by the Kolmogorov-Arnold theorem; it is a nice tool for small interpretable scientific models, but under fair compute budgets MLPs match or beat it on most tasks and run far faster.
+
+### 13.98 What are physics-informed neural networks (PINNs), and how do they work?
+
+A **physics-informed neural network** is a neural network trained to satisfy known physical laws, usually written as partial differential equations (PDEs), as well as fitting whatever measurements are available. The idea was popularised by Raissi, Perdikaris and Karniadakis (2019). Instead of learning only from data, the network is penalised whenever its output breaks the governing equations.
+
+**The setup**
+
+- The unknown field, for example temperature, velocity or pressure, is a function of space and time, $u(x, t)$.
+- The physics is a PDE residual $\mathcal{N}[u] = 0$ on the domain, plus boundary and initial conditions $\mathcal{B}[u] = g$.
+- A neural network $u_\theta(x, t)$ takes coordinates as input and outputs the field value.
+
+**The loss function** combines three parts:
+
+$$
+\mathcal{L}(\theta) = \lambda_{d} \frac{1}{N_d} \sum_{i=1}^{N_d} \left( u_\theta(x_i, t_i) - u_i \right)^2 + \lambda_{r} \frac{1}{N_r} \sum_{j=1}^{N_r} \mathcal{N}[u_\theta](x_j, t_j)^2 + \lambda_{b} \frac{1}{N_b} \sum_{k=1}^{N_b} \left( \mathcal{B}[u_\theta](x_k, t_k) - g_k \right)^2
+$$
+
+- **Data term:** match the measurements, if any exist.
+- **Residual term:** the PDE should be close to zero at many **collocation points** sampled across the domain. These points need no labels.
+- **Boundary and initial condition term:** enforce the known conditions.
+- The derivatives inside the residual (such as the time derivative or second spatial derivative) are computed exactly with **automatic differentiation** through the network, so no mesh or finite-difference grid is needed.
+
+**Example: the viscous Burgers' equation**
+
+$$
+\frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} - \nu \frac{\partial^2 u}{\partial x^2} = 0
+$$
+
+The residual for the network is the left-hand side evaluated on $u_\theta$, and training drives it towards zero everywhere in the domain.
+
+**Forward and inverse problems**
+
+- **Forward problem:** the equation and its parameters are known; the PINN approximates the solution. This works, but classical solvers are usually faster and more accurate here.
+- **Inverse problem:** some parameters are unknown, for example the viscosity $\nu$, a diffusion coefficient or a source term. Make them trainable variables alongside the network weights, and fit them from sparse measurements while respecting the physics. This is where PINNs are most useful.
+
+**Design details**
+
+- Use **smooth activations** such as tanh, sine or GELU. ReLU has zero second derivative almost everywhere, which breaks residuals that contain second derivatives.
+- Normalise inputs and outputs to similar scales, or non-dimensionalise the equations.
+- Typical networks are small fully connected models: a few layers of 20 to 100 units.
+
+```python
+import torch
+import torch.nn as nn
+
+class PINN(nn.Module):
+    def __init__(self, width=64, depth=4):
+        super().__init__()
+        layers, d = [], 2
+        for _ in range(depth):
+            layers += [nn.Linear(d, width), nn.Tanh()]
+            d = width
+        self.net = nn.Sequential(*layers, nn.Linear(width, 1))
+        self.log_nu = nn.Parameter(torch.tensor(-3.0))    # unknown viscosity, learned (inverse problem)
+
+    def forward(self, x, t):
+        return self.net(torch.cat([x, t], dim=1))
+
+def burgers_residual(model, x, t):
+    x.requires_grad_(True); t.requires_grad_(True)
+    u = model(x, t)
+    grad = lambda out, inp: torch.autograd.grad(out, inp, torch.ones_like(out), create_graph=True)[0]
+    u_t, u_x = grad(u, t), grad(u, x)
+    u_xx = grad(u_x, x)
+    return u_t + u * u_x - torch.exp(model.log_nu) * u_xx
+
+model = PINN()
+opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+x0 = torch.rand(256, 1) * 2 - 1                          # initial-condition points on [-1, 1]
+x_obs, t_obs, u_obs = load_sensor_data()                  # sparse measurements, each of shape (n, 1)
+for step in range(20_000):
+    x_r = torch.rand(2048, 1) * 2 - 1; t_r = torch.rand(2048, 1)          # collocation points
+    loss_r = burgers_residual(model, x_r, t_r).pow(2).mean()
+    loss_ic = (model(x0, torch.zeros_like(x0)) + torch.sin(torch.pi * x0)).pow(2).mean()   # u(x, 0) = -sin(pi x)
+    loss_d = (model(x_obs, t_obs) - u_obs).pow(2).mean()                     # sparse measurements
+    loss = loss_d + loss_r + 10.0 * loss_ic
+    opt.zero_grad(); loss.backward(); opt.step()
+```
+
+### 13.99 Why are PINNs hard to train, and how do you improve them?
+
+PINNs are easy to write but notoriously difficult to train well. Many published failures come from optimisation problems rather than from the idea itself. Knowing the failure modes and their fixes is what interviewers look for.
+
+**Common failure modes and fixes**
+
+| Problem | What happens | Fixes |
+| --- | --- | --- |
+| Imbalanced loss terms | Data, residual and boundary terms have very different scales and gradient sizes; one term dominates and the others are ignored | Adaptive weighting based on gradient statistics, weighting based on the neural tangent kernel, self-adaptive (learnable) weights, non-dimensionalising the equations |
+| Spectral bias | Networks learn smooth, low-frequency functions first, so sharp gradients and high-frequency solutions are learned slowly or not at all | Random Fourier feature input embeddings, sine activations, multi-scale architectures |
+| Ill-conditioned optimisation | For stiff PDEs or strong convection, the loss landscape is very hard to optimise, and training converges to trivial or wrong solutions | Curriculum training (start with an easy parameter value and increase it), training in time windows, better architectures |
+| Violation of causality | In time-dependent problems the network fits later times before earlier times are correct | Causal weighting that only emphasises later times once earlier residuals are small, time-marching |
+| Poor collocation sampling | Uniform random points miss regions where the solution changes quickly | Residual-based adaptive refinement: add points where the residual is largest |
+| Soft boundary conditions | Boundary conditions are only approximately satisfied | Hard constraints: build them into the network output so they hold exactly |
+| Large or complex domains | One network cannot capture everything | Domain decomposition with several networks (XPINNs, finite-basis PINNs) |
+
+**Hard boundary constraints** use an ansatz in which the boundary condition holds by construction:
+
+$$
+u_\theta(x) = g(x) + d(x) \cdot N_\theta(x)
+$$
+
+Here $g$ satisfies the boundary condition and $d$ is a function that equals zero on the boundary, so whatever the network $N_\theta$ outputs, the boundary values are correct.
+
+**Optimisation practice**
+
+- Train with Adam first, then fine-tune with L-BFGS, which often reduces the residual substantially more for these smooth, deterministic losses.
+- Use full or large batches of collocation points, and resample them periodically.
+- Monitor each loss term separately, and compare against a reference solution from a classical solver whenever possible.
+- Consider double precision when residuals must be driven very low.
+
+**Evaluation:** a low training loss does not guarantee an accurate solution. Measure the relative L2 error against a trusted numerical solution on a fine grid, and check conserved quantities (mass, energy) where they apply.
+
+```python
+import torch
+import torch.nn as nn
+
+class FourierFeatures(nn.Module):
+    """Random Fourier features to reduce spectral bias."""
+    def __init__(self, in_dim=2, n_features=128, scale=5.0):
+        super().__init__()
+        self.register_buffer("B", torch.randn(in_dim, n_features) * scale)
+    def forward(self, z):
+        proj = 2 * torch.pi * z @ self.B
+        return torch.cat([torch.sin(proj), torch.cos(proj)], dim=-1)
+
+class HardBCNet(nn.Module):
+    """u(x) = g(x) + d(x) * N(x): zero Dirichlet boundary at x = -1 and x = 1 is satisfied exactly."""
+    def __init__(self, width=64):
+        super().__init__()
+        self.features = FourierFeatures(in_dim=1, n_features=64)
+        self.net = nn.Sequential(nn.Linear(128, width), nn.Tanh(), nn.Linear(width, 1))
+    def forward(self, x):
+        g = torch.zeros_like(x)
+        d = (1 - x) * (1 + x)          # equals zero at both boundaries
+        return g + d * self.net(self.features(x))
+```
+
+### 13.100 How do PINNs compare with classical numerical solvers and neural operators, and when should you use each?
+
+Physics-informed machine learning is a family of approaches. A senior answer places PINNs among the alternatives and is honest about where each one wins.
+
+| Approach | What it learns | Strengths | Weaknesses |
+| --- | --- | --- | --- |
+| Classical solvers (finite element, finite volume, finite difference) | The solution of one problem instance, computed numerically | Mature, accurate, error estimates, trusted by engineers and regulators | Expensive for many repeated runs; inverse problems and sparse data need extra machinery |
+| PINNs | A network representing one solution, trained on physics plus data | Mesh-free; combines sparse noisy data with known equations; natural for inverse problems and parameter identification | Usually slower and less accurate than classical solvers for standard forward problems; difficult training; must retrain for each new instance |
+| Neural operators (DeepONet, Fourier Neural Operator) | A mapping from input functions (coefficients, initial or boundary conditions, geometry) to solutions, across many instances | After training, new solutions in milliseconds, often orders of magnitude faster than simulation | Needs a large training set, usually from simulations; accuracy limited outside the training distribution |
+| Physics-informed neural operators | A neural operator trained with both simulation data and a physics residual loss | Less data needed; better physical consistency | More complex training |
+| Hybrid (grey-box) models | Known physics with learned components, for example neural ODEs or a learned closure term inside a simulator | Keeps trusted structure; learns only what is unknown | Requires domain modelling expertise |
+
+**When PINNs are a good choice**
+
+- **Inverse problems and data assimilation:** estimate unknown material properties, source terms or boundary conditions from sparse sensor data.
+- **Combining scarce measurements with known physics,** where purely data-driven models would overfit or violate the physics.
+- **Problems where meshing is hard** (complex or moving geometries) or the domain is high-dimensional.
+- **A differentiable model** is needed for design optimisation or control.
+
+**When to prefer something else**
+
+- **Standard forward simulations** of a well-posed PDE: use a classical solver.
+- **Many repeated simulations** with different inputs (design exploration, real-time digital twins, uncertainty quantification): train a **neural operator** or other surrogate on solver outputs.
+- **Purely data-rich problems with little reliable physics:** standard ML may be simpler.
+
+**Real-world applications** of physics-informed ML include heat transfer and fluid flow, subsurface and reservoir modelling, battery and materials modelling, biomedical flows, structural health monitoring, and digital twins. Weather and climate forecasting has seen strong results from learned surrogates such as Fourier neural operator variants and graph neural networks trained on reanalysis data.
+
+**Practical guidance for leading such projects**
+
+- Pair ML engineers with domain scientists from the start; the physics, scaling and boundary conditions matter more than the architecture.
+- **Validate against a trusted solver** and measured data, and report errors in physical units that engineers understand.
+- Quantify uncertainty (ensembles or Bayesian PINNs) and define the operating envelope where the model is trusted; physics-informed models can still fail badly when extrapolating.
+- Use established libraries: DeepXDE for PINNs, NVIDIA PhysicsNeMo (formerly Modulus) for physics-ML at scale, and the `neuraloperator` library for Fourier neural operators.
+
+```python
+import torch
+import torch.nn as nn
+
+class SpectralConv1d(nn.Module):
+    """Core layer of a Fourier Neural Operator: mix the lowest Fourier modes with learned complex weights."""
+    def __init__(self, channels, modes):
+        super().__init__()
+        self.modes = modes
+        self.weight = nn.Parameter(torch.randn(channels, channels, modes, dtype=torch.cfloat) / channels)
+
+    def forward(self, v):                                   # v: (batch, channels, grid)
+        v_hat = torch.fft.rfft(v)
+        out = torch.zeros_like(v_hat)
+        out[:, :, : self.modes] = torch.einsum("bim,iom->bom", v_hat[:, :, : self.modes], self.weight)
+        return torch.fft.irfft(out, n=v.shape[-1])
+```
 
 ---
 

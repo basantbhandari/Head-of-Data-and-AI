@@ -1433,7 +1433,7 @@ Per-step attention cost drops from reprocessing $t$ tokens to processing one tok
 **Memory cost:**
 
 $$
-\text{KV bytes} = 2 \times L \times n_{\text{kv\_heads}} \times d_{\text{head}} \times \text{seq\_len} \times \text{batch} \times \text{bytes}
+\text{KV bytes} = 2 \times L \times n_{\text{kv heads}} \times d_{\text{head}} \times \text{seq len} \times \text{batch} \times \text{bytes}
 $$
 
 **Example:** LLaMA-2 7B (32 layers, 32 heads × 128, FP16) uses ~0.5 MB per token, so ~2 GB for one 4k-token sequence. At serving scale **the KV cache, not the weights, often limits batch size and context length.**
@@ -1474,7 +1474,7 @@ and computes K/V only for **AI**.
 **Grouped Query Attention (GQA)** is a middle ground between multi-head (MHA) and multi-query attention (MQA). Query heads are split into $G$ groups, and **each group shares one Key/Value head**.
 
 - MHA: $h$ query heads, $h$ KV heads.
-- **GQA: $h$ query heads, $G$ KV heads** ($1 < G < h$).
+- **GQA: $h$ query heads, $G$ KV heads** ($1 \lt G \lt h$).
 - MQA: $h$ query heads, 1 KV head.
 
 **Why:** during decoding, the bottleneck is **reading the KV cache from memory**, not FLOPs. The KV cache scales with the number of KV heads, so GQA cuts it by $h/G$.
@@ -1708,7 +1708,7 @@ Two things must live in GPU memory (HBM) during inference, and both are large:
 **2. KV cache** — grows with batch size × sequence length:
 
 $$
-\text{KV bytes} = 2 \times n_{\text{layers}} \times n_{\text{kv\_heads}} \times d_{\text{head}} \times \text{seq\_len} \times \text{batch} \times \text{bytes}
+\text{KV bytes} = 2 \times n_{\text{layers}} \times n_{\text{kv heads}} \times d_{\text{head}} \times \text{seq len} \times \text{batch} \times \text{bytes}
 $$
 
 - Llama-2-70B (80 layers, 8 KV heads with GQA, $d_{\text{head}} = 128$, FP16): ~0.33 MB per token → a 4k context is ~1.3 GB per sequence. Thirty concurrent requests consume tens of GB.
@@ -1772,7 +1772,7 @@ Work through **memory first, then throughput**, then validate with a benchmark.
 
 **1. Weights:** $\text{params} \times \text{bytes}$. A 70B model: FP16 ≈ 140 GB, FP8/INT8 ≈ 70 GB, INT4 ≈ 35–40 GB.
 
-**2. KV cache per token:** $2 \times n_{layers} \times n_{kv\_heads} \times d_{head} \times \text{bytes}$.
+**2. KV cache per token:** $2 \times n_{layers} \times n_{\text{kv heads}} \times d_{head} \times \text{bytes}$.
 Llama-3-70B (80 layers, 8 KV heads, $d_{\text{head}} = 128$, FP16): $2 \times 80 \times 8 \times 128 \times 2 \approx 320$ KB per token.
 **Total KV:** $\text{KV}_{\text{total}} = \text{KV per token} \times \text{avg context length} \times \text{concurrent sequences}$. For 32 concurrent users at 8k tokens: $32 \times 8192 \times 320\ \text{KB} \approx 84\ \text{GB}$.
 

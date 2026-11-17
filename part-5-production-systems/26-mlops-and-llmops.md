@@ -817,12 +817,12 @@ Break the cost into **usage, infrastructure, and operational costs**.
 
 $$
 \begin{aligned}
-\text{Monthly Cost} = {} & \text{LLM Cost} \\
-& + \text{Embedding/Reranking Cost} \\
-& + \text{Compute} \\
-& + \text{Storage} \\
-& + \text{Network} \\
-& + \text{Monitoring} \\
+\text{Monthly Cost} = {} & \text{LLM Cost} \cr
+& + \text{Embedding/Reranking Cost} \cr
+& + \text{Compute} \cr
+& + \text{Storage} \cr
+& + \text{Network} \cr
+& + \text{Monitoring} \cr
 & + \text{Other Operational Costs}
 \end{aligned}
 $$

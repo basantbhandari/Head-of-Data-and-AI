@@ -1188,7 +1188,7 @@ The model receives a programming problem and generates code. The generated code 
 For example:
 
 $$
-\text{pass@}1 = 70\%
+\text{pass@}1 = 0.70
 $$
 
 means the model successfully solves approximately 70% of the benchmark problems with one generated solution under the benchmark's evaluation procedure.
@@ -1652,7 +1652,7 @@ A typical evaluation pipeline is:
 For example, if an answer contains 10 factual claims and 9 are supported by the retrieved documents:
 
 $$
-\text{Groundedness} = \frac{9}{10} = 90\%
+\text{Groundedness} = \frac{9}{10} = 0.90
 $$
 
 ### 24.19 How do you evaluate multi-turn conversation quality?

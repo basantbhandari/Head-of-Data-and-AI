@@ -2876,7 +2876,7 @@ These four metrics separate RAG quality into **retrieval** and **generation**:
 **Retrieval precision** — of the retrieved chunks, how many are relevant?
 
 $$
-\text{Precision@}k = \frac{\#\,\text{relevant in top-}k}{k}
+\text{Precision@}k = \frac{\text{relevant items in top-}k}{k}
 $$
 
 Low precision = noisy context, more tokens, more distraction.
@@ -2884,7 +2884,7 @@ Low precision = noisy context, more tokens, more distraction.
 **Retrieval recall** — of all relevant chunks, how many were retrieved?
 
 $$
-\text{Recall@}k = \frac{\#\,\text{relevant in top-}k}{\#\,\text{relevant total}}
+\text{Recall@}k = \frac{\text{relevant items in top-}k}{\text{total relevant items}}
 $$
 
 Low recall = the answer isn't in the context, so the LLM can't answer correctly (or hallucinates). Usually the first thing to fix.

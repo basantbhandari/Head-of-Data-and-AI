@@ -1231,7 +1231,7 @@ averaged over queries. This measures the index, not the embedding model. Retriev
 
 **How it is trained:** the training loss (for example, a contrastive loss) is computed on several prefixes of the same vector and summed:
 
-$\mathcal{L} = \sum_{k \in \{64, 128, \ldots, d\}} c_k \cdot \mathcal{L}(\mathbf{z}_{1:k})$
+$\mathcal{L} = \sum_{k \in \lbrace 64, 128, \ldots, d\rbrace } c_k \cdot \mathcal{L}(\mathbf{z}_{1:k})$
 
 This forces the model to put the most important information in the earliest dimensions.
 

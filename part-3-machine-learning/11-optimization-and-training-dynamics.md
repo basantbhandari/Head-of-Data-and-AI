@@ -531,7 +531,7 @@ scaler.scale(loss).backward(); scaler.step(opt); scaler.update()
 
 **Actually converges: Batch GD.** With a suitable fixed learning rate on a convex problem (e.g. linear regression's MSE), it follows the true gradient and settles exactly at the minimum. SGD and mini-batch GD use noisy gradient estimates, so with a constant learning rate they **keep bouncing around** the minimum. Mini-batch bounces less than SGD.
 
-**However:** SGD and mini-batch GD *will* converge if you use a **learning-rate schedule** that decays over time (e.g. $\eta_t \propto 1/t$, satisfying $\sum \eta_t = \infty$, $\sum \eta_t^2 < \infty$), or progressively increase the batch size.
+**However:** SGD and mini-batch GD *will* converge if you use a **learning-rate schedule** that decays over time (e.g. $\eta_t \propto 1/t$, satisfying $\sum \eta_t = \infty$, $\sum \eta_t^2 \lt \infty$), or progressively increase the batch size.
 
 **Tradeoffs:**
 | | Batch GD | Mini-batch GD | SGD |
@@ -985,7 +985,7 @@ Too large:  ←────→────←────→  unstable
 #### 1. Global Minimum
 
 $$
-L(\theta^*) \leq L(\theta), \quad \forall \theta
+L(\theta^{\ast}) \leq L(\theta), \quad \forall \theta
 $$
 
 It has the **lowest possible loss across the entire parameter space**.
@@ -1211,7 +1211,7 @@ Classical theory (VC dimension, bias-variance) says more parameters than data po
 
 - **Implicit regularization:** among the infinitely many solutions that fit the training data, gradient descent tends to find "simple" ones (low norm, low complexity, flat minima).
 - **Interpolation can be benign:** in high dimensions, a model can fit noisy labels with tiny, spread-out components that barely affect predictions on new inputs ("benign overfitting").
-- **Double descent:** test error rises near the interpolation threshold ($\#\text{params} \approx \#\text{samples}$) and then *falls again* as the model grows, because larger models can pick smoother interpolating solutions.
+- **Double descent:** test error rises near the interpolation threshold ($\text{number of parameters} \approx \text{number of samples}$) and then *falls again* as the model grows, because larger models can pick smoother interpolating solutions.
 - **Architectural inductive biases:** convolutions, attention, weight sharing and normalization constrain the hypothesis space to functions that suit the data.
 - **Explicit regularization and training tricks:** weight decay, data augmentation, dropout, early stopping.
 - **Optimization benefits:** overparameterized loss landscapes have more connected, flatter minima, which makes good solutions easier to reach.
@@ -1223,7 +1223,7 @@ Classical theory (VC dimension, bias-variance) says more parameters than data po
 **Double descent** is the observation that test error does not follow the classic U-curve as model capacity grows:
 
 1. **Classical regime:** as capacity grows, test error first falls and then rises (the usual bias-variance U).
-2. **Interpolation threshold:** around the point where the model can just barely fit the training set exactly ($\#\text{params} \approx \#\text{samples}$), test error **peaks** — the model is forced into a single, highly contorted solution that fits the noise.
+2. **Interpolation threshold:** around the point where the model can just barely fit the training set exactly ($\text{number of parameters} \approx \text{number of samples}$), test error **peaks** — the model is forced into a single, highly contorted solution that fits the noise.
 3. **Modern (overparameterized) regime:** past the threshold, test error **decreases again**, often below the classical optimum, because many interpolating solutions exist and the optimizer picks a smooth, low-norm one.
 
 ```txt
@@ -1283,21 +1283,21 @@ Convergence speed depends on the **geometry of the loss function**: how curved i
 **Key definitions**
 
 - **$L$-smooth:** the gradient does not change too fast; the largest curvature (largest Hessian eigenvalue) is at most $L$.
-- **$\mu$-strongly convex:** the function curves upwards at least as much as a quadratic with curvature $\mu$ (smallest Hessian eigenvalue at least $\mu > 0$).
+- **$\mu$-strongly convex:** the function curves upwards at least as much as a quadratic with curvature $\mu$ (smallest Hessian eigenvalue at least $\mu \gt 0$).
 - **Condition number:** $\kappa = L / \mu$, the ratio of the steepest to the flattest curvature.
 
 **Convergence rates of gradient descent (step size $1/L$)**
 
 | Setting | Rate | Meaning |
 | --- | --- | --- |
-| Convex, $L$-smooth | $f(x_k) - f^* \le \frac{L \lVert x_0 - x^* \rVert^2}{2k}$, so $O(1/k)$ | Sublinear: 10 times more steps for 10 times less error |
+| Convex, $L$-smooth | $f(x_k) - f^{\ast} \le \frac{L \lVert x_0 - x^{\ast} \rVert^2}{2k}$, so $O(1/k)$ | Sublinear: 10 times more steps for 10 times less error |
 | Strongly convex | $O\left((1 - 1/\kappa)^k\right)$ | Linear (geometric) convergence; about $\kappa$ steps per constant-factor improvement |
 | With Nesterov momentum | $O(1/k^2)$ convex; $O\left((1 - 1/\sqrt{\kappa})^k\right)$ strongly convex | Momentum replaces $\kappa$ with $\sqrt{\kappa}$, a large gain when $\kappa$ is big |
 | Stochastic gradient descent | $O(1/\sqrt{k})$ convex; $O(1/k)$ strongly convex with decaying step size | Gradient noise slows final convergence, which is why learning rates are decayed |
 
 **Why the condition number matters**
 
-- With a large $\kappa$, the loss surface is a long, narrow valley. A step size small enough to be stable in the steep direction ($\eta < 2/L$) makes progress painfully slow along the flat direction, and the path zig-zags across the valley.
+- With a large $\kappa$, the loss surface is a long, narrow valley. A step size small enough to be stable in the steep direction ($\eta \lt 2/L$) makes progress painfully slow along the flat direction, and the path zig-zags across the valley.
 - This is exactly what happens with **unscaled features** in linear models: a feature measured in thousands creates a steep direction, another in fractions a flat one.
 
 **Remedies, all of which reduce the effective condition number**
@@ -1437,7 +1437,7 @@ Several techniques improve a model by **averaging weights** rather than choosing
 
 **Exponential moving average (EMA) of weights**
 
-- Maintain a shadow copy: $\theta_{\text{EMA}} \leftarrow \beta \, \theta_{\text{EMA}} + (1 - \beta) \, \theta$ after each step, with $\beta$ typically 0.999 to 0.9999.
+- Maintain a shadow copy: $\theta_{\text{EMA}} \leftarrow \beta \thinspace \theta_{\text{EMA}} + (1 - \beta) \thinspace \theta$ after each step, with $\beta$ typically 0.999 to 0.9999.
 - Evaluate and deploy the EMA weights, while training continues on the raw weights.
 - Widely used in diffusion models, object detectors and self-supervised learning (the "teacher" network in methods such as BYOL and DINO is an EMA of the student).
 - Costs one extra copy of the parameters.

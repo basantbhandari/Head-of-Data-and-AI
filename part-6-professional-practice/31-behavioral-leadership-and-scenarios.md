@@ -199,7 +199,7 @@ $$
 For example, if an AI automation feature generates the revenue **\$100K/year** and costs **\$30K/year** to operate and maintain:
 
 $$
-\text{ROI} = \frac{\$100\text{K} - \$30\text{K}}{\$30\text{K}} = 233\%
+\text{ROI} = \frac{100\text{K} - 30\text{K}}{30\text{K}} \approx 2.33 \quad (233\text{ percent})
 $$
 
 ##### 5. Include AI-specific metrics
