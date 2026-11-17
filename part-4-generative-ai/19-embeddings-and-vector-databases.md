@@ -2,9 +2,9 @@
 
 _Part IV — Generative AI and LLM Engineering_
 
-Embedding models, similarity search, ANN indexes and choosing and operating a vector store.
+Embedding models, similarity search, ANN index internals (HNSW, IVF, product quantisation), late interaction and learned sparse retrieval, and sizing, securing and operating a vector store.
 
-This chapter contains **26 questions**.
+This chapter contains **37 questions**.
 
 ## Contents
 
@@ -27,13 +27,24 @@ This chapter contains **26 questions**.
 - **19.17** [How do you fine-tune an embedding model for a specific domain?](#1917-how-do-you-fine-tune-an-embedding-model-for-a-specific-domain)
 - **19.18** [Your vector database for RAG is consuming too much memory. How do you reduce it?](#1918-your-vector-database-for-rag-is-consuming-too-much-memory-how-do-you-reduce-it)
 - **19.19** [Your vector database cannot scale to millions of embeddings. How do you fix the bottleneck?](#1919-your-vector-database-cannot-scale-to-millions-of-embeddings-how-do-you-fix-the-bottleneck)
-- **19.20** [Your new embedding model has different dimensions from the existing vectors in production. How do you handle the mismatch?](#1920-your-new-embedding-model-has-different-dimensions-from-the-existing-vectors-in-production-how-do-you-handle-the-mismatch)
-- **19.21** [Your vector search returns irrelevant results despite high similarity scores. How do you fix it?](#1921-your-vector-search-returns-irrelevant-results-despite-high-similarity-scores-how-do-you-fix-it)
-- **19.22** [You deployed a new embedding model, and search quality crashed overnight. How do you handle embedding drift?](#1922-you-deployed-a-new-embedding-model-and-search-quality-crashed-overnight-how-do-you-handle-embedding-drift)
-- **19.23** [Your semantic search fails for short queries. How do you improve it?](#1923-your-semantic-search-fails-for-short-queries-how-do-you-improve-it)
-- **19.24** [What is InfoNCE loss, and where is it used?](#1924-what-is-infonce-loss-and-where-is-it-used)
-- **19.25** [Why can't you use one embedding model for every domain?](#1925-why-cant-you-use-one-embedding-model-for-every-domain)
-- **19.26** [How do you choose between Pinecone, Weaviate, Qdrant, and pgvector for a given client?](#1926-how-do-you-choose-between-pinecone-weaviate-qdrant-and-pgvector-for-a-given-client)
+- **19.20** [Your vector search returns irrelevant results despite high similarity scores. How do you fix it?](#1920-your-vector-search-returns-irrelevant-results-despite-high-similarity-scores-how-do-you-fix-it)
+- **19.21** [You deployed a new embedding model, and search quality crashed overnight. How do you handle embedding drift?](#1921-you-deployed-a-new-embedding-model-and-search-quality-crashed-overnight-how-do-you-handle-embedding-drift)
+- **19.22** [Your semantic search fails for short queries. How do you improve it?](#1922-your-semantic-search-fails-for-short-queries-how-do-you-improve-it)
+- **19.23** [What is InfoNCE loss, and where is it used?](#1923-what-is-infonce-loss-and-where-is-it-used)
+- **19.24** [Why can't you use one embedding model for every domain?](#1924-why-cant-you-use-one-embedding-model-for-every-domain)
+- **19.25** [How do you choose between Pinecone, Weaviate, Qdrant, pgvector and other vector stores for a given client?](#1925-how-do-you-choose-between-pinecone-weaviate-qdrant-pgvector-and-other-vector-stores-for-a-given-client)
+- **19.26** [How does the HNSW index work, and how do you tune it?](#1926-how-does-the-hnsw-index-work-and-how-do-you-tune-it)
+- **19.27** [How do IVF and product quantisation work, and when would you use them instead of HNSW?](#1927-how-do-ivf-and-product-quantisation-work-and-when-would-you-use-them-instead-of-hnsw)
+- **19.28** [How do you benchmark a vector index for recall, latency and cost?](#1928-how-do-you-benchmark-a-vector-index-for-recall-latency-and-cost)
+- **19.29** [What are Matryoshka embeddings, and how do they reduce cost?](#1929-what-are-matryoshka-embeddings-and-how-do-they-reduce-cost)
+- **19.30** [What is late interaction (ColBERT), and how does it compare with bi-encoders and cross-encoders?](#1930-what-is-late-interaction-colbert-and-how-does-it-compare-with-bi-encoders-and-cross-encoders)
+- **19.31** [How does filtered vector search work, and why can filters hurt recall?](#1931-how-does-filtered-vector-search-work-and-why-can-filters-hurt-recall)
+- **19.32** [What are learned sparse embeddings such as SPLADE, and how do they compare with BM25 and dense embeddings?](#1932-what-are-learned-sparse-embeddings-such-as-splade-and-how-do-they-compare-with-bm25-and-dense-embeddings)
+- **19.33** [How do you keep a vector index fresh and consistent when source documents change frequently?](#1933-how-do-you-keep-a-vector-index-fresh-and-consistent-when-source-documents-change-frequently)
+- **19.34** [Why do many embedding models need different prefixes or instructions for queries and documents?](#1934-why-do-many-embedding-models-need-different-prefixes-or-instructions-for-queries-and-documents)
+- **19.35** [Why should you not use a fixed similarity score threshold to decide whether a result is relevant?](#1935-why-should-you-not-use-a-fixed-similarity-score-threshold-to-decide-whether-a-result-is-relevant)
+- **19.36** [Are embeddings sensitive data, and how do you secure a vector database?](#1936-are-embeddings-sensitive-data-and-how-do-you-secure-a-vector-database)
+- **19.37** [How would you estimate the size and cost of a vector database deployment?](#1937-how-would-you-estimate-the-size-and-cost-of-a-vector-database-deployment)
 
 ---
 
@@ -409,6 +420,12 @@ The best dimensionality is the one that provides sufficient retrieval quality at
 #### Important point
 
 You generally **should not mix embeddings from different model versions in the same similarity space** unless the models are explicitly designed to be compatible.
+
+#### When the new model has a different dimension
+
+- If the old model produces 768-dimensional vectors and the new one 1536, most indexes cannot even store them together. Create a new index or collection configured for the new dimension, re-embed the corpus, and cut over as above.
+- **Do not truncate or pad vectors** to force them to the same size. This destroys the representation and badly hurts retrieval. The one exception is a model trained with Matryoshka representation learning, whose vectors are designed to be truncated (and then re-normalised); even then, every vector in an index must use the same truncation.
+- Update the ingestion pipeline at the same time, and store the model version and dimension with the index configuration.
 
 ### 19.10 What are multi-modal embeddings, and how are they generated?
 
@@ -909,40 +926,7 @@ Measure:
 - Storage usage
 - Cost
 
-### 19.20 Your new embedding model has different dimensions from the existing vectors in production. How do you handle the mismatch?
-
-#### How do you handle an embedding dimension mismatch?
-
-- **Do not mix the old and new vectors in the same index.**
-  - If the existing vectors are 768-dimensional and the new model produces 1536-dimensional vectors, most vector indexes cannot compare them directly.
-- **Create a new index/collection**
-  - Configure it for the new embedding dimension.
-  - Keep the existing production index unchanged during migration.
-- **Re-embed the existing data**
-  - Run the new embedding model over the existing documents/chunks.
-  - Store the new vectors in the new index.
-- **Dual-run both systems**
-  - Send the same evaluation queries to both indexes.
-  - Compare **Recall@K, MRR, NDCG, latency, and downstream RAG quality**.
-- **Migrate gradually**
-  - Once the new model is validated, route traffic to the new index.
-  - Keep the old index available temporarily for rollback.
-- **Update the ingestion pipeline**
-  - Ensure all newly created documents use the new embedding model.
-  - Store the model version and dimension with the indexing configuration.
-
-#### What not to do
-
-- **Don't simply truncate or pad vectors** to force them to the same dimension.
-- This generally destroys the embedding model's intended representation and can significantly hurt retrieval quality.
-
-#### Practical migration
-
-**Old Model (768D) → Old Index**
-
-**New Model (1536D) → Re-embed corpus → New Index → Evaluate → Gradual Cutover → Retire Old Index**
-
-### 19.21 Your vector search returns irrelevant results despite high similarity scores. How do you fix it?
+### 19.20 Your vector search returns irrelevant results despite high similarity scores. How do you fix it?
 
 #### How do you fix irrelevant results despite high similarity scores?
 
@@ -986,7 +970,7 @@ A **high similarity score does not necessarily mean high relevance**. I would de
 
 **Check data → Check chunking → Check embeddings → Check metric/normalization → Check ANN → Add metadata filters → Hybrid retrieval → Rerank → Evaluate**
 
-### 19.22 You deployed a new embedding model, and search quality crashed overnight. How do you handle embedding drift?
+### 19.21 You deployed a new embedding model, and search quality crashed overnight. How do you handle embedding drift?
 
 #### How do you handle embedding drift after a deployment?
 
@@ -1031,7 +1015,7 @@ If search quality **crashed overnight**, I would treat it as a production incide
 
 If the new model produces a different representation, maintain a separate index and migrate after validation.
 
-### 19.23 Your semantic search fails for short queries. How do you improve it?
+### 19.22 Your semantic search fails for short queries. How do you improve it?
 
 #### How to improve semantic search for short queries
 
@@ -1046,7 +1030,7 @@ If the new model produces a different representation, maintain a separate index 
 - **Handle abbreviations and entities:** Normalize acronyms, product names, IDs, spelling variations, and domain-specific terminology.
 - **Evaluate specifically on short queries:** Create a test set containing 1–5-word queries and measure Recall@K, MRR, NDCG, and Precision@K.
 
-### 19.24 What is InfoNCE loss, and where is it used?
+### 19.23 What is InfoNCE loss, and where is it used?
 
 **InfoNCE** (from Contrastive Predictive Coding, van den Oord et al., 2018) is the standard **contrastive loss**. Given an anchor $q$, one positive $k^+$ and $N-1$ negatives, it is a softmax cross-entropy that asks the model to pick out the positive:
 
@@ -1075,20 +1059,418 @@ def info_nce(q, k, tau=0.07):           # q, k: [B, D], row i of k is the positi
 
 **Practical issues:** quality depends on **batch size / number of negatives** (hence large batches, memory queues, cross-device gathering), **hard-negative mining** (but watch for false negatives, such as duplicates that are actually positives), and tuning $\tau$.
 
-### 19.25 Why can't you use one embedding model for every domain?
+### 19.24 Why can't you use one embedding model for every domain?
 
-Embedding models encode different notions of similarity; a model tuned for general text may miss domain-specific meaning (e.g., legal language), so the model must be selected to fit the domain.
+An embedding model encodes **one particular notion of similarity**: the one implied by its training data and objective. Two texts are "close" only in the sense the model was trained to treat as close. When the domain or task changes, that notion often stops matching what users mean by relevant.
 
-### 19.26 How do you choose between Pinecone, Weaviate, Qdrant, and pgvector for a given client?
+**Why a single model falls short**
 
-Depends on scale, existing infra, and operational requirements:
+- **Vocabulary and meaning shift.** In law, "consideration" means something exchanged in a contract, not thoughtfulness. In medicine, abbreviations and drug names are rare in general web text, so a general model has weak representations for them and the tokenizer splits them into meaningless pieces.
+- **Different definitions of similarity.** For duplicate detection, paraphrases should be close. For question answering, a question should be close to its *answer*, which may share few words. For code search, a natural-language description should be close to code. For e-commerce, "iPhone 15 case" should not be close to "iPhone 15", even though they share words. One training objective cannot serve all of these equally.
+- **Asymmetry.** Search queries are short and documents are long. Models trained only on symmetric sentence pairs handle this poorly.
+- **Language coverage.** English-heavy models degrade on other languages and scripts.
+- **Modalities.** Text models cannot embed images or tables well; multimodal models are needed for those.
 
-- **pgvector**: best when the client already runs Postgres and wants to avoid a new piece of infrastructure — good for small/medium scale, keeps data consistency (transactions) with the rest of the app, but scales less well for very high-dimensional/high-volume ANN search.
-- **Pinecone**: fully managed, minimal ops overhead, strong at scale, good if the client wants a SaaS solution and doesn't want to self-host.
-- **Weaviate**: open-source, supports hybrid search natively, good schema/class modeling, can self-host or use managed cloud — good middle ground.
-- **Qdrant**: open-source, high performance, strong filtering support, good for self-hosted deployments with fine-grained metadata filtering needs.
+**What to do in practice**
 
-Decision drivers: data volume, latency SLAs, need for hybrid search out-of-the-box, self-hosted vs. managed preference, existing infra, and cost.
+- Benchmark candidate models on **your own queries and documents** (recall@k, NDCG), not only on public leaderboards such as MTEB, which may not match your domain.
+- Use domain-specific or instruction-tuned models where they exist, and pass the task instruction or query prefix the model expects.
+- Fine-tune a general model on in-domain pairs when the gap is large (see the fine-tuning question in this chapter).
+- Use hybrid search so that exact domain terms, codes and IDs are matched lexically even when embeddings are weak.
+- It is fine to run **different models for different collections** (for example, one for code, one for support articles), as long as each index only ever compares vectors from its own model.
+
+### 19.25 How do you choose between Pinecone, Weaviate, Qdrant, pgvector and other vector stores for a given client?
+
+Start from the client's requirements and existing infrastructure, not from a product list. For most projects, several options would work; the decision is about operations, cost, scale and features such as filtering and hybrid search.
+
+**Questions to ask first**
+
+- **Scale:** how many vectors now and in two years (100k, 10M, 1B)? What dimension? How many queries per second?
+- **Latency and recall targets:** for example, p99 under 50 ms at recall@10 of 0.95.
+- **Filtering:** heavy metadata filtering, multi-tenancy, per-document permissions?
+- **Hybrid search:** is keyword search needed alongside vectors?
+- **Update pattern:** mostly static, or constant upserts and deletes?
+- **Operations:** does the client want a managed service, or must data stay inside its own cloud account or on premises?
+- **Existing stack:** do they already run Postgres, Elasticsearch or OpenSearch, or a lakehouse?
+- **Budget** and team skills.
+
+**Options compared**
+
+| Option | Strengths | Watch out for | Good fit |
+| --- | --- | --- | --- |
+| pgvector (Postgres) | No new system; SQL joins and filters; transactions with application data; HNSW and IVF indexes | Large indexes need lots of RAM; tuning filtered queries; scaling beyond tens of millions of vectors needs care | Already on Postgres, up to roughly tens of millions of vectors |
+| Elasticsearch / OpenSearch | Mature keyword search plus vectors in one engine; strong filtering and aggregations | Operational weight; vector performance and memory need tuning | Already using them for search; hybrid search is central |
+| Pinecone | Fully managed, serverless option, little to operate | Vendor lock-in, data leaves your account, cost at high volume | Teams who want no operations and accept SaaS |
+| Weaviate | Open source or managed; built-in hybrid search and modules | Another system to run if self-hosted | Hybrid search with flexible hosting |
+| Qdrant | Open source or managed; fast; strong payload filtering; quantisation support | Self-hosting needs operations skills | Heavy filtering, self-hosted performance |
+| Milvus / Zilliz | Built for very large scale; many index types including GPU and disk-based | More complex architecture | Hundreds of millions to billions of vectors |
+| LanceDB, or vectors in a lakehouse | Vectors stored alongside data in open formats; cheap storage | Lower query concurrency than dedicated servers | Batch, analytics and offline retrieval workloads |
+
+**How I would decide**
+
+1. Default to the **simplest option that meets the requirements**, usually the database the client already runs (pgvector, OpenSearch).
+2. Shortlist two or three alternatives only if requirements exceed what the default can do.
+3. Run a **benchmark on the client's data**: recall@k against exact search, p99 latency at target QPS, filtered-query performance, index build time, memory and cost.
+4. Check non-functional needs: security (encryption, private networking, RBAC), backups, multi-region, compliance.
+5. Keep an abstraction layer in the application and keep the source text and metadata in the system of record, so the vector store can be rebuilt or replaced.
+
+### 19.26 How does the HNSW index work, and how do you tune it?
+
+**HNSW (Hierarchical Navigable Small World)** is a graph-based approximate nearest neighbour index. It is the default in most vector databases (pgvector, Qdrant, Weaviate, Milvus, OpenSearch) because it gives high recall at low latency for in-memory search.
+
+**Structure**
+
+- Every vector is a node in a graph, connected to some of its nearest neighbours.
+- The graph has **several layers**. Every node is in layer 0. Each node is also placed in higher layers with exponentially decreasing probability, so the top layers are sparse and contain few nodes with long-range links, like an express highway. This is similar in spirit to a skip list.
+
+**Search**
+
+1. Start at a fixed entry point in the top layer.
+2. Greedily move to the neighbour closest to the query until no neighbour is closer. Then drop down one layer and repeat.
+3. In layer 0, run a **beam search** that keeps a candidate list of size `ef_search`, expanding the closest unvisited candidates until the list stops improving.
+4. Return the best `k` from the candidate list.
+
+Search cost grows roughly logarithmically with the number of vectors, which is why HNSW scales well.
+
+**Insertion:** a new vector picks its top layer at random, then is connected at each layer to its nearest neighbours, found with the same search procedure using `ef_construction`. A heuristic prefers diverse neighbours, so the graph keeps long links that help navigation.
+
+**Parameters**
+
+| Parameter | What it controls | Higher value means |
+| --- | --- | --- |
+| `M` | Links per node (often 2M at layer 0) | Better recall, more memory, slower build. Typical 16 to 64 |
+| `ef_construction` | Candidate list size during build | Better graph quality, slower build. Typical 100 to 500 |
+| `ef_search` | Candidate list size at query time (must be at least k) | Better recall, higher latency. Tune per workload, can change at runtime |
+
+**How to tune**
+
+1. Compute exact nearest neighbours for a sample of real queries as ground truth.
+2. Fix `M` and `ef_construction` at reasonable values, build the index.
+3. Sweep `ef_search` and plot recall@k against p99 latency and QPS. Pick the smallest value that meets the recall target.
+4. If recall plateaus too low, increase `M` or `ef_construction` and rebuild.
+
+**Costs and limitations**
+
+- **Memory:** the full vectors plus the links, roughly `M × 2 × 4 bytes` per vector at layer 0. For 10M vectors at 768 dimensions in float32 that is about 31 GB of vectors plus about 1 to 3 GB of graph.
+- **Build time** is significant for large collections.
+- **Deletes** are usually tombstones; many deletes degrade the graph until it is rebuilt or compacted.
+- **Restrictive filters** can disconnect the graph during search and reduce recall (see the filtered search question).
+- When memory is the limit, combine HNSW with quantised vectors, or use a disk-based index such as DiskANN.
+
+### 19.27 How do IVF and product quantisation work, and when would you use them instead of HNSW?
+
+**IVF (inverted file index)** partitions the vector space into clusters:
+
+1. Run k-means on a sample of vectors to get `nlist` centroids. A common starting point is `nlist` around $\sqrt{n}$ to $4\sqrt{n}$.
+2. Assign every vector to its nearest centroid's list.
+3. At query time, find the `nprobe` nearest centroids and search only the vectors in those lists.
+
+Raising `nprobe` increases recall and latency. IVF has a small memory overhead and fast builds, but recall suffers when the nearest neighbours fall just across a cluster boundary, and the centroids should be retrained if the data distribution shifts.
+
+**Product quantisation (PQ)** compresses vectors:
+
+1. Split each $d$-dimensional vector into $m$ sub-vectors.
+2. For each sub-space, learn 256 centroids with k-means, so each sub-vector is replaced by a one-byte code.
+3. A 768-dimensional float32 vector (3,072 bytes) with $m = 96$ becomes 96 bytes, a 32 times reduction.
+4. At query time, precompute a small lookup table of distances from the query's sub-vectors to every centroid. The distance to any compressed vector is then a sum of $m$ table lookups (asymmetric distance computation), which is very fast.
+
+PQ distances are approximate, so production systems **retrieve more candidates with PQ and re-rank them with full-precision vectors** (kept on disk or in cheaper storage).
+
+**IVF-PQ** combines both: clusters to limit how many vectors are scanned, PQ codes to make each scan cheap. Variants such as OPQ (a learned rotation before PQ) and ScaNN's anisotropic quantisation improve accuracy.
+
+**DiskANN** is another option for very large collections: a graph index stored on SSD with PQ codes in memory for navigation, fetching full vectors from disk only for final re-ranking. It serves billions of vectors with modest RAM.
+
+**When to choose what**
+
+| Situation | Good choice |
+| --- | --- |
+| Up to tens of millions of vectors, RAM available, best latency and recall | HNSW (possibly with scalar quantisation) |
+| Hundreds of millions to billions of vectors, memory is the constraint | IVF-PQ with re-ranking, or DiskANN |
+| Frequent full rebuilds, batch workloads, GPU available | IVF or IVF-PQ (fast to build, GPU-friendly in FAISS) |
+| Small collection (under about 100k vectors) or very selective filters | Exact (flat) search, which is often fast enough and has perfect recall |
+
+### 19.28 How do you benchmark a vector index for recall, latency and cost?
+
+Vector search is approximate, so you must measure how much accuracy you are trading for speed. Vendor benchmarks rarely match your data, filters and load, so run your own.
+
+**1. Build a ground truth**
+
+- Take a representative sample of real queries (or held-out documents used as queries), typically 1,000 to 10,000.
+- Run **exact (brute-force) search** over the full collection to get the true top-k for each query.
+
+**2. Measure ANN recall**
+
+$\text{recall@k} = \frac{|\text{ANN top-}k \cap \text{exact top-}k|}{k}$
+
+averaged over queries. This measures the index, not the embedding model. Retrieval relevance (whether the true top-k are actually useful) is a separate evaluation with labelled relevance data.
+
+**3. Measure performance under realistic conditions**
+
+- p50, p95 and p99 latency at the target QPS, with realistic concurrency, not one query at a time.
+- Queries **with the filters** production will use, at realistic selectivity.
+- Performance **during writes** (upserts and deletes) if the index is updated continuously.
+- Index build time, memory use, disk use, and cost per million queries.
+
+**4. Sweep parameters and plot trade-off curves**
+
+- For each index configuration (HNSW `M`, `ef_search`; IVF `nlist`, `nprobe`; quantisation settings), plot recall@k against QPS or p99 latency.
+- Choose the cheapest configuration that meets the recall target, for example recall@10 of at least 0.95.
+
+**5. Check end-to-end impact**
+
+- Confirm on the downstream task (RAG answer quality, search NDCG) that the recall loss does not matter in practice. Recall of 0.95 versus 0.99 at the index level is often invisible after reranking.
+
+**Tools:** ann-benchmarks and VectorDBBench for comparing engines; FAISS for quickly building exact ground truth; your own load-testing harness for production-like tests.
+
+**Common mistakes:** benchmarking with random vectors instead of real embeddings; testing without filters; single-threaded tests; comparing systems at different recall levels; and confusing index recall with retrieval relevance.
+
+### 19.29 What are Matryoshka embeddings, and how do they reduce cost?
+
+**Matryoshka Representation Learning (MRL)** trains an embedding model so that **the first $k$ dimensions of the vector are themselves a good embedding**, for several values of $k$ (for example 64, 128, 256, 512, 1024). Like nested Russian dolls, smaller embeddings sit inside the larger one.
+
+**How it is trained:** the training loss (for example, a contrastive loss) is computed on several prefixes of the same vector and summed:
+
+$\mathcal{L} = \sum_{k \in \{64, 128, \ldots, d\}} c_k \cdot \mathcal{L}(\mathbf{z}_{1:k})$
+
+This forces the model to put the most important information in the earliest dimensions.
+
+**How to use it**
+
+- **Truncate** the vector to the size you need, then **re-normalise** it to unit length before using cosine or dot-product similarity.
+- Several commercial and open models support it, for example OpenAI's text-embedding-3 models (through the `dimensions` parameter) and several open models (Nomic, Jina, and many recent models in the sentence-transformers ecosystem).
+
+**Why it matters for cost**
+
+- Storage and memory scale linearly with dimension: going from 1,024 to 256 dimensions cuts vector memory by 4 times, often with only a small loss in retrieval quality.
+- **Adaptive retrieval (funnel search):** search a fast index of short vectors (for example 128 or 256 dimensions) to get a few hundred candidates, then re-rank those candidates with the full vectors. This gives most of the full-dimension quality at a fraction of the cost.
+- Combine with quantisation (int8 or binary) for further savings.
+
+**Caveats**
+
+- Only works for models trained with MRL. Truncating an ordinary embedding model's vectors badly damages quality.
+- Always measure the quality loss at each size on your own evaluation set; the loss varies by domain.
+- Every vector in an index must use the same truncation size.
+
+### 19.30 What is late interaction (ColBERT), and how does it compare with bi-encoders and cross-encoders?
+
+There are three common ways to score how relevant a document is to a query with transformers. They trade quality against cost.
+
+**Bi-encoder (dense retrieval)**
+
+- Encode the query and the document **separately**, each into one vector, and score with a dot product.
+- Document vectors are computed offline, so search is cheap and works with ANN indexes.
+- Weakness: compressing a whole passage into one vector loses detail, especially for long or multi-topic text and exact terms.
+
+**Cross-encoder (reranker)**
+
+- Feed the query and document **together** into one transformer, which outputs a relevance score. Every query token can attend to every document token.
+- The most accurate option, but nothing can be precomputed: each (query, document) pair needs a full forward pass. Only practical for re-ranking a short list (tens to hundreds of candidates).
+
+**Late interaction (ColBERT)**
+
+- Encode the query and document separately, but keep **one vector per token** (for example, 128 dimensions each) instead of one vector per text.
+- Score with **MaxSim**: for each query token, find its most similar document token, and add up those maximum similarities:
+
+$\text{score}(q, d) = \sum_{i \in q} \max_{j \in d} \mathbf{q}_i \cdot \mathbf{d}_j$
+
+- Document token vectors are precomputed offline, so it is much cheaper than a cross-encoder, while fine-grained token matching makes it more accurate than a single-vector bi-encoder, and it generalises better to new domains.
+
+| Approach | Precompute documents? | Quality | Cost | Typical use |
+| --- | --- | --- | --- | --- |
+| Bi-encoder | Yes (one vector) | Good | Lowest | First-stage retrieval over millions of documents |
+| Late interaction | Yes (vector per token) | Better | Medium; much more storage | Retrieval or re-ranking where quality matters |
+| Cross-encoder | No | Best | Highest per pair | Re-ranking the top 20 to 200 candidates |
+
+**The storage problem:** one vector per token makes the index tens of times larger than a single-vector index. ColBERTv2 compresses token vectors with centroids plus quantised residuals, and the PLAID engine speeds up search. Some vector databases now support multi-vector fields natively, and the same idea is used for visual document retrieval (ColPali), where each image patch gets a vector.
+
+**Typical production pipeline:** bi-encoder plus BM25 retrieval for recall, then late interaction or a cross-encoder for re-ranking.
+
+### 19.31 How does filtered vector search work, and why can filters hurt recall?
+
+Most real queries combine similarity with constraints: tenant ID, user permissions, date range, language, product category. How the engine combines the filter with the ANN search has a big effect on both recall and latency.
+
+**Strategies**
+
+| Strategy | How it works | Problem |
+| --- | --- | --- |
+| Post-filtering | Run ANN for top-k (or top-k × a factor), then drop results that fail the filter | With a selective filter, few or no results survive, so you return fewer than k results or miss relevant ones |
+| Pre-filtering with exact search | Apply the filter first, then brute-force search the matching vectors | Exact and correct; fast only when the filtered set is small |
+| Filtered ANN traversal | Search the graph but only accept nodes that pass the filter | With a restrictive filter the allowed nodes are sparse, the graph becomes effectively disconnected, and the search gets stuck, so recall drops |
+
+**How good engines handle it**
+
+- **Query planning by selectivity:** estimate how many vectors pass the filter. If few, use exact search over them; if many, use filtered ANN. Qdrant, Weaviate, Milvus and pgvector (with iterative scans in recent versions) do variations of this.
+- **Filter-aware graphs:** add extra edges so the graph stays connected within common filter values, or expand to neighbours of neighbours when filtered nodes are sparse (the ACORN approach).
+- **Partitioning:** for filters that are always present and high cardinality, such as tenant ID, put each tenant in its own partition, shard or collection, so the filter becomes free.
+- **Payload indexes** on filter fields so the engine can evaluate filters quickly.
+
+**What to do in a design**
+
+1. Identify the filters production queries use and their selectivity distribution (a 1% filter behaves very differently from a 50% filter).
+2. Benchmark recall@k **with those filters**, not just unfiltered.
+3. Partition by tenant or other mandatory filters where possible.
+4. For security filters (permissions), never rely on post-filtering that might return nothing; and always enforce access control in the query, never only in the application after retrieval.
+
+### 19.32 What are learned sparse embeddings such as SPLADE, and how do they compare with BM25 and dense embeddings?
+
+**Learned sparse retrieval** uses a transformer to produce a sparse vector over the vocabulary: one weight per vocabulary term, with most weights zero. It can be served from a standard **inverted index**, like BM25, but the weights are learned.
+
+**How SPLADE works**
+
+- Pass the text through a BERT-style model with its masked language modelling head, giving a score for every vocabulary term at every token position.
+- For each vocabulary term, take the maximum over positions and apply $\log(1 + \text{ReLU}(\cdot))$ to get a non-negative weight.
+- A sparsity regulariser during training pushes most weights to zero, so each document has a few hundred non-zero terms.
+- Crucially, the model can give weight to terms **that do not appear in the text** (expansion): a passage about "car insurance" may get weight on "vehicle" and "policy". This reduces vocabulary mismatch, which is BM25's main weakness.
+
+**Comparison**
+
+| Aspect | BM25 | Learned sparse (SPLADE) | Dense (bi-encoder) |
+| --- | --- | --- | --- |
+| Training needed | No | Yes | Yes |
+| Synonyms and paraphrase | No | Partly, through expansion | Yes |
+| Exact terms, IDs, rare words | Strong | Strong | Often weak |
+| Interpretability | High (term weights) | High (term weights) | Low |
+| Index | Inverted index | Inverted index | ANN index |
+| Out-of-domain robustness | Good | Good | Varies, often weaker |
+| Cost | Very cheap | Model inference for documents (and queries, unless an inference-free query variant is used) | Model inference for both; ANN memory |
+
+**Where it fits:** learned sparse retrieval is a strong option for hybrid search, combined with dense retrieval through reciprocal rank fusion, and it works well in engines that already have an inverted index (Elasticsearch's ELSER, OpenSearch neural sparse search, and sparse vector support in Qdrant, Milvus and others). It is particularly helpful in domains with technical vocabulary, where dense models struggle with exact terms.
+
+### 19.33 How do you keep a vector index fresh and consistent when source documents change frequently?
+
+In production, documents are created, edited and deleted constantly, and permissions change. A vector index that drifts out of sync with the source of truth returns deleted, outdated or unauthorised content, which is both a quality and a security problem.
+
+**Principles**
+
+- The **source system is the system of record**; the vector index is a derived, rebuildable view.
+- Every vector carries metadata linking it back to its source: `doc_id`, `chunk_id`, source version or `updated_at`, content hash, embedding model version, and access-control fields.
+
+**Pipeline**
+
+```text
+source systems ─► change events (CDC, webhooks, or an outbox table)
+  ─► queue (Kafka / SQS) ─► ingestion workers: parse ─► chunk ─► embed ─► upsert
+  ─► vector store (idempotent upserts keyed by doc_id + chunk_id)
+nightly reconciliation job: compare source IDs and versions with the index ─► fix drift
+```
+
+**Handling the hard cases**
+
+- **Edits:** a changed document may produce a different number of chunks. Delete all chunks for that `doc_id` (or for the old version), then insert the new ones, so stale chunks do not linger.
+- **Idempotency:** deterministic chunk IDs and content hashes make retries safe and let you skip re-embedding unchanged chunks, which saves cost.
+- **Deletes:** propagate quickly, especially for legal deletion requests (GDPR). Remember backups and caches.
+- **Permission changes:** update ACL metadata without re-embedding; enforce permissions at query time.
+- **Ordering:** use version numbers so a late, older event cannot overwrite a newer one.
+
+**Index maintenance**
+
+- Graph indexes (HNSW) degrade with many deletes and updates, which are stored as tombstones. Schedule compaction or periodic rebuilds.
+- For full rebuilds (new embedding model, new chunking strategy), build a new index in the background and switch an **alias** atomically, keeping the old index for rollback (blue/green).
+
+**Monitoring:** ingestion lag (time from source change to searchable), failed documents, count reconciliation between source and index, and the share of retrieved chunks whose source version is stale.
+
+### 19.34 Why do many embedding models need different prefixes or instructions for queries and documents?
+
+Retrieval is usually **asymmetric**: a short query ("refund policy for damaged items") is matched against long passages that answer it. The query and the passage do not say the same thing; one asks, the other answers. Many embedding models are trained to handle this by being told which role each text plays.
+
+**Common conventions**
+
+| Model family | Convention |
+| --- | --- |
+| E5 | Prefix queries with `query: ` and documents with `passage: ` |
+| BGE (English v1.5) | An instruction prefix on queries for retrieval; no prefix on passages |
+| Nomic embed | `search_query: ` and `search_document: ` (also `clustering: `, `classification: `) |
+| Instruction-tuned models (e5-mistral, gte-Qwen and similar) | A task description on the query, such as `Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: ...` |
+| Commercial APIs | An input-type parameter, for example `search_query` versus `search_document` |
+
+**Why it matters**
+
+- The model learned different behaviour for each role during training. Leaving out the prefix, or using the wrong one, **silently degrades retrieval**: nothing errors, recall just drops, sometimes by several points.
+- Instructions let one model serve several tasks (retrieval, clustering, classification, duplicate detection), each with its own notion of similarity.
+- For **symmetric** tasks such as duplicate detection, both sides use the same prefix or instruction.
+
+**Engineering practice**
+
+- Read the model card and encode the convention in **one shared embedding function** used by both ingestion and query code, so they cannot drift apart.
+- Store the prefix or instruction as part of the embedding model version metadata; changing it requires re-embedding, just like changing the model.
+- Include the prefix when evaluating candidate models, otherwise the comparison is unfair.
+
+### 19.35 Why should you not use a fixed similarity score threshold to decide whether a result is relevant?
+
+It is tempting to say "only return chunks with cosine similarity above 0.8". This usually fails, because embedding similarity scores are **not calibrated probabilities of relevance**.
+
+**Reasons**
+
+- **Each model has its own score distribution.** Many models are anisotropic: their embeddings occupy a narrow cone of the space, so even unrelated texts can score 0.6 to 0.8. Another model may score related texts at 0.4. A threshold tuned for one model is meaningless for another, including a new version of the same model.
+- **Scores vary by query.** Short or generic queries tend to get high similarity with many documents; long, specific queries get lower scores overall. One global threshold will be too strict for some queries and too loose for others.
+- **Similarity is not relevance.** A passage can be on the same topic without answering the question, for example a document about a product's older version.
+- **Hubness:** in high-dimensional spaces, some vectors are close to many others and appear in many result lists regardless of the query.
+
+**Better approaches**
+
+- **Use a reranker score for thresholds.** Cross-encoder rerankers produce scores that track relevance much better; calibrate a threshold on labelled data.
+- **Calibrate per model with labelled data:** plot precision against threshold on (query, document, relevant?) examples, choose the threshold for the precision you need, and recalibrate whenever the model changes.
+- **Relative rules:** keep results within a margin of the top score, or look for a large gap in the score curve.
+- **Let the generator decide:** in RAG, pass the top-k and instruct the model to answer only from relevant context and to say when the context is insufficient; evaluate this behaviour explicitly.
+- **Monitor the distribution of top scores** over time; a shift often signals a data or model change.
+
+### 19.36 Are embeddings sensitive data, and how do you secure a vector database?
+
+Yes. Embeddings are often treated as anonymous numbers, but they should be protected **as carefully as the text they were created from**.
+
+**Why embeddings are sensitive**
+
+- **Inversion attacks:** research such as Vec2Text has shown that text can be reconstructed from embeddings with high accuracy for short passages, given access to the embedding model. Leaked embeddings can therefore leak the content, including names and other personal data.
+- **Attribute and membership inference:** embeddings can reveal properties of the text (topic, sentiment, demographic signals) or confirm whether a particular record is in the collection.
+- Vector stores usually also hold the **original chunk text and metadata**, so a breach exposes the source content directly.
+
+**Controls**
+
+- **Access control enforced at query time:** store ACL metadata (user, group, tenant) with each chunk and filter in the query, so retrieval only ever returns content the requester can see. Do not rely on the LLM or on application code after retrieval.
+- **Tenant isolation:** separate collections, namespaces or databases per tenant for strong isolation where required.
+- **Encryption** at rest and in transit, private networking, secrets management, and audit logs of queries.
+- **Data minimisation:** redact or mask personal data before embedding when it is not needed for retrieval.
+- **Deletion:** support deletion of every vector and chunk derived from a document (GDPR right to erasure), including replicas and backups.
+- **Third-party embedding APIs:** check data retention and training terms, region, and contractual protections; self-host the embedding model for highly sensitive data.
+- **Index poisoning and prompt injection:** documents added to the index can contain malicious instructions or misleading content aimed at the RAG system. Control who can add content, scan ingested content, and treat retrieved text as untrusted data in prompts.
+
+### 19.37 How would you estimate the size and cost of a vector database deployment?
+
+Capacity planning starts from four numbers: **number of vectors, dimensions, bytes per dimension, and query load**. Work through the estimate explicitly; interviewers look for the arithmetic and the levers.
+
+**Worked example:** 20M documents, chunked into an average of 2.5 chunks each, so 50M vectors at 1,024 dimensions.
+
+**1. Raw vectors**
+
+- float32: 50M × 1,024 × 4 bytes ≈ **205 GB**
+- int8 scalar quantisation: about **51 GB**
+- binary quantisation: 50M × 1,024 bits ≈ **6.4 GB**
+- Matryoshka truncation to 256 dimensions in float32: about **51 GB**
+
+**2. Index overhead**
+
+- HNSW with `M = 16` stores about 32 links at layer 0, roughly 32 × 4 bytes = 128 bytes per vector, so about **6.4 GB**, plus upper layers.
+
+**3. Metadata and text**
+
+- If chunk text (about 1.5 KB) and metadata are stored with the vectors, that adds about 75 GB, which can live on disk rather than in RAM.
+
+**4. Replication and headroom**
+
+- Two or three replicas for availability and read throughput, plus 30% to 50% headroom for growth and rebuilds.
+- float32 HNSW in RAM: (205 + 6.4) × 2 replicas × 1.4 ≈ **590 GB of RAM**. With int8 vectors in RAM and full vectors on disk for re-scoring: (51 + 6.4) × 2 × 1.4 ≈ **160 GB**.
+
+**5. Query load**
+
+- Benchmark the queries per second one node sustains at the target recall and latency, then divide peak QPS by it and add headroom.
+
+**6. Embedding cost**
+
+- Initial ingestion: 50M chunks × about 300 tokens = 15B tokens. Multiply by the embedding API price per million tokens, or estimate GPU hours for a self-hosted model.
+- Ongoing cost: daily changed documents plus query embeddings.
+- **Re-embedding the whole corpus** for a model change costs the same as initial ingestion; budget for it.
+
+**Levers to cut cost:** quantisation with re-scoring, Matryoshka truncation, disk-based indexes (DiskANN-style), tiered storage for rarely queried data, smaller chunks only where needed, and deduplicating near-identical chunks before embedding.
 
 ---
 

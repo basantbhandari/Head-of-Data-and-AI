@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,770 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,781 interview questions with worked answers, in 31 chapters across 6 parts._
 
 Last updated 2026-11-17.
 
@@ -78,13 +78,13 @@ _Large language models and the systems built around them: prompting, retrieval, 
 |---|---:|
 | 17. [Large Language Model Foundations](part-4-generative-ai/17-large-language-model-foundations.md) | 155 |
 | 18. [Prompt and Context Engineering](part-4-generative-ai/18-prompt-and-context-engineering.md) | 36 |
-| 19. [Embeddings and Vector Databases](part-4-generative-ai/19-embeddings-and-vector-databases.md) | 26 |
+| 19. [Embeddings and Vector Databases](part-4-generative-ai/19-embeddings-and-vector-databases.md) | 37 |
 | 20. [Retrieval-Augmented Generation](part-4-generative-ai/20-retrieval-augmented-generation.md) | 70 |
 | 21. [AI Agents and Agentic Systems](part-4-generative-ai/21-ai-agents-and-agentic-systems.md) | 64 |
 | 22. [Fine-Tuning and Model Adaptation](part-4-generative-ai/22-fine-tuning-and-model-adaptation.md) | 38 |
 | 23. [Multimodal AI](part-4-generative-ai/23-multimodal-ai.md) | 31 |
 | 24. [Evaluation and Testing of AI Systems](part-4-generative-ai/24-evaluation-and-testing-of-ai-systems.md) | 42 |
-| **Part total** | **462** |
+| **Part total** | **473** |
 
 ### Part V — Production Systems and Architecture
 
@@ -109,4 +109,4 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 50 |
 | **Part total** | **50** |
 
-**Total: 1,770 questions.**
+**Total: 1,781 questions.**
