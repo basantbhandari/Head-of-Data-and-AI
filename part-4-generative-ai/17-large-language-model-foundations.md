@@ -204,7 +204,7 @@ This chapter contains **155 questions**.
 
 ### 17.5 What is Fine-tuning?
 
-> **See also:** [Question 22.27 — What is fine-tuning?](22-fine-tuning-and-model-adaptation.md#2227-what-is-fine-tuning), which covers the same question from another angle.
+> **See also:** [Question 22.1 — What is fine-tuning, and when should you fine-tune an LLM?](22-fine-tuning-and-model-adaptation.md#221-what-is-fine-tuning-and-when-should-you-fine-tune-an-llm), which covers the same question from another angle.
 
 - **Fine-tuning is the process of taking a pretrained model and further training it on a smaller, task-specific or domain-specific dataset so that the model becomes better adapted to a particular task, behavior, or domain.**
 - **Instead of training a model from scratch, we start with the knowledge and representations learned during pretraining and update some or all of the model's parameters using the fine-tuning dataset.**
