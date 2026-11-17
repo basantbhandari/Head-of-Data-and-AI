@@ -1677,4 +1677,4 @@ As a leader, an incident is a test of **calm, transparency and learning**. The t
 
 ---
 
-← [Chapter 30. AI Safety, Security and Responsible AI](../part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) · [Table of contents](../README.md)
+← [Chapter 30. AI Safety, Security and Responsible AI](../part-5-production-systems/30-ai-safety-security-and-responsible-ai.md) · [Table of contents](../README.md) · [Chapter 32. Causal Inference, Recommender Systems and Forecasting](../part-7-applied-data-science/32-causal-inference-recommender-systems-and-forecasting.md) →

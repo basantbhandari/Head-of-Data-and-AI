@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,807 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,843 interview questions with worked answers, in 32 chapters across 7 parts._
 
 Last updated 2026-11-17.
 
@@ -12,7 +12,7 @@ Last updated 2026-11-17.
 
 Senior Data and AI engineering interviews test more than one discipline. In one loop a candidate may derive a gradient, tune a Spark job, design a retrieval-augmented assistant, explain how a model will be monitored in production, and describe how they handled a disagreement with a stakeholder. This handbook brings those disciplines together in one place.
 
-The book is organised by domain rather than by source. It starts with the foundations that every later topic depends on, then moves through data engineering, machine learning and generative AI, and finishes with the production, architecture and leadership topics that separate senior candidates from mid-level ones. Each chapter is self-contained and can be read on its own before a targeted interview.
+The book is organised by domain rather than by source. It starts with the foundations that every later topic depends on, moves through data engineering, machine learning and generative AI, and covers the production, architecture and leadership topics that separate senior candidates from mid-level ones. It ends with applied data science: causal inference, recommender systems and forecasting. Each chapter is self-contained and can be read on its own before a targeted interview.
 
 It is also the first step on a longer path, from senior engineer today towards a Head of Data and AI role over the next ten to fifteen years.
 
@@ -21,9 +21,9 @@ It is also the first step on a longer path, from senior engineer today towards a
 | Target role | Core chapters | Also review |
 |---|---|---|
 | Senior Data Engineer | 2, 4, 5, 6, 7 | 3, 25, 26, 31 |
-| Senior ML Engineer | 1, 8–13, 26, 28 | 2, 14, 15, 27, 31 |
+| Senior ML Engineer | 1, 8–13, 26, 28 | 2, 14, 15, 27, 31, 32 |
 | Senior AI / LLM Engineer | 17–24, 27, 29 | 13, 26, 30, 31 |
-| Applied Scientist | 1, 8–17, 22 | 12, 24 |
+| Applied Scientist | 1, 8–17, 22, 32 | 12, 24 |
 | Data and AI Platform / Architect | 4, 6, 25–29 | 7, 30, 31 |
 
 ---
@@ -109,4 +109,13 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 50 |
 | **Part total** | **50** |
 
-**Total: 1,807 questions.**
+### Part VII — Applied Data Science
+
+_Causal inference, recommender systems and forecasting: the applied methods behind pricing, marketing, personalisation and planning decisions._
+
+| Chapter | Questions |
+|---|---:|
+| 32. [Causal Inference, Recommender Systems and Forecasting](part-7-applied-data-science/32-causal-inference-recommender-systems-and-forecasting.md) | 36 |
+| **Part total** | **36** |
+
+**Total: 1,843 questions.**
