@@ -333,15 +333,15 @@ An **n-gram model** is an NLP language model that predicts the **next word/token
 - **Core idea:** A statistical measure used to evaluate how important a word is to a document within a collection (corpus), balancing how often a word appears in a document against how common it is across all documents.
 - **Term Frequency (TF):** Measures how frequently a word appears in a document.
 
-  $$
+  ```math
   \text{TF}(t, d) = \frac{\text{Number of times term } t \text{ appears in document } d}{\text{Total terms in } d}
-  $$
+  ```
 
 - **Inverse Document Frequency (IDF):** Measures how rare/common a word is across the entire corpus — words appearing in many documents get a lower score (less informative).
 
-  $$
+  ```math
   \text{IDF}(t) = \log \frac{\text{Total number of documents}}{\text{Number of documents containing term } t}
-  $$
+  ```
 
 - **TF-IDF score:** $\text{TF-IDF}(t, d) = \text{TF}(t, d) \cdot \text{IDF}(t)$
   - High score → word is frequent in this document but rare across the corpus (likely important/distinctive).

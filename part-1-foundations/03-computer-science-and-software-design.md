@@ -405,7 +405,7 @@ Big-O notation gives an upper bound on how an algorithm's running time (or memor
 
 - A Python loop doing `if x in some_list` inside another loop is $O(n \cdot m)$; converting the list to a set makes it $O(n + m)$. This single change regularly turns hours into seconds.
 - Joins follow the same logic: a nested-loop join is $O(n \cdot m)$, a hash join is $O(n + m)$, a sort-merge join is $O(n \log n + m \log m)$. Spark and database optimizers pick among these for that reason.
-- Sorting a large dataset is $O(n \log n)$ plus a shuffle; an `ORDER BY` on a billion rows is expensive, and a top-K with a heap ($O(n \log k)$) is often all you actually need.
+- Sorting a large dataset is $O(n \log n)$ plus a shuffle; an `ORDER BY` on a billion rows is expensive, and a top-K with a heap ($`O(n \log k)`$) is often all you actually need.
 
 **Production caveat:** Big-O hides constants and memory effects. A linear scan over a contiguous array can beat a tree lookup for small $n$ because of CPU caches, and in distributed systems network I/O and shuffles usually dominate CPU complexity. Use Big-O to rule out bad designs, then measure.
 
@@ -591,7 +591,7 @@ class LRUCache:
         self._push_front(node)
 ```
 
-Sentinel head and tail nodes remove all the empty-list edge cases. In real Python code you would use `collections.OrderedDict` (`move_to_end` and `popitem(last=False)` are both $O(1)$) or `functools.lru_cache` for memoising functions; interviewers usually want the hand-built version first.
+Sentinel head and tail nodes remove all the empty-list edge cases. In real Python code you would use `collections.OrderedDict` (`move_to_end` and `popitem(last=False)` are both $`O(1)`$) or `functools.lru_cache` for memoising functions; interviewers usually want the hand-built version first.
 
 **Senior-level extensions:**
 

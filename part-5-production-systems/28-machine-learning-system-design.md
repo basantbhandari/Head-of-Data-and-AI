@@ -802,7 +802,7 @@ event triggers (likes, new content, reminders) ─► candidate notifications qu
 
 **Clarify:** suggestions appear as the user types in a search box. Very high QPS (every keystroke), latency under 50 ms end to end, results should be popular, fresh, personalised and safe.
 
-**Framing:** given a prefix and context, rank candidate completions by $P(\text{completion selected} \mid \text{prefix}, \text{user}, \text{context})$.
+**Framing:** given a prefix and context, rank candidate completions by $`P(\text{completion selected} \mid \text{prefix}, \text{user}, \text{context})`$.
 
 **Candidate generation:**
 - A **trie** (or finite-state transducer) of historical queries with their frequencies, giving the top-k completions per prefix. Precompute top-k at each node so lookup is $O(\text{prefix length})$.

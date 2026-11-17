@@ -1289,7 +1289,7 @@ They answer different questions. **Monocular depth** guesses per-pixel distance 
 **NeRF (Neural Radiance Fields).** A small MLP maps a 3D position and viewing direction to colour and density. To render a pixel, you cast a ray, sample points along it, query the MLP, and alpha-composite:
 
 $$
-C(\mathbf{r}) = \sum_{i} T_i \left(1 - e^{-\sigma_i \delta_i}\right) \mathbf{c}_i, \qquad T_i = \exp\Big(-\sum_{j<i} \sigma_j \delta_j\Big)
+C(\mathbf{r}) = \sum_{i} T_i \left(1 - e^{-\sigma_i \delta_i}\right) \mathbf{c}_i, \qquad T_i = \exp\Big(-\sum_{j \lt i} \sigma_j \delta_j\Big)
 $$
 
 Training minimises the photometric error against the input photos. Positional encoding (Fourier features) lets the MLP represent high frequencies. Camera poses come from structure-from-motion (COLMAP). The original was slow: hours to train and seconds per frame. Instant-NGP's hash-grid encoding cut training to minutes, and Mip-NeRF 360 handled unbounded scenes.

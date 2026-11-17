@@ -690,17 +690,17 @@ Use continual pre-training when:
    - Assign each adapter a weight and combine their updates.
    - Conceptually:
 
-   $$
+   ```math
    \Delta W = \alpha_1 \Delta W_1 + \alpha_2 \Delta W_2 + \cdots + \alpha_n \Delta W_n
-   $$
+   ```
 
    - This allows you to control how strongly each adapter contributes.
 2. **Merge into the base model**
    - Combine the LoRA updates with the original model weights:
 
-   $$
+   ```math
    W' = W + \Delta W
-   $$
+   ```
 
    - The resulting model no longer needs the separate LoRA adapter for inference.
 3. **Keep adapters separate**

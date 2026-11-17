@@ -292,16 +292,16 @@ In the context of **Reinforcement Learning**, a **Value Function** serves as 
 1. **State Value Function** $V(s)$: This function calculates the expected cumulative reward from being in a specific state $s$ and following a given policy.
    Mathematically, this is defined as the expected reward from the current state:
 
-   $$
+   ```math
    V^\pi(s) = \mathbb{E}_\pi\left[R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots \mid S_t = s\right]
-   $$
+   ```
 
 2. **Action Value Function** $Q(s, a)$: This function expands on the state value function by factoring in the action chosen. It calculates the expected cumulative reward from being in state $s$, **taking action $a$** under a policy $\pi$.
    Mathematically, this is expressed as:
 
-   $$
+   ```math
    Q^\pi(s,a) = \mathbb{E}_\pi\left[R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots \mid S_t = s, A_t = a\right]
-   $$
+   ```
 
 #### **Relationship with Policies**
 
@@ -524,15 +524,15 @@ In **model-free** RL, the agent doesn't attempt to model the environment expli
 4. **Update the Q-Value**
    **Q-learning update rule:**
 
-   $$
+   ```math
    Q(s_t,a_t) \leftarrow (1-\alpha)Q(s_t,a_t) + \alpha \left[ r_{t+1} + \gamma\max_a Q(s_{t+1},a) \right]
-   $$
+   ```
 
    Or equivalently:
 
-   $$
+   ```math
    Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \left[ r_{t+1} + \gamma\max_a Q(s_{t+1},a) - Q(s_t,a_t) \right]
-   $$
+   ```
 
 #### Parameters
 
@@ -3523,7 +3523,7 @@ $$
 
 **The two extremes:**
 - $\lambda = 0$: $\hat{A}_t = \delta_t$. Only one real reward is used and the rest comes from the critic. Low variance, but biased whenever $V$ is wrong, which early in training is always.
-- $\lambda = 1$: $\hat{A}_t = \sum_l \gamma^l r_{t+l} - V(s_t)$, the Monte Carlo return minus a baseline. Unbiased regardless of critic quality, but the variance of a long sum of random rewards is high.
+- $\lambda = 1$: $`\hat{A}_t = \sum_l \gamma^l r_{t+l} - V(s_t)`$, the Monte Carlo return minus a baseline. Unbiased regardless of critic quality, but the variance of a long sum of random rewards is high.
 - In between, $\lambda$ sets how quickly you stop trusting real rewards and start trusting the critic. Values around 0.9 to 0.97 work well on most tasks, with 0.95 the common default.
 
 **The role of $\gamma$:** GAE treats $\gamma$ as a variance-reduction knob too. A smaller $\gamma$ ignores far-future rewards, reducing variance but biasing the objective towards short-term outcomes regardless of the critic. So $\gamma$ changes what you optimise, while $\lambda$ changes how you estimate it.
@@ -3617,7 +3617,7 @@ Any two are safe in the classic theory. Tabular off-policy Q-learning converges;
 | Conservative or constrained updates (CQL, BC penalties) | Off-policy | Avoid bootstrapping from actions the data does not support |
 | Layer normalisation, smaller step sizes | Function approximation | Limit how far one update spreads to other states |
 
-**Why it matters beyond theory:** offline RL is the extreme case, with no fresh on-policy data at all, which is why its methods are built around conservatism. In production, the warning signs are mean Q-values rising steadily while measured returns stay flat, Q-values exceeding the maximum possible discounted return ($r_{\max}/(1-\gamma)$), and loss that falls while behaviour worsens. Log the predicted Q-values next to realised returns as a standard training dashboard metric.
+**Why it matters beyond theory:** offline RL is the extreme case, with no fresh on-policy data at all, which is why its methods are built around conservatism. In production, the warning signs are mean Q-values rising steadily while measured returns stay flat, Q-values exceeding the maximum possible discounted return ($`r_{\max}/(1-\gamma)`$), and loss that falls while behaviour worsens. Log the predicted Q-values next to realised returns as a standard training dashboard metric.
 
 ### 16.81 How do policy iteration and value iteration differ, and when does dynamic programming apply?
 
@@ -3862,7 +3862,7 @@ Then reproduce a published result on CartPole or Pendulum with your code. If a r
 
 - Normalise observations, and scale or clip rewards (`VecNormalize`). Save its statistics with the model.
 - Initialise the final policy layer with small weights so early actions are near-uniform.
-- Use a sensible learning rate (around $3 \times 10^{-4}$ with Adam), GAE with $\lambda \approx 0.9$–$0.95$, and $\gamma$ matched to the task horizon.
+- Use a sensible learning rate (around $3 \times 10^{-4}$ with Adam), GAE with $\lambda \approx 0.9$–$`0.95`$, and $\gamma$ matched to the task horizon.
 - Make sure the action space is scaled to $[-1, 1]$ for continuous control.
 
 **5. Run experiments honestly**

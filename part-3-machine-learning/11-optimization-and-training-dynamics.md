@@ -68,9 +68,9 @@ Imagine the loss function as a **hill/valley**. We want to move downhill until w
    The gradient tells us **which direction increases the loss most quickly**.
 4. **Move in the opposite direction**
 
-   $$
+   ```math
    w := w - \eta \frac{\partial L}{\partial w}
-   $$
+   ```
 
    where:
 
@@ -322,9 +322,9 @@ optuna.create_study(direction="maximize").optimize(objective, n_trials=100)
   - $\hat{m}_t = \frac{m_t}{1-\beta_1^t}$, $\hat{v}_t = \frac{v_t}{1-\beta_2^t}$
 - **Update rule**:
 
-  $$
+  ```math
   \theta_{t+1} = \theta_t - \alpha \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
-  $$
+  ```
 
 **Hyperparameters**
 
@@ -357,9 +357,9 @@ optuna.create_study(direction="maximize").optimize(objective, n_trials=100)
   - $v_t = \beta v_{t-1} + (1-\beta) g_t^2$
 - **Update rule**:
 
-  $$
+  ```math
   \theta_{t+1} = \theta_t - \alpha \frac{g_t}{\sqrt{v_t} + \epsilon}
-  $$
+  ```
 
   - $\alpha$ = learning rate, $\beta$ = decay rate (typically 0.9), $\epsilon$ = small constant (avoid division by zero)
 
@@ -391,9 +391,9 @@ optuna.create_study(direction="maximize").optimize(objective, n_trials=100)
 - Accumulates squared gradients: $G_t = G_{t-1} + g_t^2$
 - **Update rule**:
 
-  $$
+  ```math
   \theta_{t+1} = \theta_t - \alpha \frac{g_t}{\sqrt{G_t} + \epsilon}
-  $$
+  ```
 
   - $\alpha$ = initial learning rate, $\epsilon$ = small constant (to avoid division by zero)
 

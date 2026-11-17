@@ -418,7 +418,7 @@ This chapter contains **100 questions**.
 - **Placement**: before or after activation function (commonly before) — architectural choice affecting performance
 - **Axis/dimension** to normalize over: standard BN normalizes over batch dimension per channel/feature; choice matters for conv layers (per-channel) vs dense layers
 - **Whether to use running statistics or batch statistics at inference**: standard is running stats, but affects behavior with small/varying batch sizes
-- In practice, momentum and epsilon are the main hyperparameters tuned; $\gamma$/$\beta$ are learned automatically
+- In practice, momentum and epsilon are the main hyperparameters tuned; $\gamma$/$`\beta`$ are learned automatically
 
 ### 13.15 What is parameter sharing in deep learning?
 
@@ -494,13 +494,13 @@ This chapter contains **100 questions**.
 | Typically | More flexible, can handle missing data | Better performance on classification tasks (with enough data) |
 | Examples | Naive Bayes, GANs, VAEs, GPT | Logistic Regression, SVM, standard classifiers |
 
-- Generative models can be used for classification too (via Bayes' rule: $P(Y \mid X) \propto P(X \mid Y)\thinspace P(Y)$) but typically less accurate than discriminative for pure classification when data is abundant
+- Generative models can be used for classification too (via Bayes' rule: $`P(Y \mid X) \propto P(X \mid Y)\thinspace P(Y)`$) but typically less accurate than discriminative for pure classification when data is abundant
 
 ### 13.18 Can you explain how a generative model works?
 
 **How Generative Models Work**
 
-- Goal: learn the underlying probability distribution of training data $P(X)$ (or joint $P(X, Y)$), then use it to generate new samples
+- Goal: learn the underlying probability distribution of training data $P(X)$ (or joint $`P(X, Y)`$), then use it to generate new samples
 
 **General approach**
 
@@ -714,7 +714,7 @@ This chapter contains **100 questions**.
 
 **Generator (G)**
 
-- Takes random noise vector $z$ (from latent space, e.g., $\mathcal{N}(0, 1)$) as input
+- Takes random noise vector $z$ (from latent space, e.g., $`\mathcal{N}(0, 1)`$) as input
 - Generates fake data samples: $G(z)$ → fake sample
 - Goal: produce samples realistic enough to fool the discriminator
 
@@ -727,7 +727,7 @@ This chapter contains **100 questions**.
 **Training process (adversarial)**
 
 1. Generator creates fake sample from noise: $G(z)$
-2. Discriminator evaluates both real sample ($x$) and fake sample ($G(z)$)
+2. Discriminator evaluates both real sample ($x$) and fake sample ($`G(z)`$)
 3. Discriminator updated to better classify real vs fake (maximize correct classification)
 4. Generator updated to better fool discriminator (maximize D's error on fake samples)
 5. Repeat — both networks improve together in a minimax game
@@ -1122,7 +1122,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
     - $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$
   - **Input Gate ($i_t$):** Decides what new information to add to the cell state.
     - $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$
-    - A candidate value $\tilde{C}_t = \tanh(W_c \cdot [h_{t-1}, x_t] + b_c)$ is also computed.
+    - A candidate value $`\tilde{C}_t = \tanh(W_c \cdot [h_{t-1}, x_t] + b_c)`$ is also computed.
   - **Cell State Update:** Combines the forget and input gates to update the cell state.
     - $C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t$
   - **Output Gate ($o_t$):** Decides what part of the cell state to output as the hidden state.
@@ -1144,7 +1144,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
   - **Reset Gate ($r_t$):** Controls how much of the past hidden state to forget when computing the new candidate state.
     - $r_t = \sigma(W_r \cdot [h_{t-1}, x_t] + b_r)$
   - **Candidate Hidden State:**
-    - $\tilde{h}_t = \tanh(W_h \cdot [r_t \odot h_{t-1}, x_t] + b_h)$
+    - $`\tilde{h}_t = \tanh(W_h \cdot [r_t \odot h_{t-1}, x_t] + b_h)`$
   - **Final Hidden State Update:**
     - $h_t = (1 - z_t) \odot h_{t-1} + z_t \odot \tilde{h}_t$
 - **How this solves long-term dependency issues:**
@@ -1189,7 +1189,7 @@ The convolutional layers act as feature extractors (edges, textures, shapes, obj
 - **Role:** Decides what **new information** from the current input should be added to the cell state.
 - **Formula:**
   - $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$
-  - Along with a candidate value: $\tilde{C}_t = \tanh(W_c \cdot [h_{t-1}, x_t] + b_c)$
+  - Along with a candidate value: $`\tilde{C}_t = \tanh(W_c \cdot [h_{t-1}, x_t] + b_c)`$
 - **How it works:**
   - The sigmoid part ($i_t$) decides **which values** to update (how much of the new information matters).
   - The tanh part ($\tilde{C}_t$) creates a vector of **new candidate values** that could be added to the cell state.
@@ -3240,7 +3240,7 @@ $$
 | --- | --- |
 | Exact symmetry, physically consistent outputs | More complex layers, harder to implement and debug |
 | Big data efficiency, better extrapolation to unseen poses | Higher-order tensor products are slow and memory-heavy |
-| Fewer parameters spent on learning symmetry | Wrong or overly strict symmetry hurts (chirality needs $SE(3)$, not $E(3)$) |
+| Fewer parameters spent on learning symmetry | Wrong or overly strict symmetry hurts (chirality needs $SE(3)$, not $`E(3)`$) |
 
 **Decision rule:** use equivariance when the symmetry is genuinely exact (physics, geometry) and data is scarce. With huge datasets and approximate symmetries, a plain Transformer plus augmentation can be competitive; AlphaFold 3, for instance, dropped strict equivariance in parts of its architecture.
 
@@ -4035,7 +4035,7 @@ $$
 h_k = \bar A h_{k-1} + \bar B u_k, \qquad y_k = C h_k
 $$
 
-If $\bar A, \bar B, C$ do not depend on the input, unrolling gives a **convolution** $y = \bar K \ast u$ with kernel $\bar K = (C\bar B, C\bar A\bar B, \dots, C\bar A^{L-1}\bar B)$. That is the **duality** S4 exploits: train as a long convolution (FFT, $O(L \log L)$), infer as a recurrence ($O(1)$ per token).
+If $\bar A, \bar B, C$ do not depend on the input, unrolling gives a **convolution** $y = \bar K \ast u$ with kernel $\bar K = (C\bar B, C\bar A\bar B, \dots, C\bar A^{L-1}\bar B)$. That is the **duality** S4 exploits: train as a long convolution (FFT, $`O(L \log L)`$), infer as a recurrence ($O(1)$ per token).
 
 **S4 (Gu, Goel and Ré, 2021)**
 
@@ -4155,7 +4155,7 @@ $$
 f(x_1, \dots, x_n) = \sum_{q=1}^{2n+1} \Phi_q\left( \sum_{p=1}^{n} \phi_{q,p}(x_p) \right)
 $$
 
-The catch, and why it was long considered useless for learning: the inner functions can be **non-smooth or even fractal**. KANs sidestep this by abandoning the fixed depth-two, width-$(2n+1)$ form and stacking arbitrary widths and depths, betting that real-world functions have smooth compositional structure.
+The catch, and why it was long considered useless for learning: the inner functions can be **non-smooth or even fractal**. KANs sidestep this by abandoning the fixed depth-two, width-$`(2n+1)`$ form and stacking arbitrary widths and depths, betting that real-world functions have smooth compositional structure.
 
 **A KAN layer**
 
