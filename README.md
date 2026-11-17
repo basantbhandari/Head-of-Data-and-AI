@@ -2,7 +2,7 @@
 
 ### The Senior Data and AI Engineer's Interview Handbook
 
-_1,800 interview questions with worked answers, in 31 chapters across 6 parts._
+_1,802 interview questions with worked answers, in 31 chapters across 6 parts._
 
 Last updated 2026-11-17.
 
@@ -61,14 +61,14 @@ _Classical and deep learning, from first principles to the judgment calls interv
 |---|---:|
 | 8. [Machine Learning Fundamentals](part-3-machine-learning/08-machine-learning-fundamentals.md) | 99 |
 | 9. [Machine Learning Algorithms](part-3-machine-learning/09-machine-learning-algorithms.md) | 81 |
-| 10. [Data Preprocessing and Feature Engineering](part-3-machine-learning/10-data-preprocessing-and-feature-engineering.md) | 36 |
+| 10. [Data Preprocessing and Feature Engineering](part-3-machine-learning/10-data-preprocessing-and-feature-engineering.md) | 38 |
 | 11. [Optimization and Training Dynamics](part-3-machine-learning/11-optimization-and-training-dynamics.md) | 38 |
 | 12. [Model Evaluation and Experimentation](part-3-machine-learning/12-model-evaluation-and-experimentation.md) | 58 |
 | 13. [Deep Learning](part-3-machine-learning/13-deep-learning.md) | 97 |
 | 14. [Natural Language Processing](part-3-machine-learning/14-natural-language-processing.md) | 43 |
 | 15. [Computer Vision](part-3-machine-learning/15-computer-vision.md) | 47 |
 | 16. [Reinforcement Learning](part-3-machine-learning/16-reinforcement-learning.md) | 86 |
-| **Part total** | **585** |
+| **Part total** | **587** |
 
 ### Part IV — Generative AI and LLM Engineering
 
@@ -109,4 +109,4 @@ _Behavioural, leadership and scenario questions that decide senior-level offers.
 | 31. [Behavioural, Leadership and Scenario Questions](part-6-professional-practice/31-behavioral-leadership-and-scenarios.md) | 50 |
 | **Part total** | **50** |
 
-**Total: 1,800 questions.**
+**Total: 1,802 questions.**
